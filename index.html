@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
+    <title><%= htmlWebpackPlugin.options.title %></title>
+
+</head>
+<body onload="load()">
+<div id="x-spreadsheet-demo"></div>
+<script>
+    function load() {
+        // x.spreadsheet.locale('zh-cn');
+        let options = {
+            showFreeze: false,
+            showEditor: false,
+            rowWidth: {
+                state: true,
+                width: 180
+            },
+            row: {
+                len: 10,
+                height: 25,
+            },
+            showGrid: false,
+            showToolbar: false,
+            col: {
+                len: 3,
+                width: 100,
+                indexWidth: 60,
+                minWidth: 60,
+            },
+        }
+        let spaces = ['          ', '                    '];     // 10个空格，和20个空格
+
+        var xs = x.spreadsheet('#x-spreadsheet-demo', options)
+            .loadData({
+                styles: [
+                    {
+                        bgcolor: '#f4f5f8',
+                        textwrap: true,
+                        color: '#900b09',
+                        font: {name: "Arial", size: 10, bold: true, italic: false},
+                        border: {
+                            top: ['thin', '#0366d6'],
+                            bottom: ['thin', '#0366d6'],
+                            right: ['thin', '#0366d6'],
+                            left: ['thin', '#0366d6'],
+                        },
+                    },
+                    {
+                        font: {name: "Arial", size: 10, bold: true, italic: false},
+                        bgcolor: '#5CACEE',
+                        align: "center"
+                    },
+                    {
+                        bgcolor: '#EBF3FD',
+                        border: {
+                            top: ['thin', '#fff'],
+                            bottom: ['thin', '#fff'],
+                            right: ['thin', '#fff'],
+                            left: ['thin', '#fff'],
+                        },
+                    },
+                    {
+                        align: "center",
+                        bgcolor: '#F2F2F2',
+                        border: {
+                            top: ['thin', '#fff'],
+                            bottom: ['thin', '#fff'],
+                            right: ['thin', '#fff'],
+                            left: ['thin', '#fff'],
+                        },
+                    },
+                    {
+                        bgcolor: '#fff',
+                        // color: 'blue',
+                        border: {
+                            top: ['thin', '#fff'],
+                            bottom: ['thin', '#fff'],
+                            right: ['thin', '#fff'],
+                            left: ['thin', '#fff'],
+                        },
+                    },
+                    {
+                        bgcolor: '#fff',
+                        align: "right",
+                        color: 'blue',
+                        border: {
+                            top: ['thin', '#fff'],
+                            bottom: ['thin', '#fff'],
+                            right: ['thin', '#fff'],
+                            left: ['thin', '#fff'],
+                        },
+                    },
+                    {
+                        bgcolor: '#F2F2F2',
+                        align: "right",
+                        color: 'blue',
+                        border: {
+                            top: ['thin', '#fff'],
+                            bottom: ['thin', '#fff'],
+                            right: ['thin', '#fff'],
+                            left: ['thin', '#fff'],
+                        },
+                    }
+                ],
+                flex: [
+                    {
+                        ri: 6,
+                        ci: 0,
+                        set_total: 3,
+                        state: false
+                    },
+                    // {
+                    //     ri: 7,
+                    //     ci: 0,
+                    //     set_total: 2,
+                    //     state: false
+                    // },
+                    // {
+                    //     ri: 12,
+                    //     ci: 0,
+                    //     set_total: 2,
+                    //     state: false
+                    // }
+                ],
+                rows: {
+                    0: {
+                        cells: {
+                            0: {style: 1},
+                            1: {text: '2019-3-1', style: 1},
+                            2: {text: '2019-3-2', style: 1},
+                        },
+                    },
+                    1: {
+                        cells: {
+                            0: {text: '报告期', style: 2},
+                            1: {text: '一季度', style: 3},
+                            2: {text: '年报',  style: 3},
+
+                        },
+                    },
+                    2: {
+                        cells: {
+                            0: {text: '报表内容', style: 2},
+                            1: {text: '合并报表', style: 4},
+                            2: {text: '合并报表', style: 4},
+                        }
+                    },
+                    3: {
+                        cells: {
+                            0: {text: '流动资产: ', style: 2},
+                            1: {text: '', style: 3},
+                            2: {text: '',  style: 3},
+                        }
+                    },
+                    4: {
+                        cells: {
+                            0: {text: `          货币资金: `, style: 2},
+                            1: {text: '4950.03', style: 5},
+                            2: {text: '4226.29', style: 5}
+                        }
+                    },
+                    5: {
+                        cells: {
+                            0: {text: `          货币资金: `, style: 2},
+                            1: {text: '4950.03', style: 6},
+                            2: {text: '4226.29', style: 6}
+                        }
+                    },
+                    6: {
+                        cells: {
+                            0: {text: `          货币资金: `, style: 2},
+                            1: {text: '4950.03', style: 5},
+                            2: {text: '4226.29', style: 5}
+                        }
+                    },
+                    7: {
+                        cells: {
+                            0: {text: `                    货币资金: `, style: 2},
+                            1: {text: '4950.03', style: 6},
+                            2: {text: '4226.29', style: 6}
+                        }
+                    },
+                    8: {
+                        cells: {
+                            0: {text: `                    货币资金: `, style: 2},
+                            1: {text: '4950.03', style: 5},
+                            2: {text: '4226.29', style: 5}
+                        }
+                    },
+                    9: {
+                        cells: {
+                            0: {text: `                    货币资金: `, style: 2},
+                            1: {text: '4950.03', style: 6},
+                            2: {text: '4226.29', style: 6}
+                        }
+                    },
+                },
+            }).change((cdata) => {
+                console.log(cdata);
+                console.log(xs.validate());
+            });
+    }
+</script>
+<!--script type="text/javascript" src="https://unpkg.com/x-data-spreadsheet@1.0.20/dist/locale/zh-cn.js"></script-->
+</body>
+</html>
