@@ -51,6 +51,7 @@ export default class Resizer {
   }
 
   mousedownHandler(evt) {
+    console.log("54...")
     let startEvt = evt;
     const {
       el, lineEl, cRect, vertical, minDistance,
@@ -65,7 +66,6 @@ export default class Resizer {
         if (vertical) {
           distance += e.movementX;
           if (distance > minDistance) {
-            console.log("....",cRect.left )
             el.css('left', `${cRect.left + distance}px`);
           }
         } else {
@@ -82,10 +82,9 @@ export default class Resizer {
       this.moving = false;
       this.hide();
       if (this.finishedFn) {
-        if (distance < minDistance) distance = minDistance;
-        console.log(cRect, "。。。", distance)
+          console.log(cRect, "。。。", distance, minDistance)
+          if (distance < minDistance) distance = minDistance;
         this.finishedFn(cRect, distance);
-        console.log(this.finishedFn)
       }
     });
   }

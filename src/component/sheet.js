@@ -247,7 +247,7 @@ function paste(what) {
 }
 
 function autofilter() {
-  const {data, table} = this;
+  const {data} = this;
   data.autofilter();
   sheetReset.call(this);
 }
@@ -282,8 +282,6 @@ function overlayerMousedown(evt) {
   // trait add
   if (autoFilter.includes2(ri, ci)) {
     autoFilter.getSet(data.exceptRowSet, ri);
-    console.log("1641", data.viewRange())
-    // overlayerMousescroll.call(this, evt);
   }
 
   if (autoFilter.includes(ri, ci)) {
@@ -472,6 +470,8 @@ function toolbarChange(type, value) {
       this.freeze(0, 0);
     }
   } else {
+    console.log(type, value, "473")
+      //format percent 473
     data.setSelectedCellAttr(type, value);
     if (type === 'formula') {
       editorSet.call(this);
@@ -493,6 +493,7 @@ function sheetInitEvents() {
     verticalScrollbar,
     horizontalScrollbar,
     editor,
+      table,
     contextMenu,
     data,
     toolbar,

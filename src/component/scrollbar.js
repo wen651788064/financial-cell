@@ -20,7 +20,6 @@ export default class Scrollbar {
 
   move(v) {
     this.el.scroll(v);
-    debugger
     return this;
   }
 
@@ -29,13 +28,12 @@ export default class Scrollbar {
   }
 
   set(distance, contentDistance) {
-    console.log("31...")
     const d = distance - 1;
     // console.log('distance:', distance, ', contentDistance:', contentDistance);
     if (contentDistance > d) {
       const cssKey = this.vertical ? 'height' : 'width';
-      this.el.css(cssKey, `${d}px`).show();
-      this.contentEl
+        this.el.css(cssKey, `${d - 15}px`).show();
+        this.contentEl
         .css(this.vertical ? 'width' : 'height', '1px')
         .css(cssKey, `${contentDistance}px`);
     } else {

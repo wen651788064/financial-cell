@@ -154,3 +154,12 @@ Modern browsers(chrome, firefox, Safari).
 ## LICENSE
 
 MIT
+
+
+--
+修复了百分比的bugger
+增加自适应高度的功能，当style里的textwrap为 true
+# 增加自适应宽度的功能:
+    ignore : []  忽略
+
+
