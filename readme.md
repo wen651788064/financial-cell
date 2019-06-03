@@ -1,165 +1,34 @@
-# x-spreadsheet
+### x-sheet
 
-[![npm package](https://img.shields.io/npm/v/x-data-spreadsheet.svg)](https://www.npmjs.org/package/x-data-spreadsheet)
-[![NPM downloads](http://img.shields.io/npm/dm/x-data-spreadsheet.svg)](https://npmjs.org/package/x-data-spreadsheet)
-[![NPM downloads](http://img.shields.io/npm/dt/x-data-spreadsheet.svg)](https://npmjs.org/package/x-data-spreadsheet)
-[![Build passing](https://travis-ci.org/myliang/x-spreadsheet.svg?branch=master)](https://travis-ci.org/myliang/x-spreadsheet)
-[![codecov](https://codecov.io/gh/myliang/x-spreadsheet/branch/master/graph/badge.svg)](https://codecov.io/gh/myliang/x-spreadsheet)
-![GitHub](https://img.shields.io/github/license/myliang/x-spreadsheet.svg)
-![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/myliang/x-spreadsheet.svg)
-[![Join the chat at https://gitter.im/x-datav/spreadsheet](https://badges.gitter.im/x-datav/spreadsheet.svg)](https://gitter.im/x-datav/spreadsheet?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+- 添加功能: autoAdapt
 
-> A web-based JavaScript spreadsheet
+  - 类型: Boolean
+  - 描述:  自适应高和宽，目前该关键字会忽略第一行的数据。
+  - 详情:  默认为false，为true时开启该功能。他会先按照列自适应列宽，然后再按照行自适应行宽，可配合关键字 *ignore* 使用。 目前已经在鼠标点击、input回车后、初始加载、format中使用该功能。 主要提供的函数为: renderAutoAdapt和autoRowResizer。
 
-<p align="center">
-  <a href="https://github.com/myliang/x-spreadsheet">
-    <img width="100%" src="https://raw.githubusercontent.com/myliang/x-spreadsheet/master/docs/demo.png">
-  </a>
-</p>
+- 添加关键字: ignore
 
-## CDN
-```html
-<link rel="stylesheet" href="https://unpkg.com/x-data-spreadsheet@1.0.13/dist/xspreadsheet.css">
-<script src="https://unpkg.com/x-data-spreadsheet@1.0.13/dist/xspreadsheet.js"></script>
+  - 类型: Array
+  - 描述: 该关键字是一个数组，主要用与忽略宽的自适应，需要先开启autoAdapt。
+  - 详情: 默认为[]。比如想第一列、第二列忽略宽的自适应， 写法如下:  ignore: [0, 1]。主要配合autoAdapt使用。
 
-<script>
-   x.spreadsheet('#xspreadsheet');
-</script>
-```
+- 添加模板: flex
 
-## NPM
+  - 类型: Array
 
-```shell
-npm install x-data-spreadsheet
-```
+  - 描述: 折叠功能，目前支持单层折叠。
 
-```html
-<div id="x-spreadsheet-demo"></div>
-```
+  - 格式: 
 
-```javascript
-import Spreadsheet from "x-data-spreadsheet";
-// If you need to override the default options, you can set the override
-// const options = {};
-// new Spreadsheet('#x-spreadsheet-demo', options);
-const s = new Spreadsheet("#x-spreadsheet-demo")
-  .loadData({}) // load data
-  .change(data => {
-    // save data to db
-  });
-
-// data validation
-s.validate()
-```
-
-```javascript
-// default options
-{
-  showToolbar: true,
-  showGrid: true,
-  showContextmenu: true,
-  view: {
-    height: () => document.documentElement.clientHeight,
-    width: () => document.documentElement.clientWidth,
-  },
-  row: {
-    len: 100,
-    height: 25,
-  },
-  col: {
-    len: 26,
-    width: 100,
-    indexWidth: 60,
-    minWidth: 60,
-  },
-  style: {
-    bgcolor: '#ffffff',
-    align: 'left',
-    valign: 'middle',
-    textwrap: false,
-    strike: false,
-    underline: false,
-    color: '#0a0a0a',
-    font: {
-      name: 'Helvetica',
-      size: 10,
-      bold: false,
-      italic: false,
+    ```json
+     {
+         "ri": 5,		//  第几行，这里为第六行
+         "ci": 0,		// 固定为0
+         "set_total": 3,	// 折叠的行数
+         "set_total_abj": 0,	// 默认设置为0
+         "offset": 0,	// 默认设置为0
+         "state": False	// false为展开，true为折叠
     },
-  },
-}
-```
+    ```
 
-## Internationalization
-```javascript
-// npm 
-import Spreadsheet from 'x-data-spreadsheet';
-import zhCN from 'x-data-spreadsheet/dist/locale/zh-cn';
-
-Spreadsheet.locale('zh-cn', zhCN);
-new Spreadsheet(document.getElementById('xss-demo'));
-```
-```html
-<!-- Import via CDN -->
-<link rel="stylesheet" href="https://unpkg.com/x-data-spreadsheet@1.0.13/dist/xspreadsheet.css">
-<script src="https://unpkg.com/x-data-spreadsheet@1.0.13/dist/xspreadsheet.js"></script>
-<script src="https://unpkg.com/x-data-spreadsheet@1.0.13/dist/locale/zh-cn.js"></script>
-
-<script>
-  x.spreadsheet.locale('zh-cn');
-</script>
-```
-
-## Features
-  - Undo & Redo
-  - Paint format
-  - Clear format
-  - Format
-  - Font
-  - Font size
-  - Font bold
-  - Font italic
-  - Underline
-  - Strike
-  - Text color
-  - Fill color
-  - Borders
-  - Merge cells
-  - Align
-  - Text wrapping
-  - Freeze cell
-  - Functions
-  - Resize row-height, col-width
-  - Copy, Cut, Paste
-  - Autofill
-  - Insert row, column
-  - Delete row, column
-  - Data validations
-
-## Development
-
-```sheel
-git clone https://github.com/myliang/x-spreadsheet.git
-cd x-spreadsheet
-npm install
-npm run dev
-```
-
-Open your browser and visit http://127.0.0.1:8080.
-
-## Browser Support
-
-Modern browsers(chrome, firefox, Safari).
-
-## LICENSE
-
-MIT
-
-
---
-修复了百分比的bugger
-增加自适应高度的功能，当style里的textwrap为 true
-# 增加自适应宽度的功能:
-    ignore : []  忽略
-
-
+    

@@ -41,23 +41,6 @@ function getAutoDrawBox(rindex, cindex, width) {
     return new DrawBox(left, top, width, height, cellPaddingWidth);
 }
 
-
-function getCellTextContent(rindex, cindex) {
-    const {data} = this;
-    const {sortedRowMap} = data;
-    let nrindex = rindex;
-    if (sortedRowMap.has(rindex)) {
-        nrindex = sortedRowMap.get(rindex);
-    }
-
-    const cell = data.getCell(nrindex, cindex);
-    if (cell === null) return;
-    // console.log("62", cell.adapt);
-
-    let cellText = _cell.render(cell.text || '', formulam, (y, x) => (data.getCellTextOrDefault(x, y)));
-    return cellText;
-}
-
 function getCellTextStyle(rindex, cindex) {
     const {data} = this;
     const {sortedRowMap} = data;
@@ -87,7 +70,6 @@ function renderCell(rindex, cindex) {
 
     const style = data.getCellStyleOrDefault(nrindex, cindex);
     const dbox = getDrawBox.call(this, rindex, cindex);
-    console.log("280", dbox)
     dbox.bgcolor = style.bgcolor;
     if (style.border !== undefined) {
         dbox.setBorders(style.border);
@@ -102,9 +84,8 @@ function renderCell(rindex, cindex) {
             cellText = formatm[style.format].render(cellText);
         }
         const font = Object.assign({}, style.font);
-        const r_font = Object.assign({}, style.font);
-        font.size = getFontSizePxByPt(font.size);
 
+        font.size = getFontSizePxByPt(font.size);
         let {ignore} = data.settings;
         // console.log('style:', style);
 
@@ -117,7 +98,7 @@ function renderCell(rindex, cindex) {
             underline: style.underline,
             ignore: ignore,
             cindex: cindex,
-            r_font: r_font
+            // r_font: r_font
         }, style.textwrap);
         // error
         const error = data.validations.getError(rindex, cindex);
@@ -369,40 +350,43 @@ function renderAutoAdapt() {
 
     const viewRange = data.viewRange2();
     if (data.settings.style.textwrap) {
-        let autoAdaptList = [];
         viewRange.each((ri, ci) => {
             let txt = getCellTextContent.call(this, ri, ci);
-            if (txt != undefined) {
+            const dbox = getDrawBox.call(this, ri, ci);
+
+            if (txt != undefined || this.autoAdaptList[ci] == undefined) {
                 const style = getCellTextStyle.call(this, ri, ci);
                 const font = Object.assign({}, style.font);
-
+                font.size = getFontSizePxByPt(font.size);
                 // 得到当前文字最宽的width
                 let txtWidth = null;
                 if (style.format != undefined) {
                     txt = multiply(txt) + '%';
-                    txtWidth = this.draw.selfAdaptionTxtWidth(multiply(txt) + '%', font);
+                    txtWidth = this.draw.selfAdaptionTxtWidth(multiply(txt) + '%', font, dbox);
                 } else {
-                    txtWidth = this.draw.selfAdaptionTxtWidth(txt, font);
+                    txtWidth = this.draw.selfAdaptionTxtWidth(txt, font, dbox);
                 }
-                if ((autoAdaptList[ci] == undefined || autoAdaptList[ci] < txtWidth) && ri > 0) {
-                    autoAdaptList[ci] = txtWidth;
+                if ((this.autoAdaptList[ci] == undefined || this.autoAdaptList[ci] < txtWidth) && ri > 0) {
+                    this.autoAdaptList[ci] = txtWidth;
                 }
             }
         });
-        console.log("380", autoAdaptList)
-        if (autoAdaptList.length > 0) {
+        console.log("380", this.autoAdaptList)
+        if (this.autoAdaptList.length > 0) {
             let {ignore} = data.settings;
-            for (let i = 0; i < autoAdaptList.length; i++) {
+            for (let i = 0; i < this.autoAdaptList.length; i++) {
                 let _ignore = false;
                 for (let j = 0; j < ignore.length; j++) {
                     if (i == ignore[j]) _ignore = true;
                 }
                 if (_ignore == false) {
-                    data.cols.setWidth(i, autoAdaptList[i]);
+                    if (this.autoAdaptList[i] == undefined) {
+                        data.cols.setWidth(i, 50);
+                    } else
+                        data.cols.setWidth(i, this.autoAdaptList[i]);
                 }
             }
         }
-        console.log("379", autoAdaptList)
     }
 }
 
@@ -412,59 +396,64 @@ class Table {
         this.el = el;
         this.draw = new Draw(el, data.viewWidth(), data.viewHeight());
         this.data = data;
+        this.autoAdaptList = [];
+    }
+
+
+    getCellTextContent(rindex, cindex) {
+        const {data} = this;
+        const {sortedRowMap} = data;
+        let nrindex = rindex;
+        if (sortedRowMap.has(rindex)) {
+            nrindex = sortedRowMap.get(rindex);
+        }
+
+        const cell = data.getCell(nrindex, cindex);
+        if (cell === null) return;
+        // console.log("62", cell.adapt);
+
+        let cellText = _cell.render(cell.text || '', formulam, (y, x) => (data.getCellTextOrDefault(x, y)));
+        return cellText;
+    }
+
+    getDrawBox(rindex, cindex) {
+        const {data} = this;
+        const {
+            left, top, width, height,
+        } = data.cellRect(rindex, cindex);
+        return new DrawBox(left, top, width, height, cellPaddingWidth);
+    }
+
+    getCellTextStyle(rindex, cindex) {
+        const {data} = this;
+        const {sortedRowMap} = data;
+        let nrindex = rindex;
+        if (sortedRowMap.has(rindex)) {
+            nrindex = sortedRowMap.get(rindex);
+        }
+
+        const style = data.getCellStyleOrDefault(nrindex, cindex);
+
+        return style;
     }
 
     render() {
         // resize canvas
         const {data} = this;
         const {rows, cols} = data;
-
         this.draw.resize(data.viewWidth(), data.viewHeight());
         this.clear();
 
         const tx = data.freezeTotalWidth();
         const ty = data.freezeTotalHeight();
         const {x, y} = data.scroll;
-        // 按行计算
-        renderAutoAdapt.call(this);
-        // renderAutoAdapt.call(this);
+
         let viewRange = data.viewRange();
         // fixed width of header
         const fw = cols.indexWidth;
         // fixed height of header
-        const fh = rows.height;
-        let record_rc = 0, max = 0;
-        let r_h = data.settings.row.height;
-        if (true) {
-            viewRange.each((ri, ci) => {
-                const txt = getCellTextContent.call(this, record_rc, ci);
-                // 1. 自适应调整一行的高度
-                // 2. 进入下一行 得到 本行的max
-                // 3. 如果adapt为false进入，不然不进
-                if (record_rc != ri && txt != undefined) {
-                    let record_h = data.rows.getHeight(record_rc);
-                    if (r_h * max != record_h) {
-                        data.rows.setHeight(record_rc, r_h * max);
-                    }
-                    max = 0;
-                } else if (txt != undefined && record_rc == ri) {
-                    const dbox = getDrawBox.call(this, record_rc, ci);
-                    if (txt != undefined) {
-                        const style = getCellTextStyle.call(this, ri, ci);
-                        const font = Object.assign({}, style.font);
-                        const n = this.draw.selfAdaptionHeight(dbox, txt, font);
-                        if (n > max || max == 0) {
-                            max = n;
-                        }
-                    }
-                }
-                record_rc = ri;
-            });
-            let record_h = data.rows.getHeight(record_rc);
-            if (r_h * 1 * max != record_h) {
-                data.rows.setHeight(record_rc, data.rows.getHeight(record_rc) * 1 * max);
-            }
-        }
+        let fh = rows.height;
+
 
         renderContentGrid.call(this, viewRange, fw, fh, tx, ty);
 

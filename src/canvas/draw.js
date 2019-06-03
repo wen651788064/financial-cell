@@ -1,6 +1,6 @@
 /* global window */
 function dpr() {
-    return window.devicePixelRatio || 1;
+    return 1;       // 修改之后
 }
 
 function thinLineWidth() {
@@ -200,7 +200,7 @@ class Draw {
 
     fillText(text, x, y) {
         // this.ctx.font.size = 30;
-        console.log("202: ", this.ctx.font, text, this.ctx.measureText(text).width)
+        // console.log("203:", this.ctx.font);
         this.ctx.fillText(text, npx(x), npx(y));
         return this;
     }
@@ -208,23 +208,31 @@ class Draw {
     selfAdaptionHeight(box, txt, font) {
         const {ctx} = this;
         if (font == undefined)
-            return
+            return;
         let txtWidth;
         ctx.font = `${font.italic ? 'italic' : ''} ${font.bold ? 'bold' : ''} ${npx(font.size)}px ${font.name}`;
         txtWidth = ctx.measureText(txt).width;
-        console.log("215", npx(font.size), txt, txtWidth)
-        const n = Math.ceil(txtWidth / box.width);
+        const n = Math.ceil(txtWidth / (box.width - box.padding * 2));
         return n;
     }
 
-    selfAdaptionTxtWidth(txt, font) {
+    selfAdaptionTxtWidth(txt, font, box) {
+        if (txt == undefined || font == undefined)
+            return;
+        const {ctx} = this;
+        ctx.font = `${font.italic ? 'italic' : ''} ${font.bold ? 'bold' : ''} ${npx(font.size)}px ${font.name}`;
+
+        const txtWidth = ctx.measureText(txt).width + box.padding * 2;
+        return txtWidth;
+    }
+
+    selfAdaptionOneTxtWidth(txt, font, box) {
         if (txt == undefined || font == undefined)
             return;
         const {ctx} = this;
         ctx.font = `${font.italic ? 'italic' : ''} ${font.bold ? 'bold' : ''} ${npx(font.size)}px ${font.name}`;
 
         const txtWidth = ctx.measureText(txt).width;
-        console.log("230", txt, txtWidth, font);
         return txtWidth;
     }
 
@@ -250,9 +258,11 @@ class Draw {
         const {
             align, valign, font, color, strike, underline, ignore, cindex
         } = attr;
+
         const tx = box.textx(align);
         ctx.save();
         ctx.beginPath();
+
         this.attr({
             textAlign: align,
             textBaseline: valign,
@@ -260,28 +270,27 @@ class Draw {
             fillStyle: color,
             strokeStyle: color,
         });
-        let txtWidth = this.selfAdaptionTxtWidth(txt, font);
-        // ctx.font = `${font.italic ? 'italic' : ''} ${font.bold ? 'bold' : ''} ${23}px ${font.name}`;
+
+        let txtWidth = this.selfAdaptionTxtWidth(txt, font, box);
         let hoffset = 0;
         let innerWidth = box.innerWidth();
         if (textWrap) {
-            innerWidth = box.width * 2 - txt.length;
-            const n = Math.ceil(txtWidth / innerWidth);
+            innerWidth = box.width - box.padding * 2;
+            const n = this.selfAdaptionHeight(box, txt, font);
             hoffset = ((n - 1) * font.size) / 2;
             for (let i = 0; i < ignore.length; i++) {
                 if (cindex != ignore[i]) {
-                    hoffset = 0;
+                    // hoffset = 0;
                 } else if (cindex == ignore[i]) {
                 }
             }
         }
         let ty = box.texty(valign, font.size, hoffset);
-        console.log("box.innerWidth()", innerWidth, txt, txtWidth, font, ty);
         if (textWrap && txtWidth > innerWidth) {
             const textLine = {len: 0, start: 0};
             for (let i = 0; i < txt.length; i += 1) {
-                if (textLine.len >= innerWidth) {
-                    console.log("289", txt.substring(textLine.start, i), tx, ty)
+                if (textLine.len + box.padding >= innerWidth) {
+                    // debugger
                     this.fillText(txt.substring(textLine.start, i), tx, ty);
                     if (strike) {
                         drawFontLine.call(this, 'strike', tx, ty, align, valign, font.size, textLine.len);
@@ -293,10 +302,9 @@ class Draw {
                     textLine.len = 0;
                     textLine.start = i;
                 }
-                textLine.len += this.selfAdaptionTxtWidth(txt[i], font);
+                textLine.len += this.selfAdaptionOneTxtWidth(txt[i], font, box);
             }
             if (textLine.len > 0) {
-                console.log("311", txt, textLine.len)
                 this.fillText(txt.substring(textLine.start), tx, ty);
                 if (strike) {
                     drawFontLine.call(this, 'strike', tx, ty, align, valign, font.size, textLine.len);

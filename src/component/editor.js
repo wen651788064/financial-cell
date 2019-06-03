@@ -65,7 +65,7 @@ function setText(text, position) {
   const { textEl, textlineEl } = this;
   // firefox bug
   textEl.el.blur();
-
+  console.log("668")
   textEl.val(text);
   textlineEl.html(text);
   setTextareaRange.call(this, position);

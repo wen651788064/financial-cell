@@ -200,7 +200,6 @@ export default class Toolbar {
     this.redoEl.disabled(!data.canRedo());
     this.mergeEl.active(data.canUnmerge())
       .disabled(!data.selector.multiple());
-    console.log(data.canAutofilter(), "204")
     this.autofilterEl.active(!data.canAutofilter());
     // this.mergeEl.disabled();
     // console.log('selectedCell:', style, cell);

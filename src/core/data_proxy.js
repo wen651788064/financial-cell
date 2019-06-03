@@ -96,6 +96,7 @@ const defaultSettings = {
         strike: false,
         flexible: false,
         underline: false,
+        autoAdapt: false,
         color: '#0a0a0a',
         font: {
             name: 'Arial',

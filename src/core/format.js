@@ -3,11 +3,15 @@ import {tf} from '../locale/locale';
 const formatStringRender = v => v;
 
 const formatNumberRender = (v) => {
+    //
+
     if (/^(-?\d*.?\d*)$/.test(v)) {
         const v1 = Number(v).toFixed(2).toString();
         const [first, ...parts] = v1.split('\\.');
-        return [first.replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,'), ...parts];
+        console.log(first.replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,'), "7.");
+        return first.replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,');
     }
+
     return v;
 };
 
@@ -39,7 +43,6 @@ const baseFormats = [
         render: v => {
             let a = multiply(v, 100);
             let a_s = a + "";
-
             return `${a_s}%`
         },
     },
@@ -95,15 +98,19 @@ function isInteger(obj) {
 function add(a, b, digits) {
     return operation(a, b, digits, 'add')
 }
+
 function subtract(a, b, digits) {
     return operation(a, b, digits, 'subtract')
 }
+
 export function multiply(a, b, digits) {
     return operation(a, b, digits, 'multiply')
 }
+
 function divide(a, b, digits) {
     return operation(a, b, digits, 'divide')
 }
+
 /*
  * 将一个浮点数转成整数，返回整数和倍数。如 3.14 >> 314，倍数是 100
  * @param floatNum {number} 小数
