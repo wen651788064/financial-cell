@@ -400,7 +400,7 @@ function renderAutoAdapt() {
     let {data, table} = this;
     const viewRange = data.viewRange2();
     let {autoAdapt} = data.settings.style;
-    table.autoAdaptList = [];
+    let  viewWidth = 0;
 
     if (autoAdapt) {
         viewRange.each((ri, ci) => {
@@ -414,7 +414,7 @@ function renderAutoAdapt() {
                 // 得到当前文字最宽的width
                 let txtWidth = null;
                 if (style.format != undefined) {
-                    txtWidth = table.draw.selfAdaptionTxtWidth(formatm[style.format].render(txt), font, dbox);
+                    viewWidth = table.draw.selfAdaptionTxtWidth(formatm[style.format].render(txt), font, dbox);
                     console.log(formatm[style.format].render(txt), "416", txtWidth)
 
                 } else {
@@ -437,12 +437,15 @@ function renderAutoAdapt() {
             }
             if (_ignore == false) {
                 if (table.autoAdaptList[i] == undefined) {
+                    viewWidth +=  50;
                     data.cols.setWidth(i, 50);
-                } else
+                } else {
+                    viewWidth +=  table.autoAdaptList[i];
                     data.cols.setWidth(i, table.autoAdaptList[i]);
+                }
             }
         }
-
+        data.settings.width = () => viewWidth;
     }
 }
 
@@ -452,6 +455,7 @@ function autoRowResizer() {
     let record_rc = 0, max = 0;
     let r_h = data.settings.row.height;
     let {autoAdapt} = data.settings.style;
+    let viewHeight = 0;
 
     if (autoAdapt) {
         viewRange.each((ri, ci) => {
@@ -465,10 +469,10 @@ function autoRowResizer() {
             if (record_rc != ri && txt != undefined) {
                 let record_h = data.rows.getHeight(record_rc);
                 if (r_h * max != record_h) {
-
-                    let c_h = font.size * max + dbox.padding * 3;
+                    let c_h = font.size * max + dbox.padding * 2;
                     // console.log("451", view.height(r_h * max));
                     data.rows.setHeight(record_rc, c_h);
+                    viewHeight += c_h;
                 }
                 max = 0;
             } else if (txt != undefined && record_rc == ri) {
@@ -488,9 +492,11 @@ function autoRowResizer() {
         const dbox = table.getDrawBox(record_rc, 0);
         if (r_h * max != record_h) {
             let c_h = font.size * max + dbox.padding * 2;
+            viewHeight += c_h;
             data.rows.setHeight(record_rc, c_h);
         }
     }
+    data.settings.height = () => viewHeight;
 }
 
 function rowResizerFinished(cRect, distance) {
@@ -813,7 +819,7 @@ function sheetInitEvents() {
                     selectorMove.call(this, false, shiftKey ? 'left' : 'right');
                     evt.preventDefault();
                     break;
-                case 13: // enter
+                case 13: // 
                     editor.clear();
                     renderAutoAdapt.call(this);
                     autoRowResizer.call(this);

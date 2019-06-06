@@ -209,10 +209,19 @@ class Draw {
         const {ctx} = this;
         if (font == undefined)
             return;
-        let txtWidth;
-        ctx.font = `${font.italic ? 'italic' : ''} ${font.bold ? 'bold' : ''} ${npx(font.size)}px ${font.name}`;
-        txtWidth = ctx.measureText(txt).width;
-        const n = Math.ceil(txtWidth / (box.width - box.padding * 2));
+        let n = 0;
+        const textLine = {len: 0, start: 0};
+        for (let i = 0; i < txt.length; i += 1) {
+            if (textLine.len + box.padding >= innerWidth) {
+                n = n + 1;
+                textLine.len = 0;
+                textLine.start = i;
+            }
+            textLine.len += this.selfAdaptionOneTxtWidth(txt[i], font, box);
+        }
+        if (textLine.len > 0) {
+            n = n + 1;
+        }
         return n;
     }
 
