@@ -206,11 +206,11 @@ class Draw {
     }
 
     selfAdaptionHeight(box, txt, font) {
-        const {ctx} = this;
-        if (font == undefined)
+        if (font == undefined || txt ==  undefined)
             return;
-        let n = 0;
+        let n = 1;
         const textLine = {len: 0, start: 0};
+        let innerWidth = box.width - box.padding * 2;
         for (let i = 0; i < txt.length; i += 1) {
             if (textLine.len + box.padding >= innerWidth) {
                 n = n + 1;
@@ -219,9 +219,7 @@ class Draw {
             }
             textLine.len += this.selfAdaptionOneTxtWidth(txt[i], font, box);
         }
-        if (textLine.len > 0) {
-            n = n + 1;
-        }
+
         return n;
     }
 

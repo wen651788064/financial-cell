@@ -400,6 +400,7 @@ function renderAutoAdapt() {
     let {data, table} = this;
     const viewRange = data.viewRange2();
     let {autoAdapt} = data.settings.style;
+    let {ignoreRi} = data.settings;
     let  viewWidth = 0;
 
     if (autoAdapt) {
@@ -414,13 +415,12 @@ function renderAutoAdapt() {
                 // 得到当前文字最宽的width
                 let txtWidth = null;
                 if (style.format != undefined) {
-                    viewWidth = table.draw.selfAdaptionTxtWidth(formatm[style.format].render(txt), font, dbox);
-                    console.log(formatm[style.format].render(txt), "416", txtWidth)
+                    txtWidth = table.draw.selfAdaptionTxtWidth(formatm[style.format].render(txt), font, dbox);
 
                 } else {
                     txtWidth = table.draw.selfAdaptionTxtWidth(txt, font, dbox);
                 }
-                if ((table.autoAdaptList[ci] == undefined || table.autoAdaptList[ci] < txtWidth) && ri > 0) {
+                if ((table.autoAdaptList[ci] == undefined || table.autoAdaptList[ci] < txtWidth) && ri > ignoreRi - 1) {
                     table.autoAdaptList[ci] = txtWidth;
                 }
             }
@@ -440,12 +440,17 @@ function renderAutoAdapt() {
                     viewWidth +=  50;
                     data.cols.setWidth(i, 50);
                 } else {
-                    viewWidth +=  table.autoAdaptList[i];
+                    if(table.autoAdaptList[i] < 30) {
+                        table.autoAdaptList[i] = 30;
+                    }
                     data.cols.setWidth(i, table.autoAdaptList[i]);
                 }
             }
+            viewWidth +=  table.autoAdaptList[i];
+
         }
-        data.settings.width = () => viewWidth;
+        if(viewWidth > 0)
+            data.settings.cellWidth = () => viewWidth;
     }
 }
 
@@ -469,10 +474,12 @@ function autoRowResizer() {
             if (record_rc != ri && txt != undefined) {
                 let record_h = data.rows.getHeight(record_rc);
                 if (r_h * max != record_h) {
-                    let c_h = font.size * max + dbox.padding * 2;
+                    let c_h = font.size * max + dbox.padding * 2 + 2 * max;
                     // console.log("451", view.height(r_h * max));
                     data.rows.setHeight(record_rc, c_h);
-                    viewHeight += c_h;
+                         viewHeight += c_h;
+                } else {
+                    viewHeight += record_h;
                 }
                 max = 0;
             } else if (txt != undefined && record_rc == ri) {
@@ -490,13 +497,18 @@ function autoRowResizer() {
         const font = Object.assign({}, style.font);
         font.size = getFontSizePxByPt(font.size);
         const dbox = table.getDrawBox(record_rc, 0);
-        if (r_h * max != record_h) {
+        if (r_h * max != record_h && viewHeight > 0) {
+            console.log("502")
             let c_h = font.size * max + dbox.padding * 2;
             viewHeight += c_h;
             data.rows.setHeight(record_rc, c_h);
+        } else if(viewHeight > 0) {
+            viewHeight += record_h;
         }
     }
-    data.settings.height = () => viewHeight;
+    console.log(503, viewHeight)
+    if(viewHeight > 0)
+        data.settings.view.height = () => viewHeight + 40;
 }
 
 function rowResizerFinished(cRect, distance) {
