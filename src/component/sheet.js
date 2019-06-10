@@ -14,8 +14,8 @@ import {xtoast} from './message';
 import {cssPrefix} from '../config';
 import {formulas} from '../core/formula';
 import {getFontSizePxByPt} from "../core/font";
-import {baseFormats, multiply} from "../core/format";
-import {formatm} from "x-spreadsheet-master/src/core/format";
+// import {baseFormats, multiply} from "../core/format";
+import {formatm} from "../core/format";
 
 function scrollbarMove() {
     const {
