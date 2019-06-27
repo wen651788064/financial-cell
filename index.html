@@ -12,8 +12,8 @@
     function load() {
         // x.spreadsheet.locale('zh-cn');
         let options = {
-            showFreeze: false,
-            showEditor: false,
+            showFreeze: true,
+            showEditor: true,
             rowWidth: {
                 state: true,
                 width: 180
@@ -22,8 +22,9 @@
                 len: 10,
                 height: 25,
             },
-            showGrid: false,
-            showToolbar: false,
+            showGrid: true,
+            showToolbar: true,
+            minus: true,
             col: {
                 len: 3,
                 width: 100,
@@ -193,7 +194,7 @@
                     9: {
                         cells: {
                             0: {text: `                    货币资金: `, style: 2},
-                            1: {text: '4950.03', style: 6},
+                            1: {text: '-4950.03', style: 6},
                             2: {text: '4226.29', style: 6}
                         }
                     },

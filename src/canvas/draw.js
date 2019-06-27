@@ -395,7 +395,6 @@ class Draw {
     }
 
     dropup(box, state, diff) {
-        console.log("351")
         const {ctx} = this;
         const {
             x, y, width, height,
@@ -412,8 +411,6 @@ class Draw {
         // img.onload = function () {
         //   ctx.drawImage(img, npx(sx), npx(sy), 16, 16);
         // }
-
-        console.log("state: ", state)
         if (state) {
             this.drawFlexTrue(ctx, npx(sx), npx(sy))
         } else {

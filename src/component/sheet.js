@@ -429,7 +429,6 @@ function renderAutoAdapt() {
             return;
         }
         let {ignore} = data.settings;
-        console.log("427", table.autoAdaptList)
         for (let i = 0; i < table.autoAdaptList.length; i++) {
             let _ignore = false;
             for (let j = 0; j < ignore.length; j++) {
@@ -625,9 +624,8 @@ function sheetInitEvents() {
             overlayerMousemove.call(this, evt);
         })
         .on('mousedown', (evt) => {
-            console.log("604")
-            renderAutoAdapt.call(this);
-            autoRowResizer.call(this);
+            // renderAutoAdapt.call(this);
+            // autoRowResizer.call(this);
             // the left mouse button: mousedown → mouseup → click
             // the right mouse button: mousedown → contenxtmenu → mouseup
             if (evt.buttons === 2) {

@@ -78,8 +78,9 @@ const defaultSettings = {
     showContextmenu: true,
     autoLoad: true,
     ignore: [],
-  cellWidth: 0,
-  ignoreRi: 0,
+    cellWidth: 0,
+    ignoreRi: 0,
+    minus: false,
     row: {
         len: 100,
         height: 25,
@@ -99,7 +100,7 @@ const defaultSettings = {
         flexible: false,
         underline: false,
         autoAdapt: false,
-      color: '#0a0a0a',
+        color: '#0a0a0a',
         font: {
             name: 'Arial',
             size: 10,

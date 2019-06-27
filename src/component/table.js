@@ -3,6 +3,7 @@ import {getFontSizePxByPt} from '../core/font';
 import _cell from '../core/cell';
 import {formulam} from '../core/formula';
 import {formatm, multiply} from '../core/format';
+import {isMinus} from "../utils/number_util";
 
 import {Draw, DrawBox, npx, thinLineWidth,} from '../canvas/draw';
 // gobal var
@@ -86,19 +87,22 @@ function renderCell(rindex, cindex) {
         const font = Object.assign({}, style.font);
 
         font.size = getFontSizePxByPt(font.size);
-        let {ignore} = data.settings;
-        // console.log('style:', style);
+        let {ignore, minus} = data.settings;
+        let color = style.color;
+        console.log('style:', cellText);
+        if(minus == true && isMinus(cellText)) {
+            color = 'red'
+        }
 
         draw.text(cellText, dbox, {
             align: style.align,
             valign: style.valign,
             font,
-            color: style.color,
+            color: color,
             strike: style.strike,
             underline: style.underline,
             ignore: ignore,
             cindex: cindex,
-            // r_font: r_font
         }, style.textwrap);
         // error
         const error = data.validations.getError(rindex, cindex);
