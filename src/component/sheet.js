@@ -58,7 +58,16 @@ function selectorSet(multiple, ri, ci, indexesUpdated = true, moving = false) {
         selector.set(ri, ci, indexesUpdated);
     }
     toolbar.reset();
-    table.render();
+
+    // add
+    if(this.render_timer) {
+        clearTimeout(this.render_timer)
+    }
+
+     this.render_timer = setTimeout(() => {
+        table.render();
+        console.log("68")
+    }, 50);
 }
 
 // multiple: boolean
@@ -185,8 +194,7 @@ function horizontalScrollbarSet() {
 }
 
 function sheetFreeze() {
-    console.log("183")
-    const {
+     const {
         selector, data, editor,
     } = this;
     const [ri, ci] = data.freeze;
@@ -297,13 +305,13 @@ function overlayerMousedown(evt) {
             return;
         }
     }
-
     // console.log('ri:', ri, ', ci:', ci);
     if (!evt.shiftKey) {
         // console.log('selectorSetStart:::');
         if (isAutofillEl) {
             selector.showAutofill(ri, ci);
         } else {
+            console.log("1")
             selectorSet.call(this, false, ri, ci);
         }
 
@@ -314,6 +322,7 @@ function overlayerMousedown(evt) {
             if (isAutofillEl) {
                 selector.showAutofill(ri, ci);
             } else if (e.buttons === 1 && !e.shiftKey) {
+                console.log("2")
                 selectorSet.call(this, true, ri, ci, true, true);
             }
         }, () => {
@@ -327,9 +336,9 @@ function overlayerMousedown(evt) {
         });
     }
 
-
     if (!isAutofillEl && evt.buttons === 1) {
         if (evt.shiftKey) {
+            console.log("3")
             // console.log('shiftKey::::');
             selectorSet.call(this, true, ri, ci);
         }
@@ -401,7 +410,7 @@ function renderAutoAdapt() {
     const viewRange = data.viewRange2();
     let {autoAdapt} = data.settings.style;
     let {ignoreRi} = data.settings;
-    let  viewWidth = 0;
+    let viewWidth = 0;
 
     if (autoAdapt) {
         viewRange.each((ri, ci) => {
@@ -436,19 +445,19 @@ function renderAutoAdapt() {
             }
             if (_ignore == false) {
                 if (table.autoAdaptList[i] == undefined) {
-                    viewWidth +=  50;
+                    viewWidth += 50;
                     data.cols.setWidth(i, 50);
                 } else {
-                    if(table.autoAdaptList[i] < 30) {
+                    if (table.autoAdaptList[i] < 30) {
                         table.autoAdaptList[i] = 30;
                     }
                     data.cols.setWidth(i, table.autoAdaptList[i]);
                 }
             }
-            viewWidth +=  table.autoAdaptList[i];
+            viewWidth += table.autoAdaptList[i];
 
         }
-        if(viewWidth > 0)
+        if (viewWidth > 0)
             data.settings.cellWidth = () => viewWidth;
     }
 }
@@ -476,7 +485,7 @@ function autoRowResizer() {
                     let c_h = font.size * max + dbox.padding * 2 + 2 * max;
                     // console.log("451", view.height(r_h * max));
                     data.rows.setHeight(record_rc, c_h);
-                         viewHeight += c_h;
+                    viewHeight += c_h;
                 } else {
                     viewHeight += record_h;
                 }
@@ -501,12 +510,12 @@ function autoRowResizer() {
             let c_h = font.size * max + dbox.padding * 2;
             viewHeight += c_h;
             data.rows.setHeight(record_rc, c_h);
-        } else if(viewHeight > 0) {
+        } else if (viewHeight > 0) {
             viewHeight += record_h;
         }
     }
     console.log(503, viewHeight)
-    if(viewHeight > 0)
+    if (viewHeight > 0)
         data.settings.view.height = () => viewHeight + 40;
 }
 

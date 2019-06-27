@@ -73,7 +73,7 @@ function renderCell(rindex, cindex) {
     const dbox = getDrawBox.call(this, rindex, cindex);
     dbox.bgcolor = style.bgcolor;
     if (style.border !== undefined) {
-        dbox.setBorders(style.border);
+        // dbox.setBorders(style.border);
         // bboxes.push({ ri: rindex, ci: cindex, box: dbox });
         draw.strokeBorders(dbox);
     }
@@ -89,7 +89,7 @@ function renderCell(rindex, cindex) {
         font.size = getFontSizePxByPt(font.size);
         let {ignore, minus} = data.settings;
         let color = style.color;
-        console.log('style:', cellText);
+        // console.log('style:', cellText);
         if(minus == true && isMinus(cellText)) {
             color = 'red'
         }
@@ -107,7 +107,6 @@ function renderCell(rindex, cindex) {
         // error
         const error = data.validations.getError(rindex, cindex);
         if (error) {
-            // console.log('error:', rindex, cindex, error);
             draw.error(dbox);
         }
     }, style.textwrap, cellText);
@@ -191,10 +190,7 @@ function renderContent(viewRange, fw, fh, tx, ty) {
         return !ret;
     };
     // 1 render cell
-    // let bboxes = [];
     draw.save();
-    // renderAutoAdaptWithWidth.call(this, viewRange);
-
     viewRange.each((ri, ci) => {
         renderCell.call(this, ri, ci);
     }, ri => filteredTranslateFunc(ri));
@@ -219,15 +215,11 @@ function renderContent(viewRange, fw, fh, tx, ty) {
     });
     draw.restore();
 
-    // 4 render mergeCell border
-    // draw.save();
-    // renderCellBorders.call(this, bboxes, (ri) => filteredTranslateFunc(ri));
-    // draw.restore();
 
-    // 5 render autofilter
+    // 4 render autofilter
     renderAutofilter.call(this, viewRange);
 
-    // 6 render flex
+    // 5 render flex
     renderFlexible.call(this);
 
     draw.restore();
@@ -442,7 +434,7 @@ class Table {
     }
 
     render() {
-        // resize canvas
+         // resize canvas
         const {data} = this;
         const {rows, cols} = data;
         this.draw.resize(data.viewWidth(), data.viewHeight());

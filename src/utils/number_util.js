@@ -5,7 +5,7 @@ export const isMinus = (text) => {
         return false;
     }
 
-    if(parseInt(text) > 0)
+    if(parseInt(text) >= 0)
         return false;
 
     return true;
