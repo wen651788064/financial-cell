@@ -66,7 +66,6 @@ function selectorSet(multiple, ri, ci, indexesUpdated = true, moving = false) {
 
      this.render_timer = setTimeout(() => {
         table.render();
-        console.log("68")
     }, 50);
 }
 
@@ -838,7 +837,7 @@ function sheetInitEvents() {
                     selectorMove.call(this, false, shiftKey ? 'left' : 'right');
                     evt.preventDefault();
                     break;
-                case 13: // 
+                case 13: //
                     editor.clear();
                     renderAutoAdapt.call(this);
                     autoRowResizer.call(this);
