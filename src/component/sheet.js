@@ -596,7 +596,10 @@ function toolbarChange(type, value) {
         } else {
             this.freeze(0, 0);
         }
-    } else {
+    } else if(type === 'add')  {
+        data.showEquation = !data.showEquation;
+        sheetReset.call(this);
+    } else{
         //format percent 473
         data.setSelectedCellAttr(type, value);
         if (type === 'formula') {

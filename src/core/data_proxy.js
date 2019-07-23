@@ -341,6 +341,7 @@ export default class DataProxy {
         this.validations = new Validations();
         this.hyperlinks = {};
         this.comments = {};
+        this.showEquation = false;
         // save data end
 
         // don't save object
@@ -932,6 +933,10 @@ export default class DataProxy {
         validations.validate(ri, ci, text);
     }
 
+    equationIsActive() {
+        return this.showEquation;
+    }
+
     freezeIsActive() {
         const [ri, ci] = this.freeze;
         return ri > 0 || ci > 0;
@@ -1093,7 +1098,7 @@ export default class DataProxy {
     setData(d) {
         let {autoFilter} = this;
         Object.keys(d).forEach((property) => {
-            console.log(d.rows, 1055, property)
+            console.log(d, 1055, property, d[property])
             // this.judgeAutoWidth(d.rows);
             if (property === 'merges' || property === 'rows'
                 || property === 'cols' || property === 'validations') {

@@ -1,7 +1,7 @@
 /* global document */
-import { h } from './element';
-import { bind } from './event';
-import { cssPrefix } from '../config';
+import {h} from './element';
+import {bind} from './event';
+import {cssPrefix} from '../config';
 
 export default function tooltip(html, target) {
   if (target.classList.contains('active')) {
@@ -23,7 +23,7 @@ export default function tooltip(html, target) {
   });
 
   bind(target, 'click', () => {
-    if (document.body.contains(el.el)) {
+      if (document.body.contains(el.el)) {
       document.body.removeChild(el.el);
     }
   });

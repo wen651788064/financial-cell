@@ -77,7 +77,12 @@ function renderCell(rindex, cindex) {
         // bboxes.push({ ri: rindex, ci: cindex, box: dbox });
         draw.strokeBorders(dbox);
     }
-    let cellText = _cell.render(cell.text || '', formulam, (y, x) => (data.getCellTextOrDefault(x, y)));
+    let cellText = "";
+    if(data.showEquation) {
+        cellText = cell.formulas;
+    } else {
+        cellText = _cell.render(cell.text || '', formulam, (y, x) => (data.getCellTextOrDefault(x, y)));
+    }
     draw.rect2(dbox, () => {
         // render text
         if (style.format) {
