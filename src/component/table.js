@@ -1,4 +1,4 @@
-import {stringAt} from '../core/alphabet';
+import {stringAt, xy2expr} from '../core/alphabet';
 import {getFontSizePxByPt} from '../core/font';
 import _cell from '../core/cell';
 import {formulam} from '../core/formula';
@@ -55,7 +55,25 @@ function getCellTextStyle(rindex, cindex) {
     return style;
 }
 
-function renderCell(rindex, cindex) {
+
+function parseCell(viewRange) {
+    let {data, row} = this;
+    let workbook = [];
+    workbook.Sheets = {};
+    workbook.Sheets.Sheet1 = {};
+
+    viewRange.each((ri, ci) => {
+        let cell = data.getCell(ri, ci);
+        let expr = xy2expr(ci, ri);
+        if (cell)
+            workbook.Sheets.Sheet1[expr] = {v: cell.text, f: cell.text };
+        else
+            workbook.Sheets.Sheet1[expr] = {v: "", f: ""};
+    });
+    return workbook;
+}
+
+function renderCell(rindex, cindex, sheetbook) {
     const {draw, data} = this;
     const {sortedRowMap} = data;
     let nrindex = rindex;
@@ -68,7 +86,6 @@ function renderCell(rindex, cindex) {
     // data.rows.setHeight(1, 50);
 
     // console.log(rindex, nrindex, "63")
-
     const style = data.getCellStyleOrDefault(nrindex, cindex);
     const dbox = getDrawBox.call(this, rindex, cindex);
     dbox.bgcolor = style.bgcolor;
@@ -77,11 +94,12 @@ function renderCell(rindex, cindex) {
         // bboxes.push({ ri: rindex, ci: cindex, box: dbox });
         draw.strokeBorders(dbox);
     }
+
     let cellText = "";
-    if(data.showEquation) {
-        cellText = cell.formulas;
+    if (data.showEquation) {
+        cellText = cell.formulas == "" ? cell.text : cell.formulas;
     } else {
-        cellText = _cell.render(cell.text || '', formulam, (y, x) => (data.getCellTextOrDefault(x, y)));
+        cellText = _cell.render(sheetbook,rindex, cindex, cell.text || '', formulam, (y, x) => (data.getCellTextOrDefault(x, y)));
     }
     draw.rect2(dbox, () => {
         // render text
@@ -95,7 +113,7 @@ function renderCell(rindex, cindex) {
         let {ignore, minus} = data.settings;
         let color = style.color;
         // console.log('style:', cellText);
-        if(minus == true && isMinus(cellText)) {
+        if (minus == true && isMinus(cellText)) {
             color = 'red'
         }
 
@@ -129,7 +147,6 @@ function renderFlexible() {
             let {set_total, state} = flex[j];
             if (state == true) {
                 s_t += set_total;
-
             }
         }
 
@@ -162,22 +179,6 @@ function renderAutofilter(viewRange) {
     // renderFlexible.call(this, 1, 1)
 }
 
-function renderAutoAdaptWithWidth(viewRange) {
-    // const {data, draw} = this;
-    // let autoAdaptList = [];
-    //
-    // viewRange.each((ri, ci) => {
-    //     const txt = getCellTextContent.call(this, ri, ci);
-    //
-    //     // 得到当前文字最宽的width
-    //     let txtWidth = draw.selfAdaptionTxtWidth(txt);
-    //     if (txt != undefined && (autoAdaptList[ri] == undefined || autoAdaptList[ri] < txtWidth) && ri > 0) {
-    //         autoAdaptList[ci] = txtWidth;
-    //     }
-    // });
-    // console.log(autoAdaptList, "209");
-}
-
 function renderContent(viewRange, fw, fh, tx, ty) {
     const {draw, data} = this;
     draw.save();
@@ -196,8 +197,9 @@ function renderContent(viewRange, fw, fh, tx, ty) {
     };
     // 1 render cell
     draw.save();
+    const sheetbook = parseCell.call(this, viewRange);
     viewRange.each((ri, ci) => {
-        renderCell.call(this, ri, ci);
+        renderCell.call(this, ri, ci, sheetbook);
     }, ri => filteredTranslateFunc(ri));
     draw.restore();
     // 2 render cell border
@@ -211,7 +213,7 @@ function renderContent(viewRange, fw, fh, tx, ty) {
     draw.save();
     data.eachMergesInView(viewRange, ({sri, sci, eri}) => {
         if (!exceptRowSet.has(sri)) {
-            renderCell.call(this, sri, sci);
+            renderCell.call(this, sri, sci, sheetbook);
         } else if (!rset.has(sri)) {
             rset.add(sri);
             const height = data.rows.sumHeight(sri, eri + 1);
@@ -346,51 +348,6 @@ function renderFreezeHighlightLine(fw, fh, ftw, fth) {
     draw.restore();
 }
 
-function renderAutoAdapt() {
-    let {data} = this;
-
-    const viewRange = data.viewRange2();
-    if (data.settings.style.textwrap) {
-        viewRange.each((ri, ci) => {
-            let txt = getCellTextContent.call(this, ri, ci);
-            const dbox = getDrawBox.call(this, ri, ci);
-
-            if (txt != undefined || this.autoAdaptList[ci] == undefined) {
-                const style = getCellTextStyle.call(this, ri, ci);
-                const font = Object.assign({}, style.font);
-                font.size = getFontSizePxByPt(font.size);
-                // 得到当前文字最宽的width
-                let txtWidth = null;
-                if (style.format != undefined) {
-                    txt = multiply(txt) + '%';
-                    txtWidth = this.draw.selfAdaptionTxtWidth(multiply(txt) + '%', font, dbox);
-                } else {
-                    txtWidth = this.draw.selfAdaptionTxtWidth(txt, font, dbox);
-                }
-                if ((this.autoAdaptList[ci] == undefined || this.autoAdaptList[ci] < txtWidth) && ri > 0) {
-                    this.autoAdaptList[ci] = txtWidth;
-                }
-            }
-        });
-        console.log("380", this.autoAdaptList)
-        if (this.autoAdaptList.length > 0) {
-            let {ignore} = data.settings;
-            for (let i = 0; i < this.autoAdaptList.length; i++) {
-                let _ignore = false;
-                for (let j = 0; j < ignore.length; j++) {
-                    if (i == ignore[j]) _ignore = true;
-                }
-                if (_ignore == false) {
-                    if (this.autoAdaptList[i] == undefined) {
-                        data.cols.setWidth(i, 50);
-                    } else
-                        data.cols.setWidth(i, this.autoAdaptList[i]);
-                }
-            }
-        }
-    }
-}
-
 /** end */
 class Table {
     constructor(el, data) {
@@ -439,7 +396,7 @@ class Table {
     }
 
     render() {
-         // resize canvas
+        // resize canvas
         const {data} = this;
         const {rows, cols} = data;
         this.draw.resize(data.viewWidth(), data.viewHeight());

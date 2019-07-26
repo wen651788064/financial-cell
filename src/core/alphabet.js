@@ -13,7 +13,7 @@ export function stringAt(index) {
   return str;
 }
 
-export function indexAt(str) {
+export function  indexAt(str) {
   let ret = 0;
   for (let i = 0; i < str.length - 1; i += 1) {
     const cindex = str.charCodeAt(i) - 65;
