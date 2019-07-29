@@ -652,6 +652,11 @@ function sheetInitEvents() {
                 editor.clear();
                 overlayerMousedown.call(this, evt);
             }
+
+            let {formula} = data.settings;
+            if(formula && typeof formula.wland == "function") {
+                formula.wland(formula, data, table);
+            }
         }).on('mousewheel.stop', (evt) => {
         overlayerMousescroll.call(this, evt);
     });
@@ -932,7 +937,7 @@ export default class Sheet {
         // init selector [0, 0]
         selectorSet.call(this, false, 0, 0);
 
-        if (rowWidth.state) {
+        if (rowWidth && rowWidth.state) {
             firstRowToWidth.call(this, rowWidth.width)
         }
     }

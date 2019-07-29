@@ -275,7 +275,6 @@ class Rows {
     }
 
     setData(d) {
-        console.log(d.len, "277")
         if (d.len) {
             this.len = d.len;
             delete d.len;

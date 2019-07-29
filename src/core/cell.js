@@ -1,5 +1,7 @@
 import {expr2xy, xy2expr} from './alphabet';
 import XLSX_CALC from "xlsx-calc"
+import axios from "axios"
+
 // Converting infix expression to a suffix expression
 // src: AVERAGE(SUM(A1,A2), B1) + 50 + B20
 // return: [A1, A2], SUM[, B1],AVERAGE,50,+,B20,+
@@ -150,10 +152,24 @@ const evalSuffixExpr = (srcStack, formulaMap, cellRender, cellList) => {
     return stack[0];
 };
 
+function evalFormula(text, rule) {
+    if (typeof text !== 'string') {
+        return false;
+    }
+    if (text.toUpperCase().indexOf(rule.toUpperCase()) == -1) {
+        return false;
+    }
+    return true;
+}
 
-const cellRender = (sheetbook, x, y, src, formulaMap, getCellText, cellList = []) => {
+const cellRender = (data, sheetbook, y, x, src, formulaMap, getCellText, cellList = []) => {
     if (src[0] === '=') {
-        if (src.substring(1) && sheetbook.Sheets.Sheet1[xy2expr(x, y)]) {
+        // console.log("156", sheetbook.Sheets.Sheet1[xy2expr(x, y)], xy2expr(x, y))
+        if (evalFormula(src.substring(1), "wland") || evalFormula(src.substring(1), "wfr")) {
+            // let {formula} = data.settings;
+            // formula.wland(formula, data);
+            return src.toUpperCase();
+        } else if (src.substring(1) && sheetbook.Sheets.Sheet1[xy2expr(x, y)]) {
             sheetbook.Sheets.Sheet1[xy2expr(x, y)].f = src.substring(1).toUpperCase();
             XLSX_CALC(sheetbook);
             let value = sheetbook.Sheets.Sheet1[xy2expr(x, y)].v ? sheetbook.Sheets.Sheet1[xy2expr(x, y)].v : "NaN";

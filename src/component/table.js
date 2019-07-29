@@ -96,10 +96,13 @@ function renderCell(rindex, cindex, sheetbook) {
     }
 
     let cellText = "";
+    if(!cell.formulas) {
+        cell.formulas = !cell.text ? "" : cell.text;
+    }
     if (data.showEquation) {
-        cellText = cell.formulas == "" ? cell.text : cell.formulas;
+        cellText = cell.formulas;
     } else {
-        cellText = _cell.render(sheetbook,rindex, cindex, cell.text || '', formulam, (y, x) => (data.getCellTextOrDefault(x, y)));
+        cellText = _cell.render(data, sheetbook, rindex, cindex, cell.text || '', formulam, (y, x) => (data.getCellTextOrDefault(x, y)));
     }
     draw.rect2(dbox, () => {
         // render text

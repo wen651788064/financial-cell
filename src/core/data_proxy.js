@@ -73,6 +73,8 @@ const defaultSettings = {
         height: () => document.documentElement.clientHeight,
         width: () => document.documentElement.clientWidth,
     },
+    formula: {
+    },
     showGrid: true,
     showToolbar: true,
     showContextmenu: true,
@@ -1098,7 +1100,6 @@ export default class DataProxy {
     setData(d) {
         let {autoFilter} = this;
         Object.keys(d).forEach((property) => {
-            console.log(d, 1055, property, d[property])
             // this.judgeAutoWidth(d.rows);
             if (property === 'merges' || property === 'rows'
                 || property === 'cols' || property === 'validations') {
