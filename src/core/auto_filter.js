@@ -110,7 +110,6 @@ export default class AutoFilter {
     getSet(exceptRowSet, rir) {
         for (let ix = 0; ix < this.flex.length; ix++) {
             let {ri, ci, set_total, state} = this.flex[ix]
-            console.log(ix, "113", this.flex[ix])
             for (let i = ri; i < set_total + ri; i++) {
                 console.log(state, "114", rir, ri, state)
                 if (state === false && rir == ri) {

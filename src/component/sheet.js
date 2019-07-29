@@ -652,11 +652,6 @@ function sheetInitEvents() {
                 editor.clear();
                 overlayerMousedown.call(this, evt);
             }
-
-            let {formula} = data.settings;
-            if(formula && typeof formula.wland == "function") {
-                formula.wland(formula, data, table);
-            }
         }).on('mousewheel.stop', (evt) => {
         overlayerMousescroll.call(this, evt);
     });
@@ -845,11 +840,15 @@ function sheetInitEvents() {
                     selectorMove.call(this, false, shiftKey ? 'left' : 'right');
                     evt.preventDefault();
                     break;
-                case 13: //
+                case 13: // enter
                     editor.clear();
                     renderAutoAdapt.call(this);
                     autoRowResizer.call(this);
                     selectorMove.call(this, false, shiftKey ? 'up' : 'down');
+                    let {formula} = data.settings;
+                    if(formula && typeof formula.wland == "function") {
+                        formula.wland(formula, data, table);
+                    }
                     evt.preventDefault();
                     break;
                 case 8: // backspace
