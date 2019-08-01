@@ -75,9 +75,7 @@ function parseCell(viewRange) {
     try {
         calc(workbook);
     } catch (e) {
-        if(e.toString() === '') {
-
-        }
+        console.error(e);
     }
     return workbook;
 }

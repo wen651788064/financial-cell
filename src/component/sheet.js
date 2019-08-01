@@ -18,6 +18,7 @@ import {getFontSizePxByPt} from "../core/font";
 import {formatm} from "../core/format";
 import {selectorColor} from "../component/color_palette";
 import {xy2expr} from "../core/alphabet";
+import {operation} from "../component/operator";
 
 function scrollbarMove() {
     const {
@@ -638,7 +639,7 @@ function lockCells(evt) {
         let selector = this.selectors[i];
         let {inputText} = editor;
         let last = inputText[inputText.length - 1];
-        if (selector.ri == ri && selector.ci == ci && last != '+' && last != '-' && last != '*' && last != '/')
+        if (selector.ri == ri && selector.ci == ci && !operation(last))
             return;
     }
 
@@ -650,7 +651,7 @@ function lockCells(evt) {
     let {inputText} = editor;
     let last = inputText[inputText.length - 1];
     let input = "";
-    if (this.selectors.length && last != '+' && last != '-' && last != '*' && last != '/') {
+    if (this.selectors.length && !operation(last)) {
         let {selector, erpx} = this.selectors[this.selectors.length - 1];
         selector.set(ri, ci);
         this.selectors[this.selectors.length - 1].ri = ri;
@@ -731,6 +732,7 @@ function sheetInitEvents() {
                 } else {
                     editor.clear();
                     overlayerMousedown.call(this, evt);
+                    clearSelectors.call(this);
                 }
             }
         }).on('mousewheel.stop', (evt) => {
@@ -769,6 +771,14 @@ function sheetInitEvents() {
         if(editor.getLock() && itext != '=') {
             return;
         }
+        if(this.selectors.length > 0) {
+            return;
+        }
+
+        // if(!editor.getLock()) {
+        //     clearSelectors.call(this);
+        // }
+
         dataSetCellText.call(this, itext, state);
     };
     // modal validation

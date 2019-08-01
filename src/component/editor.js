@@ -3,6 +3,7 @@ import {h} from './element';
 import Suggest from './suggest';
 import Datepicker from './datepicker';
 import {cssPrefix} from '../config';
+import {operation} from "../component/operator";
 
 // import { mouseMoveUp } from '../event';
 
@@ -44,11 +45,16 @@ function inputEventHandler(evt) {
         }
     } else {
         const start = v.lastIndexOf('=');
-        if(start === 0) {
-
+        if(start === 0 && v.length >= 1 && operation(v[v.length - 1])) {
             this.setLock(true);
-        } else {
+        } else  {
             this.setLock(false);
+        }
+
+        if (start !== 0) {
+            this.setLock(false);
+        } else if (start === 0 && v.length == 1) {
+            this.setLock(true);
         }
 
         if (start === 0 && v.length > 1) {
@@ -61,6 +67,7 @@ function inputEventHandler(evt) {
     resetTextareaSize.call(this);
     this.change('input', v);
 }
+
 
 function setTextareaRange(position) {
     const {el} = this.textEl;
