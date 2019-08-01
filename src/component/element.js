@@ -246,6 +246,13 @@ class Element {
         return this.el.style[name];
     }
 
+    removeEl() {
+        if(!this.el) {
+            return;
+        }
+        this.el.parentNode.removeChild(this.el);
+    }
+
     computedStyle() {
         return window.getComputedStyle(this.el, null);
     }

@@ -35,6 +35,7 @@ function inputEventHandler(evt) {
     // console.log(evt, 'v:', v);
     const {suggest, textlineEl, validator} = this;
     this.inputText = v;
+
     if (validator) {
         if (validator.type === 'list') {
             suggest.search(v);
@@ -43,7 +44,14 @@ function inputEventHandler(evt) {
         }
     } else {
         const start = v.lastIndexOf('=');
-        if (start !== -1) {
+        if(start === 0) {
+
+            this.setLock(true);
+        } else {
+            this.setLock(false);
+        }
+
+        if (start === 0 && v.length > 1) {
             suggest.search(v.substring(start + 1));
         } else {
             suggest.hide();
@@ -66,7 +74,6 @@ function setText(text, position) {
     const {textEl, textlineEl} = this;
     // firefox bug
     textEl.el.blur();
-    console.log("668")
     textEl.val(text);
     textlineEl.html(text);
     setTextareaRange.call(this, position);
@@ -115,12 +122,15 @@ export default class Editor {
         this.suggest = new Suggest(formulas, (it) => {
             suggestItemClick.call(this, it);
         });
+        this.lock = false;
         this.datepicker = new Datepicker();
         this.datepicker.change((d) => {
             // console.log('d:', d);
             this.setText(dateFormat(d));
             this.clear();
         });
+        this.ri = 0;
+        this.ci = 0;
         this.areaEl = h('div', `${cssPrefix}-editor-area`)
             .children(
                 this.textEl = h('textarea', '')
@@ -148,6 +158,19 @@ export default class Editor {
     setFreezeLengths(width, height) {
         this.freeze.w = width;
         this.freeze.h = height;
+    }
+
+    setRiCi(ri, ci) {
+        this.ri = ri;
+        this.ci = ci;
+    }
+
+    setLock(lock) {
+        this.lock = lock;
+    }
+
+    getLock() {
+        return this.lock;
     }
 
     clear() {

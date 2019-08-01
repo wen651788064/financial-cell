@@ -2,10 +2,11 @@ import {stringAt, xy2expr} from '../core/alphabet';
 import {getFontSizePxByPt} from '../core/font';
 import _cell from '../core/cell';
 import {formulam} from '../core/formula';
-import {formatm, multiply} from '../core/format';
+import {formatm} from '../core/format';
 import {isMinus} from "../utils/number_util";
-
 import {Draw, DrawBox, npx, thinLineWidth,} from '../canvas/draw';
+
+var formulajs = require('formulajs');
 // gobal var
 const cellPaddingWidth = 5;
 const tableFixedHeaderCleanStyle = {fillStyle: '#f4f5f8'};
@@ -57,7 +58,8 @@ function getCellTextStyle(rindex, cindex) {
 
 
 function parseCell(viewRange) {
-    let {data, row} = this;
+    let {data} = this;
+    let {calc} = data;
     let workbook = [];
     workbook.Sheets = {};
     workbook.Sheets.Sheet1 = {};
@@ -66,10 +68,17 @@ function parseCell(viewRange) {
         let cell = data.getCell(ri, ci);
         let expr = xy2expr(ci, ri);
         if (cell)
-            workbook.Sheets.Sheet1[expr] = {v: cell.text, f: cell.text };
+            workbook.Sheets.Sheet1[expr] = {v: cell.text, f: cell.text.toUpperCase()};
         else
             workbook.Sheets.Sheet1[expr] = {v: "", f: ""};
     });
+    try {
+        calc(workbook);
+    } catch (e) {
+        if(e.toString() === '') {
+
+        }
+    }
     return workbook;
 }
 
@@ -96,7 +105,7 @@ function renderCell(rindex, cindex, sheetbook) {
     }
 
     let cellText = "";
-    if(!cell.formulas) {
+    if (!cell.formulas) {
         cell.formulas = !cell.text ? "" : cell.text;
     }
     if (data.showEquation) {

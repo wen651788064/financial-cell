@@ -1,6 +1,6 @@
 /* global window */
 function dpr() {
-    return 1;       // 修改之后
+    return window.devicePixelRatio || 1;       // 修改之后
 }
 
 function thinLineWidth() {

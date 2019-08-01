@@ -16,6 +16,8 @@ import {formulas} from '../core/formula';
 import {getFontSizePxByPt} from "../core/font";
 // import {baseFormats, multiply} from "../core/format";
 import {formatm} from "../core/format";
+import {selectorColor} from "../component/color_palette";
+import {xy2expr} from "../core/alphabet";
 
 function scrollbarMove() {
     const {
@@ -60,11 +62,11 @@ function selectorSet(multiple, ri, ci, indexesUpdated = true, moving = false) {
     toolbar.reset();
 
     // add
-    if(this.render_timer) {
+    if (this.render_timer) {
         clearTimeout(this.render_timer)
     }
 
-     this.render_timer = setTimeout(() => {
+    this.render_timer = setTimeout(() => {
         table.render();
     }, 50);
 }
@@ -193,7 +195,7 @@ function horizontalScrollbarSet() {
 }
 
 function sheetFreeze() {
-     const {
+    const {
         selector, data, editor,
     } = this;
     const [ri, ci] = data.freeze;
@@ -277,7 +279,7 @@ function overlayerMousedown(evt) {
     // console.log(':::::overlayer.mousedown:', evt.detail, evt.button, evt.buttons, evt.shiftKey);
     // console.log('evt.target.className:', evt.target.className);
     const {
-        selector, data, table, sortFilter, verticalScrollbar
+        selector, data, table, sortFilter, verticalScrollbar, editor
     } = this;
     const {offsetX, offsetY} = evt;
     const isAutofillEl = evt.target.className === `${cssPrefix}-selector-corner`;
@@ -286,7 +288,7 @@ function overlayerMousedown(evt) {
         left, top, width, height,
     } = cellRect;
     let {ri, ci} = cellRect;
-
+    editor.setRiCi(ri, ci)
 
     // sort or filter
     const {autoFilter} = data;
@@ -539,6 +541,12 @@ function colResizerFinished(cRect, distance) {
     editorSetOffset.call(this);
 }
 
+function selectorCellText(ri, ci, text, state) {
+    const {data, table} = this;
+    data.setCellText(ri, ci, text, state);
+    if (state === 'finished') table.render();
+}
+
 function dataSetCellText(text, state = 'finished') {
     const {data, table} = this;
     // const [ri, ci] = selector.indexes;
@@ -596,10 +604,10 @@ function toolbarChange(type, value) {
         } else {
             this.freeze(0, 0);
         }
-    } else if(type === 'add')  {
+    } else if (type === 'add') {
         data.showEquation = !data.showEquation;
         sheetReset.call(this);
-    } else{
+    } else {
         //format percent 473
         data.setSelectedCellAttr(type, value);
         if (type === 'formula') {
@@ -612,6 +620,72 @@ function toolbarChange(type, value) {
 function sortFilterChange(ci, order, operator, value) {
     this.data.setAutoFilter(ci, order, operator, value);
     sheetReset.call(this);
+}
+
+function lockCells(evt) {
+    const {data, editor} = this;
+    const {offsetX, offsetY} = evt;
+
+    const cellRect = data.getCellRectByXY(offsetX, offsetY);
+    let {ri, ci} = cellRect;
+
+    /*
+        step 1. 如果该单元格已经被锁定，，
+            判定1. 如果没有text最后一个不是 + - * / 则直接返回
+            判定2. 选定
+     */
+    for (let i = 0; i < this.selectors.length; i++) {
+        let selector = this.selectors[i];
+        let {inputText} = editor;
+        let last = inputText[inputText.length - 1];
+        if (selector.ri == ri && selector.ci == ci && last != '+' && last != '-' && last != '*' && last != '/')
+            return;
+    }
+
+    /*
+        step 2. 把单元格信息添加到txt中取
+                2.1  如果用户没有输入 + - * / 则替换
+                2.2  如果用户输入+ - * / 则 构造selector el， 选择颜色
+     */
+    let {inputText} = editor;
+    let last = inputText[inputText.length - 1];
+    let input = "";
+    if (this.selectors.length && last != '+' && last != '-' && last != '*' && last != '/') {
+        let {selector, erpx} = this.selectors[this.selectors.length - 1];
+        selector.set(ri, ci);
+        this.selectors[this.selectors.length - 1].ri = ri;
+        this.selectors[this.selectors.length - 1].ci = ci;
+        this.selectors[this.selectors.length - 1].erpx = xy2expr(ci, ri);
+        input = `${inputText.substring(0, inputText.lastIndexOf(erpx))}${xy2expr(ci, ri)}`;
+        editor.setText(input);
+    } else {
+        let selector = new Selector(data);
+        let color = selectorColor(this.selectors.length);
+        selector.setCss(color);
+        selector.set(ri, ci);
+        input = `${inputText}${xy2expr(ci, ri)}`;
+        editor.setText(input);
+
+        this.overlayerCEl.child(selector.el);
+        this.selectors.push({
+            ri: ri,
+            ci: ci,
+            erpx: xy2expr(ci, ri),
+            selector: selector,
+        });
+    }
+    // step 3.  在enter或者点击的时候写入到cell中
+    // dataSetCellText.call(this, input, 'input');
+}
+
+function clearSelectors() {
+    Object.keys(this.selectors).forEach(i => {
+        let {selector} = this.selectors[i];
+        selector.el.removeEl();
+    });
+    this.selectors = [];
+    let {editor} = this;
+    editor.setLock(false);
 }
 
 function sheetInitEvents() {
@@ -647,10 +721,17 @@ function sheetInitEvents() {
                     contextMenu.hide();
                 }
             } else if (evt.detail === 2) {
+                if(editor.getLock()) {
+                    return;
+                }
                 editorSet.call(this);
             } else {
-                editor.clear();
-                overlayerMousedown.call(this, evt);
+                if (editor.getLock()) {
+                    lockCells.call(this, evt);
+                } else {
+                    editor.clear();
+                    overlayerMousedown.call(this, evt);
+                }
             }
         }).on('mousewheel.stop', (evt) => {
         overlayerMousescroll.call(this, evt);
@@ -685,6 +766,9 @@ function sheetInitEvents() {
     };
     // editor
     editor.change = (state, itext) => {
+        if(editor.getLock() && itext != '=') {
+            return;
+        }
         dataSetCellText.call(this, itext, state);
     };
     // modal validation
@@ -841,15 +925,24 @@ function sheetInitEvents() {
                     evt.preventDefault();
                     break;
                 case 13: // enter
+                    // lockCells
+                    if (editor.getLock()) {
+                        let {inputText, ri, ci} = editor;
+                        selectorCellText.call(this, ri, ci, inputText, 'input');
+                    }
+
                     editor.clear();
                     renderAutoAdapt.call(this);
                     autoRowResizer.call(this);
                     selectorMove.call(this, false, shiftKey ? 'up' : 'down');
                     let {formula} = data.settings;
-                    if(formula && typeof formula.wland == "function") {
+                    if (formula && typeof formula.wland == "function") {
                         formula.wland(formula, data, table);
                     }
+
                     evt.preventDefault();
+                    // 清除各种属性
+                    clearSelectors.call(this);
                     break;
                 case 8: // backspace
                     insertDeleteRowColumn.call(this, 'delete-cell-text');
@@ -881,7 +974,6 @@ export default class Sheet {
     constructor(targetEl, data) {
         const {view, showToolbar, showContextmenu, showEditor, rowWidth} = data.settings;
         this.el = h('div', `${cssPrefix}-sheet`);
-        console.log("...")
         this.toolbar = new Toolbar(data, view.width, !showToolbar);
 
         targetEl.children(this.toolbar.el, this.el);
@@ -906,6 +998,8 @@ export default class Sheet {
         this.contextMenu = new ContextMenu(() => this.getTableOffset(), !showContextmenu);
         // selector
         this.selector = new Selector(data);
+
+        this.selectors = [];
 
         this.overlayerCEl = hasEditor.call(this, showEditor);
 

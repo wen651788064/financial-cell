@@ -13,8 +13,8 @@ import {Validations} from './validation';
 import {CellRange} from './cell_range';
 import {expr2xy, xy2expr} from './alphabet';
 import {t} from '../locale/locale';
-
-// private methods
+import {formulaCalc} from "x-spreadsheet-master/src/core/formula";
+ // private methods
 /*
  * {
  *  name: ''
@@ -344,6 +344,7 @@ export default class DataProxy {
         this.hyperlinks = {};
         this.comments = {};
         this.showEquation = false;
+        this.calc = formulaCalc();
         // save data end
 
         // don't save object

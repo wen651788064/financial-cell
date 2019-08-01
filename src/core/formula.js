@@ -5,6 +5,9 @@
  render
  */
 import {tf} from '../locale/locale';
+import XLSX_CALC from "xlsx-calc"
+
+var formulajs = require('formulajs');
 
 const baseFormulas = [
     {
@@ -44,7 +47,22 @@ const baseFormulas = [
     },
 ];
 
-const formulas = baseFormulas;
+let formulas = baseFormulas;
+
+const formulaCalc = () => {
+    XLSX_CALC.import_functions(formulajs);
+    let xlsx_Fx = XLSX_CALC.xlsx_Fx;
+    formulas = [];
+    Object.keys(xlsx_Fx).forEach(i => {
+        let args = {
+            key: i,
+            title: i,
+            render: xlsx_Fx[i]
+        }
+        formulas.push(args);
+    });
+    return XLSX_CALC;
+};
 
 // const formulas = (formulaAry = []) => {
 //   const formulaMap = {};
@@ -64,4 +82,5 @@ export {
     formulam,
     formulas,
     baseFormulas,
+    formulaCalc,
 };

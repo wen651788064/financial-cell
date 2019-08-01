@@ -37,7 +37,7 @@ function buildButtonWithIcon(tooltipdata, iconName, change = () => {}) {
 }
 
 function bindDropdownChange() {
-    this.ddFormat.change = it => this.change('format', it.key);
+  this.ddFormat.change = it => this.change('format', it.key);
   this.ddFont.change = it => this.change('font-name', it.key);
   this.ddFormula.change = it => this.change('formula', it.key);
   this.ddFontSize.change = it => this.change('font-size', it.pt);
