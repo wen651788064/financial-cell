@@ -17,8 +17,8 @@ import {getFontSizePxByPt} from "../core/font";
 // import {baseFormats, multiply} from "../core/format";
 import {formatm} from "../core/format";
 import {selectorColor} from "../component/color_palette";
-import {xy2expr} from "../core/alphabet";
-import {operation} from "../component/operator";
+import {expr2xy, xy2expr} from "../core/alphabet";
+import {cutStr, operation} from "../component/operator";
 
 function scrollbarMove() {
     const {
@@ -543,8 +543,12 @@ function colResizerFinished(cRect, distance) {
 }
 
 function selectorCellText(ri, ci, text, state) {
-    const {data, table} = this;
+    if (ri == -1 || ci == -1) {
+        return;
+    }
+    const {data, table, editor} = this;
     data.setCellText(ri, ci, text, state);
+    editor.setRiCi(-1, -1)
     if (state === 'finished') table.render();
 }
 
@@ -624,6 +628,7 @@ function sortFilterChange(ci, order, operator, value) {
 }
 
 function lockCells(evt) {
+    console.log("...")
     const {data, editor} = this;
     const {offsetX, offsetY} = evt;
 
@@ -631,6 +636,7 @@ function lockCells(evt) {
     let {ri, ci} = cellRect;
 
     /*
+        实时更新this.selectors  => editor.change
         step 1. 如果该单元格已经被锁定，，
             判定1. 如果没有text最后一个不是 + - * / 则直接返回
             判定2. 选定
@@ -651,7 +657,36 @@ function lockCells(evt) {
     let {inputText} = editor;
     let last = inputText[inputText.length - 1];
     let input = "";
-    if (this.selectors.length && !operation(last)) {
+
+    // 需要考虑移动光标的情况 ->> 对应 editor 里的 mousedownIndex 字段
+    // 不为-1 就表示true，不用做额外判断
+    let {mousedownIndex} = editor;
+    if(mousedownIndex.length > 0) {
+        let args = makeSelector.call(this, ri, ci);
+        this.selectors.push(args);
+        input = `${mousedownIndex[0]}${xy2expr(ci, ri)}${mousedownIndex[1]}`;
+        let judgeText = input.substring(mousedownIndex[0].length + xy2expr(ci, ri).length, input.length);
+        if(operation(judgeText[0])) {
+            editor.setText(input);
+            editor.setMouseDownIndex([]);
+            return;
+        }
+        // 不是的话，需要删除这个
+        let str = cutStr(judgeText)[0];
+        if(str) {
+            let cut = cutStr(`${mousedownIndex[0]}${xy2expr(ci, ri)}+4${mousedownIndex[1]}`);
+            let {selectors_delete, selectors_new} = filterSelectors.call(this, cut);
+            Object.keys(selectors_delete).forEach(i => {
+                let selector = selectors_delete[i];
+                selector.removeEl();
+            });
+
+            this.selectors = selectors_new;
+        }
+        editor.setText(input);
+        editor.setCursorPos(mousedownIndex[0].length);
+    } else if (this.selectors.length && !operation(last)) {
+        // 此情况是例如: =A1  -> 这时再点A2  则变成: =A2
         let {selector, erpx} = this.selectors[this.selectors.length - 1];
         selector.set(ri, ci);
         this.selectors[this.selectors.length - 1].ri = ri;
@@ -660,23 +695,93 @@ function lockCells(evt) {
         input = `${inputText.substring(0, inputText.lastIndexOf(erpx))}${xy2expr(ci, ri)}`;
         editor.setText(input);
     } else {
-        let selector = new Selector(data);
-        let color = selectorColor(this.selectors.length);
-        selector.setCss(color);
-        selector.set(ri, ci);
+        let args = makeSelector.call(this, ri, ci);
+        this.selectors.push(args);
         input = `${inputText}${xy2expr(ci, ri)}`;
         editor.setText(input);
-
-        this.overlayerCEl.child(selector.el);
-        this.selectors.push({
-            ri: ri,
-            ci: ci,
-            erpx: xy2expr(ci, ri),
-            selector: selector,
-        });
     }
     // step 3.  在enter或者点击的时候写入到cell中
     // dataSetCellText.call(this, input, 'input');
+}
+
+function makeSelector(ri, ci, selectors = this.selectors) {
+    const {data} = this;
+    let selector = new Selector(data);
+    console.log("677", selectors);
+    let color = selectorColor(selectors.length);
+    selector.setCss(color);
+    selector.set(ri, ci);
+
+    this.overlayerCEl.child(selector.el);
+    let args = {
+        ri: ri,
+        ci: ci,
+        erpx: xy2expr(ci, ri),
+        selector: selector,
+    };
+    return args;
+}
+
+// 在用户输入的情况下
+function editingSelectors(text = "") {
+    let selectors_new = [];
+    let cut = cutStr(text);
+    // case 1  过滤 selectors
+    let {selectors_delete} = filterSelectors.call(this, cut);
+
+    Object.keys(selectors_delete).forEach(i => {
+        let selector = selectors_delete[i];
+        selector.removeEl();
+    });
+
+
+    let selectors_valid = selectors_new;
+    // case 2  验证 selectors
+    Object.keys(cut).forEach(i => {
+        let enter = 0;
+        Object.keys(this.selectors).forEach(i2 => {
+            let selector = this.selectors[i2];
+            let {erpx} = selector;
+            if (cut[i] === erpx) {
+                selectors_new.push(selector);
+                enter = 1;
+            }
+        });
+
+        if (enter == 0) {
+            let arr = expr2xy(cut[i]);
+            let ri = arr[1], ci = arr[0];
+            let args = makeSelector.call(this, ri, ci, selectors_valid);
+            selectors_valid.push(args);
+        }
+    });
+
+    this.selectors = selectors_valid;
+}
+
+
+function filterSelectors(cut) {
+    let selectors_new = [];
+    let selectors_delete = [];
+    Object.keys(this.selectors).forEach(i => {
+        let selector = this.selectors[i];
+        let {erpx} = selector;
+        let enter = 0;
+        Object.keys(cut).forEach(i => {
+            if (cut[i] === erpx) {
+                enter = 1;
+                selectors_new.push(selector);
+            }
+        });
+
+        if (enter == 0) {
+            selectors_delete.push(selector.selector.el);
+        }
+    });
+    return {
+        "selectors_delete": selectors_delete,
+        "selectors_new": selectors_new
+    };
 }
 
 function clearSelectors() {
@@ -688,6 +793,13 @@ function clearSelectors() {
     let {editor} = this;
     editor.setLock(false);
     editor.state = 1;
+}
+
+function afterSelector(editor) {
+    if (editor.getLock() || editor.state === 2) {
+        let {inputText, ri, ci} = editor;
+        selectorCellText.call(this, ri, ci, inputText, 'input');
+    }
 }
 
 function sheetInitEvents() {
@@ -723,7 +835,7 @@ function sheetInitEvents() {
                     contextMenu.hide();
                 }
             } else if (evt.detail === 2) {
-                if(editor.getLock()) {
+                if (editor.getLock()) {
                     return;
                 }
                 editorSet.call(this);
@@ -731,11 +843,8 @@ function sheetInitEvents() {
                 if (editor.getLock()) {
                     lockCells.call(this, evt);
                 } else {
-                    let {state} = editor;
-                    if(state == 2) {
-                        let {inputText, ri, ci} = editor;
-                        selectorCellText.call(this, ri, ci, inputText, 'input');
-                    }
+                    let {inputText, ri, ci} = editor;
+                    selectorCellText.call(this, ri, ci, inputText, 'input');
                     editor.clear();
                     overlayerMousedown.call(this, evt);
                     clearSelectors.call(this);
@@ -774,13 +883,23 @@ function sheetInitEvents() {
     };
     // editor
     editor.change = (state, itext) => {
-        if(editor.getLock() && itext != '=') {
-            return;
-        }
-        if(this.selectors.length > 0) {
+        // 如果是 esc
+        if (itext == "@~esc") {
+            editor.setText("");
+            clearSelectors.call(this);
+            editor.clear();
             return;
         }
 
+        //实时更新this.selectors
+        let {lock} = editor;
+        editingSelectors.call(this, itext);
+        if (lock && itext != '=') {
+            return;
+        }
+        if (this.selectors.length > 0) {
+            return;
+        }
 
         dataSetCellText.call(this, itext, state);
     };
@@ -931,18 +1050,20 @@ function sheetInitEvents() {
                     evt.preventDefault();
                     break;
                 case 9: // tab
+                    // lockCells
+                    afterSelector.call(this, editor);
+
                     editor.clear();
                     // shift + tab => move left
                     // tab => move right
                     selectorMove.call(this, false, shiftKey ? 'left' : 'right');
                     evt.preventDefault();
+                    // 清除各种属性
+                    clearSelectors.call(this);
                     break;
                 case 13: // enter
                     // lockCells
-                    if (editor.getLock() || editor.state === 2) {
-                        let {inputText, ri, ci} = editor;
-                        selectorCellText.call(this, ri, ci, inputText, 'input');
-                    }
+                    afterSelector.call(this, editor);
 
                     editor.clear();
                     renderAutoAdapt.call(this);

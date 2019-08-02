@@ -1,4 +1,5 @@
 import assert from 'assert';
+
 import { describe, it } from 'mocha';
 import { CellRange } from '../../src/core/cell_range';
 

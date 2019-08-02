@@ -39,13 +39,40 @@ const getCursortPosition = function (element) {
     return cursorPos;
 };
 
+const setCursorPosition = (elem, index) => {
+    var val = elem.value;
+    var len = val.length;
+
+    // 超过文本长度直接返回
+    if (len < index) return;
+    setTimeout(function() {
+        elem.focus()
+        if (elem.setSelectionRange) { // 标准浏览器
+            elem.setSelectionRange(index, index)
+        } else { // IE9-
+            var range = elem.createTextRange()
+            range.moveStart("character", -len)
+            range.moveEnd("character", -len)
+            range.moveStart("character", index)
+            range.moveEnd("character", 0)
+            range.select()
+        }
+    }, 10)
+}
+
 function mouseDownEventHandler(evt) {
     setTimeout(() => {
         let cursorPos = getCursortPosition.call(this, evt.target);
         let text = evt.target.value;
-        text = text.substring(0, cursorPos);
-        parse.call(this, text)
+        let textBegin = text.substring(0, cursorPos);
+        let textEnd = text.substring(cursorPos, text.length);
+        parse.call(this, textBegin);
+        let {lock} = this;
+        if (lock && textEnd !== "") {
+            this.setMouseDownIndex([textBegin, textEnd]);
+        }
     }, 0)
+
 }
 
 function inputEventHandler(evt) {
@@ -73,6 +100,14 @@ function inputEventHandler(evt) {
     textlineEl.html(v);
     resetTextareaSize.call(this);
     this.change('input', v);
+}
+
+function keyDownEventHandler(evt) {
+    console.log("80", evt);
+    const keyCode = evt.keyCode || evt.which;
+    if (keyCode == 27) {
+        this.change('input', "@~esc");
+    }
 }
 
 function parse(v) {
@@ -159,20 +194,23 @@ export default class Editor {
             this.setText(dateFormat(d));
             this.clear();
         });
-        this.ri = 0;
-        this.ci = 0;
+        this.ri = -1;
+        this.ci = -1;
+        this.mousedownIndex = [];
         this.areaEl = h('div', `${cssPrefix}-editor-area`)
             .children(
                 this.textEl = h('textarea', '')
                     .on('input', evt => inputEventHandler.call(this, evt))
-                    .on('mousedown', evt => mouseDownEventHandler.call(this, evt)),
+                    .on('mousedown', evt => mouseDownEventHandler.call(this, evt))
+                    .on('keydown', evt => keyDownEventHandler.call(this, evt)),
                 this.textlineEl = h('div', 'textline'),
                 this.suggest.el,
                 this.datepicker.el,
             )
             .on('mousemove.stop', () => {
             })
-            .on('mousedown.stop',() => {});
+            .on('mousedown.stop', () => {
+            });
         this.el = h('div', `${cssPrefix}-editor`)
             .child(this.areaEl).hide();
         this.suggest.bindInputEvents(this.textEl);
@@ -188,6 +226,10 @@ export default class Editor {
     setFreezeLengths(width, height) {
         this.freeze.w = width;
         this.freeze.h = height;
+    }
+
+    setMouseDownIndex(index) {
+        this.mousedownIndex = index;
     }
 
     setRiCi(ri, ci) {
@@ -274,6 +316,11 @@ export default class Editor {
                 suggest.search('');
             }
         }
+        this.change('input', text);
+    }
+
+    setCursorPos(pos) {
+        setCursorPosition.call(this, this.textEl.el, pos);
     }
 
     setText(text) {

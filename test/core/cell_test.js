@@ -1,5 +1,4 @@
-import assert from 'assert.js';
-// var assert=require('assert');
+import assert from 'assert';
 import { describe, it } from 'mocha';
 import cell, { infixExprToSuffixExpr } from '../../src/core/cell';
 import { formulam } from '../../src/core/formula';
