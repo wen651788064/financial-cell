@@ -31,6 +31,23 @@ function resetTextareaSize() {
     }
 }
 
+const getCursortPosition = function (element) {
+    let cursorPos = 0;
+    if (element.selectionStart || element.selectionStart == '0') {
+        cursorPos = element.selectionStart;
+    }
+    return cursorPos;
+};
+
+function mouseDownEventHandler(evt) {
+    setTimeout(() => {
+        let cursorPos = getCursortPosition.call(this, evt.target);
+        let text = evt.target.value;
+        text = text.substring(0, cursorPos);
+        parse.call(this, text)
+    }, 0)
+}
+
 function inputEventHandler(evt) {
     const v = evt.target.value;
     // console.log(evt, 'v:', v);
@@ -45,17 +62,7 @@ function inputEventHandler(evt) {
         }
     } else {
         const start = v.lastIndexOf('=');
-        if(start === 0 && v.length >= 1 && operation(v[v.length - 1])) {
-            this.setLock(true);
-        } else  {
-            this.setLock(false);
-        }
-
-        if (start !== 0) {
-            this.setLock(false);
-        } else if (start === 0 && v.length == 1) {
-            this.setLock(true);
-        }
+        parse.call(this, v);
 
         if (start === 0 && v.length > 1) {
             suggest.search(v.substring(start + 1));
@@ -68,6 +75,21 @@ function inputEventHandler(evt) {
     this.change('input', v);
 }
 
+function parse(v) {
+    const start = v.lastIndexOf('=');
+    if (start === 0 && v.length >= 1 && operation(v[v.length - 1])) {
+        this.setLock(true);
+    } else {
+        this.setLock(false);
+        this.state = 2;
+    }
+
+    if (start !== 0) {
+        this.setLock(false);
+    } else if (start === 0 && v.length == 1) {
+        this.setLock(true);
+    }
+}
 
 function setTextareaRange(position) {
     const {el} = this.textEl;
@@ -130,6 +152,7 @@ export default class Editor {
             suggestItemClick.call(this, it);
         });
         this.lock = false;
+        this.state = 1;
         this.datepicker = new Datepicker();
         this.datepicker.change((d) => {
             // console.log('d:', d);
@@ -141,15 +164,15 @@ export default class Editor {
         this.areaEl = h('div', `${cssPrefix}-editor-area`)
             .children(
                 this.textEl = h('textarea', '')
-                    .on('input', evt => inputEventHandler.call(this, evt)),
+                    .on('input', evt => inputEventHandler.call(this, evt))
+                    .on('mousedown', evt => mouseDownEventHandler.call(this, evt)),
                 this.textlineEl = h('div', 'textline'),
                 this.suggest.el,
                 this.datepicker.el,
             )
             .on('mousemove.stop', () => {
             })
-            .on('mousedown.stop', () => {
-            });
+            .on('mousedown.stop',() => {});
         this.el = h('div', `${cssPrefix}-editor`)
             .child(this.areaEl).hide();
         this.suggest.bindInputEvents(this.textEl);
@@ -235,6 +258,7 @@ export default class Editor {
         this.cell = cell;
         const text = (cell && cell.text) || '';
         this.setText(text);
+        parse.call(this, text);
 
         this.validator = validator;
         if (validator) {

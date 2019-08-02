@@ -687,6 +687,7 @@ function clearSelectors() {
     this.selectors = [];
     let {editor} = this;
     editor.setLock(false);
+    editor.state = 1;
 }
 
 function sheetInitEvents() {
@@ -730,6 +731,11 @@ function sheetInitEvents() {
                 if (editor.getLock()) {
                     lockCells.call(this, evt);
                 } else {
+                    let {state} = editor;
+                    if(state == 2) {
+                        let {inputText, ri, ci} = editor;
+                        selectorCellText.call(this, ri, ci, inputText, 'input');
+                    }
                     editor.clear();
                     overlayerMousedown.call(this, evt);
                     clearSelectors.call(this);
@@ -775,9 +781,6 @@ function sheetInitEvents() {
             return;
         }
 
-        // if(!editor.getLock()) {
-        //     clearSelectors.call(this);
-        // }
 
         dataSetCellText.call(this, itext, state);
     };
@@ -936,7 +939,7 @@ function sheetInitEvents() {
                     break;
                 case 13: // enter
                     // lockCells
-                    if (editor.getLock()) {
+                    if (editor.getLock() || editor.state === 2) {
                         let {inputText, ri, ci} = editor;
                         selectorCellText.call(this, ri, ci, inputText, 'input');
                     }
