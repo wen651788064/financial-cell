@@ -1,6 +1,6 @@
 import assert from 'assert';
 import {describe, it} from 'mocha';
-import {cutStr} from "../../src/component/operator";
+import {cutStr} from "../../src/core/operator";
 
 describe('infixExprToSuffixExpr', () => {
     it('test 1 == 1', () => {
@@ -8,9 +8,9 @@ describe('infixExprToSuffixExpr', () => {
     });
 
     it('test cut', () => {
-        let arr = cutStr("=A1+A2+ADD(A3, A4)");
-        console.log(arr);
+        let arr = cutStr("=A1+A2+ADD(A3, A4)+'A7'+1");
+        console.log("arr: ", arr);
         let a = ['A1', 'A2', 'A3', 'A4'];
-        assert.equal(arr, a);
+        assert.deepStrictEqual(arr, a);
     });
 });

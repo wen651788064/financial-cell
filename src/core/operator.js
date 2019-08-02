@@ -13,7 +13,7 @@ const operation = (s) => {
 
 const cutStr = (str) => {
     str = str.replace(/\s/g,"");
-    let arr = str.split(/([(-\/,=^&])/);
+    let arr = str.split(/([(-\/,+*=^&])/);
     let express = [];
     arr.filter(i => {
         if(i.search(/^[A-Za-z]+\d+$/) != -1)
@@ -22,13 +22,8 @@ const cutStr = (str) => {
     return express;
 };
 
-const merge = function() {
-    return Array.prototype.concat.apply([], arguments)
-};
-
 export {
     operator,
     operation,
     cutStr,
-    merge,
 }

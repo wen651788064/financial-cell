@@ -3,7 +3,7 @@ import {h} from './element';
 import Suggest from './suggest';
 import Datepicker from './datepicker';
 import {cssPrefix} from '../config';
-import {operation} from "../component/operator";
+import {operation} from "../core/operator";
 
 // import { mouseMoveUp } from '../event';
 
