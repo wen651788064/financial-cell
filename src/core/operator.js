@@ -1,5 +1,5 @@
 const operator = [
-    "+", "-", "*", "/", "&", "^", "(", ",", "="
+    "+", "-", "*", "/", "&", "^", "(", ",", "=", " "
 ];
 
 
@@ -26,15 +26,22 @@ const cutStr = (str) => {
     return express;
 };
 
+const cuttingByPos = (str, pos) => {
+    let value = "";
+    let end = false;
+    for (let i = pos - 1; i > 0 && end == false; i--) {
+        end = operation(str[i]) ? true : false;
+        if (end == false) {
+            value += str[i];
+        }
+    }
+    value = value.split('').reverse().join('');
+    return value;
+};
+
+
 const cutting = (str) => {
-    // let arr = str.split(/([(-\/,+*=^&])/);
-    //
     let express = [];
-    // for (let i = 0; i < arr.length; i++) {
-    //     if (arr[i]) {
-    //         express.push(arr[i]);
-    //     }
-    // }
     for (let i = 0; i < str.length; i++) {
         if (str[i]) {
             express.push(str[i]);
@@ -43,14 +50,128 @@ const cutting = (str) => {
     return express;
 };
 
+
+const helpFormula = {
+    "ADD": {
+        "title": [
+            {
+                "name": "ADD(",
+                "editor": false
+            },
+            {
+
+                "name": "数值1",
+                "editor": false
+            },
+            {
+
+                "name": "，",
+                "editor": false
+            },
+            {
+                "name": "数值2",
+                "editor": false
+            },
+            {
+                "name": ")",
+                "editor": false
+            }
+        ],
+        "example": [
+            {
+                "name": "ADD(",
+                "editor": false
+            },
+            {
+
+                "name": "2",
+                "editor": false
+            },
+            {
+
+                "name": "，",
+                "editor": false
+            },
+            {
+                "name": "3",
+                "editor": false
+            },
+            {
+                "name": ")",
+                "editor": false
+            }
+        ],
+        "content": {
+            "摘要": "返回两个数值之和。相当于 + 运算符。",
+            "数值1": "第一个加数。",
+            "数值2": "第二个加数。",
+        }
+    },
+    "SUM": {
+        "title": [
+            {
+                "name": "SUM(",
+                "editor": false
+            },
+            {
+                "name": "值一",
+                "editor": false
+            },
+            {
+
+                "name": "，",
+                "editor": false
+            },
+            {
+                "name": "[数值2, ...]",
+                "editor": true,
+                "index": 3
+            },
+            {
+                "name": ")",
+                "editor": false
+            }
+        ],
+        "example": [
+            {
+                "name": "SUM(",
+                "editor": false
+            },
+            {
+                "name": "A2:A100",
+                "editor": false
+            },
+            {
+
+                "name": "，",
+                "editor": false
+            },
+            {
+                "name": "101",
+                "editor": true,
+                "index": 3
+            },
+            {
+                "name": ")",
+                "editor": false
+            }
+        ],
+        "content": {
+            "摘要": "返回一组数值和/或单元格的总和。",
+            "值1": "要相加的第一个数值或范围。",
+            "数值2… - [可选] 可重复": "要与“数值1”相加的其他数值或范围。",
+        }
+    }
+};
+
 const isAbsoluteValue = (str) => {
-    if(str.search(/^\$[A-Z]+\$\d+$/) != -1)
+    if (str.search(/^\$[A-Z]+\$\d+$/) != -1)
         return true;
     return false;
 };
 
 const cutting2 = (str) => {
-    let arr = str.split(/([(-\/,+*=^&])/);
+    let arr = str.split(/([(-\/,+* =^&])/);
 
     let color = 0;
     let express = [];
@@ -88,4 +209,6 @@ export {
     cutting,
     cutting2,
     isAbsoluteValue,
+    cuttingByPos,
+    helpFormula,
 }

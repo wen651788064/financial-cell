@@ -20,10 +20,10 @@ class Spreadsheet {
         targetEl.appendChild(rootEl.el);
         this.sheet = new Sheet(rootEl, this.data);
 
-        let aceEl = h('script', 'ace').attr('src', 'https://cdnjs.cloudflare.com/ajax/libs/ace/1.1.3/ace.js')
-            .attr('type', 'text/javascript');
-
-        targetEl.appendChild(aceEl.el);
+        // let aceEl = h('script', 'ace').attr('src', 'https://cdnjs.cloudflare.com/ajax/libs/ace/1.1.3/ace.js')
+        //     .attr('type', 'text/javascript');
+        //
+        // targetEl.appendChild(aceEl.el);
     }
 
     loadData(data) {

@@ -1,4 +1,4 @@
-import {cutStr, cutting, cutting2, isAbsoluteValue, operation} from "../core/operator";
+import {cutStr, cutting, cutting2, cuttingByPos, isAbsoluteValue, operation} from "../core/operator";
 import {expr2xy, xy2expr} from "../core/alphabet";
 import {selectorColor} from "../component/color_palette";
 import Selector from "../component/selector";
@@ -99,12 +99,15 @@ function filterSelectors(cut) {
         let selector = this.selectors[i];
         let {erpx} = selector;
         let enter = 0;
-        Object.keys(cut).forEach(i => {
-            if (cut[i] === erpx) {
+        let stop = false;
+        for (let i2 = 0; i2 < cut.length && stop == false; i2++) {
+            if (cut[i2].replace(/\$/g, "") === erpx) {
+                console.log(i2, cut[i2], "104");
                 enter = 1;
                 selectors_new.push(selector);
+                stop = true;
             }
-        });
+        }
 
         if (enter == 0) {
             selectors_delete.push(selector.selector.el);
@@ -161,14 +164,15 @@ function editingSelectors(text = "") {
     // case 2  验证 selectors
     Object.keys(cut).forEach(i => {
         let enter = 0;
-        Object.keys(this.selectors).forEach(i2 => {
+
+        for (let i2 = 0; i2 < this.selectors.length && enter == 0; i2++) {
             let selector = this.selectors[i2];
             let {erpx} = selector;
             if (cut[i].replace(/\$/g, "") === erpx) {
                 selectors_new.push(selector);
                 enter = 1;
             }
-        });
+        }
 
         // 绝对值
         let arr = "";
@@ -195,6 +199,7 @@ function editingSelectors(text = "") {
     }
 }
 
+// 找 ( 的index
 function findBracket(cut, i) {
     let begin = -1;
     let has = 0;
@@ -221,73 +226,130 @@ function findBracket(cut, i) {
     return begin;
 }
 
-function div2span(cut, cutcolor) {
-    const {editor} = this;
-
-    let spanArr = [];
-    let left = 2;
+// 找 ( 的 index
+function findBracketRight(cut, i) {
     let begin = -1;
-    let end = -1;
-    Object.keys(cut).forEach(i => {
-        let spanEl = h('span', `formula_span${i}`).on('mousedown', evt => {
-            let offset = 0;
-            for (let j = 0; j <= i; j++) {
-                offset += cut[j].length;
-            }
-            if (cut[i] === ')') {
-                let {spanArr} = editor;
-                let begin = -1;
-                let has = 0;
-                let stop = false;
+    let has = 0;
+    let stop = false;
 
-                for (let j = i - 1; j > 0 && stop == false; j--) {
-                    if (cut[j] == "(") {
-                        stop = true;
-                    }
-                    if (cut[j] == ")") {
-                        has++;
-                    }
-                }
-
-                for (let j = i; j > 0 && begin == -1; j--) {
-                    if (cut[j] == "(") {
-                        if (has === 0) {
-                            begin = j;
-                        }
-                        has--;
-                    }
-                }
-                editor.mount2span(spanArr, i, begin);
-            } else {
-                editor.mount2span(spanArr, -1, -1);
-            }
-            editor.setCursorPos2(offset, evt);
-        });
-        Object.keys(cutcolor).forEach(i2 => {
-            if (cutcolor[i].code !== -1 && cutcolor[i].data == cut[i]) {
-                let color = selectorColor(cutcolor[i].code);
-                spanEl.css('color', color);
-            }
-        });
-        // 括号高亮
-        // const {editor} = this;
-        // spanEl.css('top', '10px');
-        // spanEl.css('position', 'absolute');
-        spanEl.css('position', 'relative');
-        spanEl.css('top', '-20px');
-        spanEl.css('cursor', 'text');
-        spanEl.html(cut[i]);
-        spanArr.push(spanEl);
-    });
-    let {change_input, inputText} = editor;
-    if (change_input == ')') {
-        begin = spanArr.length - 1;
-        end = findBracket.call(this, cut, begin);
+    for (let j = i + 1; j < cut.length && stop == false; j++) {
+        if (cut[j] == ")") {
+            stop = true;
+        }
+        if (cut[j] == "(") {
+            has++;
+        }
     }
 
+    for (let j = i; j < cut.length && begin == -1; j++) {
+        if (cut[j] == ")") {
+            if (has === 0) {
+                begin = j;
+            }
+            has--;
+        }
+    }
 
-    // 挂载
-    editor.mount2span(spanArr, begin, end);
+    return begin;
+}
+
+function suggestContent(pos, cut, inputText) {
+    // 如果在括号内
+    // step 1. 找到距离pos最近的左、右括号的index
+    // step 2. 若1成立，找到该函数名
+    // step 3. 找光标前有几个逗号
+    let content = {suggestContent: false, cut: "", pos: 1};
+    let begin = pos - 1;
+    let left = findBracket.call(this, cut, begin);
+    let right = findBracketRight.call(this, cut, begin);
+
+    if (left <= begin && right > begin) {
+        content.suggestContent = true;
+        content.cut = cuttingByPos(inputText, left);
+    }
+
+    for(let i = left; i < begin + 1; i++) {
+        if(inputText[i] == ",") {
+            content.pos = content.pos + 2;
+        }
+    }
+
+    return content;
+}
+
+function div2span(cut, cutcolor) {
+    setTimeout(() => {
+        const {editor} = this;
+
+        let spanArr = [];
+        let left = 2;
+        let begin = -1;
+        let end = -1;
+        Object.keys(cut).forEach(i => {
+            let spanEl = h('span', `formula_span${i}`).on('mousedown', evt => {
+                let offset = 0;
+                for (let j = 0; j <= i; j++) {
+                    offset += cut[j].length;
+                }
+
+                if (cut[i] === ')') {
+                    let {spanArr} = editor;
+                    let begin = -1;
+                    let has = 0;
+                    let stop = false;
+
+                    for (let j = i - 1; j > 0 && stop == false; j--) {
+                        if (cut[j] == "(") {
+                            stop = true;
+                        }
+                        if (cut[j] == ")") {
+                            has++;
+                        }
+                    }
+
+                    for (let j = i; j > 0 && begin == -1; j--) {
+                        if (cut[j] == "(") {
+                            if (has === 0) {
+                                begin = j;
+                            }
+                            has--;
+                        }
+                    }
+                    editor.mount2span(spanArr, i, begin);
+                } else {
+                    let {inputText} = editor;
+                    let content = suggestContent.call(this, offset, cut, inputText);
+                    editor.mount2span(spanArr, -1, -1, content);
+                }
+                editor.setCursorPos2(offset, evt);
+            });
+            Object.keys(cutcolor).forEach(i2 => {
+                if (cutcolor[i].code !== -1 && cutcolor[i].data == cut[i]) {
+                    let color = selectorColor(cutcolor[i].code);
+                    spanEl.css('color', color);
+                }
+            });
+            // 括号高亮
+            // const {editor} = this;
+            // spanEl.css('top', '10px');
+            // spanEl.css('position', 'absolute');
+            spanEl.css('cursor', 'text');
+            spanEl.html(cut[i]);
+            spanArr.push(spanEl);
+        });
+        // 高亮
+        let {pos, inputText} = editor;
+        let content = {suggestContent: false, cut: ""};
+        if (inputText[pos - 1] == ')') {
+            begin = pos - 1;
+            end = findBracket.call(this, cut, begin);
+        } else {
+            content = suggestContent.call(this, pos, cut, inputText);
+        }
+
+        // 挂载
+        editor.mount2span(spanArr, begin, end, content);
+    }, 0)
 }
 
 

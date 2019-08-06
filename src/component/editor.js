@@ -3,8 +3,8 @@ import {h} from './element';
 import Suggest from './suggest';
 import Datepicker from './datepicker';
 import {cssPrefix} from '../config';
-import {operation} from "../core/operator";
-import {cutting} from "x-spreadsheet-master/src/core/operator";
+import {cutting, cuttingByPos, operation} from "../core/operator";
+import SuggestContent from "../component/suggest_content";
 
 // import { mouseMoveUp } from '../event';
 
@@ -36,7 +36,10 @@ const getCursortPosition = function (element) {
     let cursorPos = 0;
     if (element.selectionStart || element.selectionStart == '0') {
         cursorPos = element.selectionStart;
+    } else if (element.target.selectionStart || element.target.selectionStart == '0') {
+        cursorPos = element.target.selectionStart;
     }
+
     return cursorPos;
 };
 
@@ -124,14 +127,34 @@ function mouseDownEventHandler2(evt, cursorPos, text) {
     }, 0);
 }
 
+function getDiff(sr1, sr2) {
+    let result = "";
+    for (let i = 0; i < sr1.length; i++) {
+        let flag = true;
+        if (sr1[i] == sr2[i]) {
+            flag = false;
+        }
+        if (flag) result += sr1[i];
+    }
+
+
+    return result;
+}
+
 function inputEventHandler(evt) {
     const v = evt.target.value;
     // console.log(evt, 'v:', v);
     const {suggest, textlineEl, validator} = this;
     // 得到2个字符串不同的地方
-    this.change_input = v.replace(this.inputText, "");
+    this.change_input = getDiff(v, this.inputText);
 
     this.inputText = v;
+
+    /*
+        point 1. 得到光标之前的那个元素, eg:  A2+A1 , 光标在1, 解析出 => A1
+     */
+    this.pos = getCursortPosition.call(this, evt);
+    let cutValue = cuttingByPos(v, this.pos);
 
     if (validator) {
         if (validator.type === 'list') {
@@ -143,8 +166,8 @@ function inputEventHandler(evt) {
         const start = v.lastIndexOf('=');
         parse.call(this, v);
 
-        if (start === 0 && v.length > 1) {
-            suggest.search(v.substring(start + 1));
+        if (start === 0 && v.length > 1 && cutValue != "") {
+            suggest.search(cutValue);
         } else {
             suggest.hide();
         }
@@ -156,9 +179,17 @@ function inputEventHandler(evt) {
 
 function keyDownEventHandler(evt) {
     console.log("80", evt);
+    this.pos = getCursortPosition.call(this, evt);
+    if (evt.code === "ArrowRight") {
+        this.pos = this.pos + 1;
+    } else {
+        this.pos = this.pos - 1;
+    }
     const keyCode = evt.keyCode || evt.which;
     if (keyCode == 27) {
         this.change('input', "@~esc");
+    } else {
+        this.change('input', this.inputText);
     }
 }
 
@@ -203,19 +234,35 @@ function suggestItemClick(it) {
         position = this.inputText.length;
     } else {
         const start = inputText.lastIndexOf('=');
-        const sit = inputText.substring(0, start + 1);
-        let eit = inputText.substring(start + 1);
-        if (eit.indexOf(')') !== -1) {
-            eit = eit.substring(eit.indexOf(')'));
-        } else {
-            eit = '';
+        // const sit = inputText.substring(0, start + 1);
+        // let eit = inputText.substring(start + 1);
+        // if (eitt.indexOf(')') !== -1) {
+        //     eit = eit.substring(eit.indexOf(')'));
+        //     this.inputText = `${sit + it.key}(`;
+        //     // console.log('inputText:', this.inputText);
+        //     position = this.inputText.length;
+        //     this.inputText += `)${eit}`;
+        // } else {
+        let begin = this.pos - cuttingByPos(inputText, this.pos).length;
+
+        let arr = ["", ""];
+        for (let i = 0; i < inputText.length; i++) {
+            if (i < begin) {
+                arr[0] += inputText[i];
+            }
+
+            if (i > this.pos) {
+                arr[1] += inputText[i];
+            }
         }
-        this.inputText = `${sit + it.key}(`;
-        // console.log('inputText:', this.inputText);
+        this.inputText = `${arr[0] + it.key}(`;
         position = this.inputText.length;
-        this.inputText += `)${eit}`;
+        this.inputText += `)${arr[1]}`;
+        // }
     }
+    this.change('input', this.inputText);
     setText.call(this, this.inputText, position);
+    resetTextareaSize.call(this);
 }
 
 function resetSuggestItems() {
@@ -238,6 +285,7 @@ export default class Editor {
         this.suggest = new Suggest(formulas, (it) => {
             suggestItemClick.call(this, it);
         });
+        this.suggestContent = new SuggestContent();
         this.lock = false;
         this.state = 1;
         this.change_input = "";
@@ -259,6 +307,7 @@ export default class Editor {
                     .on('keydown', evt => keyDownEventHandler.call(this, evt)),
                 this.textlineEl = h('div', 'textline'),
                 this.suggest.el,
+                this.suggestContent.el,
                 this.datepicker.el,
             )
             .on('mousemove.stop', () => {
@@ -270,13 +319,13 @@ export default class Editor {
         this.suggest.bindInputEvents(this.textEl);
 
         this.ace = "";
+        this.pos = 0;
         this.areaOffset = null;
         this.freeze = {w: 0, h: 0};
         this.cell = null;
         this.inputText = '';
         this.change = () => {
         };
-
     }
 
     setFreezeLengths(width, height) {
@@ -309,8 +358,6 @@ export default class Editor {
     }
 
     clear() {
-        // const { cell } = this;
-        // const cellText = (cell && cell.text) || '';
         if (this.inputText !== '') {
             this.change('finished', this.inputText);
         }
@@ -324,26 +371,37 @@ export default class Editor {
         this.datepicker.hide();
     }
 
-    mount2span(spanArr, pos = -1, begin = -1) {
-        // if (this.aces)
-        //     this.aces.removeEl();
-        // setTimeout(() => {
-        //     this.aces = h('div', `editor`).attr("id", "editor");
-        //     this.aces.html('=A1+11+22+33');
-        //     this.areaEl.child(this.aces);
-        //
-        //     let ace = window.ace;
-        //     console.log(ace);
-        //     var editor = ace.edit("editor");
-        //     //设置风格和语言（更多风格和语言，请到github上相应目录查看）
-        //     var language = "javascript";
-        //     editor.session.setMode("ace/mode/" + language);
-        //     editor.setOptions({});
-        // }, 100);
-        // return;
+    // mount2span2(text) {
+    //     if (this.aces)
+    //         this.aces.removeEl();
+    //     setTimeout(() => {
+    //         this.aces = h('div', `editor`).attr("id", "editor");
+    //         this.aces.html(this.inputText);
+    //         this.areaEl.child(this.aces);
+    //
+    //         let ace = window.ace;
+    //         var editor = ace.edit("editor");
+    //         //设置风格和语言（更多风格和语言，请到github上相应目录查看）
+    //         var language = "javascript";
+    //         editor.session.setMode("ace/mode/" + language);
+    //         editor.setOptions({});
+    //     }, 100);
+    //
+    //     return;
+    // }
 
+    mount2span(spanArr, pos = -1, begin = -1, content = {suggestContent: false, cut: "", pos: -1}) {
         if (this.ace)
             this.ace.removeEl();
+
+        let {show} = this.suggest;
+        if (content.suggestContent && !show) {
+            this.pos = -1;
+            this.suggestContent.content(content.cut, content.pos);
+        } else {
+            this.suggestContent.hide();
+        }
+
         Object.keys(spanArr).forEach(i => {
             spanArr[i].css('background-color', 'rgba(255,255,255,0.1)');
         });
@@ -362,7 +420,7 @@ export default class Editor {
 
         ace.css('height', this.textEl.el['style'].height);
         ace.css('font-family', 'Inconsolata,monospace,arial,sans,sans-serif');
-        ace.css('top', '30px');
+        ace.css('top', '10px');
         ace.css('left', '2px');
         ace.css('outline', 'none');
         ace.css('position', 'absolute');

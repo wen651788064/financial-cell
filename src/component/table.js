@@ -67,7 +67,7 @@ function parseCell(viewRange) {
     viewRange.each((ri, ci) => {
         let cell = data.getCell(ri, ci);
         let expr = xy2expr(ci, ri);
-        if (cell)
+        if (cell && cell.text)
             workbook.Sheets.Sheet1[expr] = {v: cell.text, f: cell.text.toUpperCase()};
         else
             workbook.Sheets.Sheet1[expr] = {v: "", f: ""};

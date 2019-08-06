@@ -74,6 +74,7 @@ export default class Suggest {
         this.el = h('div', `${cssPrefix}-suggest`).css('width', width).hide();
         this.itemClick = itemClick;
         this.itemIndex = -1;
+        this.show = false;
     }
 
     setOffset(v) {
@@ -86,6 +87,7 @@ export default class Suggest {
         this.filterItems = [];
         this.itemIndex = -1;
         el.hide();
+        this.show = false;
         unbindClickoutside(this.el.parent());
     }
 
@@ -122,14 +124,17 @@ export default class Suggest {
         this.filterItems = items;
         if (items.length <= 0) {
             this.hide();
+            this.show = false;
             return;
         }
         const {el} = this;
         // items[0].toggle();
 
         el.html('').children(...items).show();
+        this.show = true;
         bindClickoutside(el.parent(), () => {
             this.hide();
+            this.show = false;
         });
     }
 
