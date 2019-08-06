@@ -5,6 +5,7 @@ import Datepicker from './datepicker';
 import {cssPrefix} from '../config';
 import {cutting, cuttingByPos, operation} from "../core/operator";
 import SuggestContent from "../component/suggest_content";
+import {xy2expr} from "x-spreadsheet-master/src/core/alphabet";
 
 // import { mouseMoveUp } from '../event';
 
@@ -164,7 +165,10 @@ function inputEventHandler(evt) {
         }
     } else {
         const start = v.lastIndexOf('=');
-        parse.call(this, v);
+        if(this.pos != -1) {
+            parse2.call(this, v, this.pos);
+        } else
+            parse.call(this, v);
 
         if (start === 0 && v.length > 1 && cutValue != "") {
             suggest.search(cutValue);
@@ -180,11 +184,14 @@ function inputEventHandler(evt) {
 function keyDownEventHandler(evt) {
     console.log("80", evt);
     this.pos = getCursortPosition.call(this, evt);
+
     if (evt.code === "ArrowRight") {
         this.pos = this.pos + 1;
     } else {
         this.pos = this.pos - 1;
     }
+    parse2.call(this, this.inputText, this.pos);
+
     const keyCode = evt.keyCode || evt.which;
     if (keyCode == 27) {
         this.change('input', "@~esc");
@@ -196,6 +203,22 @@ function keyDownEventHandler(evt) {
 function parse(v) {
     const start = v.lastIndexOf('=');
     if (start === 0 && v.length >= 1 && operation(v[v.length - 1])) {
+        this.setLock(true);
+    } else {
+        this.setLock(false);
+        this.state = 2;
+    }
+
+    if (start !== 0) {
+        this.setLock(false);
+    } else if (start === 0 && v.length == 1) {
+        this.setLock(true);
+    }
+}
+
+function parse2(v, pos) {
+    const start = v.lastIndexOf('=');
+    if (start === 0 && v.length >= 1 && operation(v[pos - 1])) {
         this.setLock(true);
     } else {
         this.setLock(false);
@@ -251,7 +274,7 @@ function suggestItemClick(it) {
                 arr[0] += inputText[i];
             }
 
-            if (i > this.pos - 1) {
+            if (i > this.pos - 1 && inputText[i] === ")") {
                 arr[1] += inputText[i];
             }
         }
@@ -398,12 +421,10 @@ export default class Editor {
 
         let {show} = this.suggest;
         if (content.suggestContent && !show) {
-            this.pos = -1;
             this.suggestContent.content(content.cut, content.pos);
         } else {
             this.suggestContent.hide();
         }
-
         Object.keys(spanArr).forEach(i => {
             spanArr[i].css('background-color', 'rgba(255,255,255,0.1)');
         });

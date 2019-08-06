@@ -842,7 +842,7 @@ function sheetInitEvents() {
                 editorSet.call(this);
             } else {
                 if (editor.getLock()) {
-                    setTimeout(() => lockCells.call(this, evt), 0);
+                    lockCells.call(this, evt)
                 } else {
                     let {inputText, ri, ci} = editor;
                     if(ri !== -1 && ci !== -1 && inputText[0] === "=") {
