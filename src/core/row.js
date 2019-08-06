@@ -89,8 +89,7 @@ class Rows {
     }
 
     // what: all | format | text
-    copyPaste(srcCellRange, dstCellRange, what, autofill = false, cb = () => {
-    }) {
+    copyPaste(srcCellRange, dstCellRange, what, autofill = false, cb = () => {}) {
         const {
             sri, sci, eri, eci,
         } = srcCellRange;
@@ -108,7 +107,7 @@ class Rows {
             if (deri < sri) dn = drn;
             else dn = dcn;
         }
-        // console.log('drn:', drn, ', dcn:', dcn);
+        // console.log('drn:', drn, ', dcn:', dcn, dn, isAdd);
         for (let i = sri; i <= eri; i += 1) {
             if (this._[i]) {
                 for (let j = sci; j <= eci; j += 1) {
@@ -120,9 +119,8 @@ class Rows {
                                 const ncell = helper.cloneDeep(this._[i].cells[j]);
                                 // ncell.text
                                 if (autofill && ncell && ncell.text && ncell.text.length > 0) {
-                                    const {text} = ncell;
-                                    let n = (jj - dsci) + (ii - dsri) + 1;
-                                    // console.log('n:', n);
+                                    const { text } = ncell;
+                                    let n = (jj - dsci) + (ii - dsri) + 2;
                                     if (!isAdd) {
                                         n -= dn + 1;
                                     }
@@ -130,19 +128,25 @@ class Rows {
                                         ncell.text = text.replace(/\w{1,3}\d/g, (word) => {
                                             let [xn, yn] = [0, 0];
                                             if (sri === dsri) {
-                                                xn = n;
+                                                xn = n - 1;
+                                                // if (isAdd) xn -= 1;
                                             } else {
-                                                yn = n;
+                                                yn = n - 1;
                                             }
-                                            // console.log('xn:', xn, ', yn:', yn, expr2expr(word, xn, yn));
+                                            // 往下是true  往上是false
+                                            yn += 1;
+
+                                            // console.log('xn:', xn, ', yn:', yn, word, expr2expr(word, xn, yn));
                                             return expr2expr(word, xn, yn);
                                         });
+                                        ncell.formulas = ncell.text;
                                     } else {
                                         const result = /[\\.\d]+$/.exec(text);
                                         // console.log('result:', result);
                                         if (result !== null) {
-                                            const index = Number(result[0]) + n;
+                                            const index = Number(result[0]) + n - 1;
                                             ncell.text = text.substring(0, result.index) + index;
+                                            ncell.formulas = ncell.text;
                                         }
                                     }
                                 }

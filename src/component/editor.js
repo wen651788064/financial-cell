@@ -4,6 +4,7 @@ import Suggest from './suggest';
 import Datepicker from './datepicker';
 import {cssPrefix} from '../config';
 import {operation} from "../core/operator";
+import {cutting} from "x-spreadsheet-master/src/core/operator";
 
 // import { mouseMoveUp } from '../event';
 
@@ -45,40 +46,91 @@ const setCursorPosition = (elem, index) => {
 
     // 超过文本长度直接返回
     if (len < index) return;
-    setTimeout(function() {
-        elem.focus()
+    setTimeout(function () {
+        elem.focus();
         if (elem.setSelectionRange) { // 标准浏览器
             elem.setSelectionRange(index, index)
         } else { // IE9-
-            var range = elem.createTextRange()
-            range.moveStart("character", -len)
-            range.moveEnd("character", -len)
-            range.moveStart("character", index)
-            range.moveEnd("character", 0)
-            range.select()
+            var range = elem.createTextRange();
+            range.moveStart("character", -len);
+            range.moveEnd("character", -len);
+            range.moveStart("character", index);
+            range.moveEnd("character", 0);
+            range.select();
         }
     }, 10)
-}
+};
 
 function mouseDownEventHandler(evt) {
+    if (evt.target.value[0] !== "=") {
+        return;
+    }
     setTimeout(() => {
         let cursorPos = getCursortPosition.call(this, evt.target);
         let text = evt.target.value;
+        let textBegin = text.substring(0, cursorPos);
+        let textEnd = text.substring(cursorPos, text.length);
+
+        if (textBegin[textBegin.length - 1] === ")") {
+            let cut = cutting(textBegin);
+            let begin = -1;
+            let i = cut.length - 1;
+            let has = 0;
+            let stop = false;
+
+            for (let j = i - 1; j > 0 && stop == false; j--) {
+                if (cut[j] == "(") {
+                    stop = true;
+                }
+                if (cut[j] == ")") {
+                    has++;
+                }
+            }
+
+            for (let j = i; j > 0 && begin == -1; j--) {
+                if (cut[j] == "(") {
+                    if (has === 0) {
+                        begin = j;
+                    }
+                    has--;
+                }
+            }
+            this.mount2span(this.spanArr, cut.length - 1, begin);
+        } else {
+            this.mount2span(this.spanArr, -1);
+        }
+
+        parse.call(this, textBegin);
+        let {lock} = this;
+        if (lock && textEnd !== "") {
+            this.setMouseDownIndex([textBegin, textEnd]);
+        } else {
+            this.setMouseDownIndex([]);
+        }
+    }, 0);
+}
+
+function mouseDownEventHandler2(evt, cursorPos, text) {
+    setTimeout(() => {
         let textBegin = text.substring(0, cursorPos);
         let textEnd = text.substring(cursorPos, text.length);
         parse.call(this, textBegin);
         let {lock} = this;
         if (lock && textEnd !== "") {
             this.setMouseDownIndex([textBegin, textEnd]);
+        } else {
+            this.setMouseDownIndex([]);
         }
-    }, 0)
-
+    }, 0);
 }
 
 function inputEventHandler(evt) {
     const v = evt.target.value;
     // console.log(evt, 'v:', v);
     const {suggest, textlineEl, validator} = this;
+    // 得到2个字符串不同的地方
+    this.change_input = v.replace(this.inputText, "");
+
     this.inputText = v;
 
     if (validator) {
@@ -188,6 +240,7 @@ export default class Editor {
         });
         this.lock = false;
         this.state = 1;
+        this.change_input = "";
         this.datepicker = new Datepicker();
         this.datepicker.change((d) => {
             // console.log('d:', d);
@@ -196,6 +249,7 @@ export default class Editor {
         });
         this.ri = -1;
         this.ci = -1;
+        this.spanArr = [];
         this.mousedownIndex = [];
         this.areaEl = h('div', `${cssPrefix}-editor-area`)
             .children(
@@ -215,12 +269,14 @@ export default class Editor {
             .child(this.areaEl).hide();
         this.suggest.bindInputEvents(this.textEl);
 
+        this.ace = "";
         this.areaOffset = null;
         this.freeze = {w: 0, h: 0};
         this.cell = null;
         this.inputText = '';
         this.change = () => {
         };
+
     }
 
     setFreezeLengths(width, height) {
@@ -245,6 +301,13 @@ export default class Editor {
         return this.lock;
     }
 
+    recover() {
+        this.textEl.css('color', 'black');
+        this.textEl.css('caret-color', 'black');
+        this.textEl.css('font-family', 'none');
+        this.textlineEl.css('font-family', 'none');
+    }
+
     clear() {
         // const { cell } = this;
         // const cellText = (cell && cell.text) || '';
@@ -259,6 +322,57 @@ export default class Editor {
         this.textlineEl.html('');
         resetSuggestItems.call(this);
         this.datepicker.hide();
+    }
+
+    mount2span(spanArr, pos = -1, begin = -1) {
+        // if (this.aces)
+        //     this.aces.removeEl();
+        // setTimeout(() => {
+        //     this.aces = h('div', `editor`).attr("id", "editor");
+        //     this.aces.html('=A1+11+22+33');
+        //     this.areaEl.child(this.aces);
+        //
+        //     let ace = window.ace;
+        //     console.log(ace);
+        //     var editor = ace.edit("editor");
+        //     //设置风格和语言（更多风格和语言，请到github上相应目录查看）
+        //     var language = "javascript";
+        //     editor.session.setMode("ace/mode/" + language);
+        //     editor.setOptions({});
+        // }, 100);
+        // return;
+
+        if (this.ace)
+            this.ace.removeEl();
+        Object.keys(spanArr).forEach(i => {
+            spanArr[i].css('background-color', 'rgba(255,255,255,0.1)');
+        });
+        if (pos !== '-1' && begin != -1 && spanArr[pos]) {
+            spanArr[pos].css('background-color', '#e5e5e5');
+            spanArr[begin].css('background-color', '#e5e5e5');
+        }
+
+        this.textEl.css('color', 'white');
+        this.textEl.css('caret-color', 'black');
+        this.textEl.css('font-family', 'Inconsolata,monospace,arial,sans,sans-serif');
+        this.textlineEl.css('font-family', 'Inconsolata,monospace,arial,sans,sans-serif');
+        let random = Math.floor(Math.random() * 1000);
+        let ace = h('div', `ace-${random}`);
+        ace.attr('contenteditable', 'true');
+
+        ace.css('height', this.textEl.el['style'].height);
+        ace.css('font-family', 'Inconsolata,monospace,arial,sans,sans-serif');
+        ace.css('top', '30px');
+        ace.css('left', '2px');
+        ace.css('outline', 'none');
+        ace.css('position', 'absolute');
+        if (spanArr.length > 0) {
+            ace.children(...spanArr);
+        }
+        this.areaEl.child(ace);
+
+        this.spanArr = spanArr;
+        this.ace = ace;
     }
 
     setOffset(offset, suggestPosition = 'top') {
@@ -321,6 +435,11 @@ export default class Editor {
 
     setCursorPos(pos) {
         setCursorPosition.call(this, this.textEl.el, pos);
+    }
+
+    setCursorPos2(pos, evt) {
+        setCursorPosition.call(this, this.textEl.el, pos);
+        mouseDownEventHandler2.call(this, evt, pos, this.inputText)
     }
 
     setText(text) {

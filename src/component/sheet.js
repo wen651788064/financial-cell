@@ -17,9 +17,8 @@ import {getFontSizePxByPt} from "../core/font";
 // import {baseFormats, multiply} from "../core/format";
 import {formatm} from "../core/format";
 import {selectorColor} from "../component/color_palette";
-import {expr2xy, xy2expr} from "../core/alphabet";
-import {cutStr, operation} from "../core/operator";
-import {lockCells, clearSelectors, editingSelectors} from "../component/formula_editor";
+import {xy2expr} from "../core/alphabet";
+import {clearSelectors, editingSelectors, lockCells} from "../component/formula_editor";
 
 function scrollbarMove() {
     const {
@@ -290,7 +289,7 @@ function overlayerMousedown(evt) {
         left, top, width, height,
     } = cellRect;
     let {ri, ci} = cellRect;
-    editor.setRiCi(ri, ci)
+    editor.setRiCi(ri, ci);
 
     // sort or filter
     const {autoFilter} = data;
@@ -549,8 +548,7 @@ function selectorCellText(ri, ci, text, state) {
     }
     const {data, table, editor} = this;
     data.setCellText(ri, ci, text, state);
-    editor.setRiCi(-1, -1)
-    if (state === 'finished') table.render();
+    editor.setRiCi(-1, -1);
 }
 
 function dataSetCellText(text, state = 'finished') {
@@ -707,7 +705,6 @@ function sortFilterChange(ci, order, operator, value) {
 function makeSelector(ri, ci, selectors = this.selectors) {
     const {data} = this;
     let selector = new Selector(data);
-    console.log("677", selectors);
     let color = selectorColor(selectors.length);
     selector.setCss(color);
     selector.set(ri, ci);
@@ -759,30 +756,30 @@ function makeSelector(ri, ci, selectors = this.selectors) {
 //     this.selectors = selectors_valid;
 // }
 
-
-function filterSelectors(cut) {
-    let selectors_new = [];
-    let selectors_delete = [];
-    Object.keys(this.selectors).forEach(i => {
-        let selector = this.selectors[i];
-        let {erpx} = selector;
-        let enter = 0;
-        Object.keys(cut).forEach(i => {
-            if (cut[i] === erpx) {
-                enter = 1;
-                selectors_new.push(selector);
-            }
-        });
-
-        if (enter == 0) {
-            selectors_delete.push(selector.selector.el);
-        }
-    });
-    return {
-        "selectors_delete": selectors_delete,
-        "selectors_new": selectors_new
-    };
-}
+//
+// function filterSelectors(cut) {
+//     let selectors_new = [];
+//     let selectors_delete = [];
+//     Object.keys(this.selectors).forEach(i => {
+//         let selector = this.selectors[i];
+//         let {erpx} = selector;
+//         let enter = 0;
+//         Object.keys(cut).forEach(i => {
+//             if (cut[i] === erpx) {
+//                 enter = 1;
+//                 selectors_new.push(selector);
+//             }
+//         });
+//
+//         if (enter == 0) {
+//             selectors_delete.push(selector.selector.el);
+//         }
+//     });
+//     return {
+//         "selectors_delete": selectors_delete,
+//         "selectors_new": selectors_new
+//     };
+// }
 
 // function clearSelectors() {
 //     Object.keys(this.selectors).forEach(i => {
@@ -835,16 +832,22 @@ function sheetInitEvents() {
                     contextMenu.hide();
                 }
             } else if (evt.detail === 2) {
+                let {ace} = editor;
+                console.log(ace, "64");
+                if (ace && !editor.getLock())
+                    ace.removeEl();
                 if (editor.getLock()) {
                     return;
                 }
                 editorSet.call(this);
             } else {
                 if (editor.getLock()) {
-                    lockCells.call(this, evt);
+                    setTimeout(() => lockCells.call(this, evt), 0);
                 } else {
                     let {inputText, ri, ci} = editor;
-                    selectorCellText.call(this, ri, ci, inputText, 'input');
+                    if(ri !== -1 && ci !== -1 && inputText[0] === "=") {
+                        selectorCellText.call(this, ri, ci, inputText, 'input');
+                    }
                     editor.clear();
                     overlayerMousedown.call(this, evt);
                     clearSelectors.call(this);

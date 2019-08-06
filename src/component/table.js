@@ -422,7 +422,6 @@ class Table {
         // fixed height of header
         let fh = rows.height;
 
-
         renderContentGrid.call(this, viewRange, fw, fh, tx, ty);
 
         renderContent.call(this, viewRange, fw, fh, -x, -y);
