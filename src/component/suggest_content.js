@@ -2,7 +2,7 @@ import {cssPrefix} from "../config";
 import {h} from "../component/element";
 import {helpFormula} from "../core/operator";
 
-function variableElement(content, txt, pos, className) {
+function variableElement(content, txt, pos, className, s = "", s2 = "") {
     let item = h('div', className);
     for(let i = 0; i < content[txt].length; i++) {
         console.log(content[txt][i])
@@ -10,11 +10,11 @@ function variableElement(content, txt, pos, className) {
         let {name, editor, index} = ct;
 
         if(pos === i) {
-            item.child(h('span', `${cssPrefix}-help-span-title`).child(name));
+            item.child(h('span', s).child(name));
         } else if(editor == true && pos >= index) {
-            item.child(h('span', `${cssPrefix}-help-span-title`).child(name));
+            item.child(h('span', s).child(name));
         } else {
-            item.child(h('span', `${cssPrefix}-help-span2-title`).child(name));
+            item.child(h('span', s2).child(name));
         }
     }
 
@@ -48,9 +48,9 @@ export default class SuggestContent {
         }
 
         let items = [];
-        let title = variableElement.call(this, content, "title", pos, `${cssPrefix}-help-title`);
+        let title = variableElement.call(this, content, "title", pos, `${cssPrefix}-help-title`,  `${cssPrefix}-help-span-title`, `${cssPrefix}-help-span2-title`);
         let exampleName = h('div', `${cssPrefix}-help-section-title`).child("示例");
-        let example = variableElement.call(this, content, "example", pos, `${cssPrefix}-help-section-content`);
+        let example = variableElement.call(this, content, "example", pos, `${cssPrefix}-help-section-content`,  `${cssPrefix}-help-span3-title`);
         items.push(...[title, exampleName, example]);
         Object.keys(content.content).forEach(i => {
             let c = content.content[i];

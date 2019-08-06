@@ -251,7 +251,7 @@ function suggestItemClick(it) {
                 arr[0] += inputText[i];
             }
 
-            if (i > this.pos) {
+            if (i > this.pos - 1) {
                 arr[1] += inputText[i];
             }
         }
@@ -355,6 +355,8 @@ export default class Editor {
         this.textEl.css('caret-color', 'black');
         this.textEl.css('font-family', 'none');
         this.textlineEl.css('font-family', 'none');
+        if (this.ace)
+            this.ace.removeEl();
     }
 
     clear() {
