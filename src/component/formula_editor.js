@@ -1,4 +1,4 @@
-import {cutStr, cutting, cutting2, operation} from "../core/operator";
+import {cutStr, cutting, cutting2, isAbsoluteValue, operation} from "../core/operator";
 import {expr2xy, xy2expr} from "../core/alphabet";
 import {selectorColor} from "../component/color_palette";
 import Selector from "../component/selector";
@@ -144,7 +144,7 @@ function clearSelectors() {
     editor.state = 1;
 }
 
-// 输入
+// 输入 input
 function editingSelectors(text = "") {
     let selectors_new = [];
     let cut = cutStr(text);
@@ -164,14 +164,22 @@ function editingSelectors(text = "") {
         Object.keys(this.selectors).forEach(i2 => {
             let selector = this.selectors[i2];
             let {erpx} = selector;
-            if (cut[i] === erpx) {
+            if (cut[i].replace(/\$/g, "") === erpx) {
                 selectors_new.push(selector);
                 enter = 1;
             }
         });
 
+        // 绝对值
+        let arr = "";
+        if (isAbsoluteValue(cut[i])) {
+            let notTrueValue = cut[i].replace(/\$/g, "");
+            arr = expr2xy(notTrueValue);
+        } else {
+            arr = expr2xy(cut[i]);
+        }
+
         if (enter == 0) {
-            let arr = expr2xy(cut[i]);
             let ri = arr[1], ci = arr[0];
             let args = makeSelector.call(this, ri, ci, selectors_valid);
             selectors_valid.push(args);

@@ -2,6 +2,7 @@ const operator = [
     "+", "-", "*", "/", "&", "^", "(", ",", "="
 ];
 
+
 const operation = (s) => {
     for (let i = 0; i < operator.length; i++) {
         if (operator[i] == s) {
@@ -19,7 +20,7 @@ const cutStr = (str) => {
     let arr = str.split(/([(-\/,+*=^&])/);
     let express = [];
     arr.filter(i => {
-        if (i.search(/^[A-Z]+\d+$/) != -1)
+        if (i.search(/^[A-Z]+\d+$/) != -1 || i.search(/^\$[A-Z]+\$\d+$/) != -1)
             express.push(i);
     });
     return express;
@@ -42,6 +43,12 @@ const cutting = (str) => {
     return express;
 };
 
+const isAbsoluteValue = (str) => {
+    if(str.search(/^\$[A-Z]+\$\d+$/) != -1)
+        return true;
+    return false;
+};
+
 const cutting2 = (str) => {
     let arr = str.split(/([(-\/,+*=^&])/);
 
@@ -55,7 +62,7 @@ const cutting2 = (str) => {
 
     let colors = [];
     for (let i = 0; i < express.length; i++) {
-        if (express[i].search(/^[A-Z]+\d+$/) != -1) {
+        if (express[i].search(/^[A-Z]+\d+$/) != -1 || express[i].search(/^\$[A-Z]+\$\d+$/) != -1) {
             for (let i2 = 0; i2 < express[i].length; i2++)
                 colors.push({
                     "code": color,
@@ -80,4 +87,5 @@ export {
     cutStr,
     cutting,
     cutting2,
+    isAbsoluteValue,
 }

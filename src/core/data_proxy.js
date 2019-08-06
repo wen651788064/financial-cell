@@ -1,5 +1,6 @@
 /* global document */
 
+import {formulaCalc} from 'x-spreadsheet-master/src/core/formula';
 import Selector from './selector';
 import Scroll from './scroll';
 import History from './history';
@@ -13,8 +14,7 @@ import {Validations} from './validation';
 import {CellRange} from './cell_range';
 import {expr2xy, xy2expr} from './alphabet';
 import {t} from '../locale/locale';
-import {formulaCalc} from "x-spreadsheet-master/src/core/formula";
- // private methods
+// private methods
 /*
  * {
  *  name: ''
@@ -73,8 +73,7 @@ const defaultSettings = {
         height: () => document.documentElement.clientHeight,
         width: () => document.documentElement.clientWidth,
     },
-    formula: {
-    },
+    formula: {},
     showGrid: true,
     showToolbar: true,
     showContextmenu: true,
@@ -544,7 +543,7 @@ export default class DataProxy {
                         || property === 'underline'
                         || property === 'align' || property === 'valign'
                         || property === 'color' || property === 'bgcolor') {
-                        console.log("53xxx0", property, value)
+                        console.log('53xxx0', property, value);
                         cstyle[property] = value;
                         cell.style = this.addStyle(cstyle);
                     }
@@ -1099,7 +1098,7 @@ export default class DataProxy {
     }
 
     setData(d) {
-        let {autoFilter} = this;
+        const {autoFilter} = this;
         Object.keys(d).forEach((property) => {
             // this.judgeAutoWidth(d.rows);
             if (property === 'merges' || property === 'rows'

@@ -6,7 +6,6 @@ __pycache__/
 .nyc_output/
 # C extensions
 *.so
-node_modules/
 # Distribution / packaging
 .Python
 env/
