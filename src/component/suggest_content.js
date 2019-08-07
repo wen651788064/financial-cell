@@ -23,7 +23,7 @@ function variableElement(content, txt, pos, className, s = "", s2 = "") {
 
 export default class SuggestContent {
     constructor(width = "300px") {
-        this.el = h('div', `${cssPrefix}-suggest-content`).css('width', width).hide();
+        this.el = h('div', `${cssPrefix}-suggest-content`).css('width', width).css('z-index', "10000").css('position', "absolute").hide();
     }
 
     hide() {

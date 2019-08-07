@@ -1,4 +1,4 @@
-import {cutStr, cutting, cutting2, cuttingByPos, isAbsoluteValue, operation} from "../core/operator";
+import {cutFirst, cutStr, cutting, cutting2, cuttingByPos, isAbsoluteValue, operation} from "../core/operator";
 import {expr2xy, xy2expr} from "../core/alphabet";
 import {selectorColor} from "../component/color_palette";
 import Selector from "../component/selector";
@@ -48,8 +48,8 @@ function lockCells(evt) {
             return;
         }
         // 不是的话，需要删除这个
-        let str = cutStr(judgeText[0] === "=" ? judgeText : "=" + judgeText)[0];
-        let number = cutStr(mousedownIndex[1] === "=" ? mousedownIndex[1] : "=" + mousedownIndex[1])[0];
+        // let str = cutStr(judgeText[0] === "=" ? judgeText : "=" + judgeText)[0];
+        let number = cutFirst(mousedownIndex[1]);
 
         let cut = cutStr(`${mousedownIndex[0]}${xy2expr(ci, ri)}+4${mousedownIndex[1]}`);
         let {selectors_delete, selectors_new} = filterSelectors.call(this, cut);
@@ -81,20 +81,32 @@ function lockCells(evt) {
         let {pos} = editor;
         let args = makeSelector.call(this, ri, ci);
         this.selectors.push(args);
-        if(pos != -1) {
+        if (pos != -1) {
             let str = "";
             let enter = false;
-            for(let i = 0; i < inputText.length; i++) {
-                if(pos == i) {
+            let step = pos;
+            let first = "";
+            for(let i = pos; i < inputText.length; i++)
+                first += inputText[i];
+            let len = cutFirst(first).length;
+            for (let i = 0; i < inputText.length; i++) {
+                if (pos == i) {
                     enter = true;
                     str += xy2expr(ci, ri);
                 }
-                str += inputText[i];
+
+                if(step == i && len > 0) {
+                    step += 1;
+                    len -= 1;
+                } else {
+                    str += inputText[i];
+                }
             }
             str = !enter ? str += xy2expr(ci, ri) : str;
             editor.setText(str);
-            editor.setCursorPos(pos  + (xy2expr(ci, ri).length));
+            editor.setCursorPos(pos + (xy2expr(ci, ri).length));
             editor.pos = -1;
+            editor.parse();
         } else {
             input = `${inputText}${xy2expr(ci, ri)}`;
             editor.setText(input);
@@ -145,6 +157,7 @@ function makeSelector(ri, ci, selectors = this.selectors) {
     let color = selectorColor(selectors.length);
     selector.setCss(color);
     selector.set(ri, ci);
+    selector.el.css("z-index", "100");
 
     this.overlayerCEl.child(selector.el);
     let args = {

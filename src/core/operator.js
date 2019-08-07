@@ -2,10 +2,23 @@ const operator = [
     "+", "-", "*", "/", "&", "^", "(", ",", "=", " "
 ];
 
+const operator2 = [
+    "+", "-", "*", "/", "&", "^", "(", ",", "=", " ", ")"
+];
+
 
 const operation = (s) => {
     for (let i = 0; i < operator.length; i++) {
         if (operator[i] == s) {
+            return 1;
+        }
+    }
+    return 0;
+};
+
+const operation2 = (s) => {
+    for (let i = 0; i < operator2.length; i++) {
+        if (operator2[i] == s) {
             return 1;
         }
     }
@@ -24,6 +37,17 @@ const cutStr = (str) => {
             express.push(i);
     });
     return express;
+};
+
+const cutFirst = (str) => {
+    let s = "";
+    for(let i = 0; i < str.length; i++) {
+        if(operation2(str[i])) {
+            return s;
+        }
+        s += str[i];
+    }
+    return s;
 };
 
 const cuttingByPos = (str, pos) => {
@@ -313,4 +337,5 @@ export {
     isAbsoluteValue,
     cuttingByPos,
     helpFormula,
+    cutFirst,
 }

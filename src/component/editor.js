@@ -386,6 +386,10 @@ export default class Editor {
             this.ace.removeEl();
     }
 
+    parse() {
+        parse.call(this, this.inputText);
+    }
+
     clear() {
         if (this.inputText !== '') {
             this.change('finished', this.inputText);
@@ -394,6 +398,7 @@ export default class Editor {
         this.areaOffset = null;
         this.inputText = '';
         this.el.hide();
+        this.pos = -1;
         this.textEl.val('');
         this.textlineEl.html('');
         resetSuggestContentItems.call(this);

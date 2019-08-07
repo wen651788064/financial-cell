@@ -21,6 +21,7 @@ class SelectorElement {
 
     setCss(b) {
         this.areaEl.css('border', `2px dashed ${b}`);
+        this.el.css("z-index", "-1");
     }
 
     setOffset(v) {

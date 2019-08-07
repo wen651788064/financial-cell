@@ -833,7 +833,7 @@ function sheetInitEvents() {
                 }
             } else if (evt.detail === 2) {
                 let {ace} = editor;
-                console.log(ace, "64");
+                editor.setMouseDownIndex([]);
                 if (ace && !editor.getLock())
                     ace.removeEl();
                 if (editor.getLock()) {
@@ -848,6 +848,7 @@ function sheetInitEvents() {
                     if(ri !== -1 && ci !== -1 && inputText[0] === "=") {
                         selectorCellText.call(this, ri, ci, inputText, 'input');
                     }
+
                     editor.clear();
                     overlayerMousedown.call(this, evt);
                     clearSelectors.call(this);
@@ -896,6 +897,7 @@ function sheetInitEvents() {
 
         //实时更新this.selectors
         let {lock} = editor;
+        editor.setMouseDownIndex([]);
         editingSelectors.call(this, itext);
         if (lock && itext != '=') {
             return;
