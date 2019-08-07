@@ -1,6 +1,6 @@
 /* global document */
 
-import {formulaCalc} from 'x-spreadsheet-master/src/core/formula';
+import {formulaCalc} from '../core/formula';
 import Selector from './selector';
 import Scroll from './scroll';
 import History from './history';

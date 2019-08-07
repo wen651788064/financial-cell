@@ -5,7 +5,7 @@ import Datepicker from './datepicker';
 import {cssPrefix} from '../config';
 import {cutting, cuttingByPos, operation} from "../core/operator";
 import SuggestContent from "../component/suggest_content";
-import {xy2expr} from "x-spreadsheet-master/src/core/alphabet";
+import {xy2expr} from "../core/alphabet";
 
 // import { mouseMoveUp } from '../event';
 
@@ -382,6 +382,7 @@ export default class Editor {
         this.textEl.css('caret-color', 'black');
         this.textEl.css('font-family', 'none');
         this.textlineEl.css('font-family', 'none');
+        this.textEl.css('word-wrap', 'break-word');
         if (this.ace)
             this.ace.removeEl();
     }
@@ -447,13 +448,18 @@ export default class Editor {
         this.textEl.css('caret-color', 'black');
         this.textEl.css('font-family', 'Inconsolata,monospace,arial,sans,sans-serif');
         this.textlineEl.css('font-family', 'Inconsolata,monospace,arial,sans,sans-serif');
+        resetTextareaSize.call(this);
         let random = Math.floor(Math.random() * 1000);
         let ace = h('div', `ace-${random}`);
         ace.attr('contenteditable', 'true');
-
+        ace.css('line-height', '22px');
+        ace.css('padding', '0 3px');
+        ace.css('word-wrap', 'normal');
+        ace.css('white-space', 'break-word');
+        ace.css('font-size', '12px');
         ace.css('height', this.textEl.el['style'].height);
         ace.css('font-family', 'Inconsolata,monospace,arial,sans,sans-serif');
-        ace.css('top', '10px');
+        ace.css('top', '2px');
         ace.css('left', '2px');
         ace.css('outline', 'none');
         ace.css('position', 'absolute');

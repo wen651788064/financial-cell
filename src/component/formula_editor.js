@@ -362,8 +362,16 @@ function div2span(cut, cutcolor) {
                 spanEl.css('color', color);
             }
         });
+        spanEl.css('display', 'inline-block');
+        spanEl.css('height', '22px');
         spanEl.css('cursor', 'text');
-        spanEl.html(cut[i]);
+
+        if(cut[i] == " ") {
+            spanEl.html("&emsp;");
+        } else {
+            spanEl.html(cut[i]);
+        }
+
         spanArr.push(spanEl);
     });
     // 高亮

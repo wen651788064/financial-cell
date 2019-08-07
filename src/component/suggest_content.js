@@ -43,7 +43,7 @@ export default class SuggestContent {
             }
         });
 
-        if(!content) {
+        if(!content || JSON.stringify(content) === '{}') {
             return;
         }
 
