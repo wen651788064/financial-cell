@@ -288,6 +288,10 @@ function suggestItemClick(it) {
     resetTextareaSize.call(this);
 }
 
+function resetSuggestContentItems() {
+    this.suggestContent.hide();
+}
+
 function resetSuggestItems() {
     this.suggest.setItems(this.formulas);
 }
@@ -392,6 +396,7 @@ export default class Editor {
         this.el.hide();
         this.textEl.val('');
         this.textlineEl.html('');
+        resetSuggestContentItems.call(this);
         resetSuggestItems.call(this);
         this.datepicker.hide();
     }

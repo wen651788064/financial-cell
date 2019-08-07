@@ -83,13 +83,15 @@ function lockCells(evt) {
         this.selectors.push(args);
         if(pos != -1) {
             let str = "";
+            let enter = false;
             for(let i = 0; i < inputText.length; i++) {
                 if(pos == i) {
+                    enter = true;
                     str += xy2expr(ci, ri);
                 }
                 str += inputText[i];
             }
-            console.log(xy2expr(ci, ri).length)
+            str = !enter ? str += xy2expr(ci, ri) : str;
             editor.setText(str);
             editor.setCursorPos(pos  + (xy2expr(ci, ri).length));
             editor.pos = -1;

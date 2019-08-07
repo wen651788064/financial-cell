@@ -161,7 +161,109 @@ const helpFormula = {
             "值1": "要相加的第一个数值或范围。",
             "数值2… - [可选] 可重复": "要与“数值1”相加的其他数值或范围。",
         }
-    }
+    },
+    "PMT": {
+        "title": [
+            {
+                "name": "PMT(",
+                "editor": false
+            },
+            {
+                "name": "rate",
+                "editor": false
+            },
+            {
+                "name": ",",
+                "editor": false
+            },
+            {
+                "name": "nper",
+                "editor": false
+            },
+            {
+                "name": ",",
+                "editor": false
+            },
+            {
+                "name": "pv",
+                "editor": false
+            },
+            {
+                "name": ",",
+                "editor": false
+            },
+            {
+                "name": "fv",
+                "editor": false
+            },
+            {
+                "name": ",",
+                "editor": false
+            },
+            {
+                "name": "type",
+                "editor": false
+            },
+            {
+                "name": ")",
+                "editor": false
+            }
+        ],
+        "example": [
+            {
+                "name": "PMT(",
+                "editor": false
+            },
+            {
+                "name": "0.1",
+                "editor": false
+            },
+            {
+                "name": ",",
+                "editor": false
+            },
+            {
+                "name": "120",
+                "editor": false
+            },
+            {
+                "name": ",",
+                "editor": false
+            },
+            {
+                "name": "1000",
+                "editor": false
+            },
+            {
+                "name": ",",
+                "editor": false
+            },
+            {
+                "name": "0",
+                "editor": false
+            },
+            {
+                "name": ",",
+                "editor": false
+            },
+            {
+                "name": "0",
+                "editor": false
+            },
+            {
+                "name": ")",
+                "editor": false
+            }
+        ],
+        "content": {             // 这部分是内容说明。
+            "摘要": "基于固定利率及等额分期付款方式，返回贷款的每期付款额。",
+            "rate": "贷款利率。",
+            "nper": "该项贷款的付款期数。",
+            "pv": "现值，或一系列未来付款的当前值的累积和，也称为本金。",
+            "fv": "为未来值，或在最后一次付款后希望得到的现金余额，如果省略 fv，则假设其值为零，也就是一笔贷款的未来值为零。",
+            "type": "指定各期的付款时间是在期初还是期末。0或者省略为期初，1为期末",
+        }
+    },
 };
 
 const isAbsoluteValue = (str) => {
