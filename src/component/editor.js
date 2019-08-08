@@ -39,7 +39,6 @@ const getCursortPosition = function (containerEl) {
 };
 
 function set_focus(el, poss) {
-    el.focus();
     console.log(this);
     let pos = -1;
     if (this && this.pos) {
@@ -53,12 +52,13 @@ function set_focus(el, poss) {
     let range = document.createRange();
     range.selectNodeContents(el);
     range.collapse(false);
-    let sel = window.getSelection();
     if (pos != -1) {
         let content = el.firstChild;
         range.setStart(content, pos);
         range.setEnd(content, pos);
+        range.collapse(true);
     }
+    let sel = window.getSelection();
     sel.removeAllRanges();
     sel.addRange(range);
 }
@@ -190,6 +190,12 @@ function inputEventHandler(evt) {
     textlineEl.html(v);
     resetTextareaSize.call(this);
     this.change('input', v + "");
+    if(v === "") {
+        this.tmp.removeEl();
+        this.lock = false;
+        this.pos = -1;
+        this.inputText = "";
+    }
     this.pos = -1;
 }
 
@@ -302,6 +308,7 @@ function suggestItemClick(it) {
         // }
     }
     this.textEl.html(this.inputText);
+    this.textlineEl.html(this.inputText);
     this.change('input', this.inputText);
     setTimeout(() => {
         set_focus.call(this, this.textEl.el, -1);
@@ -383,7 +390,6 @@ export default class Editor {
         this.textEl.css('outline', 'none');
         // this.areaEl.child(this.ace);
         this.pos = 0;
-        this.move = -1;
         this.areaOffset = null;
         this.freeze = {w: 0, h: 0};
         this.cell = null;
@@ -472,8 +478,6 @@ export default class Editor {
         }
         this.textEl.css('color', 'white');
         this.textEl.css('caret-color', 'black');
-        this.textEl.css('font-family', 'Inconsolata,monospace,arial,sans,sans-serif');
-        this.textlineEl.css('font-family', 'Inconsolata,monospace,arial,sans,sans-serif');
         console.log(this.textEl.el['style'].width);
         console.log(this.textEl.el['style'].height);
 
