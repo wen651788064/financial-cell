@@ -5,7 +5,6 @@ import Datepicker from './datepicker';
 import {cssPrefix} from '../config';
 import {cutting, cuttingByPos, operation} from "../core/operator";
 import SuggestContent from "../component/suggest_content";
-import {xy2expr} from "../core/alphabet";
 
 // import { mouseMoveUp } from '../event';
 
@@ -33,44 +32,57 @@ function resetTextareaSize() {
     }
 }
 
-const getCursortPosition = function (element) {
-    let cursorPos = 0;
-    if (element.selectionStart || element.selectionStart == '0') {
-        cursorPos = element.selectionStart;
-    } else if (element.target.selectionStart || element.target.selectionStart == '0') {
-        cursorPos = element.target.selectionStart;
-    }
+const getCursortPosition = function (containerEl) {
+    let range = window.getSelection().getRangeAt(0);
+    let preSelectionRange = range.cloneRange();
+    preSelectionRange.selectNodeContents(this.textEl.el);
+    preSelectionRange.setEnd(range.startContainer, range.startOffset);
+    let start = preSelectionRange.toString().length;
 
-    return cursorPos;
+
+    return start;
 };
 
+function set_focus(el, poss) {
+    el.focus();
+    console.log(this);
+    let pos = -1;
+    if(this && this.pos) {
+        pos = this.pos;
+    }
+
+    if(poss) {
+        pos = poss;
+    }
+
+    let range = document.createRange();
+    range.selectNodeContents(el);
+    range.collapse(false);
+    let sel = window.getSelection();
+    if (pos != -1) {
+        let content = el.firstChild;
+        range.setStart(content, pos);
+        range.collapse(true)
+    }
+    sel.removeAllRanges();
+    sel.addRange(range);
+}
+
 const setCursorPosition = (elem, index) => {
-    var val = elem.value;
+    var val = elem.value || elem.textContent;
     var len = val.length;
 
     // 超过文本长度直接返回
     if (len < index) return;
-    setTimeout(function () {
-        elem.focus();
-        if (elem.setSelectionRange) { // 标准浏览器
-            elem.setSelectionRange(index, index)
-        } else { // IE9-
-            var range = elem.createTextRange();
-            range.moveStart("character", -len);
-            range.moveEnd("character", -len);
-            range.moveStart("character", index);
-            range.moveEnd("character", 0);
-            range.select();
-        }
-    }, 10)
+    set_focus.call(this, elem, index);
 };
 
 function mouseDownEventHandler(evt) {
-    if (evt.target.value[0] !== "=") {
+    if (this.inputText !== "=") {
         return;
     }
     setTimeout(() => {
-        let cursorPos = getCursortPosition.call(this, evt.target);
+        let cursorPos = getCursortPosition.call(this, evt);
         let text = evt.target.value;
         let textBegin = text.substring(0, cursorPos);
         let textEnd = text.substring(cursorPos, text.length);
@@ -128,7 +140,9 @@ function mouseDownEventHandler2(evt, cursorPos, text) {
     }, 0);
 }
 
-function getDiff(sr1, sr2) {
+function getDiff(sr1 = "", sr2 = "") {
+    if (!sr1 || !sr2)
+        return;
     let result = "";
     for (let i = 0; i < sr1.length; i++) {
         let flag = true;
@@ -143,13 +157,15 @@ function getDiff(sr1, sr2) {
 }
 
 function inputEventHandler(evt) {
-    const v = evt.target.value;
-    // console.log(evt, 'v:', v);
-    const {suggest, textlineEl, validator} = this;
-    // 得到2个字符串不同的地方
+    let v = "";
+    for (let i = 0, len = evt.target.childNodes.length; i < len; i++) {
+        if (evt.target.childNodes[i].nodeType === 3) {  // 通过nodeType是不是文本节点来判断
+            v += evt.target.childNodes[i].nodeValue
+        }
+    }
+    const {suggest, textlineEl, validator, textEl} = this;
     this.change_input = getDiff(v, this.inputText);
-
-    this.inputText = v;
+    this.inputText = v + "";
 
     /*
         point 1. 得到光标之前的那个元素, eg:  A2+A1 , 光标在1, 解析出 => A1
@@ -165,7 +181,7 @@ function inputEventHandler(evt) {
         }
     } else {
         const start = v.lastIndexOf('=');
-        if(this.pos != -1) {
+        if (this.pos != -1) {
             parse2.call(this, v, this.pos);
         } else
             parse.call(this, v);
@@ -178,11 +194,10 @@ function inputEventHandler(evt) {
     }
     textlineEl.html(v);
     resetTextareaSize.call(this);
-    this.change('input', v);
+    this.change('input', v + "");
 }
 
 function keyDownEventHandler(evt) {
-    console.log("80", evt);
     this.pos = getCursortPosition.call(this, evt);
 
     if (evt.code === "ArrowRight") {
@@ -190,17 +205,24 @@ function keyDownEventHandler(evt) {
     } else {
         this.pos = this.pos - 1;
     }
+
     parse2.call(this, this.inputText, this.pos);
 
     const keyCode = evt.keyCode || evt.which;
     if (keyCode == 27) {
         this.change('input', "@~esc");
+    } else if (keyCode == 37 || keyCode == 38 || keyCode == 39 || keyCode == 40) {
+        console.log(this.pos);
+        evt.stopPropagation();
     } else {
         this.change('input', this.inputText);
     }
 }
 
 function parse(v) {
+    if (!isNaN(v)) {
+        return;
+    }
     const start = v.lastIndexOf('=');
     if (start === 0 && v.length >= 1 && operation(v[v.length - 1])) {
         this.setLock(true);
@@ -217,6 +239,9 @@ function parse(v) {
 }
 
 function parse2(v, pos) {
+    if (!isNaN(v)) {
+        return;
+    }
     const start = v.lastIndexOf('=');
     if (start === 0 && v.length >= 1 && operation(v[pos - 1])) {
         this.setLock(true);
@@ -235,8 +260,9 @@ function parse2(v, pos) {
 function setTextareaRange(position) {
     const {el} = this.textEl;
     setTimeout(() => {
-        el.focus();
-        el.setSelectionRange(position, position);
+        // el.focus();
+        set_focus.call(this, el);
+        // el.setSelectionRange(position, position);
     }, 0);
 }
 
@@ -244,10 +270,11 @@ function setText(text, position) {
     const {textEl, textlineEl} = this;
     // firefox bug
     textEl.el.blur();
-    textEl.val(text);
+    textEl.html(text);
     textlineEl.html(text);
     setTextareaRange.call(this, position);
 }
+
 
 function suggestItemClick(it) {
     const {inputText, validator} = this;
@@ -257,15 +284,6 @@ function suggestItemClick(it) {
         position = this.inputText.length;
     } else {
         const start = inputText.lastIndexOf('=');
-        // const sit = inputText.substring(0, start + 1);
-        // let eit = inputText.substring(start + 1);
-        // if (eitt.indexOf(')') !== -1) {
-        //     eit = eit.substring(eit.indexOf(')'));
-        //     this.inputText = `${sit + it.key}(`;
-        //     // console.log('inputText:', this.inputText);
-        //     position = this.inputText.length;
-        //     this.inputText += `)${eit}`;
-        // } else {
         let begin = this.pos - cuttingByPos(inputText, this.pos).length;
 
         let arr = ["", ""];
@@ -328,7 +346,7 @@ export default class Editor {
         this.mousedownIndex = [];
         this.areaEl = h('div', `${cssPrefix}-editor-area`)
             .children(
-                this.textEl = h('textarea', '')
+                this.textEl = h('div', '')
                     .on('input', evt => inputEventHandler.call(this, evt))
                     .on('mousedown', evt => mouseDownEventHandler.call(this, evt))
                     .on('keydown', evt => keyDownEventHandler.call(this, evt)),
@@ -345,7 +363,20 @@ export default class Editor {
             .child(this.areaEl).hide();
         this.suggest.bindInputEvents(this.textEl);
 
-        this.ace = "";
+        this.tmp = h('div', '').attr("id", "span_tmp");
+        this.textEl.child(this.tmp);
+        this.textEl.attr('contenteditable', 'true');
+        this.textEl.css('line-height', '22px');
+        this.textEl.css('background', 'white');
+        this.textEl.css('font-size', '12px');
+        this.textEl.css('caret-color', 'black');
+        this.textEl.css('font-family', 'Inconsolata,monospace,arial,sans,sans-serif');
+        this.textEl.css('top', '2px');
+        this.textEl.css('caret-color', 'black');
+        this.textEl.css('color', 'white');
+        this.textEl.css('left', '2px');
+        this.textEl.css('outline', 'none');
+        // this.areaEl.child(this.ace);
         this.pos = 0;
         this.areaOffset = null;
         this.freeze = {w: 0, h: 0};
@@ -383,8 +414,8 @@ export default class Editor {
         this.textEl.css('font-family', 'none');
         this.textlineEl.css('font-family', 'none');
         this.textEl.css('word-wrap', 'break-word');
-        if (this.ace)
-            this.ace.removeEl();
+        // this.textEl.css('position', 'static');
+
     }
 
     parse() {
@@ -401,34 +432,22 @@ export default class Editor {
         this.el.hide();
         this.pos = -1;
         this.textEl.val('');
+        this.textEl.html('');
         this.textlineEl.html('');
         resetSuggestContentItems.call(this);
         resetSuggestItems.call(this);
         this.datepicker.hide();
     }
 
-    // mount2span2(text) {
-    //     if (this.aces)
-    //         this.aces.removeEl();
-    //     setTimeout(() => {
-    //         this.aces = h('div', `editor`).attr("id", "editor");
-    //         this.aces.html(this.inputText);
-    //         this.areaEl.child(this.aces);
-    //
-    //         let ace = window.ace;
-    //         var editor = ace.edit("editor");
-    //         //设置风格和语言（更多风格和语言，请到github上相应目录查看）
-    //         var language = "javascript";
-    //         editor.session.setMode("ace/mode/" + language);
-    //         editor.setOptions({});
-    //     }, 100);
-    //
-    //     return;
-    // }
-
     mount2span(spanArr, pos = -1, begin = -1, content = {suggestContent: false, cut: "", pos: -1}) {
-        if (this.ace)
-            this.ace.removeEl();
+        if (this.spanArr === spanArr) {
+            return;
+        }
+
+        this.textEl.html(this.inputText);
+        this.tmp.removeEl();
+        this.pos = -1;
+        set_focus.call(this, this.textEl.el);
 
         let {show} = this.suggest;
         if (content.suggestContent && !show) {
@@ -443,33 +462,22 @@ export default class Editor {
             spanArr[pos].css('background-color', '#e5e5e5');
             spanArr[begin].css('background-color', '#e5e5e5');
         }
-
         this.textEl.css('color', 'white');
         this.textEl.css('caret-color', 'black');
         this.textEl.css('font-family', 'Inconsolata,monospace,arial,sans,sans-serif');
         this.textlineEl.css('font-family', 'Inconsolata,monospace,arial,sans,sans-serif');
+        console.log(this.textEl.el['style'].width);
+        console.log(this.textEl.el['style'].height);
+
         resetTextareaSize.call(this);
-        let random = Math.floor(Math.random() * 1000);
-        let ace = h('div', `ace-${random}`);
-        ace.attr('contenteditable', 'true');
-        ace.css('line-height', '22px');
-        ace.css('padding', '0 3px');
-        ace.css('word-wrap', 'normal');
-        ace.css('white-space', 'break-word');
-        ace.css('font-size', '12px');
-        ace.css('height', this.textEl.el['style'].height);
-        ace.css('font-family', 'Inconsolata,monospace,arial,sans,sans-serif');
-        ace.css('top', '2px');
-        ace.css('left', '2px');
-        ace.css('outline', 'none');
-        ace.css('position', 'absolute');
         if (spanArr.length > 0) {
-            ace.children(...spanArr);
+            this.tmp = h('div', '').children(...spanArr).css("position", "absolute")
+                .css("top", "0px").css("color", "black");
+
+            this.textEl.child(this.tmp);
         }
-        this.areaEl.child(ace);
 
         this.spanArr = spanArr;
-        this.ace = ace;
     }
 
     setOffset(offset, suggestPosition = 'top') {
@@ -509,7 +517,8 @@ export default class Editor {
         const {el, datepicker, suggest} = this;
         el.show();
         this.cell = cell;
-        const text = (cell && cell.text) || '';
+        let text = (cell && cell.formulas) || '';
+        text = text == "" ? (cell && cell.text) || '' : text;
         this.setText(text);
         parse.call(this, text);
 

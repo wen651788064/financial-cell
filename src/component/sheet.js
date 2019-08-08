@@ -832,10 +832,8 @@ function sheetInitEvents() {
                     contextMenu.hide();
                 }
             } else if (evt.detail === 2) {
-                let {ace} = editor;
                 editor.setMouseDownIndex([]);
-                if (ace && !editor.getLock())
-                    ace.removeEl();
+
                 if (editor.getLock()) {
                     return;
                 }
@@ -848,7 +846,10 @@ function sheetInitEvents() {
                     if(ri !== -1 && ci !== -1 && inputText[0] === "=") {
                         selectorCellText.call(this, ri, ci, inputText, 'input');
                     }
-
+                    let {formula} = data.settings;
+                    if (formula && typeof formula.wland == "function") {
+                        formula.wland(formula, data, table);
+                    }
                     editor.clear();
                     overlayerMousedown.call(this, evt);
                     clearSelectors.call(this);

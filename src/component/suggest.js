@@ -48,12 +48,14 @@ function inputKeydownHandler(evt) {
             break;
         case 38: // up
             inputMovePrev.call(this, evt);
+            evt.stopPropagation();
             break;
         case 39: // right
             evt.stopPropagation();
             break;
         case 40: // down
             inputMoveNext.call(this, evt);
+            evt.stopPropagation();
             break;
         case 13: // enter
             inputEnter.call(this, evt);

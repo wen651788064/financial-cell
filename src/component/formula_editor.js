@@ -182,6 +182,9 @@ function clearSelectors() {
 
 // 输入 input
 function editingSelectors(text = "") {
+    if(typeof text === "number") {
+        return;
+    }
     let selectors_new = [];
     let cut = cutStr(text);
     // case 1  过滤 selectors
@@ -224,6 +227,7 @@ function editingSelectors(text = "") {
     });
 
     this.selectors = selectors_valid;
+
     if (this.selectors.length > 0 || text.lastIndexOf('=') == 0) {
         div2span.call(this, cutting(text), cutting2(text));
     } else {
@@ -355,6 +359,7 @@ function div2span(cut, cutcolor) {
             }
 
             editor.setCursorPos2(offset, evt);
+            // evt.stopPropagation();
         });
         Object.keys(cutcolor).forEach(i2 => {
             if (cutcolor[i].code !== -1 && cutcolor[i].data == cut[i]) {

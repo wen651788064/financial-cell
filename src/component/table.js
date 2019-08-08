@@ -67,8 +67,13 @@ function parseCell(viewRange) {
     viewRange.each((ri, ci) => {
         let cell = data.getCell(ri, ci);
         let expr = xy2expr(ci, ri);
-        if (cell && cell.text)
-            workbook.Sheets.Sheet1[expr] = {v: cell.text, f: cell.text.toUpperCase()};
+        if (cell && cell.text) {
+            if(cell.text.indexOf("MD.RTD") != -1) {
+                workbook.Sheets.Sheet1[expr] = {v: "", f: ""};
+            } else {
+                workbook.Sheets.Sheet1[expr] = {v: cell.text, f: cell.text.toUpperCase()};
+            }
+        }
         else
             workbook.Sheets.Sheet1[expr] = {v: "", f: ""};
     });
