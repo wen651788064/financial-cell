@@ -300,7 +300,7 @@ function suggestContent(pos, cut, inputText) {
     let left = findBracket.call(this, cut, begin);
     let right = findBracketRight.call(this, cut, begin);
 
-    if (left <= begin && right > begin) {
+    if (left <= begin) {
         content.suggestContent = true;
         content.cut = cuttingByPos(inputText, left);
     }
@@ -386,7 +386,8 @@ function div2span(cut, cutcolor) {
         begin = pos - 1;
         end = findBracket.call(this, cut, begin);
     } else {
-        content = suggestContent.call(this, pos, cut, inputText);
+        editor.getCursor();
+        content = suggestContent.call(this, pos + 1, cut, inputText);
     }
 
     // 挂载

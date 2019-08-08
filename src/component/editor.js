@@ -34,24 +34,19 @@ function resetTextareaSize() {
 
 const getCursortPosition = function (containerEl) {
     let range = window.getSelection().getRangeAt(0);
-    let preSelectionRange = range.cloneRange();
-    preSelectionRange.selectNodeContents(this.textEl.el);
-    preSelectionRange.setEnd(range.startContainer, range.startOffset);
-    let start = preSelectionRange.toString().length;
 
-
-    return start;
+    return range.startOffset;
 };
 
 function set_focus(el, poss) {
     el.focus();
     console.log(this);
     let pos = -1;
-    if(this && this.pos) {
+    if (this && this.pos) {
         pos = this.pos;
     }
 
-    if(poss) {
+    if (poss) {
         pos = poss;
     }
 
@@ -62,7 +57,7 @@ function set_focus(el, poss) {
     if (pos != -1) {
         let content = el.firstChild;
         range.setStart(content, pos);
-        range.collapse(true)
+        range.setEnd(content, pos);
     }
     sel.removeAllRanges();
     sel.addRange(range);
@@ -195,6 +190,7 @@ function inputEventHandler(evt) {
     textlineEl.html(v);
     resetTextareaSize.call(this);
     this.change('input', v + "");
+    this.pos = -1;
 }
 
 function keyDownEventHandler(evt) {
@@ -212,10 +208,13 @@ function keyDownEventHandler(evt) {
     if (keyCode == 27) {
         this.change('input', "@~esc");
     } else if (keyCode == 37 || keyCode == 38 || keyCode == 39 || keyCode == 40) {
-        console.log(this.pos);
-        evt.stopPropagation();
-    } else {
-        this.change('input', this.inputText);
+        if (keyCode == 38 || keyCode == 40) {
+            setTimeout(() => {
+                set_focus.call(this, this.textEl.el, -1);
+            }, 100);
+        } else {
+            this.move = this.pos;
+        }
     }
 }
 
@@ -284,6 +283,7 @@ function suggestItemClick(it) {
         position = this.inputText.length;
     } else {
         const start = inputText.lastIndexOf('=');
+        this.pos = getCursortPosition.call(this);
         let begin = this.pos - cuttingByPos(inputText, this.pos).length;
 
         let arr = ["", ""];
@@ -301,8 +301,12 @@ function suggestItemClick(it) {
         this.inputText += `)${arr[1]}`;
         // }
     }
+    this.textEl.html(this.inputText);
     this.change('input', this.inputText);
-    setText.call(this, this.inputText, position);
+    setTimeout(() => {
+        set_focus.call(this, this.textEl.el, -1);
+    }, 50);
+    // setText.call(this, this.inputText, position);
     resetTextareaSize.call(this);
 }
 
@@ -349,7 +353,8 @@ export default class Editor {
                 this.textEl = h('div', '')
                     .on('input', evt => inputEventHandler.call(this, evt))
                     .on('mousedown', evt => mouseDownEventHandler.call(this, evt))
-                    .on('keydown', evt => keyDownEventHandler.call(this, evt)),
+                    .on('keydown', evt => keyDownEventHandler.call(this, evt))
+                  ,
                 this.textlineEl = h('div', 'textline'),
                 this.suggest.el,
                 this.suggestContent.el,
@@ -378,6 +383,7 @@ export default class Editor {
         this.textEl.css('outline', 'none');
         // this.areaEl.child(this.ace);
         this.pos = 0;
+        this.move = -1;
         this.areaOffset = null;
         this.freeze = {w: 0, h: 0};
         this.cell = null;
@@ -431,6 +437,7 @@ export default class Editor {
         this.inputText = '';
         this.el.hide();
         this.pos = -1;
+        this.move = -1;
         this.textEl.val('');
         this.textEl.html('');
         this.textlineEl.html('');
@@ -444,10 +451,11 @@ export default class Editor {
             return;
         }
 
-        this.textEl.html(this.inputText);
+        // this.textEl.html(this.inputText);
         this.tmp.removeEl();
-        this.pos = -1;
-        set_focus.call(this, this.textEl.el);
+
+        // this.pos = -1;
+        // set_focus.call(this, this.textEl.el);
 
         let {show} = this.suggest;
         if (content.suggestContent && !show) {
@@ -504,7 +512,7 @@ export default class Editor {
             }
             el.offset(elOffset);
             areaEl.offset({left: left - elOffset.left - 0.8, top: top - elOffset.top - 0.8});
-            textEl.offset({width: width - 9 + 0.8, height: height - 3 + 0.8});
+            textEl.offset({width: width - 2 + 0.8, height: height - 3 + 0.8});
             const sOffset = {left: 0};
             sOffset[suggestPosition] = height;
             suggest.setOffset(sOffset);
@@ -541,6 +549,10 @@ export default class Editor {
 
     setCursorPos(pos) {
         setCursorPosition.call(this, this.textEl.el, pos);
+    }
+
+    getCursor() {
+        this.pos = getCursortPosition.call(this);
     }
 
     setCursorPos2(pos, evt) {

@@ -896,6 +896,7 @@ function sheetInitEvents() {
             return;
         }
 
+
         //实时更新this.selectors
         let {lock} = editor;
         editor.setMouseDownIndex([]);
