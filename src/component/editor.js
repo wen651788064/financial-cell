@@ -3,7 +3,7 @@ import {h} from './element';
 import Suggest from './suggest';
 import Datepicker from './datepicker';
 import {cssPrefix} from '../config';
-import {cutting, cuttingByPos, operation} from "../core/operator";
+import {cuttingByPos, operation} from "../core/operator";
 import SuggestContent from "../component/suggest_content";
 
 // import { mouseMoveUp } from '../event';
@@ -34,33 +34,48 @@ function resetTextareaSize() {
 
 const getCursortPosition = function (containerEl) {
     let range = window.getSelection().getRangeAt(0);
+    let preSelectionRange = range.cloneRange();
+    preSelectionRange.selectNodeContents(this.textEl.el);
+    preSelectionRange.setEnd(range.startContainer, range.startOffset);
+    let start = preSelectionRange.toString().length;
 
-    return range.startOffset;
+    return start;
 };
 
 function set_focus(el, poss) {
     console.log(this);
     let pos = -1;
-    if (this && this.pos) {
-        pos = this.pos;
-    }
+    //
+    // if (this && this.pos) {
+    //     pos = this.pos;
+    // }
 
     if (poss) {
         pos = poss;
     }
-
-    let range = document.createRange();
-    range.selectNodeContents(el);
-    range.collapse(false);
-    if (pos != -1) {
-        let content = el.firstChild;
-        range.setStart(content, pos);
-        range.setEnd(content, pos);
-        range.collapse(true);
+    if (this && this.move && this.move > -1) {
+        if (this.state2 == 1) {
+            this.move = this.move + 1;
+        }
+        pos = this.move;
     }
-    let sel = window.getSelection();
-    sel.removeAllRanges();
-    sel.addRange(range);
+
+    try {
+        let range = document.createRange();
+        range.selectNodeContents(el);
+        range.collapse(false);
+        if (pos != -1) {
+            range.collapse(true);
+            let content = el.firstChild;
+            range.setStart(content, pos);
+            range.setEnd(content, pos);
+        }
+        let sel = window.getSelection();
+        sel.removeAllRanges();
+        sel.addRange(range);
+    } catch {
+        console.log("77")
+    }
 }
 
 const setCursorPosition = (elem, index) => {
@@ -73,52 +88,13 @@ const setCursorPosition = (elem, index) => {
 };
 
 function mouseDownEventHandler(evt) {
-    if (this.inputText !== "=") {
+    if (this.inputText[0] !== "=" || evt.target.nodeName !== "DIV") {
         return;
     }
-    setTimeout(() => {
-        let cursorPos = getCursortPosition.call(this, evt);
-        let text = evt.target.value;
-        let textBegin = text.substring(0, cursorPos);
-        let textEnd = text.substring(cursorPos, text.length);
+    // this.pos = getCursortPosition.call(this, evt);
+    this.move = -1;
+    this.state2 = 2;
 
-        if (textBegin[textBegin.length - 1] === ")") {
-            let cut = cutting(textBegin);
-            let begin = -1;
-            let i = cut.length - 1;
-            let has = 0;
-            let stop = false;
-
-            for (let j = i - 1; j > 0 && stop == false; j--) {
-                if (cut[j] == "(") {
-                    stop = true;
-                }
-                if (cut[j] == ")") {
-                    has++;
-                }
-            }
-
-            for (let j = i; j > 0 && begin == -1; j--) {
-                if (cut[j] == "(") {
-                    if (has === 0) {
-                        begin = j;
-                    }
-                    has--;
-                }
-            }
-            this.mount2span(this.spanArr, cut.length - 1, begin);
-        } else {
-            this.mount2span(this.spanArr, -1);
-        }
-
-        parse.call(this, textBegin);
-        let {lock} = this;
-        if (lock && textEnd !== "") {
-            this.setMouseDownIndex([textBegin, textEnd]);
-        } else {
-            this.setMouseDownIndex([]);
-        }
-    }, 0);
 }
 
 function mouseDownEventHandler2(evt, cursorPos, text) {
@@ -153,15 +129,23 @@ function getDiff(sr1 = "", sr2 = "") {
 
 function inputEventHandler(evt) {
     let v = "";
+    let t1 = "";
     for (let i = 0, len = evt.target.childNodes.length; i < len; i++) {
-        if (evt.target.childNodes[i].nodeType === 3) {  // 通过nodeType是不是文本节点来判断
-            v += evt.target.childNodes[i].nodeValue
+        if (evt.target.childNodes[i].nodeType === 1) {  // 通过nodeType是不是文本节点来判断
+            v += evt.target.childNodes[i].innerText
+        } else if (evt.target.childNodes[i].nodeType === 3) {
+            t1 += evt.target.childNodes[i].nodeValue;
         }
     }
+    if (t1 != "") {
+        v = t1;
+        this.textEl.html('');
+    }
+
     const {suggest, textlineEl, validator, textEl} = this;
     this.change_input = getDiff(v, this.inputText);
     this.inputText = v + "";
-
+    this.state2 =  this.state2 != 3 ? 1 : 3;
     /*
         point 1. 得到光标之前的那个元素, eg:  A2+A1 , 光标在1, 解析出 => A1
      */
@@ -187,15 +171,22 @@ function inputEventHandler(evt) {
             suggest.hide();
         }
     }
+
     textlineEl.html(v);
     resetTextareaSize.call(this);
-    this.change('input', v + "");
-    if(v === "") {
-        this.tmp.removeEl();
+    if (v && v[0] !== "=") {
+        textEl.html(v);
+        set_focus.call(this, textEl.el, -1);
+    }
+    if (v === "") {
+        // this.tmp.removeEl();
         this.lock = false;
         this.pos = -1;
         this.inputText = "";
+        this.ri = -1, this.ci = -1;
+        this.setText("");
     }
+    this.change('input', v + "");
     this.pos = -1;
 }
 
@@ -221,6 +212,11 @@ function keyDownEventHandler(evt) {
         } else {
             this.move = this.pos;
         }
+    } else if (keyCode == 8) {
+        this.move = this.move - 1;
+        this.state2 = 3;
+    } else {
+        this.state2 = 1;
     }
 }
 
@@ -229,6 +225,8 @@ function parse(v) {
         return;
     }
     const start = v.lastIndexOf('=');
+
+
     if (start === 0 && v.length >= 1 && operation(v[v.length - 1])) {
         this.setLock(true);
     } else {
@@ -272,10 +270,11 @@ function setTextareaRange(position) {
 }
 
 function setText(text, position) {
-    const {textEl, textlineEl} = this;
+    const {textEl, textlineEl, tmp} = this;
     // firefox bug
     textEl.el.blur();
-    textEl.html(text);
+    tmp.html(text);
+    // textEl.html(text);
     textlineEl.html(text);
     setTextareaRange.call(this, position);
 }
@@ -310,9 +309,9 @@ function suggestItemClick(it) {
     this.textEl.html(this.inputText);
     this.textlineEl.html(this.inputText);
     this.change('input', this.inputText);
-    setTimeout(() => {
-        set_focus.call(this, this.textEl.el, -1);
-    }, 50);
+    // setTimeout(() => {
+    //     set_focus.call(this, this.textEl.el, -1);
+    // }, 0);
     // setText.call(this, this.inputText, position);
     resetTextareaSize.call(this);
 }
@@ -361,7 +360,7 @@ export default class Editor {
                     .on('input', evt => inputEventHandler.call(this, evt))
                     .on('mousedown', evt => mouseDownEventHandler.call(this, evt))
                     .on('keydown', evt => keyDownEventHandler.call(this, evt))
-                  ,
+                ,
                 this.textlineEl = h('div', 'textline'),
                 this.suggest.el,
                 this.suggestContent.el,
@@ -375,19 +374,19 @@ export default class Editor {
             .child(this.areaEl).hide();
         this.suggest.bindInputEvents(this.textEl);
 
-        this.tmp = h('div', '').attr("id", "span_tmp");
-        this.textEl.child(this.tmp);
+        this.tmp = h('span', 'span_tmp');
         this.textEl.attr('contenteditable', 'true');
         this.textEl.css('line-height', '22px');
         this.textEl.css('background', 'white');
         this.textEl.css('font-size', '12px');
         this.textEl.css('caret-color', 'black');
         this.textEl.css('font-family', 'Inconsolata,monospace,arial,sans,sans-serif');
-        this.textEl.css('top', '2px');
+        this.textEl.css('top', '5px');
         this.textEl.css('caret-color', 'black');
         this.textEl.css('color', 'white');
         this.textEl.css('left', '2px');
         this.textEl.css('outline', 'none');
+        this.textEl.child(this.tmp);
         // this.areaEl.child(this.ace);
         this.pos = 0;
         this.areaOffset = null;
@@ -444,7 +443,7 @@ export default class Editor {
         this.el.hide();
         this.pos = -1;
         this.move = -1;
-        this.textEl.val('');
+        // this.textEl.val('');
         this.textEl.html('');
         this.textlineEl.html('');
         resetSuggestContentItems.call(this);
@@ -476,20 +475,33 @@ export default class Editor {
             spanArr[pos].css('background-color', '#e5e5e5');
             spanArr[begin].css('background-color', '#e5e5e5');
         }
-        this.textEl.css('color', 'white');
         this.textEl.css('caret-color', 'black');
         console.log(this.textEl.el['style'].width);
         console.log(this.textEl.el['style'].height);
 
         resetTextareaSize.call(this);
         if (spanArr.length > 0) {
-            this.tmp = h('div', '').children(...spanArr).css("position", "absolute")
+            this.tmp.el.innerHTML = "";
+            this.textEl.el.innerHTML = "";
+            this.tmp = this.tmp.children(...spanArr)
                 .css("top", "0px").css("color", "black");
-
             this.textEl.child(this.tmp);
+            // this.move = -1;
+            set_focus.call(this, this.textEl.el, -1);
         }
 
         this.spanArr = spanArr;
+    }
+
+    handler(cursorPos, text) {
+        let textBegin = text.substring(0, cursorPos);
+        let textEnd = text.substring(cursorPos, text.length);
+        parse.call(this, textBegin);
+        if (textEnd !== "") {
+            this.setMouseDownIndex([textBegin, textEnd]);
+        } else {
+            this.setMouseDownIndex([]);
+        }
     }
 
     setOffset(offset, suggestPosition = 'top') {
@@ -556,11 +568,15 @@ export default class Editor {
     }
 
     getCursor() {
-        this.pos = getCursortPosition.call(this);
+        this.pos = this.move;
+        if (this.pos == -1)
+            this.pos = this.inputText.length;
     }
 
     setCursorPos2(pos, evt) {
-        setCursorPosition.call(this, this.textEl.el, pos);
+        this.move = pos;
+        this.state2 = 2;
+        // setCursorPosition.call(this, this.textEl.el, pos);
         mouseDownEventHandler2.call(this, evt, pos, this.inputText)
     }
 
@@ -569,5 +585,6 @@ export default class Editor {
         // console.log('text>>:', text);
         setText.call(this, text, text.length);
         resetTextareaSize.call(this);
+        this.textEl.child(this.tmp);
     }
 }

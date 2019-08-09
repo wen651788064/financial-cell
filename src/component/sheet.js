@@ -895,7 +895,14 @@ function sheetInitEvents() {
             editor.clear();
             return;
         }
-
+        if (itext == "enter") {
+            let {inputText} = editor;
+            editor.setText(inputText);
+            clearSelectors.call(this);
+            editor.clear();
+            table.render();
+            return;
+        }
 
         //实时更新this.selectors
         let {lock} = editor;

@@ -1,5 +1,5 @@
 const operator = [
-    "+", "-", "*", "/", "&", "^", "(", ",", "=", " "
+    "+", "-", "*", "/", "&", "^", "(", ",", "=", " ", " "
 ];
 
 const operator2 = [
@@ -59,6 +59,7 @@ const cuttingByPos = (str, pos) => {
             value += str[i];
         }
     }
+    value = value.replace(/\s/g, "");
     value = value.split('').reverse().join('');
     return value;
 };
@@ -297,7 +298,7 @@ const isAbsoluteValue = (str) => {
 };
 
 const cutting2 = (str) => {
-    let arr = str.split(/([(-\/,+* =^&])/);
+    let arr = str.split(/([(-\/,+*\s=^&])/);
 
     let color = 0;
     let express = [];

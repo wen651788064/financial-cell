@@ -36,6 +36,7 @@ function lockCells(evt) {
 
     // 需要考虑移动光标的情况 ->> 对应 editor 里的 mousedownIndex 字段
     // 不为-1 就表示true，不用做额外判断
+    editor.handler(editor.move, editor.inputText);
     let {mousedownIndex} = editor;
     if (mousedownIndex.length > 0) {
         let args = makeSelector.call(this, ri, ci);
@@ -48,9 +49,9 @@ function lockCells(evt) {
             return;
         }
         // 不是的话，需要删除这个
-        // let str = cutStr(judgeText[0] === "=" ? judgeText : "=" + judgeText)[0];
         let number = cutFirst(mousedownIndex[1]);
 
+        console.log(xy2expr(ci, ri))
         let cut = cutStr(`${mousedownIndex[0]}${xy2expr(ci, ri)}+4${mousedownIndex[1]}`);
         let {selectors_delete, selectors_new} = filterSelectors.call(this, cut);
         Object.keys(selectors_delete).forEach(i => {
@@ -63,12 +64,8 @@ function lockCells(evt) {
         input = input.replace(number, "");
         editor.setText(input);
         let content = suggestContent.call(this, pos - 1, cutting(inputText), inputText);
-        if (content.suggestContent == false) {
-            editor.setCursorPos(mousedownIndex[0].length);
-        } else {
-            editor.setCursorPos(mousedownIndex[0].length + xy2expr(ci, ri).length);
-        }
-    } else if (this.selectors.length && !operation(last) && editor.pos == -1) {
+        editor.setCursorPos(mousedownIndex[0].length );
+    } else if (this.selectors.length && !operation(last)) {
         // 此情况是例如: =A1  -> 这时再点A2  则变成: =A2
         let {selector, erpx} = this.selectors[this.selectors.length - 1];
         selector.set(ri, ci);
@@ -77,8 +74,12 @@ function lockCells(evt) {
         this.selectors[this.selectors.length - 1].erpx = xy2expr(ci, ri);
         input = `${inputText.substring(0, inputText.lastIndexOf(erpx))}${xy2expr(ci, ri)}`;
         editor.setText(input);
+        editor.state2 = 2;
+        // editor.move = input.length;
+        // editor.move -= inputText.substring(0, inputText.lastIndexOf(erpx)).length;
     } else {
         let {pos} = editor;
+
         let args = makeSelector.call(this, ri, ci);
         this.selectors.push(args);
         if (pos != -1) {
@@ -104,7 +105,7 @@ function lockCells(evt) {
             }
             str = !enter ? str += xy2expr(ci, ri) : str;
             editor.setText(str);
-            editor.setCursorPos(pos + (xy2expr(ci, ri).length));
+            editor.setCursorPos(pos);
             editor.pos = -1;
             editor.parse();
         } else {
@@ -298,9 +299,8 @@ function suggestContent(pos, cut, inputText) {
     let content = {suggestContent: false, cut: "", pos: 1};
     let begin = pos - 1;
     let left = findBracket.call(this, cut, begin);
-    let right = findBracketRight.call(this, cut, begin);
 
-    if (left <= begin) {
+    if (left <= begin && left != -1) {
         content.suggestContent = true;
         content.cut = cuttingByPos(inputText, left);
     }
@@ -322,7 +322,7 @@ function div2span(cut, cutcolor) {
     let begin = -1;
     let end = -1;
     Object.keys(cut).forEach(i => {
-        let spanEl = h('span', `formula_span${i}`).on('mousedown', evt => {
+        let spanEl = h('span', `formula_span${i}`).on('mousedown.stop', evt => {
             let offset = 0;
             for (let j = 0; j <= i; j++) {
                 offset += cut[j].length;
@@ -359,7 +359,6 @@ function div2span(cut, cutcolor) {
             }
 
             editor.setCursorPos2(offset, evt);
-            // evt.stopPropagation();
         });
         Object.keys(cutcolor).forEach(i2 => {
             if (cutcolor[i].code !== -1 && cutcolor[i].data == cut[i]) {
