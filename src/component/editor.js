@@ -476,8 +476,6 @@ export default class Editor {
             spanArr[begin].css('background-color', '#e5e5e5');
         }
         this.textEl.css('caret-color', 'black');
-        console.log(this.textEl.el['style'].width);
-        console.log(this.textEl.el['style'].height);
 
         resetTextareaSize.call(this);
         if (spanArr.length > 0) {

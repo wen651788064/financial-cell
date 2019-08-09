@@ -157,8 +157,9 @@ function makeSelector(ri, ci, selectors = this.selectors) {
     let selector = new Selector(data);
     let color = selectorColor(selectors.length);
     selector.setCss(color);
-    selector.set(ri, ci);
+    selector.set(ri, ci, false);
     selector.el.css("z-index", "100");
+
 
     this.overlayerCEl.child(selector.el);
     let args = {

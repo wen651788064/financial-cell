@@ -795,7 +795,7 @@ function makeSelector(ri, ci, selectors = this.selectors) {
 function afterSelector(editor) {
     if (editor.getLock() || editor.state === 2) {
         let {inputText, ri, ci} = editor;
-        selectorCellText.call(this, ri, ci, inputText, 'input');
+        // selectorCellText.call(this, ri, ci, inputText, 'input');
     }
 }
 
