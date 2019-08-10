@@ -116,7 +116,6 @@ export default class Suggest {
                 .child(title)
                 .on('click.stop', () => {
                     this.itemClick(it);
-                    // this.hide();
                 });
             if (it.label) {
                 item.child(h('div', 'label').html(it.label));

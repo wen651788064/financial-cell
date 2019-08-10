@@ -3,7 +3,7 @@ const operator = [
 ];
 
 const operator2 = [
-    "+", "-", "*", "/", "&", "^", "(", ",", "=",  ")"
+    "+", "-", "*", "/", "&", "^", "(", ",", "=", ")"
 ];
 
 
@@ -33,16 +33,17 @@ const cutStr = (str) => {
     let arr = str.split(/([(-\/,+*=^&])/);
     let express = [];
     arr.filter(i => {
-        if ((i.search(/^[A-Z]+\d+$/) != -1 || i.search(/^\$[A-Z]+\$\d+$/) != -1) && express.indexOf(i) == -1)
-            express.push(i);
+        if ((i.search(/^[A-Z]+\d+$/) != -1 || i.search(/^\$[A-Z]+\$\d+$/) != -1))
+            if (express.indexOf(i) == -1)
+                express.push(i);
     });
     return express;
 };
 
 const cutFirst = (str) => {
     let s = "";
-    for(let i = 0; i < str.length; i++) {
-        if(operation2(str[i])) {
+    for (let i = 0; i < str.length; i++) {
+        if (operation2(str[i])) {
             return s;
         }
         s += str[i];
@@ -292,7 +293,7 @@ const helpFormula = {
 };
 
 const isAbsoluteValue = (str, rule = 1) => {
-    if(rule == 1) {
+    if (rule == 1) {
         if (str.search(/^\$[A-Z]+\$\d+$/) != -1)
             return true;
         return false;

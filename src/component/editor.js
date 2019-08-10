@@ -3,33 +3,30 @@ import {h} from './element';
 import Suggest from './suggest';
 import Datepicker from './datepicker';
 import {cssPrefix} from '../config';
-import {cuttingByPos, operation} from "../core/operator";
+import {cuttingByPos, isAbsoluteValue, operation} from "../core/operator";
 import SuggestContent from "../component/suggest_content";
-import {isAbsoluteValue} from "../core/operator";
 
 // import { mouseMoveUp } from '../event';
 
 function resetTextareaSize() {
-    if (!/^\s*$/.test(this.inputText)) {
-        const {
-            textlineEl, textEl, areaOffset,
-        } = this;
-        const tlineWidth = textlineEl.offset().width + 9;
-        const maxWidth = this.viewFn().width - areaOffset.left - 9;
-        // console.log('tlineWidth:', tlineWidth, ':', maxWidth);
-        if (tlineWidth > areaOffset.width) {
-            let twidth = tlineWidth;
-            if (tlineWidth > maxWidth) {
-                twidth = maxWidth;
-                let h1 = parseInt(tlineWidth / maxWidth, 10);
-                h1 += (tlineWidth % maxWidth) > 0 ? 1 : 0;
-                h1 *= this.rowHeight;
-                if (h1 > areaOffset.height) {
-                    textEl.css('height', `${h1}px`);
-                }
+    const {
+        textlineEl, textEl, areaOffset,
+    } = this;
+    const tlineWidth = textlineEl.offset().width + 9;
+    const maxWidth = this.viewFn().width - areaOffset.left - 9;
+    // console.log('tlineWidth:', tlineWidth, ':', maxWidth);
+    if (tlineWidth > areaOffset.width) {
+        let twidth = tlineWidth;
+        if (tlineWidth > maxWidth) {
+            twidth = maxWidth;
+            let h1 = parseInt(tlineWidth / maxWidth, 10);
+            h1 += (tlineWidth % maxWidth) > 0 ? 1 : 0;
+            h1 *= this.rowHeight;
+            if (h1 > areaOffset.height) {
+                textEl.css('height', `${h1}px`);
             }
-            textEl.css('width', `${twidth}px`);
         }
+        textEl.css('width', `${twidth}px`);
     }
 }
 
@@ -51,10 +48,10 @@ function set_focus(el, poss = -1) {
         start: this.pos,
         end: this.pos
     };
-    var charIndex = 0, range = document.createRange();
+    let charIndex = 0, range = document.createRange();
     range.setStart(el, 0);
     range.collapse(true);
-    var nodeStack = [el], node, foundStart = false, stop = false;
+    let nodeStack = [el], node, foundStart = false, stop = false;
 
     while (!stop && (node = nodeStack.pop())) {
         if (node.nodeType == 3) {
@@ -97,52 +94,25 @@ function mouseDownEventHandler(evt) {
     parse2.call(this, this.inputText, this.pos);
 }
 
-function mouseDownEventHandler2(evt, cursorPos, text) {
-    setTimeout(() => {
-        let textBegin = text.substring(0, cursorPos);
-        let textEnd = text.substring(cursorPos, text.length);
-        parse.call(this, textBegin);
-        let {lock} = this;
-        if (lock && textEnd !== "") {
-            this.setMouseDownIndex([textBegin, textEnd]);
-        } else {
-            this.setMouseDownIndex([]);
-        }
-    }, 0);
-}
-
-function getDiff(sr1 = "", sr2 = "") {
-    if (!sr1 || !sr2)
-        return;
-    let result = "";
-    for (let i = 0; i < sr1.length; i++) {
-        let flag = true;
-        if (sr1[i] == sr2[i]) {
-            flag = false;
-        }
-        if (flag) result += sr1[i];
-    }
-
-
-    return result;
-}
-
-function inputEventHandler(evt) {
+function inputEventHandler(evt, txt = "") {
     let v = "";
-    let t1 = "";
-    for (let i = 0, len = evt.target.childNodes.length; i < len; i++) {
-        if (evt.target.childNodes[i].nodeType === 1) {  // 通过nodeType是不是文本节点来判断
-            v += evt.target.childNodes[i].innerText
-        } else if (evt.target.childNodes[i].nodeType === 3) {
-            t1 += evt.target.childNodes[i].nodeValue;
+    if(txt == "") {
+        let t1 = "";
+        for (let i = 0, len = evt.target.childNodes.length; i < len; i++) {
+            if (evt.target.childNodes[i].nodeType === 1) {
+                v += evt.target.childNodes[i].innerText
+            } else if (evt.target.childNodes[i].nodeType === 3) {
+                t1 += evt.target.childNodes[i].nodeValue;
+            }
         }
+        v = t1 !== "" ? t1 : v;
+    } else {
+        v = txt;
     }
-    v = t1 != "" ? t1 : v;
     this.pos = getCursortPosition.call(this, evt);
     this.textEl.html('');
 
     const {suggest, textlineEl, validator, textEl} = this;
-    this.change_input = getDiff(v, this.inputText);
     this.inputText = v + "";
 
     if (validator) {
@@ -172,37 +142,30 @@ function inputEventHandler(evt) {
         set_focus.call(this, textEl.el, -1);
     }
     if (v === "") {
-        // this.tmp.removeEl();
+        this.tmp.hide();
         this.lock = false;
         this.pos = 0;
         this.inputText = "";
-        this.ri = -1, this.ci = -1;
+        this.ri = -1;
+        this.ci = -1;
         this.setText("");
     }
 
-    this.change('input', v + "");
+    this.change('input', v);
 }
 
 function keyDownEventHandler(evt) {
     this.pos = getCursortPosition.call(this, evt);
-    console.log(this.pos, "pos")
     if (evt.code === "ArrowRight") {
         this.pos = this.pos + 1;
-    } else if(evt.code === "ArrowLeft"){
+    } else if (evt.code === "ArrowLeft") {
         this.pos = this.pos - 1;
     }
-
-    parse2.call(this, this.inputText, this.pos);
 
     const keyCode = evt.keyCode || evt.which;
     if (keyCode == 27) {
         this.change('input', "@~esc");
     } else if (keyCode == 37 || keyCode == 38 || keyCode == 39 || keyCode == 40) {
-        // if (keyCode == 38 || keyCode == 40) {
-        //     set_focus.call(this, this.textEl.el, -1);
-        // } else {
-        //     this.move = this.pos;
-        // }
     }
 }
 
@@ -226,7 +189,7 @@ function parse(v) {
         this.setLock(true);
     }
 
-    if(isAbsoluteValue(cuttingByPos(v, this.pos), 2)) {
+    if (isAbsoluteValue(cuttingByPos(v, this.pos), 2)) {
         this.setLock(true);
     }
 }
@@ -249,8 +212,7 @@ function parse2(v, pos) {
         this.setLock(true);
     }
 
-    console.log("248", isAbsoluteValue(cuttingByPos(v, pos), 2))
-    if(isAbsoluteValue(cuttingByPos(v, pos), 2)) {
+    if (isAbsoluteValue(cuttingByPos(v, pos), 2)) {
         this.setLock(true);
     }
 }
@@ -302,6 +264,7 @@ function suggestItemClick(it) {
     this.textEl.html(this.inputText);
     this.textlineEl.html(this.inputText);
     this.suggest.hide();
+    parse2.call(this, this.inputText, this.pos);
     this.change('input', this.inputText);
     resetTextareaSize.call(this);
 }
@@ -333,7 +296,6 @@ export default class Editor {
         this.suggestContent = new SuggestContent();
         this.lock = false;
         this.state = 1;
-        this.change_input = "";
         this.datepicker = new Datepicker();
         this.datepicker.change((d) => {
             this.setText(dateFormat(d));
@@ -369,16 +331,14 @@ export default class Editor {
             .child(this.areaEl).hide();
         this.suggest.bindInputEvents(this.textEl);
 
-        this.tmp = h('span', 'span_tmp');
+        this.tmp = h('span', 'span_tmp').hide();
         this.textEl.attr('contenteditable', 'true');
         this.textEl.css('line-height', '22px');
         this.textEl.css('background', 'white');
         this.textEl.css('font-size', '12px');
         this.textEl.css('caret-color', 'black');
-        this.textEl.css('font-family', 'Inconsolata,monospace,arial,sans,sans-serif');
         this.textEl.css('top', '5px');
         this.textEl.css('caret-color', 'black');
-        this.textEl.css('color', 'white');
         this.textEl.css('left', '2px');
         this.textEl.css('outline', 'none');
         this.textEl.child(this.tmp);
@@ -413,13 +373,6 @@ export default class Editor {
         return this.lock;
     }
 
-    recover() {
-        this.textEl.css('color', 'black');
-        this.textEl.css('caret-color', 'black');
-        this.textEl.css('font-family', 'none');
-        this.textlineEl.css('font-family', 'none');
-        this.textEl.css('word-wrap', 'break-word');
-    }
 
     parse(pos = -1) {
         if (pos != -1) {
@@ -440,6 +393,7 @@ export default class Editor {
         this.el.hide();
         this.pos = 0;
         // this.textEl.val('');
+        this.tmp.hide();
         this.textEl.html('');
         this.textlineEl.html('');
         resetSuggestContentItems.call(this);
@@ -467,7 +421,6 @@ export default class Editor {
             spanArr[pos].css('background-color', '#e5e5e5');
             spanArr[begin].css('background-color', '#e5e5e5');
         }
-        this.textEl.css('caret-color', 'black');
 
         resetTextareaSize.call(this);
         if (spanArr.length > 0) {
@@ -484,7 +437,7 @@ export default class Editor {
 
     handler(text) {
         let cursorPos = this.pos;
-        if(cursorPos >= this.inputText) {
+        if (cursorPos >= this.inputText) {
             this.setMouseDownIndex([]);
             return;
         }
@@ -530,14 +483,18 @@ export default class Editor {
         }
     }
 
-    setCell(cell, validator) {
-        // console.log('::', validator);
-        const {el, datepicker, suggest} = this;
-        el.show();
+    setCell(cell, validator, type = 1) {
         this.cell = cell;
         let text = (cell && cell.formulas) || '';
         text = text == "" ? (cell && cell.text) || '' : text;
-        this.setText(text);
+
+        const {el, datepicker, suggest} = this;
+        el.show();
+        this.textEl.show();
+        set_focus.call(this, this.textEl.el, -1);
+        setTimeout(() => {
+            set_focus.call(this, this.textEl.el, -1);
+        });
 
         this.validator = validator;
         if (validator) {
@@ -553,18 +510,16 @@ export default class Editor {
                 suggest.search('');
             }
         }
-        this.pos = text.length;
-        parse.call(this, text);
-        this.change('input', text);
+        if (type == 2 && text != "") {
+            inputEventHandler.call(this, null, text);
+            this.pos = text.length;
+            set_focus.call(this, this.textEl.el, text.length);
+        }
     }
 
     setCursorPos(pos) {
         this.pos = pos;
         set_focus.call(this, this.textEl.el, pos);
-    }
-
-    setCursorPos2(pos, evt) {
-        mouseDownEventHandler2.call(this, evt, pos, this.inputText)
     }
 
     setText(text) {

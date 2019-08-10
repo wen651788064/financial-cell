@@ -382,10 +382,10 @@ function hasEditor(showEditor = true) {
     }
 }
 
-function editorSet() {
+function editorSet(type = 1) {
     const {editor, data} = this;
     editorSetOffset.call(this);
-    editor.setCell(data.getSelectedCell(), data.getSelectedValidator());
+    editor.setCell(data.getSelectedCell(), data.getSelectedValidator(), type);
     clearClipboard.call(this);
 }
 
@@ -689,7 +689,7 @@ function sheetInitEvents() {
                 if (editor.getLock()) {
                     return;
                 }
-                editorSet.call(this);
+                editorSet.call(this, 2);
             } else {
                 if (editor.getLock()) {
                     lockCells.call(this, evt)
@@ -748,14 +748,6 @@ function sheetInitEvents() {
             editor.clear();
             return;
         }
-        if (itext == "enter") {
-            let {inputText} = editor;
-            editor.setText(inputText);
-            clearSelectors.call(this);
-            editor.clear();
-            table.render();
-            return;
-        }
 
         //实时更新this.selectors
         let {lock} = editor;
@@ -805,6 +797,7 @@ function sheetInitEvents() {
     bind(window, 'click', (evt) => {
         this.focusing = overlayerEl.contains(evt.target);
     });
+
 
     // for selector
     bind(window, 'keydown', (evt) => {

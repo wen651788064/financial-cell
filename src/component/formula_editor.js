@@ -128,9 +128,6 @@ function lockCells(evt) {
     if (this.selectors.length > 0) {
         let {inputText} = editor;
         div2span.call(this, cutting(inputText), cutting2(inputText));
-    } else {
-        const {editor} = this;
-        editor.recover();
     }
     // step 3.  在enter或者点击的时候写入到cell中
     // dataSetCellText.call(this, input, 'input');
@@ -241,11 +238,8 @@ function editingSelectors(text = "") {
 
     this.selectors = selectors_valid;
 
-    if (this.selectors.length > 0 || text.lastIndexOf('=') == 0) {
+    if (this.selectors.length > 0 || text[0] == "=") {
         div2span.call(this, cutting(text), cutting2(text));
-    } else {
-        const {editor} = this;
-        editor.recover();
     }
 }
 
