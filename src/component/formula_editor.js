@@ -36,20 +36,44 @@ function lockCells(evt) {
 
     // 需要考虑移动光标的情况 ->> 对应 editor 里的 mousedownIndex 字段
     // 不为-1 就表示true，不用做额外判断
-    editor.handler(editor.move, editor.inputText);
+    editor.handler(inputText);
     let {mousedownIndex} = editor;
-    if (mousedownIndex.length > 0) {
+    if (isAbsoluteValue(cuttingByPos(inputText, pos), 2)) {
+        // 此情况是例如: =A1  -> 这时再点A2  则变成: =A2
+        for(let i = 0; i < this.selectors.length; i++) {
+            let selector = this.selectors[i];
+            let {erpx} = selector;
+            if(erpx === cuttingByPos(inputText, pos)) {
+                let {ri, ci} = cellRect;
+                this.selectors[i].ri = ri;
+                this.selectors[i].ci = ci;
+                this.selectors[i].erpx = xy2expr(ci, ri);
+                this.selectors[i].selector.set(ri, ci);
+                input = `${inputText.substring(0, pos - erpx.length)}${xy2expr(ci, ri)}${inputText.substring(pos, inputText.length)}`;
+                editor.setText(input);
+                editor.setCursorPos(inputText.substring(0, pos - erpx.length).length + xy2expr(ci, ri).length);
+            }
+        }
+    } else if (mousedownIndex.length > 0) {
+        if(operation(mousedownIndex[1][0]) && isAbsoluteValue(cuttingByPos(mousedownIndex[1], mousedownIndex[1].length), 2)) {
+            editor.setLock(false);
+            return;
+        }
+
+
         let args = makeSelector.call(this, ri, ci);
         this.selectors.push(args);
         input = `${mousedownIndex[0]}${xy2expr(ci, ri)}${mousedownIndex[1]}`;
         let judgeText = input.substring(mousedownIndex[0].length + xy2expr(ci, ri).length, input.length);
-        if (operation(judgeText[0])) {
+        // 不是的话，需要删除这个
+        let number = cutFirst(judgeText.substring(1));
+        if (operation(judgeText[0]) && !isAbsoluteValue(number, 2)) {
             editor.setText(input);
             editor.setMouseDownIndex([]);
             return;
         }
         // 不是的话，需要删除这个
-        let number = cutFirst(mousedownIndex[1]);
+        number = cutFirst(mousedownIndex[1]);
 
         console.log(xy2expr(ci, ri))
         let cut = cutStr(`${mousedownIndex[0]}${xy2expr(ci, ri)}+4${mousedownIndex[1]}`);
@@ -64,20 +88,8 @@ function lockCells(evt) {
         input = input.replace(number, "");
         editor.setText(input);
         let content = suggestContent.call(this, pos - 1, cutting(inputText), inputText);
-        editor.setCursorPos(mousedownIndex[0].length );
-    } else if (this.selectors.length && !operation(last)) {
-        // 此情况是例如: =A1  -> 这时再点A2  则变成: =A2
-        let {selector, erpx} = this.selectors[this.selectors.length - 1];
-        selector.set(ri, ci);
-        this.selectors[this.selectors.length - 1].ri = ri;
-        this.selectors[this.selectors.length - 1].ci = ci;
-        this.selectors[this.selectors.length - 1].erpx = xy2expr(ci, ri);
-        input = `${inputText.substring(0, inputText.lastIndexOf(erpx))}${xy2expr(ci, ri)}`;
-        editor.setText(input);
-        editor.state2 = 2;
-        // editor.move = input.length;
-        // editor.move -= inputText.substring(0, inputText.lastIndexOf(erpx)).length;
-    } else {
+        editor.setCursorPos(mousedownIndex[0].length + xy2expr(ci, ri).length);
+    }  else {
         let {pos} = editor;
 
         let args = makeSelector.call(this, ri, ci);
@@ -87,7 +99,7 @@ function lockCells(evt) {
             let enter = false;
             let step = pos;
             let first = "";
-            for(let i = pos; i < inputText.length; i++)
+            for (let i = pos; i < inputText.length; i++)
                 first += inputText[i];
             let len = cutFirst(first).length;
             for (let i = 0; i < inputText.length; i++) {
@@ -96,7 +108,7 @@ function lockCells(evt) {
                     str += xy2expr(ci, ri);
                 }
 
-                if(step == i && len > 0) {
+                if (step == i && len > 0) {
                     step += 1;
                     len -= 1;
                 } else {
@@ -105,15 +117,14 @@ function lockCells(evt) {
             }
             str = !enter ? str += xy2expr(ci, ri) : str;
             editor.setText(str);
-            editor.setCursorPos(pos);
-            editor.pos = -1;
+            editor.setCursorPos(pos + xy2expr(ci, ri).length);
             editor.parse();
         } else {
             input = `${inputText}${xy2expr(ci, ri)}`;
             editor.setText(input);
         }
     }
-
+    editor.parse(editor.pos);
     if (this.selectors.length > 0) {
         let {inputText} = editor;
         div2span.call(this, cutting(inputText), cutting2(inputText));
@@ -184,7 +195,7 @@ function clearSelectors() {
 
 // 输入 input
 function editingSelectors(text = "") {
-    if(typeof text === "number") {
+    if (typeof text === "number") {
         return;
     }
     let selectors_new = [];
@@ -323,44 +334,7 @@ function div2span(cut, cutcolor) {
     let begin = -1;
     let end = -1;
     Object.keys(cut).forEach(i => {
-        let spanEl = h('span', `formula_span${i}`).on('mousedown.stop', evt => {
-            let offset = 0;
-            for (let j = 0; j <= i; j++) {
-                offset += cut[j].length;
-            }
-
-            if (cut[i] === ')') {
-                let {spanArr} = editor;
-                let begin = -1;
-                let has = 0;
-                let stop = false;
-
-                for (let j = i - 1; j > 0 && stop == false; j--) {
-                    if (cut[j] == "(") {
-                        stop = true;
-                    }
-                    if (cut[j] == ")") {
-                        has++;
-                    }
-                }
-
-                for (let j = i; j > 0 && begin == -1; j--) {
-                    if (cut[j] == "(") {
-                        if (has === 0) {
-                            begin = j;
-                        }
-                        has--;
-                    }
-                }
-                editor.mount2span(spanArr, i, begin);
-            } else {
-                let {inputText} = editor;
-                let content = suggestContent.call(this, offset, cut, inputText);
-                editor.mount2span(spanArr, -1, -1, content);
-            }
-
-            editor.setCursorPos2(offset, evt);
-        });
+        let spanEl = h('span', `formula_span${i}`);
         Object.keys(cutcolor).forEach(i2 => {
             if (cutcolor[i].code !== -1 && cutcolor[i].data == cut[i]) {
                 let color = selectorColor(cutcolor[i].code);
@@ -371,7 +345,7 @@ function div2span(cut, cutcolor) {
         spanEl.css('height', '22px');
         spanEl.css('cursor', 'text');
 
-        if(cut[i] == " ") {
+        if (cut[i] == " ") {
             spanEl.html("&emsp;");
         } else {
             spanEl.html(cut[i]);
@@ -386,7 +360,6 @@ function div2span(cut, cutcolor) {
         begin = pos - 1;
         end = findBracket.call(this, cut, begin);
     } else {
-        editor.getCursor();
         content = suggestContent.call(this, pos + 1, cut, inputText);
     }
 

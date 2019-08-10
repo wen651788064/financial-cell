@@ -18,7 +18,7 @@ function inputMovePrev(evt) {
 function inputMoveNext(evt) {
     evt.stopPropagation();
     const {filterItems} = this;
-    if (filterItems.length <= 0) return;
+    if (filterItems.length <= 0 || filterItems.length < this.itemIndex) return;
     if (this.itemIndex >= 0) filterItems[this.itemIndex].toggle();
     this.itemIndex += 1;
     if (this.itemIndex > filterItems.length - 1) {
@@ -116,7 +116,7 @@ export default class Suggest {
                 .child(title)
                 .on('click.stop', () => {
                     this.itemClick(it);
-                    this.hide();
+                    // this.hide();
                 });
             if (it.label) {
                 item.child(h('div', 'label').html(it.label));

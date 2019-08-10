@@ -5,6 +5,7 @@ import Datepicker from './datepicker';
 import {cssPrefix} from '../config';
 import {cuttingByPos, operation} from "../core/operator";
 import SuggestContent from "../component/suggest_content";
+import {isAbsoluteValue} from "../core/operator";
 
 // import { mouseMoveUp } from '../event';
 
@@ -42,40 +43,43 @@ const getCursortPosition = function (containerEl) {
     return start;
 };
 
-function set_focus(el, poss) {
-    console.log(this);
-    let pos = -1;
-    //
-    // if (this && this.pos) {
-    //     pos = this.pos;
-    // }
+function set_focus(el, poss = -1) {
+    if (!this) {
+        return;
+    }
+    let savedSel = {
+        start: this.pos,
+        end: this.pos
+    };
+    var charIndex = 0, range = document.createRange();
+    range.setStart(el, 0);
+    range.collapse(true);
+    var nodeStack = [el], node, foundStart = false, stop = false;
 
-    if (poss) {
-        pos = poss;
-    }
-    if (this && this.move && this.move > -1) {
-        if (this.state2 == 1) {
-            this.move = this.move + 1;
+    while (!stop && (node = nodeStack.pop())) {
+        if (node.nodeType == 3) {
+            var nextCharIndex = charIndex + node.length;
+            if (!foundStart && savedSel.start >= charIndex && savedSel.start <= nextCharIndex) {
+                range.setStart(node, savedSel.start - charIndex);
+                foundStart = true;
+            }
+            if (foundStart && savedSel.end >= charIndex && savedSel.end <= nextCharIndex) {
+                range.setEnd(node, savedSel.end - charIndex);
+                stop = true;
+            }
+            charIndex = nextCharIndex;
+        } else {
+            var i = node.childNodes.length;
+            while (i--) {
+                nodeStack.push(node.childNodes[i]);
+            }
         }
-        pos = this.move;
     }
 
-    try {
-        let range = document.createRange();
-        range.selectNodeContents(el);
-        range.collapse(false);
-        if (pos != -1) {
-            range.collapse(true);
-            let content = el.firstChild;
-            range.setStart(content, pos);
-            range.setEnd(content, pos);
-        }
-        let sel = window.getSelection();
-        sel.removeAllRanges();
-        sel.addRange(range);
-    } catch {
-        console.log("77")
-    }
+    let sel = window.getSelection();
+    sel.removeAllRanges();
+    sel.addRange(range);
+
 }
 
 const setCursorPosition = (elem, index) => {
@@ -88,13 +92,9 @@ const setCursorPosition = (elem, index) => {
 };
 
 function mouseDownEventHandler(evt) {
-    if (this.inputText[0] !== "=" || evt.target.nodeName !== "DIV") {
-        return;
-    }
-    // this.pos = getCursortPosition.call(this, evt);
-    this.move = -1;
-    this.state2 = 2;
-
+    this.pos = getCursortPosition.call(this, evt);
+    console.log("pos", this.pos)
+    parse2.call(this, this.inputText, this.pos);
 }
 
 function mouseDownEventHandler2(evt, cursorPos, text) {
@@ -137,20 +137,13 @@ function inputEventHandler(evt) {
             t1 += evt.target.childNodes[i].nodeValue;
         }
     }
-    if (t1 != "") {
-        v = t1;
-        this.textEl.html('');
-    }
+    v = t1 != "" ? t1 : v;
+    this.pos = getCursortPosition.call(this, evt);
+    this.textEl.html('');
 
     const {suggest, textlineEl, validator, textEl} = this;
     this.change_input = getDiff(v, this.inputText);
     this.inputText = v + "";
-    this.state2 =  this.state2 != 3 ? 1 : 3;
-    /*
-        point 1. 得到光标之前的那个元素, eg:  A2+A1 , 光标在1, 解析出 => A1
-     */
-    this.pos = getCursortPosition.call(this, evt);
-    let cutValue = cuttingByPos(v, this.pos);
 
     if (validator) {
         if (validator.type === 'list') {
@@ -164,7 +157,7 @@ function inputEventHandler(evt) {
             parse2.call(this, v, this.pos);
         } else
             parse.call(this, v);
-
+        let cutValue = cuttingByPos(v, this.pos);
         if (start === 0 && v.length > 1 && cutValue != "") {
             suggest.search(cutValue);
         } else {
@@ -181,21 +174,21 @@ function inputEventHandler(evt) {
     if (v === "") {
         // this.tmp.removeEl();
         this.lock = false;
-        this.pos = -1;
+        this.pos = 0;
         this.inputText = "";
         this.ri = -1, this.ci = -1;
         this.setText("");
     }
+
     this.change('input', v + "");
-    this.pos = -1;
 }
 
 function keyDownEventHandler(evt) {
     this.pos = getCursortPosition.call(this, evt);
-
+    console.log(this.pos, "pos")
     if (evt.code === "ArrowRight") {
         this.pos = this.pos + 1;
-    } else {
+    } else if(evt.code === "ArrowLeft"){
         this.pos = this.pos - 1;
     }
 
@@ -205,18 +198,11 @@ function keyDownEventHandler(evt) {
     if (keyCode == 27) {
         this.change('input', "@~esc");
     } else if (keyCode == 37 || keyCode == 38 || keyCode == 39 || keyCode == 40) {
-        if (keyCode == 38 || keyCode == 40) {
-            setTimeout(() => {
-                set_focus.call(this, this.textEl.el, -1);
-            }, 100);
-        } else {
-            this.move = this.pos;
-        }
-    } else if (keyCode == 8) {
-        this.move = this.move - 1;
-        this.state2 = 3;
-    } else {
-        this.state2 = 1;
+        // if (keyCode == 38 || keyCode == 40) {
+        //     set_focus.call(this, this.textEl.el, -1);
+        // } else {
+        //     this.move = this.pos;
+        // }
     }
 }
 
@@ -239,6 +225,10 @@ function parse(v) {
     } else if (start === 0 && v.length == 1) {
         this.setLock(true);
     }
+
+    if(isAbsoluteValue(cuttingByPos(v, this.pos), 2)) {
+        this.setLock(true);
+    }
 }
 
 function parse2(v, pos) {
@@ -256,6 +246,11 @@ function parse2(v, pos) {
     if (start !== 0) {
         this.setLock(false);
     } else if (start === 0 && v.length == 1) {
+        this.setLock(true);
+    }
+
+    console.log("248", isAbsoluteValue(cuttingByPos(v, pos), 2))
+    if(isAbsoluteValue(cuttingByPos(v, pos), 2)) {
         this.setLock(true);
     }
 }
@@ -287,7 +282,6 @@ function suggestItemClick(it) {
         this.inputText = it;
         position = this.inputText.length;
     } else {
-        const start = inputText.lastIndexOf('=');
         this.pos = getCursortPosition.call(this);
         let begin = this.pos - cuttingByPos(inputText, this.pos).length;
 
@@ -302,17 +296,13 @@ function suggestItemClick(it) {
             }
         }
         this.inputText = `${arr[0] + it.key}(`;
-        position = this.inputText.length;
+        this.pos = this.inputText.length;
         this.inputText += `)${arr[1]}`;
-        // }
     }
     this.textEl.html(this.inputText);
     this.textlineEl.html(this.inputText);
+    this.suggest.hide();
     this.change('input', this.inputText);
-    // setTimeout(() => {
-    //     set_focus.call(this, this.textEl.el, -1);
-    // }, 0);
-    // setText.call(this, this.inputText, position);
     resetTextareaSize.call(this);
 }
 
@@ -346,7 +336,6 @@ export default class Editor {
         this.change_input = "";
         this.datepicker = new Datepicker();
         this.datepicker.change((d) => {
-            // console.log('d:', d);
             this.setText(dateFormat(d));
             this.clear();
         });
@@ -358,8 +347,14 @@ export default class Editor {
             .children(
                 this.textEl = h('div', '')
                     .on('input', evt => inputEventHandler.call(this, evt))
-                    .on('mousedown', evt => mouseDownEventHandler.call(this, evt))
-                    .on('keydown', evt => keyDownEventHandler.call(this, evt))
+                    .on('click', evt => mouseDownEventHandler.call(this, evt))
+                    .on('keyup', evt => keyDownEventHandler.call(this, evt))
+                    .on('keydown', evt => {
+                        let key_num = evt.keyCode;
+                        if (38 === key_num || 40 === key_num) {
+                            evt.preventDefault();
+                        }
+                    })
                 ,
                 this.textlineEl = h('div', 'textline'),
                 this.suggest.el,
@@ -387,7 +382,6 @@ export default class Editor {
         this.textEl.css('left', '2px');
         this.textEl.css('outline', 'none');
         this.textEl.child(this.tmp);
-        // this.areaEl.child(this.ace);
         this.pos = 0;
         this.areaOffset = null;
         this.freeze = {w: 0, h: 0};
@@ -425,12 +419,15 @@ export default class Editor {
         this.textEl.css('font-family', 'none');
         this.textlineEl.css('font-family', 'none');
         this.textEl.css('word-wrap', 'break-word');
-        // this.textEl.css('position', 'static');
-
     }
 
-    parse() {
-        parse.call(this, this.inputText);
+    parse(pos = -1) {
+        if (pos != -1) {
+            this.pos = getCursortPosition.call(this);
+            parse2.call(this, this.inputText, this.pos);
+        } else {
+            parse.call(this, this.inputText);
+        }
     }
 
     clear() {
@@ -441,8 +438,7 @@ export default class Editor {
         this.areaOffset = null;
         this.inputText = '';
         this.el.hide();
-        this.pos = -1;
-        this.move = -1;
+        this.pos = 0;
         // this.textEl.val('');
         this.textEl.html('');
         this.textlineEl.html('');
@@ -456,11 +452,7 @@ export default class Editor {
             return;
         }
 
-        // this.textEl.html(this.inputText);
         this.tmp.removeEl();
-
-        // this.pos = -1;
-        // set_focus.call(this, this.textEl.el);
 
         let {show} = this.suggest;
         if (content.suggestContent && !show) {
@@ -481,17 +473,21 @@ export default class Editor {
         if (spanArr.length > 0) {
             this.tmp.el.innerHTML = "";
             this.textEl.el.innerHTML = "";
-            this.tmp = this.tmp.children(...spanArr)
+            this.tmp = h('span', 'span_tmp').children(...spanArr)
                 .css("top", "0px").css("color", "black");
             this.textEl.child(this.tmp);
-            // this.move = -1;
             set_focus.call(this, this.textEl.el, -1);
         }
 
         this.spanArr = spanArr;
     }
 
-    handler(cursorPos, text) {
+    handler(text) {
+        let cursorPos = this.pos;
+        if(cursorPos >= this.inputText) {
+            this.setMouseDownIndex([]);
+            return;
+        }
         let textBegin = text.substring(0, cursorPos);
         let textEnd = text.substring(cursorPos, text.length);
         parse.call(this, textBegin);
@@ -542,7 +538,6 @@ export default class Editor {
         let text = (cell && cell.formulas) || '';
         text = text == "" ? (cell && cell.text) || '' : text;
         this.setText(text);
-        parse.call(this, text);
 
         this.validator = validator;
         if (validator) {
@@ -558,23 +553,17 @@ export default class Editor {
                 suggest.search('');
             }
         }
+        this.pos = text.length;
+        parse.call(this, text);
         this.change('input', text);
     }
 
     setCursorPos(pos) {
-        setCursorPosition.call(this, this.textEl.el, pos);
-    }
-
-    getCursor() {
-        this.pos = this.move;
-        if (this.pos == -1)
-            this.pos = this.inputText.length;
+        this.pos = pos;
+        set_focus.call(this, this.textEl.el, pos);
     }
 
     setCursorPos2(pos, evt) {
-        this.move = pos;
-        this.state2 = 2;
-        // setCursorPosition.call(this, this.textEl.el, pos);
         mouseDownEventHandler2.call(this, evt, pos, this.inputText)
     }
 
