@@ -291,7 +291,7 @@ function suggestItemClick(it) {
                 arr[0] += inputText[i];
             }
 
-            if (i > this.pos - 1 && inputText[i] === ")") {
+            if (i > this.pos - 1) {
                 arr[1] += inputText[i];
             }
         }

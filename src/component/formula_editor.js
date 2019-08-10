@@ -40,10 +40,10 @@ function lockCells(evt) {
     let {mousedownIndex} = editor;
     if (isAbsoluteValue(cuttingByPos(inputText, pos), 2)) {
         // 此情况是例如: =A1  -> 这时再点A2  则变成: =A2
-        for(let i = 0; i < this.selectors.length; i++) {
+        for (let i = 0; i < this.selectors.length; i++) {
             let selector = this.selectors[i];
             let {erpx} = selector;
-            if(erpx === cuttingByPos(inputText, pos)) {
+            if (erpx === cuttingByPos(inputText, pos)) {
                 let {ri, ci} = cellRect;
                 this.selectors[i].ri = ri;
                 this.selectors[i].ci = ci;
@@ -55,7 +55,7 @@ function lockCells(evt) {
             }
         }
     } else if (mousedownIndex.length > 0) {
-        if(operation(mousedownIndex[1][0]) && isAbsoluteValue(cuttingByPos(mousedownIndex[1], mousedownIndex[1].length), 2)) {
+        if (operation(mousedownIndex[1][0]) && isAbsoluteValue(cuttingByPos(mousedownIndex[1], mousedownIndex[1].length), 2)) {
             editor.setLock(false);
             return;
         }
@@ -89,7 +89,7 @@ function lockCells(evt) {
         editor.setText(input);
         let content = suggestContent.call(this, pos - 1, cutting(inputText), inputText);
         editor.setCursorPos(mousedownIndex[0].length + xy2expr(ci, ri).length);
-    }  else {
+    } else {
         let {pos} = editor;
 
         let args = makeSelector.call(this, ri, ci);
@@ -311,8 +311,9 @@ function suggestContent(pos, cut, inputText) {
     let content = {suggestContent: false, cut: "", pos: 1};
     let begin = pos - 1;
     let left = findBracket.call(this, cut, begin);
+    let right = findBracketRight.call(this, cut, left);
 
-    if (left <= begin && left != -1) {
+    if (left <= begin && left != -1 && right == -1) {
         content.suggestContent = true;
         content.cut = cuttingByPos(inputText, left);
     }
