@@ -39,7 +39,8 @@ function lockCells(evt) {
     let {mousedownIndex} = editor;
     if (isAbsoluteValue(cuttingByPos(inputText, pos), 2)) {
         // 此情况是例如: =A1  -> 这时再点A2  则变成: =A2
-        for (let i = 0; i < this.selectors.length; i++) {
+        let enter = 0;
+        for (let i = 0; i < this.selectors.length && enter == 0; i++) {
             let selector = this.selectors[i];
             let {erpx} = selector;
             if (erpx === cuttingByPos(inputText, pos)) {
@@ -51,6 +52,7 @@ function lockCells(evt) {
                 input = `${inputText.substring(0, pos - erpx.length)}${xy2expr(ci, ri)}${inputText.substring(pos, inputText.length)}`;
                 editor.setText(input);
                 editor.setCursorPos(inputText.substring(0, pos - erpx.length).length + xy2expr(ci, ri).length);
+                enter = 1;
             }
         }
     } else if (mousedownIndex.length > 0) {
@@ -161,7 +163,7 @@ function makeSelector(ri, ci, selectors = this.selectors) {
     let selector = new Selector(data);
     let color = selectorColor(selectors.length);
     selector.setCss(color);
-    let className = `selector${Math.random() * 99999}`;
+    let className = `selector${parseInt(Math.random() * 999999)}`;
     selector.el.attr("class", className);
     selector.set(ri, ci, false);
     selector.el.css("z-index", "100");
