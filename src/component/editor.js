@@ -16,10 +16,10 @@ function resetTextareaSize() {
     const maxWidth = this.viewFn().width - areaOffset.left - 9;
     // console.log('tlineWidth:', tlineWidth, ':', maxWidth);
     if (tlineWidth > areaOffset.width) {
-        let twidth = tlineWidth;
+        let twidth = tlineWidth - 15;
         if (tlineWidth > maxWidth) {
             twidth = maxWidth;
-            let h1 = parseInt(tlineWidth / maxWidth, 10);
+            let h1 = parseInt(tlineWidth / (maxWidth - 15), 10);
             h1 += (tlineWidth % maxWidth) > 0 ? 1 : 0;
             h1 *= this.rowHeight;
             if (h1 > areaOffset.height) {
@@ -95,63 +95,68 @@ function mouseDownEventHandler(evt) {
 }
 
 function inputEventHandler(evt, txt = "") {
-    let v = "";
-    if(txt == "") {
-        let t1 = "";
-        for (let i = 0, len = evt.target.childNodes.length; i < len; i++) {
-            if (evt.target.childNodes[i].nodeType === 1) {
-                v += evt.target.childNodes[i].innerText
-            } else if (evt.target.childNodes[i].nodeType === 3) {
-                t1 += evt.target.childNodes[i].nodeValue;
+    this.pos = getCursortPosition.call(this, evt);
+
+    setTimeout(() => {
+        if(this.chinese == false)
+            return;
+        let v = "";
+        if (txt == "") {
+            let t1 = "";
+            for (let i = 0, len = evt.target.childNodes.length; i < len; i++) {
+                if (evt.target.childNodes[i].nodeType === 1) {
+                    v += evt.target.childNodes[i].innerText
+                } else if (evt.target.childNodes[i].nodeType === 3) {
+                    t1 += evt.target.childNodes[i].nodeValue;
+                }
+            }
+            v = t1 !== "" ? t1 : v;
+        } else {
+            v = txt;
+        }
+        // this.textEl.html('');
+
+        const {suggest, textlineEl, validator, textEl, save} = this;
+        this.inputText = v + "";
+        console.log(this.chinese, v);
+        if (validator) {
+            if (validator.type === 'list') {
+                suggest.search(v);
+            } else {
+                suggest.hide();
+            }
+        } else {
+            const start = v.lastIndexOf('=');
+            if (this.pos != -1) {
+                parse2.call(this, v, this.pos);
+            } else
+                parse.call(this, v);
+            let cutValue = cuttingByPos(v, this.pos);
+            if (start === 0 && v.length > 1 && cutValue != "") {
+                suggest.search(cutValue);
+            } else {
+                suggest.hide();
             }
         }
-        v = t1 !== "" ? t1 : v;
-    } else {
-        v = txt;
-    }
-    this.pos = getCursortPosition.call(this, evt);
-    this.textEl.html('');
 
-    const {suggest, textlineEl, validator, textEl} = this;
-    this.inputText = v + "";
-
-    if (validator) {
-        if (validator.type === 'list') {
-            suggest.search(v);
-        } else {
-            suggest.hide();
+        textlineEl.html(v);
+        resetTextareaSize.call(this);
+        if (v && v[0] !== "=") {
+            // textEl.html(v);
+            set_focus.call(this, textEl.el, -1);
         }
-    } else {
-        const start = v.lastIndexOf('=');
-        if (this.pos != -1) {
-            parse2.call(this, v, this.pos);
-        } else
-            parse.call(this, v);
-        let cutValue = cuttingByPos(v, this.pos);
-        if (start === 0 && v.length > 1 && cutValue != "") {
-            suggest.search(cutValue);
-        } else {
-            suggest.hide();
+        if (v === "") {
+            this.tmp.hide();
+            this.lock = false;
+            this.pos = 0;
+            this.inputText = "";
+            this.ri = -1;
+            this.ci = -1;
+            this.setText("");
         }
-    }
 
-    textlineEl.html(v);
-    resetTextareaSize.call(this);
-    if (v && v[0] !== "=") {
-        textEl.html(v);
-        set_focus.call(this, textEl.el, -1);
-    }
-    if (v === "") {
-        this.tmp.hide();
-        this.lock = false;
-        this.pos = 0;
-        this.inputText = "";
-        this.ri = -1;
-        this.ci = -1;
-        this.setText("");
-    }
-
-    this.change('input', v);
+        this.change('input', v);
+    });
 }
 
 function keyDownEventHandler(evt) {
@@ -266,6 +271,7 @@ function suggestItemClick(it) {
     this.suggest.hide();
     parse2.call(this, this.inputText, this.pos);
     this.change('input', this.inputText);
+    set_focus.call(this, this.textEl.el, -1);
     resetTextareaSize.call(this);
 }
 
@@ -305,12 +311,19 @@ export default class Editor {
         this.ci = -1;
         this.spanArr = [];
         this.mousedownIndex = [];
+        this.chinese = true;
         this.areaEl = h('div', `${cssPrefix}-editor-area`)
             .children(
                 this.textEl = h('div', '')
                     .on('input', evt => inputEventHandler.call(this, evt))
                     .on('click', evt => mouseDownEventHandler.call(this, evt))
                     .on('keyup', evt => keyDownEventHandler.call(this, evt))
+                    .on('compositionstart', evt => {
+                        this.chinese = false;
+                    })
+                    .on('compositionend', evt => {
+                        this.chinese = true;
+                    })
                     .on('keydown', evt => {
                         let key_num = evt.keyCode;
                         if (38 === key_num || 40 === key_num) {
@@ -406,14 +419,13 @@ export default class Editor {
             return;
         }
 
-        this.tmp.removeEl();
-
         let {show} = this.suggest;
         if (content.suggestContent && !show) {
             this.suggestContent.content(content.cut, content.pos);
         } else {
             this.suggestContent.hide();
         }
+        this.textEl.css('color', 'white');
         Object.keys(spanArr).forEach(i => {
             spanArr[i].css('background-color', 'rgba(255,255,255,0.1)');
         });
@@ -424,11 +436,12 @@ export default class Editor {
 
         resetTextareaSize.call(this);
         if (spanArr.length > 0) {
-            this.tmp.el.innerHTML = "";
-            this.textEl.el.innerHTML = "";
+            // this.tmp.el.innerHTML = "";
+            this.textEl.html('');
             this.tmp = h('span', 'span_tmp').children(...spanArr)
                 .css("top", "0px").css("color", "black");
-            this.textEl.child(this.tmp);
+            this.textEl.el.insertBefore(this.tmp.el, this.textEl.el.childNodes[0]);
+            // this.textEl.el.removeChild(this.textEl.el.childNodes[this.textEl.el.childNodes.length - 1]);
             set_focus.call(this, this.textEl.el, -1);
         }
 

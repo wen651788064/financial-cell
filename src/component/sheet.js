@@ -383,9 +383,10 @@ function hasEditor(showEditor = true) {
 }
 
 function editorSet(type = 1) {
-    const {editor, data} = this;
+    const {editor, data, selector} = this;
     editorSetOffset.call(this);
     editor.setCell(data.getSelectedCell(), data.getSelectedValidator(), type);
+    selector.el.hide();
     clearClipboard.call(this);
 }
 
@@ -624,24 +625,6 @@ function toolbarChange(type, value) {
 function sortFilterChange(ci, order, operator, value) {
     this.data.setAutoFilter(ci, order, operator, value);
     sheetReset.call(this);
-}
-
-
-function makeSelector(ri, ci, selectors = this.selectors) {
-    const {data} = this;
-    let selector = new Selector(data);
-    let color = selectorColor(selectors.length);
-    selector.setCss(color);
-    selector.set(ri, ci);
-
-    this.overlayerCEl.child(selector.el);
-    let args = {
-        ri: ri,
-        ci: ci,
-        erpx: xy2expr(ci, ri),
-        selector: selector,
-    };
-    return args;
 }
 
 function afterSelector(editor) {

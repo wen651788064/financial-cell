@@ -71,11 +71,13 @@ function parseCell(viewRange) {
             if(cell.text.indexOf("MD.RTD") != -1) {
                 workbook.Sheets.Sheet1[expr] = {v: "", f: ""};
             } else {
-                workbook.Sheets.Sheet1[expr] = {v: cell.text, f: cell.text.toUpperCase()};
+                console.log(cell.text.replace(/ /g,''));
+                workbook.Sheets.Sheet1[expr] = {v: cell.text.replace(/ /g,''), f: cell.text.replace(/ /g,'').toUpperCase()};
             }
         }
-        else
-            workbook.Sheets.Sheet1[expr] = {v: "", f: ""};
+        else {
+            workbook.Sheets.Sheet1[expr] = {v: 0, f: 0};
+        }
     });
     try {
         calc(workbook);

@@ -140,13 +140,10 @@ function filterSelectors(cut) {
         let selector = this.selectors[i];
         let {erpx} = selector;
         let enter = 0;
-        let stop = false;
-        for (let i2 = 0; i2 < cut.length && stop == false; i2++) {
+        for (let i2 = 0; i2 < cut.length && enter === 0; i2++) {
             if (cut[i2].replace(/\$/g, "") === erpx) {
-                console.log(i2, cut[i2], "104");
                 enter = 1;
                 selectors_new.push(selector);
-                stop = true;
             }
         }
 
@@ -185,9 +182,10 @@ function clearSelectors() {
         selector.el.removeEl();
     });
     this.selectors = [];
-    let {editor} = this;
+    let {editor, selector} = this;
     editor.setLock(false);
     editor.state = 1;
+    selector.el.show();
 }
 
 // 输入 input
@@ -307,7 +305,7 @@ function suggestContent(pos, cut, inputText) {
     let left = findBracket.call(this, cut, begin);
     let right = findBracketRight.call(this, cut, left);
 
-    if (left <= begin && left != -1 && right == -1) {
+    if (left <= begin && left != -1 && right >= begin) {
         content.suggestContent = true;
         content.cut = cuttingByPos(inputText, left);
     }
@@ -337,7 +335,6 @@ function div2span(cut, cutcolor) {
             }
         });
         spanEl.css('display', 'inline-block');
-        spanEl.css('height', '22px');
         spanEl.css('cursor', 'text');
 
         if (cut[i] == " ") {
@@ -348,6 +345,7 @@ function div2span(cut, cutcolor) {
 
         spanArr.push(spanEl);
     });
+
     // 高亮
     let {pos, inputText} = editor;
     let content = {suggestContent: false, cut: ""};
