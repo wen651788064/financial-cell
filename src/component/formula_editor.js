@@ -305,7 +305,7 @@ function suggestContent(pos, cut, inputText) {
     let left = findBracket.call(this, cut, begin);
     let right = findBracketRight.call(this, cut, left);
 
-    if (left <= begin && left != -1 && right >= begin) {
+    if (left <= begin && left != -1 && (right >= begin || right == -1)) {
         content.suggestContent = true;
         content.cut = cuttingByPos(inputText, left);
     }

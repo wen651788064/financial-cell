@@ -12,15 +12,15 @@ function resetTextareaSize() {
     const {
         textlineEl, textEl, areaOffset,
     } = this;
-    const tlineWidth = textlineEl.offset().width + 9;
+    const tlineWidth = textlineEl.offset().width + 9 + 15;
     const maxWidth = this.viewFn().width - areaOffset.left - 9;
     // console.log('tlineWidth:', tlineWidth, ':', maxWidth);
     if (tlineWidth > areaOffset.width) {
-        let twidth = tlineWidth - 15;
+        let twidth = tlineWidth;
         if (tlineWidth > maxWidth) {
-            twidth = maxWidth;
+            twidth = maxWidth - 15;
             let h1 = parseInt(tlineWidth / (maxWidth - 15), 10);
-            h1 += (tlineWidth % (maxWidth - 15)) > 0 ? 1 : 0;
+            h1 += (tlineWidth % maxWidth) > 0 ? 1 : 0;
             h1 *= this.rowHeight;
             if (h1 > areaOffset.height) {
                 textEl.css('height', `${h1}px`);
