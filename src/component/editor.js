@@ -44,9 +44,9 @@ const getCursortPosition = function (containerEl) {
     Object.keys(this.spanArr).forEach(i => {
         this.spanArr[i].css('background-color', 'rgba(255,255,255,0.1)');
     });
-    if(exist) {
-        let spanLeft = this.spanArr[left];
-        let spanRight = this.spanArr[right];
+    let spanLeft = this.spanArr[left];
+    let spanRight = this.spanArr[right];
+    if(exist && spanLeft && spanRight) {
         spanLeft.css("background-color", "rgb(229, 229, 229)");
         spanRight.css("background-color", "rgb(229, 229, 229)");
     }
