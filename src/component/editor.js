@@ -5,6 +5,8 @@ import Datepicker from './datepicker';
 import {cssPrefix} from '../config';
 import {cuttingByPos, isAbsoluteValue, operation} from "../core/operator";
 import SuggestContent from "../component/suggest_content";
+import {findBracket} from "../component/formula_editor";
+import {cutting} from "x-spreadsheet-master/src/core/operator";
 
 // import { mouseMoveUp } from '../event';
 
@@ -37,10 +39,22 @@ const getCursortPosition = function (containerEl) {
     preSelectionRange.setEnd(range.startContainer, range.startOffset);
     let start = preSelectionRange.toString().length;
 
+    // text == ")"
+    let {exist, left, right} = findBracket(start - 1, cutting(this.inputText), this.inputText);
+    Object.keys(this.spanArr).forEach(i => {
+        this.spanArr[i].css('background-color', 'rgba(255,255,255,0.1)');
+    });
+    if(exist) {
+        let spanLeft = this.spanArr[left];
+        let spanRight = this.spanArr[right];
+        spanLeft.css("background-color", "rgb(229, 229, 229)");
+        spanRight.css("background-color", "rgb(229, 229, 229)");
+    }
+
     return start;
 };
 
-function set_focus(el, poss = -1) {
+function set_focus(el) {
     if (!this) {
         return;
     }
@@ -85,7 +99,7 @@ const setCursorPosition = (elem, index) => {
 
     // 超过文本长度直接返回
     if (len < index) return;
-    set_focus.call(this, elem, index);
+    set_focus.call(this, elem);
 };
 
 function mouseDownEventHandler(evt) {
@@ -95,10 +109,8 @@ function mouseDownEventHandler(evt) {
 }
 
 function inputEventHandler(evt, txt = "") {
-    this.pos = getCursortPosition.call(this, evt);
-
     setTimeout(() => {
-        if(this.chinese == false)
+        if (this.chinese == false)
             return;
         let v = "";
         if (txt == "") {
@@ -118,6 +130,7 @@ function inputEventHandler(evt, txt = "") {
 
         const {suggest, textlineEl, validator, textEl, save} = this;
         this.inputText = v + "";
+        this.pos = getCursortPosition.call(this, evt);
         console.log(this.chinese, v);
         if (validator) {
             if (validator.type === 'list') {
@@ -236,7 +249,6 @@ function setText(text, position) {
     // firefox bug
     textEl.el.blur();
     tmp.html(text);
-    // textEl.html(text);
     textlineEl.html(text);
     setTextareaRange.call(this, position);
 }
@@ -437,7 +449,6 @@ export default class Editor {
         }
 
         if (spanArr.length > 0) {
-            // this.tmp.el.innerHTML = "";
             this.textEl.html('');
             this.tmp = h('span', 'span_tmp').children(...spanArr)
                 .css("top", "0px").css("color", "black");
@@ -507,9 +518,9 @@ export default class Editor {
         this.textEl.show();
         set_focus.call(this, this.textEl.el, -1);
         setTimeout(() => {
-            set_focus.call(this, this.textEl.el, -1);
-        });
-
+            this.pos = text.length;
+            set_focus.call(this, this.textEl.el);
+        }, 10);
         this.validator = validator;
         if (validator) {
             const {type} = validator;

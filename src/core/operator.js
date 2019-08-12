@@ -25,7 +25,7 @@ const operation2 = (s) => {
     return 0;
 };
 
-const cutStr = (str) => {
+const cutStr = (str, filter = false) => {
     if (str[0] !== "=") {
         return [];
     }
@@ -34,7 +34,7 @@ const cutStr = (str) => {
     let express = [];
     arr.filter(i => {
         if ((i.search(/^[A-Z]+\d+$/) != -1 || i.search(/^\$[A-Z]+\$\d+$/) != -1))
-            if (express.indexOf(i) == -1)
+            if (express.indexOf(i) == -1 || filter == true)
                 express.push(i);
     });
     return express;

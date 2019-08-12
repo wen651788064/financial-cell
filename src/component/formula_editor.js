@@ -17,13 +17,13 @@ function lockCells(evt) {
             判定1. 如果没有text最后一个不是 + - * / 则直接返回
             判定2. 选定
      */
-    for (let i = 0; i < this.selectors.length; i++) {
-        let selector = this.selectors[i];
-        let {inputText} = editor;
-        let last = inputText[inputText.length - 1];
-        if (selector.ri == ri && selector.ci == ci && !operation(last))
-            return;
-    }
+    // for (let i = 0; i < this.selectors.length; i++) {
+    //     let selector = this.selectors[i];
+    //     let {inputText} = editor;
+    //     let last = inputText[inputText.length - 1];
+    //     if (selector.ri == ri && selector.ci == ci && !operation(last))
+    //         return;
+    // }
 
     /*
         step 2. 把单元格信息添加到txt中取
@@ -31,7 +31,6 @@ function lockCells(evt) {
                 2.2  如果用户输入+ - * / 则 构造selector el， 选择颜色
      */
     let {inputText, pos} = editor;
-    let last = inputText[inputText.length - 1];
     let input = "";
 
     // 需要考虑移动光标的情况 ->> 对应 editor 里的 mousedownIndex 字段
@@ -162,6 +161,8 @@ function makeSelector(ri, ci, selectors = this.selectors) {
     let selector = new Selector(data);
     let color = selectorColor(selectors.length);
     selector.setCss(color);
+    let className = `selector${Math.random() * 99999}`;
+    selector.el.attr("class", className);
     selector.set(ri, ci, false);
     selector.el.css("z-index", "100");
 
@@ -170,6 +171,7 @@ function makeSelector(ri, ci, selectors = this.selectors) {
     let args = {
         ri: ri,
         ci: ci,
+        className: className,
         erpx: xy2expr(ci, ri),
         selector: selector,
     };
@@ -194,7 +196,7 @@ function editingSelectors(text = "") {
         return;
     }
     let selectors_new = [];
-    let cut = cutStr(text);
+    let cut = cutStr(text, true);
     // case 1  过滤 selectors
     let {selectors_delete} = filterSelectors.call(this, cut);
 
@@ -209,14 +211,18 @@ function editingSelectors(text = "") {
     Object.keys(cut).forEach(i => {
         let enter = 0;
 
-        for (let i2 = 0; i2 < this.selectors.length && enter == 0; i2++) {
-            let selector = this.selectors[i2];
-            let {erpx} = selector;
-            if (cut[i].replace(/\$/g, "") === erpx) {
-                selectors_new.push(selector);
-                enter = 1;
-            }
-        }
+        Object.keys(this.selectors).forEach(i => {
+            let {selector} = this.selectors[i];
+            selector.el.removeEl();
+        });
+        // for (let i2 = 0; i2 < this.selectors.length && enter == 0; i2++) {
+        //     let selector = this.selectors[i2];
+        //     let {erpx} = selector;
+        //     if (cut[i].replace(/\$/g, "") === erpx) {
+        //         // selectors_new.push(selector);
+        //         enter = 1;
+        //     }
+        // }
 
         // 绝对值
         let arr = "";
@@ -229,6 +235,7 @@ function editingSelectors(text = "") {
 
         if (enter == 0) {
             let ri = arr[1], ci = arr[0];
+
             let args = makeSelector.call(this, ri, ci, selectors_valid);
             selectors_valid.push(args);
         }
@@ -242,7 +249,7 @@ function editingSelectors(text = "") {
 }
 
 // 找 ( 的index
-function findBracket(cut, i) {
+function findBracketLeft(cut, i) {
     let begin = -1;
     let has = 0;
     let stop = false;
@@ -268,7 +275,23 @@ function findBracket(cut, i) {
     return begin;
 }
 
-// 找 ( 的 index
+// => { left: 0, right: 0,  exist: false }
+function findBracket(pos, cut, text) {
+    let args = {left: 0, right: 0, exist: false};
+    if (text[pos] !== ")") {
+        return args;
+    }
+    let right = pos;
+    let left = findBracketLeft.call(this, cut, right);
+
+    if (left != -1 && right != -1) {
+        args = {left: left, right: right, exist: true};
+    }
+    return args;
+}
+
+
+// 找 ) 的 index
 function findBracketRight(cut, i) {
     let begin = -1;
     let has = 0;
@@ -295,6 +318,7 @@ function findBracketRight(cut, i) {
     return begin;
 }
 
+
 function suggestContent(pos, cut, inputText) {
     // 如果在括号内
     // step 1. 找到距离pos最近的左、右括号的index
@@ -302,7 +326,7 @@ function suggestContent(pos, cut, inputText) {
     // step 3. 找光标前有几个逗号
     let content = {suggestContent: false, cut: "", pos: 1};
     let begin = pos - 1;
-    let left = findBracket.call(this, cut, begin);
+    let left = findBracketLeft.call(this, cut, begin);
     let right = findBracketRight.call(this, cut, left);
 
     if (left <= begin && left != -1 && (right >= begin || right == -1)) {
@@ -323,7 +347,6 @@ function div2span(cut, cutcolor) {
     const {editor} = this;
 
     let spanArr = [];
-    let left = 2;
     let begin = -1;
     let end = -1;
     Object.keys(cut).forEach(i => {
@@ -351,7 +374,7 @@ function div2span(cut, cutcolor) {
     let content = {suggestContent: false, cut: ""};
     if (inputText[pos - 1] == ')') {
         begin = pos - 1;
-        end = findBracket.call(this, cut, begin);
+        end = findBracketLeft.call(this, cut, begin);
     } else {
         content = suggestContent.call(this, pos + 1, cut, inputText);
     }
@@ -364,5 +387,6 @@ function div2span(cut, cutcolor) {
 export {
     lockCells,
     clearSelectors,
-    editingSelectors
+    editingSelectors,
+    findBracket
 }
