@@ -20,7 +20,7 @@ function resetTextareaSize() {
         if (tlineWidth > maxWidth) {
             twidth = maxWidth;
             let h1 = parseInt(tlineWidth / (maxWidth - 15), 10);
-            h1 += (tlineWidth % maxWidth) > 0 ? 1 : 0;
+            h1 += (tlineWidth % (maxWidth - 15)) > 0 ? 1 : 0;
             h1 *= this.rowHeight;
             if (h1 > areaOffset.height) {
                 textEl.css('height', `${h1}px`);
@@ -325,6 +325,9 @@ export default class Editor {
                         this.chinese = true;
                     })
                     .on('keydown', evt => {
+                        resetTextareaSize.call(this);
+                        console.log(evt.currentTarget.innerText);
+                        this.textlineEl.html(evt.currentTarget.innerText);
                         let key_num = evt.keyCode;
                         if (38 === key_num || 40 === key_num) {
                             evt.preventDefault();
@@ -425,7 +428,6 @@ export default class Editor {
         } else {
             this.suggestContent.hide();
         }
-        this.textEl.css('color', 'white');
         Object.keys(spanArr).forEach(i => {
             spanArr[i].css('background-color', 'rgba(255,255,255,0.1)');
         });
@@ -434,7 +436,6 @@ export default class Editor {
             spanArr[begin].css('background-color', '#e5e5e5');
         }
 
-        resetTextareaSize.call(this);
         if (spanArr.length > 0) {
             // this.tmp.el.innerHTML = "";
             this.textEl.html('');
