@@ -242,7 +242,6 @@ function editingSelectors(text = "") {
             selectors_valid.push(args);
         }
     });
-
     this.selectors = selectors_valid;
 
     if (this.selectors.length > 0 || text[0] == "=") {
@@ -381,6 +380,11 @@ function div2span(cut, cutcolor) {
         content = suggestContent.call(this, pos + 1, cut, inputText);
     }
 
+
+    if(inputText != "" && spanArr.length <= 0) {
+        let spanEl = h('span', `formula_span`);
+        spanArr.push(spanEl);
+    }
     // 挂载
     editor.mount2span(spanArr, begin, end, content);
 }

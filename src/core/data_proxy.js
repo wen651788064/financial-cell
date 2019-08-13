@@ -419,8 +419,7 @@ export default class DataProxy {
     }
 
     // what: all | text | format
-    paste(what = 'all', error = () => {
-    }) {
+    paste(what = 'all', error = () => {}) {
         // console.log('sIndexes:', sIndexes);
         const {clipboard, selector} = this;
         if (clipboard.isClear()) return false;

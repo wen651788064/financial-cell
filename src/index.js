@@ -4,6 +4,7 @@ import DataProxy from './core/data_proxy';
 import Sheet from './component/sheet';
 import {cssPrefix} from './config';
 import {locale} from './locale/locale';
+// import Clipboard from 'clipboard'
 import './index.less';
 
 
@@ -19,11 +20,16 @@ class Spreadsheet {
         // create canvas element
         targetEl.appendChild(rootEl.el);
         this.sheet = new Sheet(rootEl, this.data);
-
-        // let aceEl = h('script', 'ace').attr('src', 'https://cdnjs.cloudflare.com/ajax/libs/ace/1.1.3/ace.js')
-        //     .attr('type', 'text/javascript');
+        // let btn = document.getElementById('btn2');
+        // let clipboard = new Clipboard(btn);
         //
-        // targetEl.appendChild(aceEl.el);
+        // clipboard.on('success', function(e) {
+        //     console.log(e);
+        // });
+        //
+        // clipboard.on('error', function(e) {
+        //     console.log(e);
+        // });
     }
 
     loadData(data) {

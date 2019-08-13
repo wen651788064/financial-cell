@@ -71,7 +71,6 @@ function parseCell(viewRange) {
             if(cell.text.indexOf("MD.RTD") != -1) {
                 workbook.Sheets.Sheet1[expr] = {v: "", f: ""};
             } else {
-                console.log(cell.text.replace(/ /g,''));
                 workbook.Sheets.Sheet1[expr] = {v: cell.text.replace(/ /g,''), f: cell.text.replace(/ /g,'').toUpperCase()};
             }
         }

@@ -46,7 +46,7 @@ const getCursortPosition = function (containerEl) {
     });
     let spanLeft = this.spanArr[left];
     let spanRight = this.spanArr[right];
-    if(exist && spanLeft && spanRight) {
+    if (exist && spanLeft && spanRight) {
         spanLeft.css("background-color", "rgb(229, 229, 229)");
         spanRight.css("background-color", "rgb(229, 229, 229)");
     }
@@ -535,10 +535,12 @@ export default class Editor {
                 suggest.search('');
             }
         }
-        if (type == 2 && text != "") {
+        if (type == 2 && text != "" && text[0] == "=") {
             inputEventHandler.call(this, null, text);
             this.pos = text.length;
             set_focus.call(this, this.textEl.el, text.length);
+        } else if (type == 2 && text[0] != "="){
+             this.textEl.child(text);
         }
     }
 

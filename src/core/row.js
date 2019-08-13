@@ -1,5 +1,6 @@
 import helper from './helper';
 import {expr2expr} from './alphabet';
+import {isAbsoluteValue} from "../core/operator";
 
 class Rows {
     constructor({len, height}) {
@@ -126,6 +127,9 @@ class Rows {
                                     }
                                     if (text[0] === '=') {
                                         ncell.text = text.replace(/\w{1,3}\d/g, (word) => {
+                                            if(isAbsoluteValue(word, 3) == false) {
+                                                return word;
+                                            }
                                             let [xn, yn] = [0, 0];
                                             if (sri === dsri) {
                                                 xn = n - 1;

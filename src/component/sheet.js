@@ -16,9 +16,9 @@ import {formulas} from '../core/formula';
 import {getFontSizePxByPt} from "../core/font";
 // import {baseFormats, multiply} from "../core/format";
 import {formatm} from "../core/format";
-import {selectorColor} from "../component/color_palette";
-import {xy2expr} from "../core/alphabet";
 import {clearSelectors, editingSelectors, lockCells} from "../component/formula_editor";
+import {mountPaste} from "../event/paste";
+import {mountCopy} from "../event/copy";
 
 function scrollbarMove() {
     const {
@@ -245,6 +245,10 @@ function clearClipboard() {
 function copy() {
     const {data, selector} = this;
     data.copy();
+    /*
+        复制到系统剪贴板
+     */
+
     selector.showClipboard();
 }
 
@@ -254,11 +258,19 @@ function cut() {
     selector.showClipboard();
 }
 
-function paste(what) {
-    const {data} = this;
-    if (data.paste(what, msg => xtoast('Tip', msg))) {
+const a = () => {
+}
+
+function paste(what, cb = (p) => {
+    if (p) {
         sheetReset.call(this);
     }
+}) {
+    const {data} = this;
+    let p = data.paste(what, msg => xtoast('Tip', msg));
+    cb(p);
+
+    return p;
 }
 
 function autofilter() {
@@ -574,7 +586,7 @@ function insertDeleteRowColumn(type) {
     } else if (type === 'delete-cell-format') {
         data.deleteCell('format');
     } else if (type === 'delete-cell-text') {
-        data.deleteCell('text');
+        data.deleteCell();
     }
     clearClipboard.call(this);
     sheetReset.call(this);
@@ -677,9 +689,9 @@ function sheetInitEvents() {
                 if (editor.getLock()) {
                     lockCells.call(this, evt)
                 }
-                if(!editor.getLock()) {
+                if (!editor.getLock()) {
                     let {inputText, ri, ci} = editor;
-                    if(ri !== -1 && ci !== -1 && inputText[0] === "=") {
+                    if (ri !== -1 && ci !== -1 && inputText[0] === "=") {
                         selectorCellText.call(this, ri, ci, inputText, 'input');
                     }
                     let {formula} = data.settings;
@@ -781,6 +793,15 @@ function sheetInitEvents() {
         this.focusing = overlayerEl.contains(evt.target);
     });
 
+    bind(window, 'copy', (evt) => {
+        mountCopy.call(this, evt);
+    });
+
+    bind(document, 'paste', (evt) => {
+        mountPaste.call(this, evt, () => {
+            sheetReset.call(this);
+        });
+    });
 
     // for selector
     bind(window, 'keydown', (evt) => {
@@ -809,7 +830,7 @@ function sheetInitEvents() {
                 case 67:
                     // ctrl + c
                     copy.call(this);
-                    evt.preventDefault();
+                    // evt.preventDefault();
                     break;
                 case 88:
                     // ctrl + x
@@ -823,8 +844,11 @@ function sheetInitEvents() {
                     break;
                 case 86:
                     // ctrl + v
-                    paste.call(this, what);
-                    evt.preventDefault();
+
+                    paste.call(this, what, () => {
+                        console.log("837")
+                    });
+
                     break;
                 case 37:
                     // ctrl + left
@@ -945,6 +969,10 @@ function sheetInitEvents() {
             }
         }
     });
+}
+
+export {
+    sheetReset
 }
 
 export default class Sheet {
