@@ -1,11 +1,21 @@
 import {sheetReset} from "../component/sheet";
+import {h} from "../component/element";
+import Drag from "../external/drag";
+import Resize from "../external/resize";
+import {cssPrefix} from "../config";
+
+
+let resizeOption = () => {
+    function onClick(data) {
+        console.log("10");
+    };
+};
 
 function mountPaste(e, cb) {
     let cbd = e.clipboardData;
     let p = false;
     for (let i = 0; i < cbd.items.length; i++) {
         let item = cbd.items[i];
-        let cells = {};
         if (item.kind === "string") {
             item.getAsString((str) => {
                 let textDom = document.createElement("head");
@@ -13,7 +23,7 @@ function mountPaste(e, cb) {
                 let styleDom = textDom.getElementsByTagName("style")[0];
                 let tableDom = textDom.getElementsByTagName("table")[0];
 
-                if(styleDom) {
+                if (styleDom) {
                     let {el} = this;
                     el.child(styleDom);
                 }
@@ -23,17 +33,106 @@ function mountPaste(e, cb) {
                     el.child(tableDom);
                     GetInfoFromTable.call(this, tableDom);
                     tableDom.parentNode.removeChild(tableDom);
-                    if(styleDom) {
+                    if (styleDom) {
                         styleDom.parentNode.removeChild(styleDom);
                     }
                     sheetReset.call(this);
                     p = true;
                 }
             });
+        } else if (item.kind === "file" && !p) {
+            let f = item.getAsFile();
+            let reader = new FileReader();
+            reader.onload = (evt) => {
+                let {x, y, overlayerEl, pasteDirectionsArr} = this;
+                let img = h('img', 'paste-img');
+                img.el.src = evt.target.result;
+
+                let {el} = this;
+                setTimeout(() => {
+                    if(p) {
+                       return;
+                    }
+                    let div = h('div', `${cssPrefix}-object-container`)
+                        .css("position", "absolute")
+                        .css("top", `${y}px`)
+                        .css("z-index", `100000`)
+                        .css("left", `${x}px`)
+                        .child(img);
+                    overlayerEl.child(div);
+                    new Drag("").register(div.el);
+                    let directionsArr = new Resize(resizeOption).register(div.el);
+                    let index = pasteDirectionsArr.length;
+                    pasteDirectionsArr.push({
+                        "state": true,
+                        "arr": directionsArr,
+                        "img": div,
+                        "index": index
+                    });
+                    this.direction = true;
+                    containerHandlerEvent.call(this, directionsArr, index, pasteDirectionsArr);
+                    div.on('mousedown', evt => containerHandlerEvent.call(this, directionsArr, index, pasteDirectionsArr));
+                    div.css("width", `${img.el.offsetWidth}px`);
+                    div.css("height", `${img.el.offsetHeight}px`);
+                    console.log(img.el.offsetWidth);
+                }, 0);
+            };
+
+            reader.readAsDataURL(f)
         }
     }
     if (!p)
         cb();
+}
+
+function hideDirectionArr() {
+    let {pasteDirectionsArr}  = this;
+    this.direction = false;
+    if(pasteDirectionsArr.length > 0) {
+        for(let i = 0; i < pasteDirectionsArr.length; i++) {
+            let arr = pasteDirectionsArr[i].arr;
+            if(arr.length > 0) {
+                for(let j = 0; j < arr.length; j++) {
+                    arr[j].style.display = 'none';
+                }
+            }
+            pasteDirectionsArr[i].state = false;
+            pasteDirectionsArr[i].img.css("z-index", "10000");
+        }
+    }
+}
+
+function deleteImg(d = false) {
+    let {pasteDirectionsArr}  = this;
+    let direction_new = [];
+    let direction_delete = [];
+    this.direction = false;
+    if(pasteDirectionsArr.length > 0) {
+        for(let i = 0; i < pasteDirectionsArr.length; i++) {
+            if(pasteDirectionsArr[i].state === true || d == true) {
+                direction_delete.push(pasteDirectionsArr[i]);
+            } else {
+                direction_new.push(pasteDirectionsArr[i]);
+            }
+        }
+    }
+
+    Object.keys(direction_delete).forEach(i => {
+        direction_delete[i].img.removeEl();
+    });
+
+    this.pasteDirectionsArr = direction_new;
+}
+
+function containerHandlerEvent(directionsArr, index, pasteDirectionsArr) {
+    hideDirectionArr.call(this);
+    this.direction = true;
+    Object.keys(directionsArr).forEach(i => {
+        directionsArr[i].style.display = 'block';
+        // directionsArr[i].img.css("z-index", "99999999");
+    });
+    pasteDirectionsArr[index].img.css("z-index", "99999999");
+    pasteDirectionsArr[index].state = true;
 }
 
 function equals(x, y) {
@@ -112,11 +211,9 @@ function GetInfoFromTable(tableObj) {
     };
 }
 
-function copy2clipboard() {
-
-}
-
 export {
     mountPaste,
+    hideDirectionArr,
+    deleteImg,
 }
 

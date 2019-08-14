@@ -336,11 +336,18 @@ export default class Editor {
                     .on('compositionend', evt => {
                         this.chinese = true;
                     })
+                    .on('paste', evt => {
+                        evt.stopPropagation();
+                    })
+                    .on('copy', evt => {
+                        evt.stopPropagation();
+                    })
                     .on('keydown', evt => {
                         resetTextareaSize.call(this);
                         console.log(evt.currentTarget.innerText);
                         this.textlineEl.html(evt.currentTarget.innerText);
                         let key_num = evt.keyCode;
+                        // ctrl + v 67     ctrl + v  86
                         if (38 === key_num || 40 === key_num) {
                             evt.preventDefault();
                         }
