@@ -26,6 +26,7 @@ const operation2 = (s) => {
 };
 
 const cutStr = (str, filter = false) => {
+    str = str.toUpperCase();
     if (str[0] !== "=") {
         return [];
     }
@@ -62,7 +63,7 @@ const cuttingByPos = (str, pos) => {
     }
     value = value.replace(/\s/g, "");
     value = value.split('').reverse().join('');
-    return value;
+    return value.toUpperCase();
 };
 
 
@@ -293,6 +294,7 @@ const helpFormula = {
 };
 
 const isAbsoluteValue = (str, rule = 1) => {
+    str = str.toUpperCase();
     if (rule == 1) {
         if (str.search(/^\$[A-Z]+\$\d+$/) != -1)
             return true;
@@ -302,12 +304,25 @@ const isAbsoluteValue = (str, rule = 1) => {
             return true;
         if (str.search(/^[A-Z]+\d+$/) != -1)
             return true;
+        if (str.search(/^\$[A-Z]+\d+$/) != -1)
+            return true;
+        if (str.search(/^[A-Z]+\$\d+$/) != -1)
+            return true;
         return false;
     } else {
-        if (str.search(/^[A-Z]+\d+$/) != -1)
+        if (str.search(/^[A-Za-z]+\d+$/) != -1)
             return true;
         return false;
     }
+};
+
+const absoluteType = (str) => {
+    if (str.search(/^\$[A-Z]+\d+$/) != -1)
+        return 1;
+    if (str.search(/^[A-Z]+\$\d+$/) != -1)
+        return 2;
+
+    return -1;
 };
 
 const cutting2 = (str) => {
@@ -323,7 +338,8 @@ const cutting2 = (str) => {
 
     let colors = [];
     for (let i = 0; i < express.length; i++) {
-        if (express[i].search(/^[A-Z]+\d+$/) != -1 || express[i].search(/^\$[A-Z]+\$\d+$/) != -1) {
+        let s = express[i].toUpperCase();
+        if (s.search(/^[A-Z]+\d+$/) != -1 || s.search(/^\$[A-Z]+\$\d+$/) != -1) {
             for (let i2 = 0; i2 < express[i].length; i2++)
                 colors.push({
                     "code": color,
@@ -352,4 +368,5 @@ export {
     cuttingByPos,
     helpFormula,
     cutFirst,
+    absoluteType,
 }

@@ -6,7 +6,8 @@ import {cssPrefix} from '../config';
 import {cuttingByPos, isAbsoluteValue, operation} from "../core/operator";
 import SuggestContent from "../component/suggest_content";
 import {findBracket} from "../component/formula_editor";
-import {cutting} from "x-spreadsheet-master/src/core/operator";
+import {cutting} from "../core/operator";
+import {suggestContent} from "../component/formula_editor";
 
 // import { mouseMoveUp } from '../event';
 
@@ -46,9 +47,16 @@ const getCursortPosition = function (containerEl) {
     });
     let spanLeft = this.spanArr[left];
     let spanRight = this.spanArr[right];
+    this.suggestContent.hide();
     if (exist && spanLeft && spanRight) {
         spanLeft.css("background-color", "rgb(229, 229, 229)");
         spanRight.css("background-color", "rgb(229, 229, 229)");
+    } else {
+        let {show} = this.suggest;
+        let content = suggestContent.call(this, start, cutting(this.inputText), this.inputText);
+        if (content.suggestContent && !show) {
+            this.suggestContent.content(content.cut, content.pos);
+        }
     }
 
     return start;

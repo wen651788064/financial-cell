@@ -17,27 +17,33 @@ function mountPaste(e, cb) {
     for (let i = 0; i < cbd.items.length; i++) {
         let item = cbd.items[i];
         if (item.kind === "string") {
-            item.getAsString((str) => {
+             item.getAsString((str) => {
                 let textDom = document.createElement("head");
                 textDom.innerHTML = str;
+                let imgDom = textDom.getElementsByTagName("img")[0];
                 let styleDom = textDom.getElementsByTagName("style")[0];
                 let tableDom = textDom.getElementsByTagName("table")[0];
-
-                if (styleDom) {
-                    let {el} = this;
-                    el.child(styleDom);
-                }
-
-                if (tableDom && p == false) {
-                    let {el} = this;
-                    el.child(tableDom);
-                    GetInfoFromTable.call(this, tableDom);
-                    tableDom.parentNode.removeChild(tableDom);
-                    if (styleDom) {
-                        styleDom.parentNode.removeChild(styleDom);
-                    }
-                    sheetReset.call(this);
+                if (imgDom && !styleDom) {
+                    mountImg.call(this, imgDom);
                     p = true;
+                } else {
+
+                    if (styleDom) {
+                        let {el} = this;
+                        el.child(styleDom);
+                    }
+
+                    if (tableDom && p == false) {
+                        let {el} = this;
+                        el.child(tableDom);
+                        GetInfoFromTable.call(this, tableDom);
+                        tableDom.parentNode.removeChild(tableDom);
+                        if (styleDom) {
+                            styleDom.parentNode.removeChild(styleDom);
+                        }
+                        sheetReset.call(this);
+                        p = true;
+                    }
                 }
             });
         } else if (item.kind === "file" && !p) {
@@ -50,49 +56,59 @@ function mountPaste(e, cb) {
 
                 let {el} = this;
                 setTimeout(() => {
-                    if(p) {
-                       return;
+                    if (p) {
+                        return;
                     }
-                    let div = h('div', `${cssPrefix}-object-container`)
-                        .css("position", "absolute")
-                        .css("top", `${y}px`)
-                        .css("z-index", `100000`)
-                        .css("left", `${x}px`)
-                        .child(img);
-                    overlayerEl.child(div);
-                    new Drag("").register(div.el);
-                    let directionsArr = new Resize(resizeOption).register(div.el);
-                    let index = pasteDirectionsArr.length;
-                    pasteDirectionsArr.push({
-                        "state": true,
-                        "arr": directionsArr,
-                        "img": div,
-                        "index": index
-                    });
-                    this.direction = true;
-                    containerHandlerEvent.call(this, directionsArr, index, pasteDirectionsArr);
-                    div.on('mousedown', evt => containerHandlerEvent.call(this, directionsArr, index, pasteDirectionsArr));
-                    div.css("width", `${img.el.offsetWidth}px`);
-                    div.css("height", `${img.el.offsetHeight}px`);
-                    console.log(img.el.offsetWidth);
+                    mountImg.call(this, img.el);
                 }, 0);
             };
 
-            reader.readAsDataURL(f)
+            reader.readAsDataURL(f);
         }
     }
-    if (!p)
-        cb();
+    setTimeout(() => {
+        if (!p)
+            cb();
+    })
+}
+
+function mountImg(imgDom) {
+    let img = imgDom;
+    let {x, y, overlayerEl, pasteDirectionsArr} = this;
+    let div = h('div', `${cssPrefix}-object-container`)
+        .css("position", "absolute")
+        .css("top", `${y}px`)
+        .css("z-index", `100000`)
+        .css("left", `${x}px`)
+        .child(img);
+    overlayerEl.child(div);
+    new Drag("").register(div.el);
+    setTimeout(() => {
+        let directionsArr = new Resize(resizeOption).register(div.el);
+        let index = pasteDirectionsArr.length;
+        pasteDirectionsArr.push({
+            "state": true,
+            "arr": directionsArr,
+            "img": div,
+            "index": index,
+            "img2": img
+        });
+        this.direction = true;
+        div.css("width", `${img.offsetWidth}px`);
+        div.css("height", `${img.offsetHeight}px`);
+        containerHandlerEvent.call(this, directionsArr, index, pasteDirectionsArr);
+        div.on('mousedown', evt => containerHandlerEvent.call(this, directionsArr, index, pasteDirectionsArr));
+    }, 0);
 }
 
 function hideDirectionArr() {
-    let {pasteDirectionsArr}  = this;
+    let {pasteDirectionsArr} = this;
     this.direction = false;
-    if(pasteDirectionsArr.length > 0) {
-        for(let i = 0; i < pasteDirectionsArr.length; i++) {
+    if (pasteDirectionsArr.length > 0) {
+        for (let i = 0; i < pasteDirectionsArr.length; i++) {
             let arr = pasteDirectionsArr[i].arr;
-            if(arr.length > 0) {
-                for(let j = 0; j < arr.length; j++) {
+            if (arr.length > 0) {
+                for (let j = 0; j < arr.length; j++) {
                     arr[j].style.display = 'none';
                 }
             }
@@ -103,13 +119,13 @@ function hideDirectionArr() {
 }
 
 function deleteImg(d = false) {
-    let {pasteDirectionsArr}  = this;
+    let {pasteDirectionsArr} = this;
     let direction_new = [];
     let direction_delete = [];
     this.direction = false;
-    if(pasteDirectionsArr.length > 0) {
-        for(let i = 0; i < pasteDirectionsArr.length; i++) {
-            if(pasteDirectionsArr[i].state === true || d == true) {
+    if (pasteDirectionsArr.length > 0) {
+        for (let i = 0; i < pasteDirectionsArr.length; i++) {
+            if (pasteDirectionsArr[i].state === true || d == true) {
                 direction_delete.push(pasteDirectionsArr[i]);
             } else {
                 direction_new.push(pasteDirectionsArr[i]);

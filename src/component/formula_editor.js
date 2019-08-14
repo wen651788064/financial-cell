@@ -168,7 +168,6 @@ function makeSelector(ri, ci, selectors = this.selectors) {
     selector.set(ri, ci, false);
     selector.el.css("z-index", "100");
 
-
     this.overlayerCEl.child(selector.el);
     let args = {
         ri: ri,
@@ -394,5 +393,6 @@ export {
     lockCells,
     clearSelectors,
     editingSelectors,
-    findBracket
+    findBracket,
+    suggestContent
 }
