@@ -26,6 +26,10 @@ function mountCopy(event) {
             if (rows._[i] && rows._[i].cells && rows._[i].cells[j]) {
                 if (rows._[i].cells[j] && styles[rows._[i].cells[j].style]) {
                     td.css('color', styles[rows._[i].cells[j].style].color);
+                    if(styles[rows._[i].cells[j].style].font.bold) {
+                        td.css('font-weight', styles[rows._[i].cells[j].style].font.bold);
+                    }
+                    td.css('background', styles[rows._[i].cells[j].style].bgcolor);
                 }
                 let text = rows._[i].cells[j].text.replace(/ /g, "");
                 td.html(text);
@@ -75,4 +79,5 @@ function parseDom(node) {
 
 export {
     mountCopy,
+    getChooseImg,
 }

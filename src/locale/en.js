@@ -59,6 +59,7 @@ export default {
         concat: 'Concat',
         wland: 'MD.WLAND',
         wfr: 'MD.WFR',
+        rtd: 'MD.RTD',
     },
     validation: {
         required: 'it must be required',

@@ -542,7 +542,6 @@ export default class DataProxy {
                         || property === 'underline'
                         || property === 'align' || property === 'valign'
                         || property === 'color' || property === 'bgcolor') {
-                        console.log('53xxx0', property, value);
                         cstyle[property] = value;
                         cell.style = this.addStyle(cstyle);
                     }

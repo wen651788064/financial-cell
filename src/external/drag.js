@@ -51,16 +51,21 @@ function Drag(options) {
                 nl = nx - (x - l);
                 nt = ny - (y - t);
 
+                // console.log( nl, nt);
+                if(nl > 50 && nt > -10) {
+                    el.style.left = nl + 'px';
+                    el.style.top = nt + 'px';
+                }
 
-                el.style.left = nl + 'px';
-                el.style.top = nt + 'px';
+
 
                 if (options && options.onDrag) {
                     options.onDrag.call(el, {
                         left: nl,
                         top: nt,
                         x: nx - x,
-                        y: ny - y
+                        y: ny - y,
+                        isDown: isDown
                     });
                 }
 

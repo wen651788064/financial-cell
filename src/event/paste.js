@@ -1,14 +1,29 @@
-import {sheetReset} from "../component/sheet";
+import {selectorSet, sheetReset} from "../component/sheet";
 import {h} from "../component/element";
 import Drag from "../external/drag";
 import Resize from "../external/resize";
 import {cssPrefix} from "../config";
-
+import {getChooseImg} from "../event/copy";
 
 let resizeOption = () => {
     function onClick(data) {
         console.log("10");
     };
+};
+
+let dragOption = {
+    onBegin(data) {
+        console.log("obegin", data)
+    },
+
+    onEnd(data) {
+        console.log("onEnd", data)
+    },
+
+    onDrag(data) {
+
+        // console.log("onDrag", data)
+    },
 };
 
 function mountPaste(e, cb) {
@@ -17,17 +32,31 @@ function mountPaste(e, cb) {
     for (let i = 0; i < cbd.items.length; i++) {
         let item = cbd.items[i];
         if (item.kind === "string") {
-             item.getAsString((str) => {
+            item.getAsString((str) => {
                 let textDom = document.createElement("head");
                 textDom.innerHTML = str;
                 let imgDom = textDom.getElementsByTagName("img")[0];
                 let styleDom = textDom.getElementsByTagName("style")[0];
                 let tableDom = textDom.getElementsByTagName("table")[0];
+                let spanDom = textDom.getElementsByTagName("span")[0];
                 if (imgDom && !styleDom) {
                     mountImg.call(this, imgDom);
                     p = true;
                 } else {
-
+                    if (spanDom) {
+                        let table = h("table", "");
+                        let tbody = h('tbody', '');
+                        let tr = h('tr', '');
+                        let td = h('td', '');
+                        td.html(spanDom.innerText);
+                        td.css('background', spanDom.style['background']);
+                        td.css('font-weight', spanDom.style['font-weight']);
+                        td.css('color', spanDom.style['color']);
+                        tr.child(td);
+                        tbody.child(tr);
+                        table.child(tbody);
+                        tableDom = table.el;
+                    }
                     if (styleDom) {
                         let {el} = this;
                         el.child(styleDom);
@@ -72,17 +101,64 @@ function mountPaste(e, cb) {
     })
 }
 
+function moveArr(top, left) {
+    let {pasteDirectionsArr} = this;
+    for (let i = 0; i < pasteDirectionsArr.length; i++) {
+        let p = pasteDirectionsArr[i];
+        console.log(p.img.el['style'].top, "108");
+        p.img.css("top", `${top }px`)
+            .css("left", `${left  }px`)
+    }
+}
+
+function getMaxCoord(ri, ci) {
+    let top = 0;
+    let left = 0;
+    let {pasteDirectionsArr} = this;
+    for (let i = 0; i < pasteDirectionsArr.length; i++) {
+        let p = pasteDirectionsArr[i];
+        if (p.ri === ri && p.ci === ci) {
+            if (left < p.nextLeft) {
+                left = p.nextLeft;
+            }
+            if (top < p.nextTop) {
+                top = p.nextTop;
+            }
+        }
+    }
+
+    return {
+        top: top,
+        left: left,
+    }
+}
+
 function mountImg(imgDom) {
     let img = imgDom;
-    let {x, y, overlayerEl, pasteDirectionsArr} = this;
+    let {overlayerEl, pasteDirectionsArr, data} = this;
+    // let {indexes} = selector;
+    let {ri, ci} = data.selector;
+    let rect = data.cellRect(ri, ci);
+
+    let left = rect.left + 70;
+    let top = rect.top + 41;
+    let choose = getChooseImg.call(this);
+    if (choose) {
+        let args = getMaxCoord.call(this, choose.ri, choose.ci);
+        left = args.left;
+        top = args.top;
+        ri = choose.ri;
+        ci = choose.ci;
+    }
+
     let div = h('div', `${cssPrefix}-object-container`)
         .css("position", "absolute")
-        .css("top", `${y}px`)
+        .css("top", `${top}px`)
         .css("z-index", `100000`)
-        .css("left", `${x}px`)
+        .css("left", `${left}px`)
         .child(img);
     overlayerEl.child(div);
-    new Drag("").register(div.el);
+    new Drag(dragOption).register(div.el);
     setTimeout(() => {
         let directionsArr = new Resize(resizeOption).register(div.el);
         let index = pasteDirectionsArr.length;
@@ -91,7 +167,11 @@ function mountImg(imgDom) {
             "arr": directionsArr,
             "img": div,
             "index": index,
-            "img2": img
+            "img2": img,
+            "ri": ri,
+            "ci": ci,
+            "nextLeft": left + 15,
+            "nextTop": top + 15,
         });
         this.direction = true;
         div.css("width", `${img.offsetWidth}px`);
@@ -114,6 +194,7 @@ function hideDirectionArr() {
             }
             pasteDirectionsArr[i].state = false;
             pasteDirectionsArr[i].img.css("z-index", "10000");
+            pasteDirectionsArr[i].img2.style['border'] = "none";
         }
     }
 }
@@ -145,8 +226,13 @@ function containerHandlerEvent(directionsArr, index, pasteDirectionsArr) {
     this.direction = true;
     Object.keys(directionsArr).forEach(i => {
         directionsArr[i].style.display = 'block';
-        // directionsArr[i].img.css("z-index", "99999999");
     });
+
+    let {selector, editor, data} = this;
+    selector.hide();
+    editor.clear();
+
+    pasteDirectionsArr[index].img2.style['border'] = "1px solid rgb(227, 227, 227)";
     pasteDirectionsArr[index].img.css("z-index", "99999999");
     pasteDirectionsArr[index].state = true;
 }
@@ -186,19 +272,33 @@ function isHaveStyle(styles, style) {
     return -1;
 }
 
+
 function GetInfoFromTable(tableObj) {
     let {data} = this;
     let {ri, ci} = data.selector;
     let rows = data.rows._;
     let styles = data.styles;
+    let rows2 = JSON.parse(JSON.stringify(data.rows._));
+    let lastRi = 0, lastCi = 0;
     for (let i = 0; i < tableObj.rows.length; i++) {
         let cells = {};
+        let cells2 = {};
         if (rows && rows[i + ri] && rows[i + ri].cells) {
             cells = rows[i + ri].cells;
+            cells2 = JSON.parse(JSON.stringify(rows[i + ri].cells));
         }
         for (let j = 0; j < tableObj.rows[i].cells.length; j++) {
+            let bold = false;
+            if (document.defaultView.getComputedStyle(tableObj.rows[i].cells[j], false).fontWeight < 400) {
+                bold = true;
+            }
             let args = {
-                color: document.defaultView.getComputedStyle(tableObj.rows[i].cells[j], false).color
+                color: document.defaultView.getComputedStyle(tableObj.rows[i].cells[j], false).color,
+                bgcolor: document.defaultView.getComputedStyle(tableObj.rows[i].cells[j], false).background.substring(0,
+                    document.defaultView.getComputedStyle(tableObj.rows[i].cells[j], false).background.indexOf(")") + 1),
+                font: {
+                    bold: bold,
+                },
             };
             let index = isHaveStyle(styles, args);
             if (index !== -1) {
@@ -206,20 +306,38 @@ function GetInfoFromTable(tableObj) {
                     text: tableObj.rows[i].cells[j].innerHTML,
                     style: index,
                 };
+                cells2[j + ci] = {
+                    text: tableObj.rows[i].cells[j].innerHTML,
+                };
             } else {
                 styles.push(args);
                 cells[j + ci] = {
                     text: tableObj.rows[i].cells[j].innerHTML,
                     style: styles.length - 1,
                 };
+                cells2[j + ci] = {
+                    text: tableObj.rows[i].cells[j].innerHTML,
+                };
             }
+            lastRi = i + ri;
+            lastCi = j + ci;
+            selectorSet.call(this, true, i + ri, j + ci, true, true);
         }
-
         rows[i + ri] = {
             "cells": cells
         };
+        rows2[i + ri] = {
+            "cells": cells2
+        };
     }
-    console.log(rows, styles, data.settings.style);
+
+    let rect = data.cellRect(lastRi, lastCi);
+
+    let left = rect.left + rect.width + 60;
+    let top = rect.top + rect.height + 31;
+    let {advice} = this;
+    advice.show(left, top, 1, rows2, rows);
+    data.rows._ = rows;
 
     return {
         rows: rows,
@@ -231,5 +349,6 @@ export {
     mountPaste,
     hideDirectionArr,
     deleteImg,
+    moveArr,
 }
 

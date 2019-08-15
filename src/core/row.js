@@ -1,6 +1,6 @@
 import helper from './helper';
 import {expr2expr} from './alphabet';
-import {isAbsoluteValue, absoluteType} from "../core/operator";
+import {absoluteType, isAbsoluteValue} from "../core/operator";
 
 class Rows {
     constructor({len, height}) {
@@ -90,7 +90,8 @@ class Rows {
     }
 
     // what: all | format | text
-    copyPaste(srcCellRange, dstCellRange, what, autofill = false, cb = () => {}) {
+    copyPaste(srcCellRange, dstCellRange, what, autofill = false, cb = () => {
+    }) {
         const {
             sri, sci, eri, eci,
         } = srcCellRange;
@@ -120,23 +121,23 @@ class Rows {
                                 const ncell = helper.cloneDeep(this._[i].cells[j]);
                                 // ncell.text
                                 if (autofill && ncell && ncell.text && ncell.text.length > 0) {
-                                    const { text } = ncell;
+                                    const {text} = ncell;
                                     let n = (jj - dsci) + (ii - dsri) + 2;
                                     if (!isAdd) {
                                         n -= dn + 1;
                                     }
                                     if (text[0] === '=') {
                                         ncell.text = text.replace(/\w{1,3}\d|\w{1,3}\$\d|\$\w{1,3}\d/g, (word) => {
-                                            if(isAbsoluteValue(word, 3) == false) {
+                                            if (isAbsoluteValue(word, 3) == false) {
                                                 return word;
                                             }
                                             let type = absoluteType(word);
                                             let [xn, yn] = [0, 0];
-                                            if (sri === dsri && type != 1 ) {
+                                            if (sri === dsri && type != 1) {
                                                 xn = n - 1;
                                                 // if (isAdd) xn -= 1;
-                                            } else if(type != 2) {
-                                                if(type == 1 && sri === dsri) {
+                                            } else if (type != 2) {
+                                                if (type == 1 && sri === dsri) {
 
                                                 } else {
                                                     yn = n - 1;
@@ -145,13 +146,17 @@ class Rows {
 
                                             // 往下是true  往上是false
                                             yn += 1;
+
+                                            if (xn <= 0 || yn <= 0) {
+                                                return "#REF!";
+                                            }
                                             let txt = expr2expr(word.replace("$", ""), xn, yn);
-                                            if(type == 1) {
+                                            if (type == 1) {
                                                 txt = "$" + txt;
-                                            } else if(type == 2) {
+                                            } else if (type == 2) {
                                                 let str = "", enter = 1;
-                                                for(let i = 0; i < txt.length ; i++) {
-                                                    if(parseInt(txt[i]) >= 0 && parseInt(txt[i]) <= 9 && enter == 1) {
+                                                for (let i = 0; i < txt.length; i++) {
+                                                    if (parseInt(txt[i]) >= 0 && parseInt(txt[i]) <= 9 && enter == 1) {
                                                         str += "$";
                                                         enter = 2;
                                                     }

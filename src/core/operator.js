@@ -134,6 +134,80 @@ const helpFormula = {
             "数值2": "第二个加数。",
         }
     },
+    "MD.RTD": {
+        "title": [
+            {
+                "name": "MD.RTD(",
+                "editor": false
+            },
+            {
+
+                "name": "数值1",
+                "editor": false
+            },
+            {
+
+                "name": "，",
+                "editor": false
+            },
+            {
+                "name": "数值2",
+                "editor": false
+            },
+            {
+
+                "name": "，",
+                "editor": false
+            },
+            {
+                "name": "数值3",
+                "editor": false
+            },
+            {
+                "name": ")",
+                "editor": false
+            }
+        ],
+        "example": [
+            {
+                "name": "MD.RTD(",
+                "editor": false
+            },
+            {
+
+                "name": "SINA",
+                "editor": false
+            },
+            {
+
+                "name": "，",
+                "editor": false
+            },
+            {
+                "name": "600519",
+                "editor": false
+            },
+            {
+
+                "name": "，",
+                "editor": false
+            },
+            {
+                "name": "NOW",
+                "editor": false
+            },
+            {
+                "name": ")",
+                "editor": false
+            }
+        ],
+        "content": {
+            "摘要": "股市查询。",
+            "数值1": "第一个参数。",
+            "数值2": "第二个参数。",
+            "数值3": "第三个参数。",
+        }
+    },
     "SUM": {
         "title": [
             {

@@ -257,13 +257,13 @@ class Element {
         return window.getComputedStyle(this.el, null);
     }
 
-    show() {
-        this.css('display', 'block');
+    show(key = 'display', text = 'block') {
+        this.css(key, text);
         return this;
     }
 
-    hide() {
-        this.css('display', 'none');
+    hide(key = 'display', value = 'none') {
+        this.css(key, value);
         return this;
     }
 }

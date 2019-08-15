@@ -132,6 +132,12 @@ function renderCell(rindex, cindex, sheetbook) {
         if (minus == true && isMinus(cellText)) {
             color = 'red'
         }
+        let underline = style.underline;
+        let regex = /[a-zA-Z0-9][-a-zA-Z0-9]{0,62}(\.[a-zA-Z0-9][-a-zA-Z0-9]{0,62})+\.?/;
+        if(regex.test(cellText)) {
+            color = "#4b89ff";
+            underline = true;
+        }
 
         draw.text(cellText, dbox, {
             align: style.align,
@@ -139,7 +145,7 @@ function renderCell(rindex, cindex, sheetbook) {
             font,
             color: color,
             strike: style.strike,
-            underline: style.underline,
+            underline: underline,
             ignore: ignore,
             cindex: cindex,
         }, style.textwrap);

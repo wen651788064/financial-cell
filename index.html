@@ -26,7 +26,7 @@
                 width: 180
             },
             view: {
-                height: () => 5000,
+                // height: () => 5000,
             },
             row: {
                 len: 100,
@@ -44,7 +44,24 @@
         };
 
         let rows1 = {
-
+            1: {
+                cells: {
+                    0: { text: 'testingtesttestetst' },
+                    2: { text: 'testing' },
+                },
+            },
+            2: {
+                cells: {
+                    0: { text: 'render', style: 0 },
+                    1: { text: 'Hello' },
+                    2: { text: 'haha',  },
+                }
+            },
+            8: {
+                cells: {
+                    8: { text: 'border test', style: 0 },
+                }
+            }
         };
         let flex = [
             {
@@ -73,7 +90,7 @@
             .loadData({
                 styles: [
                     {
-                        bgcolor: '#f4f5f8',
+                        bgcolor: 'rgb(146, 208, 80)',
                         textwrap: true,
                         color: '#900b09',
                         font: {name: "Arial", size: 10, bold: true, italic: false},
@@ -141,6 +158,7 @@
                         },
                     }
                 ],
+
                 flex: [],
                 rows: rows1
             }).change((cdata) => {
