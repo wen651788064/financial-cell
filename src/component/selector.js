@@ -298,7 +298,10 @@ export default class Selector {
             this.lastci = ci;
         }
         this.range = data.calSelectedRangeByEnd(ri, ci);
+        console.log(this.range, 301 )
+
         setAllAreaOffset.call(this, this.data.getSelectedRect());
+
     }
 
     reset() {

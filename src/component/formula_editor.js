@@ -4,40 +4,28 @@ import {selectorColor} from "../component/color_palette";
 import Selector from "../component/selector";
 import {h} from "../component/element";
 
-function lockCells(evt) {
-    const {data, editor} = this;
+function lockCells(evt, _selector) {
+    const {data, editor, mergeSelector} = this;
     const {offsetX, offsetY} = evt;
 
     const cellRect = data.getCellRectByXY(offsetX, offsetY);
     let {ri, ci} = cellRect;
 
-    /*
-        实时更新this.selectors  => editor.change
-        step 1. 如果该单元格已经被锁定，，
-            判定1. 如果没有text最后一个不是 + - * / 则直接返回
-            判定2. 选定
-     */
-    // for (let i = 0; i < this.selectors.length; i++) {
-    //     let selector = this.selectors[i];
-    //     let {inputText} = editor;
-    //     let last = inputText[inputText.length - 1];
-    //     if (selector.ri == ri && selector.ci == ci && !operation(last))
-    //         return;
-    // }
-
-    /*
-        step 2. 把单元格信息添加到txt中取
-                2.1  如果用户没有输入 + - * / 则替换
-                2.2  如果用户输入+ - * / 则 构造selector el， 选择颜色
-     */
     let {inputText, pos} = editor;
     let input = "";
 
-    // 需要考虑移动光标的情况 ->> 对应 editor 里的 mousedownIndex 字段
-    // 不为-1 就表示true，不用做额外判断
     editor.handler(inputText);
     let {mousedownIndex} = editor;
-    if (isAbsoluteValue(cuttingByPos(inputText, pos), 2)) {
+    if (_selector) {
+        const {
+            sri, sci, eri, eci,
+        } = data.selector.range;
+        let s1 = xy2expr(sri, sci);
+        let s2 = xy2expr(eri, eci);
+        input = `${inputText}${s1}:${s2}`;
+
+        console.log("...", sri, sci, eri, eci)
+    } else if (isAbsoluteValue(cuttingByPos(inputText, pos), 2)) {
         // 此情况是例如: =A1  -> 这时再点A2  则变成: =A2
         let enter = 0;
         for (let i = 0; i < this.selectors.length && enter == 0; i++) {
@@ -158,17 +146,36 @@ function filterSelectors(cut) {
     };
 }
 
-function makeSelector(ri, ci, selectors = this.selectors) {
+function makeSelector(ri, ci, selectors = this.selectors, multiple = false, _selector, mergeSelector) {
     const {data} = this;
-    let selector = new Selector(data);
+    let selector = null;
+    console.log(_selector);
+    if (_selector) {
+        selector = _selector;
+    } else {
+
+        selector = new Selector(data)
+    }
     let color = selectorColor(selectors.length);
     selector.setCss(color);
     let className = `selector${parseInt(Math.random() * 999999)}`;
+
+    // console.log(mergeSelector);
+    console.log("146", ri, ci, mergeSelector);
+
+    if (multiple) {
+        if (mergeSelector) {
+            selector.setEnd(ri, ci);
+        } else {
+            selector.set(ri, ci, true);
+        }
+    } else {
+        selector.set(ri, ci, false);
+    }
     selector.el.attr("class", className);
-    selector.set(ri, ci, false);
+
     selector.el.css("z-index", "100");
 
-    this.overlayerCEl.child(selector.el);
     let args = {
         ri: ri,
         ci: ci,
@@ -176,6 +183,16 @@ function makeSelector(ri, ci, selectors = this.selectors) {
         erpx: xy2expr(ci, ri),
         selector: selector,
     };
+    if (!mergeSelector) {
+        selector.el.show();
+        this.overlayerCEl.child(selector.el);
+    }
+
+    if (multiple) {
+        return args;
+    }
+
+    this.overlayerCEl.child(selector.el);
     return args;
 }
 
@@ -380,7 +397,7 @@ function div2span(cut, cutcolor) {
     }
 
 
-    if(inputText != "" && spanArr.length <= 0) {
+    if (inputText != "" && spanArr.length <= 0) {
         let spanEl = h('span', `formula_span`);
         spanArr.push(spanEl);
     }
@@ -394,5 +411,6 @@ export {
     clearSelectors,
     editingSelectors,
     findBracket,
-    suggestContent
+    suggestContent,
+    makeSelector
 }

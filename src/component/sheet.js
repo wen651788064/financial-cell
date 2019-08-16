@@ -21,6 +21,7 @@ import {clearSelectors, editingSelectors, lockCells} from "../component/formula_
 import {deleteImg, hideDirectionArr, mountPaste} from "../event/paste";
 import {mountCopy} from "../event/copy";
 import Website from "../component/website";
+import {makeSelector} from "x-spreadsheet-master/src/component/formula_editor";
 
 function scrollbarMove() {
     const {
@@ -121,17 +122,12 @@ function overlayerMousemove(evt) {
     if (evt.target.className === `${cssPrefix}-resizer-hover`) return;
     const {offsetX, offsetY} = evt;
 
-
-    // url 展开
-    const {website} = this;
-    let {ri, ci} = data.getCellRectByXY(evt.pageX, evt.pageY - 41);
-    website.show(ri, ci);
-
-
-    // console.log("124", evt, this.x, this.y);
     const {
-        rowResizer, colResizer, tableEl, data,
+        rowResizer, colResizer, tableEl, data, website
     } = this;
+    const cRect = data.getCellRectByXY(evt.offsetX, evt.offsetY);
+    // url 展开
+    website.show(cRect.ri, cRect.ci);
     const {rows, cols} = data;
     if (offsetX > cols.indexWidth && offsetY > rows.height) {
         rowResizer.hide();
@@ -139,7 +135,6 @@ function overlayerMousemove(evt) {
         return;
     }
     const tRect = tableEl.box();
-    const cRect = data.getCellRectByXY(evt.offsetX, evt.offsetY);
     if (cRect.ri >= 0 && cRect.ci === -1) {
         cRect.width = cols.indexWidth;
         rowResizer.show(cRect, {
@@ -346,6 +341,7 @@ function overlayerMousedown(evt) {
 
         // mouse move up
         mouseMoveUp(window, (e) => {
+            console.log("348");
             // console.log('mouseMoveUp::::');
             ({ri, ci} = data.getCellRectByXY(e.pageX, e.pageY - 41));
             if (isAutofillEl) {
@@ -709,7 +705,23 @@ function sheetInitEvents() {
                 editorSet.call(this, 2);
             } else {
                 if (editor.getLock()) {
-                    lockCells.call(this, evt)
+                    let _selector = null;
+                    mouseMoveUp(window, (e) => {
+                        if (e.buttons === 1 && !e.shiftKey) {
+                            let {ri, ci} = data.getCellRectByXY(e.pageX, e.pageY - 41);
+                            if (_selector && _selector.selector) {
+                                _selector = makeSelector.call(this, ri, ci, this.selectors, true, _selector.selector, true);
+                            } else {
+                                _selector = makeSelector.call(this, ri, ci, this.selectors, true, null, false);
+                            }
+                            this.mergeSelector = true;
+                        }
+                    }, () => {
+                        console.log(this.mergeSelector)
+                        lockCells.call(this, evt, _selector);
+                        _selector = null;
+                        this.mergeSelector = false;
+                    });
                 }
                 if (!editor.getLock()) {
                     let {inputText, ri, ci} = editor;
@@ -1036,15 +1048,15 @@ export default class Sheet {
         this.selector = new Selector(data);
 
         this.advice = new Advice(data, this);
-
         this.website = new Website(data);
 
         this.pasteDirectionsArr = [];
         // this.pasteOverlay = h('div', `${cssPrefix}-paste-overlay-container`).hide();
 
-        this.selectors = [];
-
         this.overlayerCEl = hasEditor.call(this, showEditor);
+
+        this.selectors = [];
+        this.mergeSelector = true;
 
         this.overlayerEl = h('div', `${cssPrefix}-overlayer`)
             .child(this.overlayerCEl);

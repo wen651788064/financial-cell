@@ -68,10 +68,13 @@ function parseCell(viewRange) {
         let cell = data.getCell(ri, ci);
         let expr = xy2expr(ci, ri);
         if (cell && cell.text) {
-            if(cell.text.indexOf("MD.RTD") != -1) {
+            if (cell.text.indexOf("MD.RTD") != -1) {
                 workbook.Sheets.Sheet1[expr] = {v: "", f: ""};
             } else {
-                workbook.Sheets.Sheet1[expr] = {v: cell.text.replace(/ /g,''), f: cell.text.replace(/ /g,'').toUpperCase()};
+                workbook.Sheets.Sheet1[expr] = {
+                    v: cell.text.replace(/ /g, ''),
+                    f: cell.text.replace(/ /g, '').toUpperCase()
+                };
             }
         }
         else {
@@ -133,8 +136,9 @@ function renderCell(rindex, cindex, sheetbook) {
             color = 'red'
         }
         let underline = style.underline;
-        let regex = /[a-zA-Z0-9][-a-zA-Z0-9]{0,62}(\.[a-zA-Z0-9][-a-zA-Z0-9]{0,62})+\.?/;
-        if(regex.test(cellText)) {
+        let regex = /^http(s)?:\/\/([\w-]+\.)+[\w-]+(\/[\w- ./?%&=]*)?$/;
+        cellText = cellText + "";
+        if (regex.test(cellText.substr(0, 7).toLowerCase() == "http://" ? cellText : "http://" + cellText)) {
             color = "#4b89ff";
             underline = true;
         }

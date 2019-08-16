@@ -557,6 +557,10 @@ export default class Editor {
         } else if (type == 2 && text[0] != "="){
              this.textEl.child(text);
         }
+        setTimeout(() => {
+            this.textlineEl.html(text);
+            resetTextareaSize.call(this);
+        })
     }
 
     setCursorPos(pos) {
