@@ -5,64 +5,38 @@
     <title>test</title>
 </head>
 <body id="body">
+<style>
+    .bottom {
+        position: absolute;
+        width: 100px;
+        height: 100px;
+         border: 1px solid;
+        cursor: pointer;
+    }
 
+    .top {
+        z-index: 999;
+        width: 200px;
+        height: 200px;
+        background-color: transparent;
+        position: absolute;
+    }
+</style>
+<div class="bottom">
+    <div>1</div>
+    <div>2</div>
+    <div>3</div>
+    <div>4</div>
+</div>
 <!--<div id="rect" style="width: 100px; height: 100px; position: absolute; border: 1px solid;"> </div>-->
 <script src="drag.js"></script>
 <script src="resize.js"></script>
 <style>
-    .border{
-        border: #4a98be 1px solid;
-        position: absolute;
-        left: -7px;
-        right: -7px;
-        top: -7px;
-        bottom: -7px;
-        display: none;
-        z-index: 99;
-    }
-    .active .direction,.active .border{
-        display: block;
-    }
-    .direction{
-        position: absolute;
-        width: 5px;
-        height: 5px;
-        border: 1px #4a98be solid;
-        background-color: #7fd6ff;
-        display: none;
-        z-index: 100;
-    }
 
-    .nw{left: -10px; top: -10px; cursor: nw-resize}
-    .w{left: -10px; top: 50%; margin-top: -3px; cursor: w-resize}
-    .ws{left: -10px; bottom: -10px; cursor: sw-resize}
-    .s{left: 50%; bottom: -10px; margin-left: -3px; cursor: s-resize}
-    .se{right: -10px; bottom: -10px; cursor: se-resize}
-    .e{right: -10px; top: 50%; margin-top: -3px; cursor: e-resize}
-    .ne{right: -10px; top: -10px; cursor: ne-resize}
-    .n{top:-10px;left: 50%;margin-left: -3px;cursor: n-resize}
 
 </style>
 <script>
-    window.onload = add();
-    function add() {
-        let overlay = document.createElement("div");
-        overlay.style.width = "100%"
-        overlay.id = "overlay";
-        overlay.style.height = "100%"
-        overlay.style.zIndex = "1000000001";
-        overlay.style.position = "relative";
-        let rect = document.createElement("rect");
-        rect.style.width = "100px";
-        rect.style.height = "100px";
-        rect.style.border = "1px solid";
-        rect.style.position = "absolute";
 
-        document.getElementById("body").appendChild(overlay);
-        overlay.appendChild(rect);
-        new Drag("").register(rect);
-        new Resize("").register(rect);
-    }
 </script>
 </body>
 </html>

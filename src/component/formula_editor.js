@@ -5,7 +5,7 @@ import Selector from "../component/selector";
 import {h} from "../component/element";
 
 function lockCells(evt, _selector) {
-    const {data, editor, mergeSelector} = this;
+    const {data, editor} = this;
     const {offsetX, offsetY} = evt;
 
     const cellRect = data.getCellRectByXY(offsetX, offsetY);
@@ -16,39 +16,43 @@ function lockCells(evt, _selector) {
 
     editor.handler(inputText);
     let {mousedownIndex} = editor;
-    if (_selector) {
-        const {
-            sri, sci, eri, eci,
-        } = data.selector.range;
-        let s1 = xy2expr(sri, sci);
-        let s2 = xy2expr(eri, eci);
-        input = `${inputText}${s1}:${s2}`;
-
-        console.log("...", sri, sci, eri, eci)
-    } else if (isAbsoluteValue(cuttingByPos(inputText, pos), 2)) {
-        // 此情况是例如: =A1  -> 这时再点A2  则变成: =A2
-        let enter = 0;
-        for (let i = 0; i < this.selectors.length && enter == 0; i++) {
-            let selector = this.selectors[i];
-            let {erpx} = selector;
-            if (erpx === cuttingByPos(inputText, pos)) {
-                let {ri, ci} = cellRect;
-                this.selectors[i].ri = ri;
-                this.selectors[i].ci = ci;
-                this.selectors[i].erpx = xy2expr(ci, ri);
-                this.selectors[i].selector.set(ri, ci);
-                input = `${inputText.substring(0, pos - erpx.length)}${xy2expr(ci, ri)}${inputText.substring(pos, inputText.length)}`;
-                editor.setText(input);
-                editor.setCursorPos(inputText.substring(0, pos - erpx.length).length + xy2expr(ci, ri).length);
-                enter = 1;
+    if (isAbsoluteValue(cuttingByPos(inputText, pos), 2) || _selector) {
+        if (_selector) {
+            const {
+                sri, sci, eri, eci,
+            } = data.selector.range;
+            let s1 = xy2expr(sci, sri);
+            let s2 = xy2expr(eci, eri);
+            let text = s1 == s2 ? s1 : `${s1}:${s2}`;
+            _selector.erpx = text;
+            input = inputText.substring(0, pos - cuttingByPos(inputText, pos).length) + text + inputText.substring(pos, inputText.length);
+            editor.setText(input);
+            editor.setCursorPos(inputText.substring(0, pos - cuttingByPos(inputText, pos).length).length + text.length);
+        } else {
+            // 此情况是例如: =A1  -> 这时再点A2  则变成: =A2
+            let enter = 0;
+            for (let i = 0; i < this.selectors.length && enter == 0; i++) {
+                let selector = this.selectors[i];
+                let {erpx} = selector;
+                if (erpx === cuttingByPos(inputText, pos)) {
+                    let {ri, ci} = cellRect;
+                    this.selectors[i].ri = ri;
+                    this.selectors[i].ci = ci;
+                    this.selectors[i].erpx = xy2expr(ci, ri);
+                    this.selectors[i].selector.set(ri, ci);
+                    input = `${inputText.substring(0, pos - erpx.length)}${xy2expr(ci, ri)}${inputText.substring(pos, inputText.length)}`;
+                    editor.setText(input);
+                    editor.setCursorPos(inputText.substring(0, pos - erpx.length).length + xy2expr(ci, ri).length);
+                    enter = 1;
+                }
             }
         }
     } else if (mousedownIndex.length > 0) {
+        console.log(mousedownIndex);
         if (operation(mousedownIndex[1][0]) && isAbsoluteValue(cuttingByPos(mousedownIndex[1], mousedownIndex[1].length), 2)) {
             editor.setLock(false);
             return;
         }
-
 
         let args = makeSelector.call(this, ri, ci);
         this.selectors.push(args);
@@ -81,8 +85,7 @@ function lockCells(evt, _selector) {
     } else {
         let {pos} = editor;
 
-        let args = makeSelector.call(this, ri, ci);
-        this.selectors.push(args);
+        let args = _selector ? _selector : makeSelector.call(this, ri, ci);
         if (pos != -1) {
             let str = "";
             let enter = false;
@@ -104,17 +107,31 @@ function lockCells(evt, _selector) {
                     str += inputText[i];
                 }
             }
-            str = !enter ? str += xy2expr(ci, ri) : str;
+
+            if (_selector) {
+                const {
+                    sri, sci, eri, eci,
+                } = data.selector.range;
+                let s1 = xy2expr(sci, sri);
+                let s2 = xy2expr(eci, eri);
+
+                input = s1 === s2 ? s1 : `${s1}:${s2}`;
+                str = !enter ? str += input : str;
+            } else {
+                this.selectors.push(args);
+                str = !enter ? str += xy2expr(ci, ri) : str;
+            }
             editor.setText(str);
-            editor.setCursorPos(pos + xy2expr(ci, ri).length);
+            editor.setCursorPos(str.length);
             editor.parse();
         } else {
+            this.selectors.push(args);
             input = `${inputText}${xy2expr(ci, ri)}`;
             editor.setText(input);
         }
     }
     editor.parse(editor.pos);
-    if (this.selectors.length > 0) {
+    if (this.selectors.length > 0 || _selector) {
         let {inputText} = editor;
         div2span.call(this, cutting(inputText), cutting2(inputText));
     }
@@ -149,19 +166,15 @@ function filterSelectors(cut) {
 function makeSelector(ri, ci, selectors = this.selectors, multiple = false, _selector, mergeSelector) {
     const {data} = this;
     let selector = null;
-    console.log(_selector);
     if (_selector) {
         selector = _selector;
     } else {
-
-        selector = new Selector(data)
+        selector = new Selector(data);
+        let className = `selector${parseInt(Math.random() * 999999)}`;
+        selector.el.attr("class", className);
+        let color = selectorColor(selectors.length);
+        selector.setCss(color);
     }
-    let color = selectorColor(selectors.length);
-    selector.setCss(color);
-    let className = `selector${parseInt(Math.random() * 999999)}`;
-
-    // console.log(mergeSelector);
-    console.log("146", ri, ci, mergeSelector);
 
     if (multiple) {
         if (mergeSelector) {
@@ -172,14 +185,13 @@ function makeSelector(ri, ci, selectors = this.selectors, multiple = false, _sel
     } else {
         selector.set(ri, ci, false);
     }
-    selector.el.attr("class", className);
 
     selector.el.css("z-index", "100");
 
     let args = {
         ri: ri,
         ci: ci,
-        className: className,
+        className: selector.el.el.className,
         erpx: xy2expr(ci, ri),
         selector: selector,
     };
@@ -227,20 +239,11 @@ function editingSelectors(text = "") {
     let selectors_valid = selectors_new;
     // case 2  验证 selectors
     Object.keys(cut).forEach(i => {
-        let enter = 0;
-
+        let enterCode = 1;
         Object.keys(this.selectors).forEach(i => {
             let {selector} = this.selectors[i];
             selector.el.removeEl();
         });
-        // for (let i2 = 0; i2 < this.selectors.length && enter == 0; i2++) {
-        //     let selector = this.selectors[i2];
-        //     let {erpx} = selector;
-        //     if (cut[i].replace(/\$/g, "") === erpx) {
-        //         // selectors_new.push(selector);
-        //         enter = 1;
-        //     }
-        // }
 
         // 绝对值
         let arr = "";
@@ -248,13 +251,26 @@ function editingSelectors(text = "") {
             let notTrueValue = cut[i].replace(/\$/g, "");
             arr = expr2xy(notTrueValue);
         } else {
-            arr = expr2xy(cut[i]);
+            if (cut[i].search(/^[A-Za-z]+\d+:[A-Za-z]+\d+$/) != -1) {
+                enterCode = 2;
+            } else {
+                arr = expr2xy(cut[i]);
+            }
         }
 
-        if (enter == 0) {
+        if(enterCode == 1) {
             let ri = arr[1], ci = arr[0];
-
             let args = makeSelector.call(this, ri, ci, selectors_valid);
+            selectors_valid.push(args);
+        } else if (enterCode == 2) {
+            let prx = cut[i].split(":")[0];
+            let lax = cut[i].split(":")[1];
+
+            let prx_index = expr2xy(prx);
+            let lax_index = expr2xy(lax);
+            let args = makeSelector.call(this, prx_index[1], prx_index[0], selectors_valid, true, null, false);
+            args = makeSelector.call(this, lax_index[1], lax_index[0], selectors_valid, true, args.selector, true);
+            args.erpx = cut[i];
             selectors_valid.push(args);
         }
     });

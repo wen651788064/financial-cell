@@ -21,7 +21,9 @@ import {clearSelectors, editingSelectors, lockCells} from "../component/formula_
 import {deleteImg, hideDirectionArr, mountPaste} from "../event/paste";
 import {mountCopy} from "../event/copy";
 import Website from "../component/website";
-import {makeSelector} from "x-spreadsheet-master/src/component/formula_editor";
+import {makeSelector} from "../component/formula_editor";
+import {cuttingByPos} from "../core/operator";
+import {moveCell} from "../event/move";
 
 function scrollbarMove() {
     const {
@@ -116,7 +118,6 @@ function selectorMove(multiple, direction) {
 
 // private methods
 function overlayerMousemove(evt) {
-
     // console.log('x:', evt.offsetX, ', y:', evt.offsetY);
     if (evt.buttons !== 0) return;
     if (evt.target.className === `${cssPrefix}-resizer-hover`) return;
@@ -126,6 +127,9 @@ function overlayerMousemove(evt) {
         rowResizer, colResizer, tableEl, data, website
     } = this;
     const cRect = data.getCellRectByXY(evt.offsetX, evt.offsetY);
+
+    // moveCell.call(this);
+
     // url 展开
     website.show(cRect.ri, cRect.ci);
     const {rows, cols} = data;
@@ -341,7 +345,6 @@ function overlayerMousedown(evt) {
 
         // mouse move up
         mouseMoveUp(window, (e) => {
-            console.log("348");
             // console.log('mouseMoveUp::::');
             ({ri, ci} = data.getCellRectByXY(e.pageX, e.pageY - 41));
             if (isAutofillEl) {
@@ -681,7 +684,6 @@ function sheetInitEvents() {
     // overlayer
     overlayerEl
         .on('mousemove', (evt) => {
-
             overlayerMousemove.call(this, evt);
         })
         .on('mousedown', (evt) => {
@@ -706,20 +708,50 @@ function sheetInitEvents() {
             } else {
                 if (editor.getLock()) {
                     let _selector = null;
+                    let change = 0;
                     mouseMoveUp(window, (e) => {
                         if (e.buttons === 1 && !e.shiftKey) {
-                            let {ri, ci} = data.getCellRectByXY(e.pageX, e.pageY - 41);
+                            let {ri, ci} = data.getCellRectByXY(e.offsetX, e.offsetY);
                             if (_selector && _selector.selector) {
                                 _selector = makeSelector.call(this, ri, ci, this.selectors, true, _selector.selector, true);
+                                lockCells.call(this, evt, _selector);
+                                this.mergeSelector = true;
                             } else {
-                                _selector = makeSelector.call(this, ri, ci, this.selectors, true, null, false);
+                                let {inputText, pos} = editor;
+                                for (let i = 0; i < this.selectors.length; i++) {
+                                    let selector = this.selectors[i];
+                                    let {erpx} = selector;
+
+                                    console.log(erpx, cuttingByPos(inputText, pos), "722");
+                                    if (erpx === cuttingByPos(inputText, pos)) {
+                                        _selector = selector;
+                                        change = 1;
+                                        _selector.selector.set(ri, ci, true);
+                                        break;
+                                    }
+                                }
+
+                                _selector = _selector ? _selector : makeSelector.call(this, ri, ci, this.selectors, true, null, false);
                             }
-                            this.mergeSelector = true;
                         }
                     }, () => {
-                        console.log(this.mergeSelector)
-                        lockCells.call(this, evt, _selector);
+                        if (this.mergeSelector === false) {
+                            lockCells.call(this, evt, _selector);
+                        } else if (_selector && !change) {
+                            this.selectors.push(_selector);
+                        }
+                        if(this.mergeSelector) {
+                            for (let i = 0; i < this.selectors.length; i++) {
+                                let selector = this.selectors[i];
+
+                                if (selector.className === _selector.className) {
+                                    selector.erpx = _selector.erpx;
+                                    break;
+                                }
+                            }
+                        }
                         _selector = null;
+                        change = 0;
                         this.mergeSelector = false;
                     });
                 }
@@ -1056,7 +1088,7 @@ export default class Sheet {
         this.overlayerCEl = hasEditor.call(this, showEditor);
 
         this.selectors = [];
-        this.mergeSelector = true;
+        this.mergeSelector = false;
 
         this.overlayerEl = h('div', `${cssPrefix}-overlayer`)
             .child(this.overlayerCEl);

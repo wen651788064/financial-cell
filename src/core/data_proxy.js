@@ -14,6 +14,7 @@ import {Validations} from './validation';
 import {CellRange} from './cell_range';
 import {expr2xy, xy2expr} from './alphabet';
 import {t} from '../locale/locale';
+import Moved from '../event/move';
 // private methods
 /*
  * {
@@ -351,6 +352,7 @@ export default class DataProxy {
         this.scroll = new Scroll();
         this.history = new History();
         this.clipboard = new Clipboard();
+        this.moved = new Moved();
         this.autoFilter = new AutoFilter();
         this.change = () => {
         };
@@ -412,6 +414,10 @@ export default class DataProxy {
 
     copy() {
         this.clipboard.copy(this.selector.range);
+    }
+
+    move() {
+        this.moved.move();
     }
 
     cut() {
@@ -591,6 +597,11 @@ export default class DataProxy {
             return this.getRect(clipboard.range);
         }
         return {left: -100, top: -100};
+    }
+
+
+    getMoveRect(range) {
+        return this.getRect(range);
     }
 
     getRect(cellRange) {

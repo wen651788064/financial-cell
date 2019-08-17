@@ -138,6 +138,7 @@ function inputEventHandler(evt, txt = "") {
 
         const {suggest, textlineEl, validator, textEl, save} = this;
         this.inputText = v + "";
+        this.inputText =  this.inputText.replace(/，/g, ",");
         this.pos = getCursortPosition.call(this, evt);
         console.log(this.chinese, v);
         if (validator) {
@@ -550,6 +551,7 @@ export default class Editor {
                 suggest.search('');
             }
         }
+
         if (type == 2 && text != "" && text[0] == "=") {
             inputEventHandler.call(this, null, text);
             this.pos = text.length;

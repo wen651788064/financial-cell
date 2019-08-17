@@ -5,7 +5,7 @@ import {helpFormula} from "../core/operator";
 function variableElement(content, txt, pos, className, s = "", s2 = "") {
     let item = h('div', className);
     for(let i = 0; i < content[txt].length; i++) {
-        console.log(content[txt][i])
+        // console.log(content[txt][i])
         let ct = content[txt][i];
         let {name, editor, index} = ct;
 
@@ -60,6 +60,5 @@ export default class SuggestContent {
         });
 
         el.html('').children(...items).show();
-        console.log(content);
     }
 }

@@ -318,12 +318,74 @@ body {
   height: 100%;
 }
 
+//.@{css-prefix}-selector-area:hover {
+//  cursor:pointer
+//}
+
+.@{css-prefix}-selector-box-t {
+  position: absolute;
+  top: -1px;
+  width: 100%;
+  height: 5px;
+  cursor: move;
+  pointer-events: auto;
+}
+
+.@{css-prefix}-selector-box-l {
+  position: absolute;
+  top: -1px;
+  width: 5px;
+  height: 100%;
+  cursor: move;
+  pointer-events: auto;
+}
+
+.@{css-prefix}-selector-box-r {
+  position: absolute;
+  top: -1px;
+  width: 5px;
+  height: 100%;
+  right: 0px;
+  cursor: move;
+  pointer-events: auto;
+}
+
+.@{css-prefix}-selector-box-b {
+  position: absolute;
+  bottom: -3px;
+  width: 100%;
+  height: 5px;
+  cursor: move;
+  pointer-events: auto;
+}
+
+
+
 /* @{css-prefix}-selector */
 .@{css-prefix}-selector {
   .@{css-prefix}-selector-area {
     position: absolute;
     border: 2px solid rgb(75, 137, 255);
     background: rgba(75, 137, 255, .1);
+    cursor: pointer;
+  }
+
+  .@{css-prefix}-selector-boxinner {
+    //pointer-events: auto;
+    //cursor: move;
+    width: 100%;
+    height: 100%;
+  }
+  .@{css-prefix}-selector-box {
+    bottom: 0;
+    right: 0;
+    position: absolute;
+    cursor: default;
+    width: 90%;
+    height: 85%;
+    margin: auto;
+    left: 0;
+    top: 0;
   }
   .@{css-prefix}-selector-clipboard, .@{css-prefix}-selector-autofill {
     position: absolute;
@@ -1149,6 +1211,10 @@ body {
       top: -3 * @icon-size;
     }
   }
+}
+
+.@{css-prefix}-mouseover {
+  opacity: 0.1;
 }
 
 .@{css-prefix}-hyperlink-tooltip {

@@ -1,15 +1,39 @@
 import {h} from './element';
 import {cssPrefix} from '../config';
 import {CellRange} from '../core/cell_range';
+import {mouseMoveUp} from "../component/event";
 
 const selectorHeightBorderWidth = 2 * 2 - 1;
 let startZIndex = 10;
 
 class SelectorElement {
-    constructor() {
+    constructor(data, selector) {
         this.cornerEl = h('div', `${cssPrefix}-selector-corner`);
+        // this.box = h('div', `${cssPrefix}-selector-box`);
+        this.data = data;
+        this._selector =  selector;
+        this.l = h('div', `${cssPrefix}-selector-box-l`)
+            .on('mousedown.stop', evt => {
+                this.moveEvent();
+            });
+        this.r = h('div', `${cssPrefix}-selector-box-r`)
+            .on('mousedown.stop', evt => {
+                this.moveEvent();
+            });
+        this.t = h('div', `${cssPrefix}-selector-box-t`)
+            .on('mousedown.stop', evt => {
+                this.moveEvent();
+            });
+        this.b = h('div', `${cssPrefix}-selector-box-b`)
+            .on('mousedown.stop', evt => {
+                this.moveEvent();
+            });
+
+
+        this.boxinner = h('div', `${cssPrefix}-selector-boxinner`)
+            .children(this.b, this.t, this.r, this.l);
         this.areaEl = h('div', `${cssPrefix}-selector-area`)
-            .child(this.cornerEl).hide();
+            .children(this.cornerEl, this.boxinner).hide();
         this.clipboardEl = h('div', `${cssPrefix}-selector-clipboard`).hide();
         this.autofillEl = h('div', `${cssPrefix}-selector-autofill`).hide();
         this.el = h('div', `${cssPrefix}-selector`)
@@ -17,6 +41,21 @@ class SelectorElement {
             .children(this.areaEl, this.clipboardEl, this.autofillEl)
             .hide();
         startZIndex += 1;
+    }
+
+    moveEvent() {
+        let {data, _selector} = this;
+        let {selector} = data;
+        let {sri, sci, eri, eci, w, h} = selector.range;
+        let cellRange = new CellRange(sri, sci, eri, eci, w, h);
+        mouseMoveUp(window, (e) => {
+            let {ri, ci} = data.getCellRectByXY(e.pageX, e.pageY - 41);
+            cellRange.move(ri, ci);
+            const coffset = data.getMoveRect(cellRange);
+            _selector.showClipboard2(coffset);
+        }, (e) => {
+            console.log("mouseup", e)
+        });
     }
 
     setCss(b) {
@@ -186,10 +225,10 @@ function setAllClipboardOffset(offset) {
 export default class Selector {
     constructor(data) {
         this.data = data;
-        this.br = new SelectorElement();
-        this.t = new SelectorElement();
-        this.l = new SelectorElement();
-        this.tl = new SelectorElement();
+        this.br = new SelectorElement(data, this);
+        this.t = new SelectorElement(data, this);
+        this.l = new SelectorElement(data, this);
+        this.tl = new SelectorElement(data, this);
         this.br.el.show();
         this.offset = null;
         this.areaOffset = null;
@@ -298,7 +337,6 @@ export default class Selector {
             this.lastci = ci;
         }
         this.range = data.calSelectedRangeByEnd(ri, ci);
-        console.log(this.range, 301 )
 
         setAllAreaOffset.call(this, this.data.getSelectedRect());
 
@@ -383,6 +421,13 @@ export default class Selector {
 
     showClipboard() {
         const coffset = this.data.getClipboardRect();
+        setAllClipboardOffset.call(this, coffset);
+        ['br', 'l', 't', 'tl'].forEach((property) => {
+            this[property].showClipboard();
+        });
+    }
+
+    showClipboard2(coffset) {
         setAllClipboardOffset.call(this, coffset);
         ['br', 'l', 't', 'tl'].forEach((property) => {
             this[property].showClipboard();
