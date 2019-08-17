@@ -17,6 +17,7 @@ export default class Website {
         let text = data.getCellTextOrDefault(ri, ci) + "";
         let regex = /^http(s)?:\/\/([\w-]+\.)+[\w-]+(\/[\w- ./?%&=]*)?$/;
         text = text.substr(0, 7).toLowerCase() == "http://" ? text : "http://" + text;
+        console.log(regex.test(text))
         if (!regex.test(text)) {
             this.el.hide();
             return;
@@ -27,7 +28,7 @@ export default class Website {
         let top = rect.top;
         this.el.html('');
         this.el.children(
-            h('a', '').attr('href', text).attr('target', '_blank').html(text)
+            h('a', 'aaa').attr('href', text).attr('target', '_blank').html(text)
         );
         this.el.css('left', `${left}px`);
         this.el.css('top', `${top}px`);
