@@ -1020,7 +1020,7 @@ function sheetInitEvents() {
                         if (formula && typeof formula.wland == "function") {
                             formula.wland(formula, data, table);
                         }
-                    }, 1000);
+                    }, 500);
 
                     evt.preventDefault();
                     // 清除各种属性
