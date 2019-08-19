@@ -344,8 +344,8 @@ function overlayerMousedown(evt) {
 
         // mouse move up
         mouseMoveUp(window, (e) => {
-            // console.log('mouseMoveUp::::');
-            ({ri, ci} = data.getCellRectByXY(e.pageX, e.pageY - 41));
+            this.container.css('pointer-events', 'none');
+            ({ri, ci} = data.getCellRectByXY(e.layerX, e.layerY));
             if (isAutofillEl) {
                 selector.showAutofill(ri, ci);
             } else if (e.buttons === 1 && !e.shiftKey) {
@@ -360,6 +360,8 @@ function overlayerMousedown(evt) {
             }
             selector.hideAutofill();
             toolbarChangePaintformatPaste.call(this);
+            this.container.css('pointer-events', 'auto');
+
         });
     }
 
@@ -1090,13 +1092,14 @@ export default class Sheet {
 
         this.overlayerCEl = hasEditor.call(this, showEditor);
         this.selectors = [];
+        this.container = h('div', '');
         this.selectorsEl = h('div', `selector_clear`).attr("id", "selector_clear");
         this.overlayerCEl.child(this.selectorsEl);
 
         this.mergeSelector = false;
 
         this.overlayerEl = h('div', `${cssPrefix}-overlayer`)
-            .child(this.overlayerCEl);
+            .children(this.overlayerCEl, this.container);
         // sortFilter
         this.sortFilter = new SortFilter();
         this.direction = false;   // 图片移动

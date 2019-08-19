@@ -135,7 +135,7 @@ function getMaxCoord(ri, ci) {
 
 function mountImg(imgDom) {
     let img = imgDom;
-    let {overlayerEl, pasteDirectionsArr, data} = this;
+    let {container, pasteDirectionsArr, data} = this;
     // let {indexes} = selector;
     let {ri, ci} = data.selector;
     let rect = data.cellRect(ri, ci);
@@ -157,7 +157,7 @@ function mountImg(imgDom) {
         .css("z-index", `100000`)
         .css("left", `${left}px`)
         .child(img);
-    overlayerEl.child(div);
+    container.child(div);
     new Drag(dragOption).register(div.el);
     setTimeout(() => {
         let directionsArr = new Resize(resizeOption).register(div.el);
