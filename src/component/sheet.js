@@ -1015,10 +1015,12 @@ function sheetInitEvents() {
                     renderAutoAdapt.call(this);
                     autoRowResizer.call(this);
                     selectorMove.call(this, false, shiftKey ? 'up' : 'down');
-                    let {formula} = data.settings;
-                    if (formula && typeof formula.wland == "function") {
-                        formula.wland(formula, data, table);
-                    }
+                    setTimeout(() => {
+                        let {formula} = data.settings;
+                        if (formula && typeof formula.wland == "function") {
+                            formula.wland(formula, data, table);
+                        }
+                    }, 1000);
 
                     evt.preventDefault();
                     // 清除各种属性

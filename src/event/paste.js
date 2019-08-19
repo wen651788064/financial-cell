@@ -29,12 +29,23 @@ let dragOption = {
 function mountPaste(e, cb) {
     let cbd = e.clipboardData;
     let p = false;
+    let isSpan = false;
     for (let i = 0; i < cbd.items.length; i++) {
         let item = cbd.items[i];
         if (item.kind === "string") {
+
             item.getAsString((str) => {
-                let textDom = document.createElement("head");
-                textDom.innerHTML = str;
+                let textDom =  h('head', '');
+                let d = h('span', '');
+                if ((str.indexOf('<span') == -1 && str.indexOf('span>') == -1) && (str.indexOf('<table') == -1 && str.indexOf('table>') == -1)) {
+                    d.html(str);
+                    textDom.child(d.el);
+                    textDom = textDom.el;
+                }
+                else {
+                    textDom.html(str);
+                    textDom = textDom.el;
+                }
                 let imgDom = textDom.getElementsByTagName("img")[0];
                 let styleDom = textDom.getElementsByTagName("style")[0];
                 let tableDom = textDom.getElementsByTagName("table")[0];
@@ -56,6 +67,7 @@ function mountPaste(e, cb) {
                         tbody.child(tr);
                         table.child(tbody);
                         tableDom = table.el;
+                        isSpan = true;
                     }
                     if (styleDom) {
                         let {el} = this;
@@ -71,7 +83,8 @@ function mountPaste(e, cb) {
                             styleDom.parentNode.removeChild(styleDom);
                         }
                         sheetReset.call(this);
-                        p = true;
+                        if(!isSpan)
+                            p = true;
                     }
                 }
             });
