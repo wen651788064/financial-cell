@@ -16,7 +16,7 @@ export default class Website {
         let {data} = this;
         let text = data.getCellTextOrDefault(ri, ci) + "";
         let regex = /^http(s)?:\/\/([\w-]+\.)+[\w-]+(\/[\w- ./?%&=]*)?$/;
-        text = text.substr(0, 7).toLowerCase() == "http://" ? text : "http://" + text;
+        text = text.substr(0, 3).toLowerCase() == "www" ? "http://" + text : text;
         // console.log(regex.test(text))
         if (!regex.test(text)) {
             this.el.hide();

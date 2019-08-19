@@ -138,7 +138,7 @@ function renderCell(rindex, cindex, sheetbook) {
         let underline = style.underline;
         let regex = /^http(s)?:\/\/([\w-]+\.)+[\w-]+(\/[\w- ./?%&=]*)?$/;
         cellText = cellText + "";
-        let text = cellText.substr(0, 3).toLowerCase() != "www" ? cellText : "http://" + cellText;
+        let text = cellText.substr(0, 3).toLowerCase() == "www" ? "http://" + cellText : cellText;
         console.log(text);
         if (regex.test(text)) {
             color = "#4b89ff";
