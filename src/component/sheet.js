@@ -908,7 +908,7 @@ function sheetInitEvents() {
                     break;
                 case 67:
                     // ctrl + c
-                    copy.call(this);
+                    // copy.call(this);
                     // evt.preventDefault();
                     break;
                 case 88:

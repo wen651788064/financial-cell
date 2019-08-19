@@ -54,6 +54,7 @@ function mountPaste(e, cb) {
                     mountImg.call(this, imgDom);
                     p = true;
                 } else {
+                    isSpan = false;
                     if (spanDom) {
                         let table = h("table", "");
                         let tbody = h('tbody', '');
@@ -83,7 +84,7 @@ function mountPaste(e, cb) {
                             styleDom.parentNode.removeChild(styleDom);
                         }
                         sheetReset.call(this);
-                        if(!isSpan)
+                        if(isSpan == false)
                             p = true;
                     }
                 }
@@ -334,7 +335,7 @@ function GetInfoFromTable(tableObj) {
             }
             lastRi = i + ri;
             lastCi = j + ci;
-            // selectorSet.call(this, true, i + ri, j + ci, true, true);
+            selectorSet.call(this, true, i + ri, j + ci, true, true);
         }
         rows[i + ri] = {
             "cells": cells

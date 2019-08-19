@@ -16,8 +16,8 @@ function mountCopy(event) {
         plain: "",
         html: h("table", ""),
     };
-    let {clipboard, rows, styles} = this.data;
-    let {sri, eri, sci, eci} = clipboard.range;
+    let {selector, rows, styles} = this.data;
+    let {sri, eri, sci, eci} = selector.range;
     let tbody = h('tbody', '');
     for (let i = sri; i <= eri; i += 1) {
         let tr = h('tr', '');
