@@ -17,11 +17,10 @@ import {getFontSizePxByPt} from "../core/font";
 // import {baseFormats, multiply} from "../core/format";
 import Advice from "../component/advice";
 import {formatm} from "../core/format";
-import {clearSelectors, editingSelectors, lockCells} from "../component/formula_editor";
+import {clearSelectors, editingSelectors, lockCells, makeSelector} from "../component/formula_editor";
 import {deleteImg, hideDirectionArr, mountPaste} from "../event/paste";
 import {mountCopy} from "../event/copy";
 import Website from "../component/website";
-import {makeSelector} from "../component/formula_editor";
 import {cuttingByPos} from "../core/operator";
 import {moveCell} from "../event/move";
 
@@ -388,6 +387,9 @@ function editorSetOffset() {
         sPosition = 'bottom';
     }
     editor.setOffset(sOffset, sPosition);
+    setTimeout(() => {
+        editor.setCursorPos(0);
+    });
 }
 
 function hasEditor(showEditor = true) {
@@ -740,7 +742,7 @@ function sheetInitEvents() {
                         } else if (_selector && !change) {
                             this.selectors.push(_selector);
                         }
-                        if(this.mergeSelector) {
+                        if (this.mergeSelector) {
                             for (let i = 0; i < this.selectors.length; i++) {
                                 let selector = this.selectors[i];
 
@@ -767,6 +769,7 @@ function sheetInitEvents() {
                     editor.clear();
                     overlayerMousedown.call(this, evt);
                     clearSelectors.call(this);
+                    editorSetOffset.call(this);
                 }
             }
         }).on('mousewheel.stop', (evt) => {
@@ -1086,8 +1089,10 @@ export default class Sheet {
         // this.pasteOverlay = h('div', `${cssPrefix}-paste-overlay-container`).hide();
 
         this.overlayerCEl = hasEditor.call(this, showEditor);
-
         this.selectors = [];
+        this.selectorsEl = h('div', `selector_clear`).attr("id", "selector_clear");
+        this.overlayerCEl.child(this.selectorsEl);
+
         this.mergeSelector = false;
 
         this.overlayerEl = h('div', `${cssPrefix}-overlayer`)

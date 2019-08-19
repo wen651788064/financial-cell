@@ -118,6 +118,7 @@ function lockCells(evt, _selector) {
                 input = s1 === s2 ? s1 : `${s1}:${s2}`;
                 str = !enter ? str += input : str;
             } else {
+                console.log("121push")
                 this.selectors.push(args);
                 str = !enter ? str += xy2expr(ci, ri) : str;
             }
@@ -171,7 +172,7 @@ function makeSelector(ri, ci, selectors = this.selectors, multiple = false, _sel
     } else {
         selector = new Selector(data);
         let className = `selector${parseInt(Math.random() * 999999)}`;
-        selector.el.attr("class", className);
+        selector.el.attr("class", `${className} clear_selector`);
         let color = selectorColor(selectors.length);
         selector.setCss(color);
     }
@@ -197,22 +198,19 @@ function makeSelector(ri, ci, selectors = this.selectors, multiple = false, _sel
     };
     if (!mergeSelector) {
         selector.el.show();
-        this.overlayerCEl.child(selector.el);
+        this.selectorsEl.child(selector.el);
     }
 
     if (multiple) {
         return args;
     }
 
-    this.overlayerCEl.child(selector.el);
+    this.selectorsEl.child(selector.el);
     return args;
 }
 
 function clearSelectors() {
-    Object.keys(this.selectors).forEach(i => {
-        let {selector} = this.selectors[i];
-        selector.el.removeEl();
-    });
+    this.selectorsEl.html('');
     this.selectors = [];
     let {editor, selector} = this;
     editor.setLock(false);

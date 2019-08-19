@@ -112,12 +112,25 @@ const setCursorPosition = (elem, index) => {
 
 function mouseDownEventHandler(evt) {
     this.pos = getCursortPosition.call(this, evt);
-    console.log("pos", this.pos)
     parse2.call(this, this.inputText, this.pos);
 }
 
 function inputEventHandler(evt, txt = "") {
+    if(evt) {
+        const {
+            inputType
+        } = evt;
+
+
+        if(inputType === 'insertFromPaste') {
+            return;
+        }
+    }
+
+    this.textEl.css('visibility', 'initial');
     setTimeout(() => {
+        this.textEl.css('position', 'static');
+
         if (this.chinese == false)
             return;
         let v = "";
@@ -346,10 +359,14 @@ export default class Editor {
                         this.chinese = true;
                     })
                     .on('paste', evt => {
-                        evt.stopPropagation();
+                        if(this.textEl.el.style['position'] != 'fixed') {
+                            evt.stopPropagation();
+                        }
                     })
                     .on('copy', evt => {
-                        evt.stopPropagation();
+                        if(this.textEl.el.style['position'] != 'fixed') {
+                            evt.stopPropagation();
+                        }
                     })
                     .on('keydown', evt => {
                         resetTextareaSize.call(this);
@@ -359,6 +376,27 @@ export default class Editor {
                         // ctrl + v 67     ctrl + v  86
                         if (38 === key_num || 40 === key_num) {
                             evt.preventDefault();
+                        }
+
+                        const {
+                            key, ctrlKey, shiftKey, altKey, metaKey,
+                        } = evt;
+                        if(ctrlKey || metaKey) {
+                            if(67 === key_num) {
+                                let event = document.createEvent('HTMLEvents');
+                                event.initEvent("keydown", true, true);
+                                event.eventType = 'message';
+                                event.keyCode = 67;
+                                event.metaKey = true;
+                                document.dispatchEvent(event);
+                            } else if (key_num === 86) {
+                                let event = document.createEvent('HTMLEvents');
+                                event.initEvent("keydown", true, true);
+                                event.eventType = 'message';
+                                event.keyCode = 86;
+                                event.metaKey = true;
+                                document.dispatchEvent(event);
+                            }
                         }
                     })
                 ,
@@ -372,7 +410,7 @@ export default class Editor {
             .on('mousedown.stop', () => {
             });
         this.el = h('div', `${cssPrefix}-editor`)
-            .child(this.areaEl).hide();
+            .child(this.areaEl);
         this.suggest.bindInputEvents(this.textEl);
 
         this.tmp = h('span', 'span_tmp').hide();
@@ -381,9 +419,12 @@ export default class Editor {
         this.textEl.css('background', 'white');
         this.textEl.css('font-size', '12px');
         this.textEl.css('caret-color', 'black');
-        this.textEl.css('top', '5px');
+        this.textEl.css('top', '-500px');
         this.textEl.css('caret-color', 'black');
         this.textEl.css('left', '2px');
+        this.textEl.css('position', 'fixed');
+        // this.textEl.css('visibility', 'hidden');
+
         this.textEl.css('outline', 'none');
         this.textEl.child(this.tmp);
         this.pos = 0;
@@ -417,6 +458,10 @@ export default class Editor {
         return this.lock;
     }
 
+    show() {
+        this.textEl.css('position', 'static');
+        this.textEl.css('visibility', 'initial');
+    }
 
     parse(pos = -1) {
         if (pos != -1) {
@@ -434,7 +479,12 @@ export default class Editor {
         this.cell = null;
         this.areaOffset = null;
         this.inputText = '';
-        this.el.hide();
+        this.textEl.css('top', '-500px');
+        this.textEl.css('position', 'fixed');
+        // this.textEl.css('visibility', 'hidden');
+
+        // this.el.hide();
+        set_focus.call(this, this.textEl.el, -1);
         this.pos = 0;
         // this.textEl.val('');
         this.tmp.hide();
@@ -526,6 +576,9 @@ export default class Editor {
 
     setCell(cell, validator, type = 1) {
         this.cell = cell;
+        this.textEl.css('position', 'static');
+        this.textEl.css('visibility', 'initial');
+
         let text = (cell && cell.formulas) || '';
         text = text == "" ? (cell && cell.text) || '' : text;
 

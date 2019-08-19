@@ -33,7 +33,7 @@ class SelectorElement {
         this.boxinner = h('div', `${cssPrefix}-selector-boxinner`)
             .children(this.b, this.t, this.r, this.l);
         this.areaEl = h('div', `${cssPrefix}-selector-area`)
-            .children(this.cornerEl, this.boxinner).hide();
+            .children(this.cornerEl).hide();            // this.boxinner
         this.clipboardEl = h('div', `${cssPrefix}-selector-clipboard`).hide();
         this.autofillEl = h('div', `${cssPrefix}-selector-autofill`).hide();
         this.el = h('div', `${cssPrefix}-selector`)

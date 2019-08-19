@@ -147,9 +147,9 @@ class Rows {
                                             // 往下是true  往上是false
                                             yn += 1;
 
-                                            if (xn <= 0 || yn <= 0) {
-                                                return "#REF!";
-                                            }
+                                            // if (xn <= 0 || yn <= 0) {
+                                            //     return "#REF!";
+                                            // }
                                             let txt = expr2expr(word.replace("$", ""), xn, yn);
                                             if (type == 1) {
                                                 txt = "$" + txt;
@@ -166,6 +166,9 @@ class Rows {
                                             }
 
                                             // console.log('xn:', xn, ', yn:', yn, word, expr2expr(word, xn, yn));
+                                            if(txt.replace(/[^-(0-9)]/ig,"") <= 0) {
+                                                return "#REF!";
+                                            }
                                             return txt;
                                         });
                                         ncell.formulas = ncell.text;

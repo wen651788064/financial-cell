@@ -2,7 +2,7 @@ import {h} from "../component/element";
 
 function mountCopy(event) {
     event.preventDefault();
-    if(this.direction) {
+    if (this.direction) {
         // console.log(parseDom(getChooseImg.call(this).img2), 6);
         if (event.clipboardData) {
             event.clipboardData.setData("text/html", parseDom(getChooseImg.call(this).img2));
@@ -26,8 +26,9 @@ function mountCopy(event) {
             if (rows._[i] && rows._[i].cells && rows._[i].cells[j]) {
                 if (rows._[i].cells[j] && styles[rows._[i].cells[j].style]) {
                     td.css('color', styles[rows._[i].cells[j].style].color);
-                    if(styles[rows._[i].cells[j].style].font.bold) {
-                        td.css('font-weight', styles[rows._[i].cells[j].style].font.bold);
+                    if (styles[rows._[i].cells[j].style].font.bold) {
+                        let bold = styles[rows._[i].cells[j].style].font.bold ? '900' : '';
+                        td.css('font-weight', bold);
                     }
                     td.css('background', styles[rows._[i].cells[j].style].bgcolor);
                 }
@@ -46,7 +47,7 @@ function mountCopy(event) {
     }
     args.html.child(tbody);
 
-    console.log(args.html.el,  parseDom(args.html.el));
+    console.log(args.html.el, parseDom(args.html.el));
 
     if (event.clipboardData) {
         console.log(parseDom(args.html.el));
@@ -56,12 +57,12 @@ function mountCopy(event) {
 }
 
 function getChooseImg() {
-    let {pasteDirectionsArr}  = this;
+    let {pasteDirectionsArr} = this;
 
     this.direction = false;
-    if(pasteDirectionsArr.length > 0) {
-        for(let i = 0; i < pasteDirectionsArr.length; i++) {
-            if(pasteDirectionsArr[i].state === true) {
+    if (pasteDirectionsArr.length > 0) {
+        for (let i = 0; i < pasteDirectionsArr.length; i++) {
+            if (pasteDirectionsArr[i].state === true) {
                 return pasteDirectionsArr[i];
             }
         }

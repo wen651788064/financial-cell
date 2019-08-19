@@ -289,7 +289,7 @@ function GetInfoFromTable(tableObj) {
         }
         for (let j = 0; j < tableObj.rows[i].cells.length; j++) {
             let bold = false;
-            if (document.defaultView.getComputedStyle(tableObj.rows[i].cells[j], false).fontWeight < 400) {
+            if (document.defaultView.getComputedStyle(tableObj.rows[i].cells[j], false).fontWeight > 400) {
                 bold = true;
             }
             let args = {
@@ -321,7 +321,7 @@ function GetInfoFromTable(tableObj) {
             }
             lastRi = i + ri;
             lastCi = j + ci;
-            selectorSet.call(this, true, i + ri, j + ci, true, true);
+            // selectorSet.call(this, true, i + ri, j + ci, true, true);
         }
         rows[i + ri] = {
             "cells": cells
@@ -331,6 +331,11 @@ function GetInfoFromTable(tableObj) {
         };
     }
 
+    let {eci, eri, sci, sri} = data.selector.range;
+    if(eci != sci || eri != sri) {
+        lastRi = eri;
+        lastCi = eci;
+    }
     let rect = data.cellRect(lastRi, lastCi);
 
     let left = rect.left + rect.width + 60;
