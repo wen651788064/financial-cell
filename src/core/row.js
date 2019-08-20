@@ -1,6 +1,7 @@
 import helper from './helper';
 import {expr2expr} from './alphabet';
 import {absoluteType, isAbsoluteValue} from "../core/operator";
+import {expr2xy} from "x-spreadsheet-master/src/core/alphabet";
 
 class Rows {
     constructor({len, height}) {
@@ -89,6 +90,12 @@ class Rows {
         cell.text = text;  // todo 自定义公式： text 为公式计算结果, formulas 为公式
     }
 
+    setCellAll(ri, ci, text, formulas) {
+        const cell = this.getCellOrNew(ri, ci);
+        cell.formulas = formulas;
+        cell.text = text;
+    }
+
     // what: all | format | text
     copyPaste(srcCellRange, dstCellRange, what, autofill = false, cb = () => {
     }) {
@@ -146,10 +153,11 @@ class Rows {
 
                                             // 往下是true  往上是false
                                             yn += 1;
+                                            let a = expr2xy(word.replace("$", ""), '');
+                                            if((a[0] - Math.abs(xn) < 0 && xn < 0) || (a[1] - Math.abs(yn) < 0 && yn <= 0)) {
+                                                return "#REF!";
+                                            }
 
-                                            // if (xn <= 0 || yn <= 0) {
-                                            //     return "#REF!";
-                                            // }
                                             let txt = expr2expr(word.replace("$", ""), xn, yn);
                                             if (type == 1) {
                                                 txt = "$" + txt;

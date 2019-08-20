@@ -59,22 +59,28 @@ function getCellTextStyle(rindex, cindex) {
 
 function parseCell(viewRange) {
     let {data} = this;
-    let {calc} = data;
+    let {calc, rows} = data;
     let workbook = [];
     workbook.Sheets = {};
     workbook.Sheets.Sheet1 = {};
 
-    viewRange.each((ri, ci) => {
+    viewRange.each2((ri, ci) => {
         let cell = data.getCell(ri, ci);
         let expr = xy2expr(ci, ri);
         if (cell && cell.text) {
             if (cell.text.indexOf("MD.RTD") != -1) {
                 workbook.Sheets.Sheet1[expr] = {v: "", f: ""};
             } else {
-                workbook.Sheets.Sheet1[expr] = {
-                    v: cell.text.replace(/ /g, ''),
-                    f: cell.text.replace(/ /g, '').toUpperCase()
-                };
+                if(cell.text && cell.text.lastIndexOf("=") === 0) {
+                    workbook.Sheets.Sheet1[expr] = {
+                        v: '',
+                        f: cell.text.replace(/ /g, '').toUpperCase()
+                    };
+                } else {
+                    workbook.Sheets.Sheet1[expr] = {
+                        v: cell.text.replace(/ /g, ''),
+                    };
+                }
             }
         }
         else {
@@ -86,6 +92,7 @@ function parseCell(viewRange) {
     } catch (e) {
         console.error(e);
     }
+    console.log(workbook);
     return workbook;
 }
 
@@ -139,7 +146,6 @@ function renderCell(rindex, cindex, sheetbook) {
         let regex = /^http(s)?:\/\/([\w-]+\.)+[\w-]+(\/[\w- ./?%&=]*)?$/;
         cellText = cellText + "";
         let text = cellText.substr(0, 3).toLowerCase() == "www" ? "http://" + cellText : cellText;
-        console.log(text);
         if (regex.test(text)) {
             color = "#4b89ff";
             underline = true;

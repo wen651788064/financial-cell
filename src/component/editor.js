@@ -3,11 +3,10 @@ import {h} from './element';
 import Suggest from './suggest';
 import Datepicker from './datepicker';
 import {cssPrefix} from '../config';
-import {cuttingByPos, isAbsoluteValue, operation} from "../core/operator";
+import {cutting, cuttingByPos, cuttingByPosEnd, isAbsoluteValue, operation} from "../core/operator";
 import SuggestContent from "../component/suggest_content";
-import {findBracket} from "../component/formula_editor";
-import {cutting} from "../core/operator";
-import {suggestContent} from "../component/formula_editor";
+import {findBracket, suggestContent} from "../component/formula_editor";
+import {createEvent} from "../component/event";
 
 // import { mouseMoveUp } from '../event';
 
@@ -15,6 +14,9 @@ function resetTextareaSize() {
     const {
         textlineEl, textEl, areaOffset,
     } = this;
+    if (!areaOffset) {
+        return;
+    }
     const tlineWidth = textlineEl.offset().width + 9 + 15;
     const maxWidth = this.viewFn().width - areaOffset.left - 9;
     // console.log('tlineWidth:', tlineWidth, ':', maxWidth);
@@ -116,13 +118,18 @@ function mouseDownEventHandler(evt) {
 }
 
 function inputEventHandler(evt, txt = "") {
-    if(evt) {
+    if (evt) {
         const {
             inputType
         } = evt;
 
 
-        if(inputType === 'insertFromPaste') {
+        if (inputType === 'insertFromPaste') {
+            this.copy = true;
+            return;
+        }
+
+        if ('deleteContentBackward' === inputType && this.textEl.el.style['position'] === 'fixed') {
             return;
         }
     }
@@ -130,7 +137,6 @@ function inputEventHandler(evt, txt = "") {
     this.textEl.css('visibility', 'initial');
     setTimeout(() => {
         this.textEl.css('position', 'static');
-
         if (this.chinese == false)
             return;
         let v = "";
@@ -147,11 +153,15 @@ function inputEventHandler(evt, txt = "") {
         } else {
             v = txt;
         }
-        // this.textEl.html('');
+        if (this.copy) {
+            this.copy = false;
+            this.textEl.html('');
+            v = '';
+        }
 
         const {suggest, textlineEl, validator, textEl, save} = this;
         this.inputText = v + "";
-        this.inputText =  this.inputText.replace(/，/g, ",");
+        this.inputText = this.inputText.replace(/，/g, ",");
         this.pos = getCursortPosition.call(this, evt);
         console.log(this.chinese, v);
         if (validator) {
@@ -166,14 +176,24 @@ function inputEventHandler(evt, txt = "") {
                 parse2.call(this, v, this.pos);
             } else
                 parse.call(this, v);
-            let cutValue = cuttingByPos(v, this.pos);
-            if (start === 0 && v.length > 1 && cutValue != "") {
+            let show = false;
+            let cutValue = cuttingByPos(v, this.pos, false);
+            if (v.length >= this.pos) {
+                let isNumber = v[this.pos] + "";
+                if (isNumber.search(/^[0-9]+.?[0-9]*$/) != -1) {
+                    show = true;
+                } else if (isNumber) {
+                    let c = cuttingByPosEnd(v, this.pos + 1);
+                    cutValue += c;
+                }
+            }
+
+            if (start === 0 && v.length > 1 && cutValue != "" && !show && cutValue.trim().length > 0) {
                 suggest.search(cutValue);
             } else {
                 suggest.hide();
             }
         }
-
         textlineEl.html(v);
         resetTextareaSize.call(this);
         if (v && v[0] !== "=") {
@@ -285,14 +305,15 @@ function suggestItemClick(it) {
     } else {
         this.pos = getCursortPosition.call(this);
         let begin = this.pos - cuttingByPos(inputText, this.pos).length;
-
+        let c = cuttingByPosEnd(inputText, this.pos + 1);
         let arr = ["", ""];
+        let end = this.pos + c.length;
         for (let i = 0; i < inputText.length; i++) {
             if (i < begin) {
                 arr[0] += inputText[i];
             }
 
-            if (i > this.pos - 1) {
+            if (i > end - 1) {
                 arr[1] += inputText[i];
             }
         }
@@ -359,12 +380,12 @@ export default class Editor {
                         this.chinese = true;
                     })
                     .on('paste', evt => {
-                        if(this.textEl.el.style['position'] != 'fixed') {
+                        if (this.textEl.el.style['position'] != 'fixed') {
                             evt.stopPropagation();
                         }
                     })
                     .on('copy', evt => {
-                        if(this.textEl.el.style['position'] != 'fixed') {
+                        if (this.textEl.el.style['position'] != 'fixed') {
                             evt.stopPropagation();
                         }
                     })
@@ -378,24 +399,22 @@ export default class Editor {
                             evt.preventDefault();
                         }
 
+                        // console.log(this.textEl.el.style['position']);
+                        if (this.textEl.el.style['position'] === 'static')
+                            return;
                         const {
                             key, ctrlKey, shiftKey, altKey, metaKey,
                         } = evt;
-                        if(ctrlKey || metaKey) {
-                            if(67 === key_num) {
-                                let event = document.createEvent('HTMLEvents');
-                                event.initEvent("keydown", true, true);
-                                event.eventType = 'message';
-                                event.keyCode = 67;
-                                event.metaKey = true;
-                                document.dispatchEvent(event);
+
+                        console.log("404");
+                        console.log(key_num);
+                        if (key_num === 8 || key_num === 46) {
+                            createEvent.call(this, 8, false);
+                        } else if (ctrlKey || metaKey) {
+                            if (67 === key_num) {
+                                createEvent.call(this, 67, true);
                             } else if (key_num === 86) {
-                                let event = document.createEvent('HTMLEvents');
-                                event.initEvent("keydown", true, true);
-                                event.eventType = 'message';
-                                event.keyCode = 86;
-                                event.metaKey = true;
-                                document.dispatchEvent(event);
+                                createEvent.call(this, 86, true);
                             }
                         }
                     })
@@ -473,9 +492,9 @@ export default class Editor {
     }
 
     clear() {
-        if (this.inputText !== '') {
-            this.change('finished', this.inputText);
-        }
+        // if (this.inputText !== '') {
+        //     this.change('finished', this.inputText);
+        // }
         this.cell = null;
         this.areaOffset = null;
         this.inputText = '';
@@ -564,6 +583,7 @@ export default class Editor {
             } else if (freeze.h > t) {
                 elOffset.left = freeze.w;
             }
+
             el.offset(elOffset);
             areaEl.offset({left: left - elOffset.left - 0.8, top: top - elOffset.top - 0.8});
             textEl.offset({width: width - 2 + 0.8, height: height - 3 + 0.8});
@@ -582,6 +602,10 @@ export default class Editor {
         let text = (cell && cell.formulas) || '';
         text = text == "" ? (cell && cell.text) || '' : text;
 
+        this.oldCell = {
+            text: (cell && cell.text) || '',
+            formulas: (cell && cell.formulas) || ''
+        };
         const {el, datepicker, suggest} = this;
         el.show();
         this.textEl.show();
@@ -609,8 +633,8 @@ export default class Editor {
             inputEventHandler.call(this, null, text);
             this.pos = text.length;
             set_focus.call(this, this.textEl.el, text.length);
-        } else if (type == 2 && text[0] != "="){
-             this.textEl.child(text);
+        } else if (type == 2 && text[0] != "=") {
+            this.textEl.child(text);
         }
         setTimeout(() => {
             this.textlineEl.html(text);

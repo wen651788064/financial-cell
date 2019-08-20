@@ -567,6 +567,12 @@ export default class DataProxy {
         this.resetAutoFilter();
     }
 
+    // state: input | finished
+    setSelectedCell(text, state = 'input', formulas, ri, ci) {
+        this.setCellAll(ri, ci, text, formulas, state);
+        this.resetAutoFilter();
+    }
+
     getSelectedCell() {
         const {ri, ci} = this.selector;
         let nri = ri;
@@ -932,6 +938,7 @@ export default class DataProxy {
     // state: input | finished
     setCellText(ri, ci, text, state) {
         const {rows, history, validations} = this;
+        console.log(ri, ci);
         if (state === 'finished') {
             rows.setCellText(ri, ci, '');
             history.add(this.getData());
@@ -942,6 +949,21 @@ export default class DataProxy {
         }
         // validator
         validations.validate(ri, ci, text);
+    }
+
+    // state: input | finished
+    setCellAll(ri, ci, text, formulas, state) {
+        const {rows, history, validations} = this;
+        if (state === 'finished') {
+            rows.setCellAll(ri, ci, '', '');
+            history.add(this.getData());
+            rows.setCellAll(ri, ci, text, formulas);
+        } else {
+            rows.setCellAll(ri, ci, text, formulas);
+            this.change(this.getData());
+        }
+        // validator
+        validations.validate(ri, ci, text, formulas);
     }
 
     equationIsActive() {

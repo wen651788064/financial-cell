@@ -1,15 +1,29 @@
 const operator = [
-    "+", "-", "*", "/", "&", "^", "(", ",", "=", " ", " "
+    "+", "-", "*", "/", "&", "^", "(", ",", "=", " ", " ", "，"
+];
+
+const operator3 = [
+    "+", "-", "*", "/", "&", "^", "(", ",", "=", " ", "，"
 ];
 
 const operator2 = [
-    "+", "-", "*", "/", "&", "^", "(", ",", "=", ")"
+    "+", "-", "*", "/", "&", "^", "(", ",", "=", ")", "，"
 ];
 
 
 const operation = (s) => {
     for (let i = 0; i < operator.length; i++) {
         if (operator[i] == s) {
+            return 1;
+        }
+    }
+    return 0;
+};
+
+// 存在的原因是 不过滤 空格
+const operation3 = (s) => {
+    for (let i = 0; i < operator.length; i++) {
+        if (operator3[i] == s) {
             return 1;
         }
     }
@@ -30,8 +44,14 @@ const cutStr = (str, filter = false) => {
     if (str[0] !== "=") {
         return [];
     }
-    str = str.replace(/\s/g, "");
-    let arr = str.split(/([(-\/,+*=^&])/);
+
+    // 把空格去除的原因是因为 => A   1 这种情况不应该被包含在内
+    // str = str.replace(/\s/g, "");
+    let arr = str.split(/([(-\/,+*，=^&])/);
+    // 去除字符串两端的空格
+    for (let i = 0; i < arr.length; i++) {
+        arr[i] = arr[i].replace(/(^\s*)|(\s*$)/g, "");
+    }
     let express = [];
     arr.filter(i => {
         if (i.search(/^[A-Z]+\d+$/) != -1 || i.search(/^\$[A-Z]+\$\d+$/) != -1 || i.search(/^[A-Za-z]+\d+:[A-Za-z]+\d+$/) != -1)
@@ -52,20 +72,37 @@ const cutFirst = (str) => {
     return s;
 };
 
-const cuttingByPos = (str, pos) => {
+const cuttingByPos = (str, pos, space = true) => {
     let value = "";
     let end = false;
     for (let i = pos - 1; i > 0 && end == false; i--) {
+        if(space == false) {
+            end = operation3(str[i]) ? true : false;
+        } else {
+            end = operation(str[i]) ? true : false;
+        }
+        if (end == false) {
+            value += str[i];
+        }
+    }
+    if(space)
+        value = value.replace(/\s/g, "");
+    value = value.split('').reverse().join('');
+    return value.toUpperCase();
+};
+
+
+const cuttingByPosEnd = (str, pos) => {
+    let value = "";
+    let end = false;
+    for (let i = pos - 1; i < str.length && end == false; i++) {
         end = operation(str[i]) ? true : false;
         if (end == false) {
             value += str[i];
         }
     }
-    value = value.replace(/\s/g, "");
-    value = value.split('').reverse().join('');
     return value.toUpperCase();
 };
-
 
 const cutting = (str) => {
     let express = [];
@@ -373,7 +410,7 @@ const isAbsoluteValue = (str, rule = 1) => {
         if (str.search(/^\$[A-Z]+\$\d+$/) != -1)
             return true;
         return false;
-    }else if(rule == 3) {
+    } else if (rule == 3) {
         if (str.search(/^\$[A-Z]+\$\d+$/) != -1)
             return true;
         if (str.search(/^[A-Z]+\d+$/) != -1)
@@ -402,7 +439,7 @@ const absoluteType = (str) => {
 };
 
 const cutting2 = (str) => {
-    let arr = str.split(/([(-\/,+*\s=^&])/);
+    let arr = str.split(/([(-\/,+，*\s=^&])/);
 
     let color = 0;
     let express = [];
@@ -445,4 +482,6 @@ export {
     helpFormula,
     cutFirst,
     absoluteType,
+    operation3,
+    cuttingByPosEnd,
 }

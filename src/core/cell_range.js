@@ -49,6 +49,34 @@ class CellRange {
         }
     }
 
+    each2(cb, rowFilter = () => true) {
+        let {
+            sri, sci, eri, eci,
+        } = this;
+        let extraRiValue = eri;
+        let extraCiValue = eci;
+
+        if(sri - extraRiValue <= 0) {
+            sri = 0;
+        }else {
+            sri = sri - extraRiValue;
+        }
+
+        if(sci  - extraCiValue <= 0) {
+            sci = 0;
+        } else {
+            sci = sci - extraCiValue;
+        }
+
+        for (let i = sri; i <= eri + extraRiValue; i += 1) {
+            if (rowFilter(i)) {
+                for (let j = sci; j <= eci + extraCiValue; j += 1) {
+                    cb(i, j);
+                }
+            }
+        }
+    }
+
     move(ri, ci) {
         let d = this.eri - this.sri;        // 格子的长 单位 格
         let d2 = this.eci - this.sci;            // 格子的 宽 单位格

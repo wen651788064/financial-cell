@@ -12,6 +12,15 @@ export function unbindClickoutside(el) {
   }
 }
 
+export function createEvent(keyCode, metaKey) {
+    let event = document.createEvent('HTMLEvents');
+    event.initEvent("keydown", true, true);
+    event.eventType = 'message';
+    event.keyCode = keyCode;
+    event.metaKey = metaKey;
+    document.dispatchEvent(event);
+}
+
 // the left mouse button: mousedown → mouseup → click
 // the right mouse button: mousedown → contenxtmenu → mouseup
 // the right mouse button in firefox(>65.0): mousedown → contenxtmenu → mouseup → click on window

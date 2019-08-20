@@ -80,7 +80,7 @@ function selectorSet(multiple, ri, ci, indexesUpdated = true, moving = false) {
 // direction: left | right | up | down | row-first | row-last | col-first | col-last
 function selectorMove(multiple, direction) {
     const {
-        selector, data,
+        selector, data, editor
     } = this;
     const {rows, cols} = data;
     let [ri, ci] = selector.indexes;
@@ -88,6 +88,12 @@ function selectorMove(multiple, direction) {
     if (multiple) {
         [ri, ci] = selector.moveIndexes;
     }
+
+    console.log("92", ri, ci, editor.ri, editor.ci)
+    // if((editor.ri != ri && editor.ri != -1) || (editor.ci != ci && editor.ci != -1)) {
+    //     return;
+    // }
+
     // console.log('selector.move:', ri, ci);
     if (direction === 'left') {
         if (ci > 0) ci -= 1;
@@ -97,7 +103,7 @@ function selectorMove(multiple, direction) {
     } else if (direction === 'up') {
         if (ri > 0) ri -= 1;
     } else if (direction === 'down') {
-        if (eri !== ri) ri = eri;
+        // if (eri !== ri) ri = eri;
         if (ri < rows.len - 1) ri += 1;
     } else if (direction === 'row-first') {
         ci = 0;
@@ -108,6 +114,8 @@ function selectorMove(multiple, direction) {
     } else if (direction === 'col-last') {
         ri = rows.len - 1;
     }
+    console.log("92", ri, ci, editor.ri, editor.ci)
+
     if (multiple) {
         selector.moveIndexes = [ri, ci];
     }
@@ -342,8 +350,12 @@ function overlayerMousedown(evt) {
             selectorSet.call(this, false, ri, ci);
         }
 
+        let dateBegin;
         // mouse move up
         mouseMoveUp(window, (e) => {
+            if(!dateBegin) {
+                dateBegin = new Date();
+            }
             this.container.css('pointer-events', 'none');
             ({ri, ci} = data.getCellRectByXY(e.layerX, e.layerY));
             if (isAutofillEl) {
@@ -353,15 +365,21 @@ function overlayerMousedown(evt) {
                 selectorSet.call(this, true, ri, ci, true, true);
             }
         }, () => {
-            if (isAutofillEl) {
-                if (data.autofill(selector.arange, 'all', msg => xtoast('Tip', msg))) {
-                    table.render();
+            let  dateEnd = new Date();
+
+            if (dateBegin && isAutofillEl) {
+                let dateDiff = dateEnd.getTime() - dateBegin.getTime();
+                console.log(dateDiff);
+                if(dateDiff > 100) {
+                    if (data.autofill(selector.arange, 'all', msg => xtoast('Tip', msg))) {
+                        table.render();
+                    }
                 }
             }
+            dateBegin = null;
             selector.hideAutofill();
             toolbarChangePaintformatPaste.call(this);
             this.container.css('pointer-events', 'auto');
-
         });
     }
 
@@ -379,15 +397,37 @@ function firstRowToWidth(width) {
     colResizerFinished.call(this, cRect, width);
 }
 
+function adviceSetOffset() {
+    const {data} = this;
+    const rect = data.getSelectedRect();
+    let left = rect.left + rect.width + 60;
+    let top = rect.top + rect.height + 31;
+
+    this.advice.el.el.style['top'] = `${top}px`;
+    this.advice.el.el.style['left'] = `${ left}px`;
+}
+
+function pictureSetOffset() {
+    const {data} = this;
+    const sOffset = data.getSelectedRect();
+
+    this.pasteDirectionsArr.forEach(i => {
+        i.img.el.style['top'] = `${i.top - sOffset.scroll.y}px`;
+        i.img.el.style['left'] = `${i.left - sOffset.scroll.x}px`;
+    });
+}
+
 function editorSetOffset() {
-    const {editor, data} = this;
+    const {editor, data, container} = this;
     const sOffset = data.getSelectedRect();
     const tOffset = this.getTableOffset();
+
     let sPosition = 'top';
     // console.log('sOffset:', sOffset, ':', tOffset);
     if (sOffset.top > tOffset.height / 2) {
         sPosition = 'bottom';
     }
+
     editor.setOffset(sOffset, sPosition);
     setTimeout(() => {
         editor.setCursorPos(0);
@@ -395,7 +435,6 @@ function editorSetOffset() {
 }
 
 function hasEditor(showEditor = true) {
-    console.log(showEditor, "344")
     let {selector} = this
     if (showEditor === true) {
         return this.overlayerCEl = h('div', `${cssPrefix}-overlayer-content`)
@@ -424,6 +463,8 @@ function verticalScrollbarMove(distance) {
     const {data, table, selector} = this;
     data.scrolly(distance, () => {
         selector.resetBRLAreaOffset();
+        pictureSetOffset.call(this);
+        adviceSetOffset.call(this);
         editorSetOffset.call(this);
         table.render();
     });
@@ -433,6 +474,8 @@ function horizontalScrollbarMove(distance) {
     const {data, table, selector} = this;
     data.scrollx(distance, () => {
         selector.resetBRTAreaOffset();
+        pictureSetOffset.call(this);
+        adviceSetOffset.call(this);
         editorSetOffset.call(this);
         table.render();
     });
@@ -582,8 +625,12 @@ function selectorCellText(ri, ci, text, state) {
 }
 
 function dataSetCellText(text, state = 'finished') {
-    const {data, table} = this;
+    const {data, table, editor} = this;
     // const [ri, ci] = selector.indexes;
+    let {ri, ci} = data.selector;
+    if ((editor.ri != ri && editor.ri != -1) || (editor.ci != ci && editor.ci != -1)) {
+        return;
+    }
     data.setSelectedCellText(text, state);
     if (state === 'finished') table.render();
 }
@@ -663,6 +710,7 @@ function afterSelector(editor) {
     }
 }
 
+
 function sheetInitEvents() {
     const {
         overlayerEl,
@@ -740,11 +788,14 @@ function sheetInitEvents() {
                         }
                     }, () => {
                         if (this.mergeSelector === false) {
+                            if (_selector && !change) {
+                                this.selectors.push(_selector);
+                            }
                             lockCells.call(this, evt, _selector);
-                        } else if (_selector && !change) {
+                        } else if (_selector && !change && _selector.selector) {
                             this.selectors.push(_selector);
                         }
-                        if (this.mergeSelector) {
+                        if (_selector) {
                             for (let i = 0; i < this.selectors.length; i++) {
                                 let selector = this.selectors[i];
 
@@ -809,9 +860,13 @@ function sheetInitEvents() {
     editor.change = (state, itext) => {
         // 如果是 esc
         if (itext == "@~esc") {
+            let {text, formulas} = editor.oldCell;
+            let {ri, ci} = editor;
+            data.setSelectedCell(text, 'input', formulas, ri, ci);
             editor.setText("");
             clearSelectors.call(this);
             editor.clear();
+            editor.setRiCi(-1, -1);
             return;
         }
 
@@ -876,7 +931,7 @@ function sheetInitEvents() {
 
     // for selector
     bind(window, 'keydown', (evt) => {
-        if (!this.focusing) return;
+        // if (!this.focusing) return;
         const keyCode = evt.keyCode || evt.which;
         const {
             key, ctrlKey, shiftKey, altKey, metaKey,
@@ -886,6 +941,9 @@ function sheetInitEvents() {
             console.log(keyCode);
             switch (keyCode) {
                 case 8:         // delete
+                    deleteImg.call(this);
+                    break;
+                case 46:         // delete
                     deleteImg.call(this);
                     break;
             }
@@ -1015,6 +1073,7 @@ function sheetInitEvents() {
                     renderAutoAdapt.call(this);
                     autoRowResizer.call(this);
                     selectorMove.call(this, false, shiftKey ? 'up' : 'down');
+                    editorSetOffset.call(this);
                     setTimeout(() => {
                         let {formula} = data.settings;
                         if (formula && typeof formula.wland == "function") {

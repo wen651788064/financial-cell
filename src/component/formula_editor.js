@@ -3,6 +3,7 @@ import {expr2xy, xy2expr} from "../core/alphabet";
 import {selectorColor} from "../component/color_palette";
 import Selector from "../component/selector";
 import {h} from "../component/element";
+import SelectorCopy from "x-spreadsheet-master/src/component/selector_copy";
 
 function lockCells(evt, _selector) {
     const {data, editor} = this;
@@ -25,6 +26,7 @@ function lockCells(evt, _selector) {
             let s2 = xy2expr(eci, eri);
             let text = s1 == s2 ? s1 : `${s1}:${s2}`;
             _selector.erpx = text;
+
             input = inputText.substring(0, pos - cuttingByPos(inputText, pos).length) + text + inputText.substring(pos, inputText.length);
             editor.setText(input);
             editor.setCursorPos(inputText.substring(0, pos - cuttingByPos(inputText, pos).length).length + text.length);
@@ -170,7 +172,7 @@ function makeSelector(ri, ci, selectors = this.selectors, multiple = false, _sel
     if (_selector) {
         selector = _selector;
     } else {
-        selector = new Selector(data);
+        selector = new SelectorCopy(data);
         let className = `selector${parseInt(Math.random() * 999999)}`;
         selector.el.attr("class", `${className} clear_selector`);
         let color = selectorColor(selectors.length);
@@ -214,6 +216,9 @@ function clearSelectors() {
     this.selectors = [];
     let {editor, selector} = this;
     editor.setLock(false);
+
+    // // 这行是在 @~esc的时候加的 原因是要把ri ci赋值为-1
+    // editor.setRiCi(-1, -1);
     editor.state = 1;
     selector.el.show();
 }

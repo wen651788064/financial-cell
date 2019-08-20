@@ -21,8 +21,6 @@ let dragOption = {
     },
 
     onDrag(data) {
-
-        // console.log("onDrag", data)
     },
 };
 
@@ -32,10 +30,11 @@ function mountPaste(e, cb) {
     let isSpan = false;
     for (let i = 0; i < cbd.items.length; i++) {
         let item = cbd.items[i];
+        console.log(cbd.items.length);
         if (item.kind === "string") {
 
             item.getAsString((str) => {
-                let textDom =  h('head', '');
+                let textDom = h('head', '');
                 let d = h('span', '');
                 if ((str.indexOf('<span') == -1 && str.indexOf('span>') == -1) && (str.indexOf('<table') == -1 && str.indexOf('table>') == -1)) {
                     d.html(str);
@@ -54,39 +53,41 @@ function mountPaste(e, cb) {
                     mountImg.call(this, imgDom);
                     p = true;
                 } else {
-                    isSpan = false;
-                    if (spanDom) {
-                        let table = h("table", "");
-                        let tbody = h('tbody', '');
-                        let tr = h('tr', '');
-                        let td = h('td', '');
-                        td.html(spanDom.innerText);
-                        td.css('background', spanDom.style['background']);
-                        td.css('font-weight', spanDom.style['font-weight']);
-                        td.css('color', spanDom.style['color']);
-                        tr.child(td);
-                        tbody.child(tr);
-                        table.child(tbody);
-                        tableDom = table.el;
-                        isSpan = true;
-                    }
-                    if (styleDom) {
-                        let {el} = this;
-                        el.child(styleDom);
-                    }
-
-                    if (tableDom && p == false) {
-                        let {el} = this;
-                        el.child(tableDom);
-                        GetInfoFromTable.call(this, tableDom);
-                        tableDom.parentNode.removeChild(tableDom);
-                        if (styleDom) {
-                            styleDom.parentNode.removeChild(styleDom);
+                    setTimeout(() => {
+                        isSpan = false;
+                        if (spanDom) {
+                            let table = h("table", "");
+                            let tbody = h('tbody', '');
+                            let tr = h('tr', '');
+                            let td = h('td', '');
+                            td.html(spanDom.innerText);
+                            td.css('background', spanDom.style['background']);
+                            td.css('font-weight', spanDom.style['font-weight']);
+                            td.css('color', spanDom.style['color']);
+                            tr.child(td);
+                            tbody.child(tr);
+                            table.child(tbody);
+                            tableDom = table.el;
+                            isSpan = true;
                         }
-                        sheetReset.call(this);
-                        if(isSpan == false)
-                            p = true;
-                    }
+                        if (styleDom) {
+                            let {el} = this;
+                            el.child(styleDom);
+                        }
+
+                        if (tableDom && p == false) {
+                            let {el} = this;
+                            el.child(tableDom);
+                            GetInfoFromTable.call(this, tableDom);
+                            tableDom.parentNode.removeChild(tableDom);
+                            if (styleDom) {
+                                styleDom.parentNode.removeChild(styleDom);
+                            }
+                            sheetReset.call(this);
+                            if (isSpan == false)
+                                p = true;
+                        }
+                    }, 100)
                 }
             });
         } else if (item.kind === "file" && !p) {
@@ -97,11 +98,12 @@ function mountPaste(e, cb) {
                 let img = h('img', 'paste-img');
                 img.el.src = evt.target.result;
 
-                let {el} = this;
+
                 setTimeout(() => {
                     if (p) {
                         return;
                     }
+                    p = true;
                     mountImg.call(this, img.el);
                 }, 0);
             };
@@ -184,6 +186,8 @@ function mountImg(imgDom) {
             "img2": img,
             "ri": ri,
             "ci": ci,
+            "top": top,
+            "left": left,
             "nextLeft": left + 15,
             "nextTop": top + 15,
         });
@@ -345,17 +349,17 @@ function GetInfoFromTable(tableObj) {
         };
     }
 
-    let {eci, eri, sci, sri} = data.selector.range;
-    if(eci != sci || eri != sri) {
-        lastRi = eri;
-        lastCi = eci;
-    }
-    let rect = data.cellRect(lastRi, lastCi);
-
+    // let {eci, eri, sci, sri} = data.selector.range;
+    // if (eci != sci || eri != sri) {
+    //     lastRi = eri;
+    //     lastCi = eci;
+    // }
+    // let rect = data.cellRect(lastRi, lastCi);
+    const rect = data.getSelectedRect();
     let left = rect.left + rect.width + 60;
     let top = rect.top + rect.height + 31;
     let {advice} = this;
-    advice.show(left, top, 1, rows2, rows);
+    advice.show(left, top, 1, rows2, rows, rect);
     data.rows._ = rows;
 
     return {
