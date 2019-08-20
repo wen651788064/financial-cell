@@ -28,6 +28,7 @@ function mountPaste(e, cb) {
     let cbd = e.clipboardData;
     let p = false;
     let isSpan = false;
+
     for (let i = 0; i < cbd.items.length; i++) {
         let item = cbd.items[i];
         console.log(cbd.items.length);
@@ -53,7 +54,43 @@ function mountPaste(e, cb) {
                     mountImg.call(this, imgDom);
                     p = true;
                 } else {
-                    setTimeout(() => {
+                    if (!tableDom) {
+                        setTimeout(() => {
+                            isSpan = false;
+                            if (spanDom) {
+                                let table = h("table", "");
+                                let tbody = h('tbody', '');
+                                let tr = h('tr', '');
+                                let td = h('td', '');
+                                td.html(spanDom.innerText);
+                                td.css('background', spanDom.style['background']);
+                                td.css('font-weight', spanDom.style['font-weight']);
+                                td.css('color', spanDom.style['color']);
+                                tr.child(td);
+                                tbody.child(tr);
+                                table.child(tbody);
+                                tableDom = table.el;
+                                isSpan = true;
+                            }
+                            if (styleDom) {
+                                let {el} = this;
+                                el.child(styleDom);
+                            }
+
+                            if (tableDom && p == false) {
+                                let {el} = this;
+                                el.child(tableDom);
+                                GetInfoFromTable.call(this, tableDom);
+                                tableDom.parentNode.removeChild(tableDom);
+                                if (styleDom) {
+                                    styleDom.parentNode.removeChild(styleDom);
+                                }
+                                sheetReset.call(this);
+                                if (isSpan == false)
+                                    p = true;
+                            }
+                        }, 100)
+                    } else {
                         isSpan = false;
                         if (spanDom) {
                             let table = h("table", "");
@@ -87,7 +124,7 @@ function mountPaste(e, cb) {
                             if (isSpan == false)
                                 p = true;
                         }
-                    }, 100)
+                    }
                 }
             });
         } else if (item.kind === "file" && !p) {
