@@ -4,7 +4,6 @@ function mountCopy(event) {
     event.preventDefault();
     let choose = getChooseImg.call(this);
     if (choose) {
-        // console.log(parseDom(getChooseImg.call(this).img2), 6);
         if (event.clipboardData) {
             event.clipboardData.setData("text/html", parseDom(choose.img2));
             event.clipboardData.setData("text/plain", "");

@@ -28,13 +28,15 @@ let dragOption = {
             return;
         // img.left = left + 70;
         // img.top = top + 31;
-        let range = self.data.getCellRectByXY(left, top);
+        let {pictureOffsetLeft, pictureOffsetTop} = self;
+
+        let range = self.data.getCellRectByXY(left + 60, top + 31);
         range.sri = range.ri;
         range.sci = range.ci;
         range.eri = range.ri;
         range.eci = range.ci;
-        let offsetLeft = left - range.left - 10;
-        let offsetTop = top - range.top;
+        let offsetLeft = left - range.left + 50;
+        let offsetTop = top - range.top + 21;
 
         img.offsetLeft = offsetLeft;
         img.offsetTop = offsetTop;
@@ -199,10 +201,11 @@ function mountImg(imgDom) {
     let img = imgDom;
     let {container, pasteDirectionsArr, data} = this;
     let {ri, ci} = data.selector;
+    let {pictureOffsetLeft, pictureOffsetTop} = this;
 
     const rect = data.getSelectedRect();
-    let left = rect.left + 70;
-    let top = rect.top + 31;
+    let left = rect.left + pictureOffsetLeft;
+    let top = rect.top + pictureOffsetTop;
     let number = 0;
     let choose = getChooseImg.call(this);
     if (choose) {

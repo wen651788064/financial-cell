@@ -406,10 +406,12 @@ function adviceSetOffset() {
 
 function pictureSetOffset() {
     const {data} = this;
+    let {pictureOffsetLeft, pictureOffsetTop} = this;
+
     this.pasteDirectionsArr.forEach(i => {
         const sOffset = data.getMoveRect(i.range);
-        i.img.el.style['top'] = `${sOffset.top + 31 + i.number * 15 + i.offsetTop }px`;
-        i.img.el.style['left'] = `${sOffset.left + 70 + i.number * 15 + i.offsetLeft}px`;
+        i.img.el.style['top'] = `${sOffset.top + pictureOffsetTop + i.number * 15 + i.offsetTop }px`;
+        i.img.el.style['left'] = `${sOffset.left + pictureOffsetLeft + i.number * 15 + i.offsetLeft}px`;
     });
 }
 
@@ -933,7 +935,7 @@ function sheetInitEvents() {
             key, ctrlKey, shiftKey, altKey, metaKey,
         } = evt;
         // console.log('keydown.evt: ', keyCode);
-        if (this.direction) {
+        if (getChooseImg.call(this)) {
             console.log(keyCode);
             switch (keyCode) {
                 case 8:         // delete
@@ -1123,6 +1125,9 @@ export default class Sheet {
         this.toolbar = new Toolbar(data, view.width, !showToolbar);
 
         targetEl.children(this.toolbar.el, this.el);
+        this.pictureOffsetLeft = 10;
+        this.pictureOffsetTop = 10;
+
         this.data = data;
         // table
         this.tableEl = h('canvas', `${cssPrefix}-table`);

@@ -4,9 +4,8 @@ import DataProxy from './core/data_proxy';
 import Sheet from './component/sheet';
 import {cssPrefix} from './config';
 import {locale} from './locale/locale';
-// import Clipboard from 'clipboard'
 import './index.less';
-
+import zhCN from './locale/zh-cn';
 
 class Spreadsheet {
     constructor(selectors, options = {}) {
@@ -14,12 +13,14 @@ class Spreadsheet {
         if (typeof selectors === 'string') {
             targetEl = document.querySelector(selectors);
         }
+        this.locale('zh-cn', zhCN);
         this.data = new DataProxy('sheet1', options);
         const rootEl = h('div', `${cssPrefix}`)
             .on('contextmenu', evt => evt.preventDefault());
         // create canvas element
         targetEl.appendChild(rootEl.el);
         this.sheet = new Sheet(rootEl, this.data);
+
         // let btn = document.getElementById('btn2');
         // let clipboard = new Clipboard(btn);
         //
@@ -52,6 +53,10 @@ class Spreadsheet {
     }
 
     static locale(lang, message) {
+        locale(lang, message);
+    }
+
+    locale(lang, message) {
         locale(lang, message);
     }
 }

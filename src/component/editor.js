@@ -155,8 +155,10 @@ function inputEventHandler(evt, txt = "") {
         }
         if (this.copy) {
             this.copy = false;
-            this.textEl.html('');
-            v = '';
+            v = evt.data;
+            this.textEl.html(v);
+            this.pos = v.length;
+            set_focus.call(this, this.textEl.el, -1);
         }
 
         const {suggest, textlineEl, validator, textEl, save} = this;
@@ -200,15 +202,17 @@ function inputEventHandler(evt, txt = "") {
             // textEl.html(v);
             set_focus.call(this, textEl.el, -1);
         }
-        if (v === "") {
-            this.tmp.hide();
-            this.lock = false;
-            this.pos = 0;
-            this.inputText = "";
-            this.ri = -1;
-            this.ci = -1;
-            this.setText("");
-        }
+
+        // 注释的原因是  copy之后把v 设置为""， 然后会把ri, ci重置
+        // if (v === "") {
+        //     this.tmp.hide();
+        //     this.lock = false;
+        //     this.pos = 0;
+        //     this.inputText = "";
+        //     this.ri = -1;
+        //     this.ci = -1;
+        //     this.setText("");
+        // }
 
         this.change('input', v);
     });
@@ -410,6 +414,15 @@ export default class Editor {
                         console.log(key_num);
                         if (key_num === 8 || key_num === 46) {
                             createEvent.call(this, 8, false);
+                        } else if(key_num === 40) {
+                            this.clear();
+                            createEvent.call(this, 40, false);
+                        } else if(key_num === 39) {
+                            createEvent.call(this, 39, false);
+                        } else if(key_num === 37) {
+                            createEvent.call(this, 37, false);
+                        } else if(key_num === 38) {
+                            createEvent.call(this, 38, false);
                         } else if (ctrlKey || metaKey) {
                             if (67 === key_num) {
                                 createEvent.call(this, 67, true);
