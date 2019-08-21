@@ -135,8 +135,7 @@ function inputEventHandler(evt, txt = "") {
     }
 
     setTimeout(() => {
-        this.textEl.css('position', 'static');
-        this.textEl.css('caret-color', 'black');
+        this.show();
         if (this.chinese == false)
             return;
         let v = "";
@@ -453,8 +452,6 @@ export default class Editor {
         this.textEl.css('caret-color', 'white');
         this.textEl.css('top', '-500px');
         this.textEl.css('left', '2px');
-
-
         this.textEl.css('outline', 'none');
         this.textEl.child(this.tmp);
         this.pos = 0;
@@ -491,7 +488,6 @@ export default class Editor {
     show() {
         this.textEl.css('position', 'static');
         this.textEl.css('caret-color', 'black');
-        this.textEl.css('visibility', 'initial');
     }
 
     parse(pos = -1) {
@@ -604,9 +600,7 @@ export default class Editor {
 
     setCell(cell, validator, type = 1) {
         this.cell = cell;
-        this.textEl.css('position', 'static');
-        this.textEl.css('caret-color', 'black');
-        this.textEl.css('visibility', 'initial');
+        this.show();
 
         let text = (cell && cell.formulas) || '';
         text = text == "" ? (cell && cell.text) || '' : text;
