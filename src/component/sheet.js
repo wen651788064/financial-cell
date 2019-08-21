@@ -370,7 +370,7 @@ function overlayerMousedown(evt) {
             if (dateBegin && isAutofillEl) {
                 let dateDiff = dateEnd.getTime() - dateBegin.getTime();
                 console.log(dateDiff);
-                if(dateDiff > 30) {
+                if(dateDiff > 100) {
                     if (data.autofill(selector.arange, 'all', msg => xtoast('Tip', msg))) {
                         table.render();
                     }
@@ -1093,7 +1093,7 @@ function sheetInitEvents() {
                     break;
                 case 8: // backspace
                     insertDeleteRowColumn.call(this, 'delete-cell-text');
-                    evt.preventDefault();
+                    // evt.preventDefault();
                     break;
                 default:
                     break;
