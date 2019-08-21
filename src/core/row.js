@@ -135,6 +135,7 @@ class Rows {
                                     }
                                     if (text[0] === '=') {
                                         ncell.text = text.replace(/\w{1,3}\d|\w{1,3}\$\d|\$\w{1,3}\d/g, (word) => {
+                                            word = word.toUpperCase();
                                             if (isAbsoluteValue(word, 3) == false) {
                                                 return word;
                                             }

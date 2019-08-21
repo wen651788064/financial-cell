@@ -5,21 +5,41 @@ import Resize from "../external/resize";
 import {cssPrefix} from "../config";
 import {getChooseImg} from "../event/copy";
 
-let resizeOption = () => {
-    function onClick(data) {
-        console.log("10");
-    };
+let resizeOption = {
+    onBegin(data) {
+        console.log("obegin", data)
+    },
+
+    onEnd(data) {
+
+    },
+
+
 };
 
 let dragOption = {
     onBegin(data) {
         console.log("obegin", data)
     },
+    onEnd(data, self) {
+        let {left, top} = data;
+        let img = getChooseImg.call(self);
+        if (!img)
+            return;
+        // img.left = left + 70;
+        // img.top = top + 31;
+        let range = self.data.getCellRectByXY(left, top);
+        range.sri = range.ri;
+        range.sci = range.ci;
+        range.eri = range.ri;
+        range.eci = range.ci;
+        let offsetLeft = left - range.left - 10;
+        let offsetTop = top - range.top;
 
-    onEnd(data) {
-        console.log("onEnd", data)
+        img.offsetLeft = offsetLeft;
+        img.offsetTop = offsetTop;
+        img.range = range;
     },
-
     onDrag(data) {
     },
 };
@@ -56,6 +76,9 @@ function mountPaste(e, cb) {
                 } else {
                     if (!tableDom) {
                         setTimeout(() => {
+                            if (p) {
+                                return;
+                            }
                             isSpan = false;
                             if (spanDom) {
                                 let table = h("table", "");
@@ -91,22 +114,6 @@ function mountPaste(e, cb) {
                             }
                         }, 100)
                     } else {
-                        isSpan = false;
-                        if (spanDom) {
-                            let table = h("table", "");
-                            let tbody = h('tbody', '');
-                            let tr = h('tr', '');
-                            let td = h('td', '');
-                            td.html(spanDom.innerText);
-                            td.css('background', spanDom.style['background']);
-                            td.css('font-weight', spanDom.style['font-weight']);
-                            td.css('color', spanDom.style['color']);
-                            tr.child(td);
-                            tbody.child(tr);
-                            table.child(tbody);
-                            tableDom = table.el;
-                            isSpan = true;
-                        }
                         if (styleDom) {
                             let {el} = this;
                             el.child(styleDom);
@@ -121,8 +128,7 @@ function mountPaste(e, cb) {
                                 styleDom.parentNode.removeChild(styleDom);
                             }
                             sheetReset.call(this);
-                            if (isSpan == false)
-                                p = true;
+                            p = true;
                         }
                     }
                 }
@@ -168,6 +174,7 @@ function getMaxCoord(ri, ci) {
     let top = 0;
     let left = 0;
     let {pasteDirectionsArr} = this;
+    let number = 0;
     for (let i = 0; i < pasteDirectionsArr.length; i++) {
         let p = pasteDirectionsArr[i];
         if (p.ri === ri && p.ci === ci) {
@@ -177,24 +184,26 @@ function getMaxCoord(ri, ci) {
             if (top < p.nextTop) {
                 top = p.nextTop;
             }
+            number++;
         }
     }
 
     return {
         top: top,
         left: left,
+        number: number,
     }
 }
 
 function mountImg(imgDom) {
     let img = imgDom;
     let {container, pasteDirectionsArr, data} = this;
-    // let {indexes} = selector;
     let {ri, ci} = data.selector;
-    let rect = data.cellRect(ri, ci);
 
+    const rect = data.getSelectedRect();
     let left = rect.left + 70;
-    let top = rect.top + 41;
+    let top = rect.top + 31;
+    let number = 0;
     let choose = getChooseImg.call(this);
     if (choose) {
         let args = getMaxCoord.call(this, choose.ri, choose.ci);
@@ -202,6 +211,7 @@ function mountImg(imgDom) {
         top = args.top;
         ri = choose.ri;
         ci = choose.ci;
+        number = args.number;
     }
 
     let div = h('div', `${cssPrefix}-object-container`)
@@ -211,7 +221,7 @@ function mountImg(imgDom) {
         .css("left", `${left}px`)
         .child(img);
     container.child(div);
-    new Drag(dragOption).register(div.el);
+    new Drag(dragOption, this).register(div.el);
     setTimeout(() => {
         let directionsArr = new Resize(resizeOption).register(div.el);
         let index = pasteDirectionsArr.length;
@@ -223,6 +233,10 @@ function mountImg(imgDom) {
             "img2": img,
             "ri": ri,
             "ci": ci,
+            "offsetLeft": 0,
+            "offsetTop": 0,
+            "number": number,
+            "range": data.selector.range,
             "top": top,
             "left": left,
             "nextLeft": left + 15,
@@ -287,7 +301,6 @@ function containerHandlerEvent(directionsArr, index, pasteDirectionsArr) {
     selector.hide();
     editor.clear();
 
-    pasteDirectionsArr[index].img2.style['border'] = "1px solid rgb(227, 227, 227)";
     pasteDirectionsArr[index].img.css("z-index", "99999999");
     pasteDirectionsArr[index].state = true;
 }

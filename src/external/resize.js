@@ -10,13 +10,20 @@ function Resize(options) {
             var div = document.createElement('div');
             div.style.display = "block";
             div.className = 'direction ' + str;
-
             //注册事件
 
             directionsArr.push(div);
             el.appendChild(div);
-
         });
+
+        for(let i = 0; i < 4; i++) {
+            var line = document.createElement('div');
+            line.style.display = "block";
+            line.className = `line${i+1}`;
+            el.appendChild(line);
+            directionsArr.push(line);
+        }
+
 
         var border = document.createElement('div');
         border.className = 'border';
@@ -73,7 +80,6 @@ function Resize(options) {
                         fun.call(obj, data, event);
                     }
 
-                    console.log("76")
                     event.stopPropagation();
                 }
                 window.onmouseup = function (ee) {

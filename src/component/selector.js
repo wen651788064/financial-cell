@@ -421,7 +421,7 @@ export default class Selector {
 
     showClipboard() {
         const coffset = this.data.getClipboardRect();
-        setAllClipboardOffset.call(this, coffset);
+        // setAllClipboardOffset.call(this, coffset);
         ['br', 'l', 't', 'tl'].forEach((property) => {
             this[property].showClipboard();
         });

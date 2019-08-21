@@ -23,6 +23,7 @@ import {mountCopy} from "../event/copy";
 import Website from "../component/website";
 import {cuttingByPos} from "../core/operator";
 import {moveCell} from "../event/move";
+import {getChooseImg} from "x-spreadsheet-master/src/event/copy";
 
 function scrollbarMove() {
     const {
@@ -263,10 +264,6 @@ function clearClipboard() {
 function copy() {
     const {data, selector} = this;
     data.copy();
-    /*
-        复制到系统剪贴板
-     */
-
     selector.showClipboard();
 }
 
@@ -370,7 +367,7 @@ function overlayerMousedown(evt) {
             if (dateBegin && isAutofillEl) {
                 let dateDiff = dateEnd.getTime() - dateBegin.getTime();
                 console.log(dateDiff);
-                if(dateDiff > 100) {
+                if(dateDiff > 30) {
                     if (data.autofill(selector.arange, 'all', msg => xtoast('Tip', msg))) {
                         table.render();
                     }
@@ -409,11 +406,10 @@ function adviceSetOffset() {
 
 function pictureSetOffset() {
     const {data} = this;
-    const sOffset = data.getSelectedRect();
-
     this.pasteDirectionsArr.forEach(i => {
-        i.img.el.style['top'] = `${i.top - sOffset.scroll.y}px`;
-        i.img.el.style['left'] = `${i.left - sOffset.scroll.x}px`;
+        const sOffset = data.getMoveRect(i.range);
+        i.img.el.style['top'] = `${sOffset.top + 31 + i.number * 15 + i.offsetTop }px`;
+        i.img.el.style['left'] = `${sOffset.left + 70 + i.number * 15 + i.offsetLeft}px`;
     });
 }
 
@@ -966,8 +962,12 @@ function sheetInitEvents() {
                     break;
                 case 67:
                     // ctrl + c
-                    // copy.call(this);
-                    // evt.preventDefault();
+
+                    //  加上这里是因为 需要展示虚线
+                    if(getChooseImg.call(this))
+                        return;
+                    copy.call(this);
+                    evt.preventDefault();
                     break;
                 case 88:
                     // ctrl + x
@@ -1155,12 +1155,14 @@ export default class Sheet {
         this.selectors = [];
         this.container = h('div', '');
         this.selectorsEl = h('div', `selector_clear`).attr("id", "selector_clear");
-        this.overlayerCEl.child(this.selectorsEl);
+
+        // 把图片容器移到了 overlayerCEl 下面，原因是 如果在 overlayerEl下面 会遮挡表头
+        this.overlayerCEl.children(this.selectorsEl, this.container);
 
         this.mergeSelector = false;
 
         this.overlayerEl = h('div', `${cssPrefix}-overlayer`)
-            .children(this.overlayerCEl, this.container);
+            .children(this.overlayerCEl);
         // sortFilter
         this.sortFilter = new SortFilter();
         this.direction = false;   // 图片移动

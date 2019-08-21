@@ -1,13 +1,11 @@
-function Drag(options) {
+function Drag(options, self) {
 
     /**
      *
      * @param el 节点
      */
     this.register = function (el) {
-
         el.addEventListener('mousedown', function (e) {
-
             if (e.button != 0) {
                 //屏蔽左键以外的按键
                 return;
@@ -52,11 +50,12 @@ function Drag(options) {
                 nt = ny - (y - t);
 
                 // console.log( nl, nt);
-                if(nl > 50 && nt > -10) {
-                    el.style.left = nl + 'px';
-                    el.style.top = nt + 'px';
-                }
-
+                // if(nl > 50 && nt > -10) {
+                //     el.style.left = nl + 'px';
+                //     el.style.top = nt + 'px';
+                // }
+                el.style.left = nl + 'px';
+                el.style.top = nt + 'px';
 
 
                 if (options && options.onDrag) {
@@ -78,7 +77,7 @@ function Drag(options) {
                 el.style.cursor = 'default';
 
                 if (options && options.onEnd) {
-                    options.onEnd.call(el, {left: nl, top: nt});
+                    options.onEnd.call(el, {left: nl, top: nt}, self);
                 }
 
                 return false;
