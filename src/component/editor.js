@@ -134,9 +134,9 @@ function inputEventHandler(evt, txt = "") {
         }
     }
 
-    this.textEl.css('visibility', 'initial');
     setTimeout(() => {
         this.textEl.css('position', 'static');
+        this.textEl.css('caret-color', 'black');
         if (this.chinese == false)
             return;
         let v = "";
@@ -450,12 +450,10 @@ export default class Editor {
         this.textEl.css('line-height', '22px');
         this.textEl.css('background', 'white');
         this.textEl.css('font-size', '12px');
-        this.textEl.css('caret-color', 'black');
+        this.textEl.css('caret-color', 'white');
         this.textEl.css('top', '-500px');
-        this.textEl.css('caret-color', 'black');
         this.textEl.css('left', '2px');
-        this.textEl.css('position', 'fixed');
-        // this.textEl.css('visibility', 'hidden');
+
 
         this.textEl.css('outline', 'none');
         this.textEl.child(this.tmp);
@@ -492,6 +490,7 @@ export default class Editor {
 
     show() {
         this.textEl.css('position', 'static');
+        this.textEl.css('caret-color', 'black');
         this.textEl.css('visibility', 'initial');
     }
 
@@ -512,13 +511,9 @@ export default class Editor {
         this.areaOffset = null;
         this.inputText = '';
         this.textEl.css('top', '-500px');
-        this.textEl.css('position', 'fixed');
-        // this.textEl.css('visibility', 'hidden');
-
-        // this.el.hide();
+        this.textEl.css('caret-color', 'white');
         set_focus.call(this, this.textEl.el, -1);
         this.pos = 0;
-        // this.textEl.val('');
         this.tmp.hide();
         this.textEl.html('');
         this.textlineEl.html('');
@@ -610,6 +605,7 @@ export default class Editor {
     setCell(cell, validator, type = 1) {
         this.cell = cell;
         this.textEl.css('position', 'static');
+        this.textEl.css('caret-color', 'black');
         this.textEl.css('visibility', 'initial');
 
         let text = (cell && cell.formulas) || '';
