@@ -8,8 +8,6 @@ import SuggestContent from "../component/suggest_content";
 import {findBracket, suggestContent} from "../component/formula_editor";
 import {createEvent} from "../component/event";
 
-// import { mouseMoveUp } from '../event';
-
 function resetTextareaSize() {
     const {
         textlineEl, textEl, areaOffset,
@@ -350,7 +348,7 @@ function dateFormat(d) {
 }
 
 export default class Editor {
-    constructor(formulas, viewFn, rowHeight) {
+    constructor(formulas, viewFn, rowHeight, rowWidth) {
         this.viewFn = viewFn;
         this.rowHeight = rowHeight;
         this.formulas = formulas;
@@ -372,10 +370,15 @@ export default class Editor {
         this.chinese = true;
         this.areaEl = h('div', `${cssPrefix}-editor-area`)
             .children(
-                this.textEl = h('div', '')
+                this.textEl = h('div', `${cssPrefix}-editor-textEl`)
                     .on('input', evt => inputEventHandler.call(this, evt))
                     .on('click', evt => mouseDownEventHandler.call(this, evt))
                     .on('keyup', evt => keyDownEventHandler.call(this, evt))
+                    .on('mousedown', (evt) => {
+                        if(evt.detail == 2) {
+                            this.show();
+                        }
+                    })
                     .on('compositionstart', evt => {
                         this.chinese = false;
                     })
@@ -446,13 +449,8 @@ export default class Editor {
 
         this.tmp = h('span', 'span_tmp').hide();
         this.textEl.attr('contenteditable', 'true');
-        this.textEl.css('line-height', '22px');
-        this.textEl.css('background', 'white');
-        this.textEl.css('font-size', '12px');
-        this.textEl.css('caret-color', 'white');
-        this.textEl.css('top', '-500px');
-        this.textEl.css('left', '2px');
-        this.textEl.css('outline', 'none');
+        this.textEl.css('width', `${rowWidth}px`);
+        this.textEl.css('height', `${rowHeight}px`);
         this.textEl.child(this.tmp);
         this.pos = 0;
         this.areaOffset = null;
@@ -485,9 +483,15 @@ export default class Editor {
         return this.lock;
     }
 
-    show() {
-        this.textEl.css('position', 'static');
-        this.textEl.css('caret-color', 'black');
+
+    show(off = true) {
+        if(off) {
+            this.textEl.css('caret-color', 'black');
+            this.textEl.css('cursor', 'text');
+        } else {
+            this.textEl.css('caret-color', 'white');
+            this.textEl.css('cursor', 'default');
+        }
     }
 
     parse(pos = -1) {
@@ -506,8 +510,7 @@ export default class Editor {
         this.cell = null;
         this.areaOffset = null;
         this.inputText = '';
-        this.textEl.css('top', '-500px');
-        this.textEl.css('caret-color', 'white');
+        this.show(false);
         set_focus.call(this, this.textEl.el, -1);
         this.pos = 0;
         this.tmp.hide();

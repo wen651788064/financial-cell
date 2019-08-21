@@ -1142,6 +1142,7 @@ export default class Sheet {
             formulas,
             () => this.getTableOffset(),
             data.rows.height,
+            data.cols.width
         );
         // data validation
         this.modalValidation = new ModalValidation();
