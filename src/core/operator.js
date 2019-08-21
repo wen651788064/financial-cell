@@ -411,6 +411,10 @@ const isAbsoluteValue = (str, rule = 1) => {
     if (rule == 1) {
         if (str.search(/^\$[A-Z]+\$\d+$/) != -1)
             return true;
+        if (str.search(/^\$[A-Z]+\d+$/) != -1)
+            return true;
+        if (str.search(/^[A-Z]+\$\d+$/) != -1)
+            return true;
         return false;
     } else if (rule == 3) {
         if (str.search(/^\$[A-Z]+\$\d+$/) != -1)

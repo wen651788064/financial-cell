@@ -144,7 +144,7 @@ export default class Toolbar {
       this.fontBoldEl = buildButtonWithIcon(`${t('toolbar.fontBold')} (Ctrl+B)`, 'bold', () => toggleChange.call(this, 'font-bold')),
       this.fontItalicEl = buildButtonWithIcon(`${t('toolbar.fontItalic')} (Ctrl+I)`, 'italic', () => toggleChange.call(this, 'font-italic')),
       this.underlineEl = buildButtonWithIcon(`${t('toolbar.underline')} (Ctrl+U)`, 'underline', () => toggleChange.call(this, 'underline')),
-      this.flexibleEl = buildButtonWithIcon(`${t('toolbar.flexibleEl')} `, 'flexible', () => toggleChange.call(this, 'flexible')),
+      // this.flexibleEl = buildButtonWithIcon(`${t('toolbar.flexibleEl')} `, 'flexible', () => toggleChange.call(this, 'flexible')),
       this.strikeEl = buildButtonWithIcon(`${t('toolbar.strike')}`, 'strike', () => toggleChange.call(this, 'strike')),
       buildButton(`${t('toolbar.textColor')}`).child(this.ddTextColor.el),
       buildDivider(),
@@ -210,7 +210,7 @@ export default class Toolbar {
     this.fontBoldEl.active(font.bold);
     this.fontItalicEl.active(font.italic);
     this.underlineEl.active(style.underline);
-    this.flexibleEl.active(style.flexible);
+    // this.flexibleEl.active(style.flexible);
     this.strikeEl.active(style.strike);
     this.ddTextColor.setTitle(style.color);
     this.ddFillColor.setTitle(style.bgcolor);

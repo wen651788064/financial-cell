@@ -113,7 +113,7 @@ function renderCell(rindex, cindex, sheetbook) {
     const dbox = getDrawBox.call(this, rindex, cindex);
     dbox.bgcolor = style.bgcolor;
     if (style.border !== undefined) {
-        // dbox.setBorders(style.border);
+        dbox.setBorders(style.border);
         // bboxes.push({ ri: rindex, ci: cindex, box: dbox });
         draw.strokeBorders(dbox);
     }

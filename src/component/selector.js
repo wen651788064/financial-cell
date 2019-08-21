@@ -344,7 +344,9 @@ export default class Selector {
 
     reset() {
         // console.log('::::', this.data);
-        const {eri, eci} = this.data.selector.range;
+        const {eri, eci, sci, sri} = this.data.selector.range;
+        // 原因是 从右下角往左上角选中，然后ctrl + c 会有bug  加下面一行的原因
+        // this.set(sri, sci);
         this.setEnd(eri, eci);
     }
 
@@ -421,7 +423,7 @@ export default class Selector {
 
     showClipboard() {
         const coffset = this.data.getClipboardRect();
-        // setAllClipboardOffset.call(this, coffset);
+        setAllClipboardOffset.call(this, coffset);
         ['br', 'l', 't', 'tl'].forEach((property) => {
             this[property].showClipboard();
         });

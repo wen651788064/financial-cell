@@ -174,7 +174,7 @@ const cellRender = (data, sheetbook, y, x, src, formulaMap, getCellText, cellLis
             // XLSX_CALC(sheetbook);
 
             // let value = sheetbook.Sheets.Sheet1[xy2expr(x, y)].v ? sheetbook.Sheets.Sheet1[xy2expr(x, y)].v : "NaN";
-            return sheetbook.Sheets.Sheet1[xy2expr(x, y)].v;
+            return sheetbook.Sheets.Sheet1[xy2expr(x, y)].v == '' ? "#ERROR!" : sheetbook.Sheets.Sheet1[xy2expr(x, y)].v;
         }
         const stack = infixExprToSuffixExpr(src.substring(1));
         if (stack.length <= 0) return src;

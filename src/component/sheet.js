@@ -370,7 +370,7 @@ function overlayerMousedown(evt) {
             if (dateBegin && isAutofillEl) {
                 let dateDiff = dateEnd.getTime() - dateBegin.getTime();
                 console.log(dateDiff);
-                if(dateDiff > 100) {
+                if(dateDiff > 300) {
                     if (data.autofill(selector.arange, 'all', msg => xtoast('Tip', msg))) {
                         table.render();
                     }
@@ -866,8 +866,8 @@ function sheetInitEvents() {
             data.setSelectedCell(text, 'input', formulas, ri, ci);
             editor.setText("");
             clearSelectors.call(this);
-            editor.clear();
-            editor.setRiCi(-1, -1);
+            editor.clear(true);
+            // editor.setRiCi(-1, -1);
             return;
         }
 
@@ -968,12 +968,12 @@ function sheetInitEvents() {
                     break;
                 case 67:
                     // ctrl + c
-
                     //  加上这里是因为 需要展示虚线
                     if(getChooseImg.call(this))
                         return;
                     copy.call(this);
-                    sheetReset.call(this);
+                    // table.render();
+                    // sheetReset.call(this);
                     evt.preventDefault();
                     break;
                 case 88:

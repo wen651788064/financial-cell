@@ -224,7 +224,8 @@ function keyDownEventHandler(evt) {
     }
 
     const keyCode = evt.keyCode || evt.which;
-    if (keyCode == 27) {
+    //this.textEl.el.style['caret-color'] != 'black' 加这个主要防止用户在没有输入的情况下按下esc
+    if (keyCode == 27 && this.textEl.el.style['caret-color'] == 'black'  && this.textEl.el.style['opacity'] == '1') {
         this.change('input', "@~esc");
     } else if (keyCode == 37 || keyCode == 38 || keyCode == 39 || keyCode == 40) {
     }
@@ -347,6 +348,14 @@ function dateFormat(d) {
     return `${d.getFullYear()}-${month}-${date}`;
 }
 
+function isDisplay() {
+    if(this.textEl.el.style['caret-color'] == 'black'
+        && this.textEl.el.style['opacity'] == '1')
+        return true;
+    else
+        return false;
+}
+
 export default class Editor {
     constructor(formulas, viewFn, rowHeight, rowWidth, data) {
         this.viewFn = viewFn;
@@ -377,9 +386,14 @@ export default class Editor {
                     .on('keyup', evt => keyDownEventHandler.call(this, evt))
                     .on('mousedown', (evt) => {
                         if(evt.detail == 2) {
+                            if(isDisplay.call(this)) {
+                                return
+                            }
                             this.show();
                             setTimeout(() => {
-                                this.setCellEnd(data.getSelectedCell());
+                                let {ri, ci} = this;
+                                console.log(ri, ci);
+                                this.setCellEnd(data.getSelectedCellRiCi(ri, ci));
                             })
                         }
                     })
@@ -446,8 +460,9 @@ export default class Editor {
             )
             .on('mousemove.stop', () => {
             })
-            .on('mousedown.stop', () => {
-            });
+            // .on('mousedown.stop', () => {
+            //     console.log("466")
+            // });
         this.el = h('div', `${cssPrefix}-editor`)
             .child(this.areaEl);
         this.suggest.bindInputEvents(this.textEl);
@@ -498,12 +513,15 @@ export default class Editor {
             this.textEl.css('cursor', 'text');
             this.textEl.css('opacity', '1');
             this.textEl.el.focus();
+            this.areaEl.css('pointer-events', 'auto');
             this.areaEl.css('border', '2px solid #4b89ff');
         } else {
             this.textEl.css('caret-color', 'white');
             this.textEl.css('cursor', 'default');
             this.textEl.css('opacity', '0');
             this.textEl.el.blur();
+            this.areaEl.css('pointer-events', 'none');
+
             this.areaEl.css('border', 'none');
         }
     }
@@ -517,7 +535,7 @@ export default class Editor {
         }
     }
 
-    clear() {
+    clear(c = false) {
         // if (this.inputText !== '') {
         //     this.change('finished', this.inputText);
         // }
@@ -525,6 +543,7 @@ export default class Editor {
         this.areaOffset = null;
         this.inputText = '';
         this.show(false);
+        this.copy = false;
         set_focus.call(this, this.textEl.el, -1);
         this.pos = 0;
         this.tmp.hide();
@@ -533,6 +552,10 @@ export default class Editor {
         resetSuggestContentItems.call(this);
         resetSuggestItems.call(this);
         this.datepicker.hide();
+
+        if(c) {
+            return;
+        }
 
         setTimeout(() => {
             let {ri, ci} = this.data.selector;

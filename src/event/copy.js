@@ -26,7 +26,9 @@ function mountCopy(event) {
             if (rows._[i] && rows._[i].cells && rows._[i].cells[j]) {
                 if (rows._[i].cells[j] && styles[rows._[i].cells[j].style]) {
                     td.css('color', styles[rows._[i].cells[j].style].color);
-                    if (styles[rows._[i].cells[j].style].font.bold) {
+                    if (styles[rows._[i].cells[j].style]
+                        && styles[rows._[i].cells[j].style].font
+                        && styles[rows._[i].cells[j].style].font.bold) {
                         let bold = styles[rows._[i].cells[j].style].font.bold ? '900' : '';
                         td.css('font-weight', bold);
                     }

@@ -49,13 +49,10 @@ let dragOption = {
 function mountPaste(e, cb) {
     let cbd = e.clipboardData;
     let p = false;
-    let isSpan = false;
 
     for (let i = 0; i < cbd.items.length; i++) {
         let item = cbd.items[i];
-        console.log(cbd.items.length);
         if (item.kind === "string") {
-
             item.getAsString((str) => {
                 let textDom = h('head', '');
                 let d = h('span', '');
@@ -81,7 +78,6 @@ function mountPaste(e, cb) {
                             if (p) {
                                 return;
                             }
-                            isSpan = false;
                             if (spanDom) {
                                 let table = h("table", "");
                                 let tbody = h('tbody', '');
@@ -95,7 +91,6 @@ function mountPaste(e, cb) {
                                 tbody.child(tr);
                                 table.child(tbody);
                                 tableDom = table.el;
-                                isSpan = true;
                             }
                             if (styleDom) {
                                 let {el} = this;
@@ -111,8 +106,7 @@ function mountPaste(e, cb) {
                                     styleDom.parentNode.removeChild(styleDom);
                                 }
                                 sheetReset.call(this);
-                                if (isSpan == false)
-                                    p = true;
+                                p = true;
                             }
                         }, 100)
                     } else {
@@ -411,7 +405,8 @@ function GetInfoFromTable(tableObj) {
     const rect = data.getSelectedRect();
     let left = rect.left + rect.width + 60;
     let top = rect.top + rect.height + 31;
-    let {advice} = this;
+    let {advice, editor} = this;
+    editor.clear();
     advice.show(left, top, 1, rows2, rows, rect);
     data.rows._ = rows;
 

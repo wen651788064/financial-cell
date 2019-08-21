@@ -54,9 +54,13 @@ function Drag(options, self) {
 
                 if(nl > 0) {
                     el.style.left = nl + 'px';
+                }else {
+                    el.style.left = 0 + 'px';
                 }
                 if(nt > 0) {
                     el.style.top = nt + 'px';
+                } else {
+                    el.style.top = 0 + 'px';
                 }
                 // el.style.left = nl + 'px';
                 // el.style.top = nt + 'px';

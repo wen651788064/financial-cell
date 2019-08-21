@@ -582,6 +582,14 @@ export default class DataProxy {
         return this.rows.getCell(nri, ci);
     }
 
+    getSelectedCellRiCi(ri, ci) {
+        let nri = ri;
+        if (this.unsortedRowMap.has(ri)) {
+            nri = this.unsortedRowMap.get(ri);
+        }
+        return this.rows.getCell(nri, ci);
+    }
+
     xyInSelectedRect(x, y) {
         const {
             left, top, width, height,
