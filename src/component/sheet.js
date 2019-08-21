@@ -24,6 +24,7 @@ import Website from "../component/website";
 import {cuttingByPos} from "../core/operator";
 import {moveCell} from "../event/move";
 import {getChooseImg} from "x-spreadsheet-master/src/event/copy";
+import {createEvent} from "../component/event";
 
 function scrollbarMove() {
     const {
@@ -121,6 +122,7 @@ function selectorMove(multiple, direction) {
         selector.moveIndexes = [ri, ci];
     }
     selectorSet.call(this, multiple, ri, ci);
+    editor.clear();
     editorSetOffset.call(this);
     scrollbarMove.call(this);
 }
@@ -821,7 +823,6 @@ function sheetInitEvents() {
                     editor.clear();
                     overlayerMousedown.call(this, evt);
                     clearSelectors.call(this);
-                    // editor.setCellEnd(data.getSelectedCell());
                     editorSetOffset.call(this);
                 }
             }
@@ -924,6 +925,7 @@ function sheetInitEvents() {
     });
 
     bind(document, 'paste', (evt) => {
+        clearClipboard.call(this);
         mountPaste.call(this, evt, () => {
             sheetReset.call(this);
         });
@@ -971,6 +973,7 @@ function sheetInitEvents() {
                     if(getChooseImg.call(this))
                         return;
                     copy.call(this);
+                    sheetReset.call(this);
                     evt.preventDefault();
                     break;
                 case 88:
@@ -989,7 +992,6 @@ function sheetInitEvents() {
                     paste.call(this, what, () => {
                         console.log("837")
                     });
-
                     break;
                 case 37:
                     // ctrl + left
@@ -1105,8 +1107,9 @@ function sheetInitEvents() {
                 || (keyCode >= 96 && keyCode <= 105)
                 || evt.key === '='
             ) {
-                dataSetCellText.call(this, evt.key, 'input');
-                editorSet.call(this);
+                // dataSetCellText.call(this, evt.key, 'input');
+                // editorSet.call(this);
+                // editor.inputEventHandler();
             } else if (keyCode === 113) {
                 // F2
                 editorSet.call(this);

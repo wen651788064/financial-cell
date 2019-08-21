@@ -50,8 +50,12 @@ function Drag(options, self) {
                 nt = ny - (y - t);
 
                 // console.log( nl, nt);
-                if(nl > 0 && nt > 0) {
+
+
+                if(nl > 0) {
                     el.style.left = nl + 'px';
+                }
+                if(nt > 0) {
                     el.style.top = nt + 'px';
                 }
                 // el.style.left = nl + 'px';

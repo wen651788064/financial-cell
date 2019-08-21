@@ -122,14 +122,14 @@ function inputEventHandler(evt, txt = "") {
         } = evt;
 
 
-        if (inputType === 'insertFromPaste') {
+        if (inputType === 'insertFromPaste' && this.textEl.el.style['caret-color'] != 'black') {
             this.copy = true;
             return;
         }
 
-        if ('deleteContentBackward' === inputType && this.textEl.el.style['position'] === 'fixed') {
-            return;
-        }
+        // if ('deleteContentBackward' === inputType && this.textEl.el.style['caret-color'] == 'black') {
+        //     return;
+        // }
     }
 
     setTimeout(() => {
@@ -137,7 +137,7 @@ function inputEventHandler(evt, txt = "") {
         if (this.chinese == false)
             return;
         let v = "";
-        if (txt == "") {
+        if (txt == "" && evt) {
             let t1 = "";
             for (let i = 0, len = evt.target.childNodes.length; i < len; i++) {
                 if (evt.target.childNodes[i].nodeType === 1) {
@@ -152,7 +152,7 @@ function inputEventHandler(evt, txt = "") {
         }
         if (this.copy) {
             this.copy = false;
-            v = evt.data;
+            v = (evt && evt.data) ? evt.data : "";
             this.textEl.html(v);
             this.pos = v.length;
             set_focus.call(this, this.textEl.el, -1);
@@ -358,6 +358,7 @@ export default class Editor {
         this.suggestContent = new SuggestContent();
         this.lock = false;
         this.state = 1;
+        this.data = data;
         this.datepicker = new Datepicker();
         this.datepicker.change((d) => {
             this.setText(dateFormat(d));
@@ -389,18 +390,19 @@ export default class Editor {
                         this.chinese = true;
                     })
                     .on('paste', evt => {
-                        if (this.textEl.el.style['position'] != 'fixed') {
+                        if (this.textEl.el.style['caret-color'] == 'black') {
+                            // createEvent.call(this, 67, true, "paste");
                             evt.stopPropagation();
                         }
                     })
                     .on('copy', evt => {
-                        if (this.textEl.el.style['position'] != 'fixed') {
-                            evt.stopPropagation();
+                        if (this.textEl.el.style['caret-color'] == 'black') {
+                            // createEvent.call(this, 86, true, "copy");
+                            evt.stopPropagation()
                         }
                     })
                     .on('keydown', evt => {
                         resetTextareaSize.call(this);
-                        console.log(evt.currentTarget.innerText);
                         this.textlineEl.html(evt.currentTarget.innerText);
                         let key_num = evt.keyCode;
                         // ctrl + v 67     ctrl + v  86
@@ -409,7 +411,7 @@ export default class Editor {
                         }
 
                         // console.log(this.textEl.el.style['position']);
-                        if (this.textEl.el.style['position'] === 'static')
+                        if (this.textEl.el.style['caret-color'] == 'black')
                             return;
                         const {
                             key, ctrlKey, shiftKey, altKey, metaKey,
@@ -460,6 +462,9 @@ export default class Editor {
         this.freeze = {w: 0, h: 0};
         this.cell = null;
         this.inputText = '';
+        setTimeout(() => {
+            this.show(false);
+        })
         this.change = () => {
         };
     }
@@ -492,10 +497,14 @@ export default class Editor {
             this.textEl.css('caret-color', 'black');
             this.textEl.css('cursor', 'text');
             this.textEl.css('opacity', '1');
+            this.textEl.el.focus();
+            this.areaEl.css('border', '2px solid #4b89ff');
         } else {
             this.textEl.css('caret-color', 'white');
             this.textEl.css('cursor', 'default');
             this.textEl.css('opacity', '0');
+            this.textEl.el.blur();
+            this.areaEl.css('border', 'none');
         }
     }
 
@@ -524,6 +533,11 @@ export default class Editor {
         resetSuggestContentItems.call(this);
         resetSuggestItems.call(this);
         this.datepicker.hide();
+
+        setTimeout(() => {
+            let {ri, ci} = this.data.selector;
+            this.setRiCi(ri, ci);
+        })
     }
 
     mount2span(spanArr, pos = -1, begin = -1, content = {suggestContent: false, cut: "", pos: -1}) {
@@ -603,6 +617,7 @@ export default class Editor {
             sOffset[suggestPosition] = height;
             suggest.setOffset(sOffset);
             suggest.hide();
+            this.show(false);
         }
     }
 
@@ -613,6 +628,11 @@ export default class Editor {
         this.textEl.child(text);
         this.pos = text.length;
         set_focus.call(this, this.textEl.el, -1);
+        this.oldCell = {
+            text: (cell && cell.text) || '',
+            formulas: (cell && cell.formulas) || ''
+        };
+        inputEventHandler.call(this, null, text);
     }
 
     setCell(cell, validator, type = 1) {
@@ -660,6 +680,10 @@ export default class Editor {
             this.textlineEl.html(text);
             resetTextareaSize.call(this);
         })
+    }
+
+    inputEventHandler() {
+        inputEventHandler.call(this, null);
     }
 
     setCursorPos(pos) {

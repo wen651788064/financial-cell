@@ -54,7 +54,9 @@ const cutStr = (str, filter = false) => {
     }
     let express = [];
     arr.filter(i => {
-        if (i.search(/^[A-Z]+\d+$/) != -1 || i.search(/^\$[A-Z]+\$\d+$/) != -1 || i.search(/^[A-Za-z]+\d+:[A-Za-z]+\d+$/) != -1)
+        if (i.search(/^[A-Z]+\d+$/) != -1 || i.search(/^\$[A-Z]+\$\d+$/) != -1
+            || i.search(/^[A-Za-z]+\d+:[A-Za-z]+\d+$/) != -1
+            || i.search(/^[A-Z]+\$\d+$/) != -1   || i.search(/^\$[A-Z]+\d+$/) != -1 )
             if (express.indexOf(i) == -1 || filter == true)
                 express.push(i);
     });
@@ -452,7 +454,10 @@ const cutting2 = (str) => {
     let colors = [];
     for (let i = 0; i < express.length; i++) {
         let s = express[i].toUpperCase();
-        if (s.search(/^[A-Z]+\d+$/) != -1 || s.search(/^\$[A-Z]+\$\d+$/) != -1 || s.search(/^[A-Za-z]+\d+:[A-Za-z]+\d+$/) != -1) {
+        if (s.search(/^[A-Z]+\d+$/) != -1
+            || s.search(/^\$[A-Z]+\$\d+$/) != -1
+            || s.search(/^[A-Z]+\$\d+$/) != -1   || s.search(/^\$[A-Z]+\d+$/) != -1
+            || s.search(/^[A-Za-z]+\d+:[A-Za-z]+\d+$/) != -1) {
             for (let i2 = 0; i2 < express[i].length; i2++)
                 colors.push({
                     "code": color,

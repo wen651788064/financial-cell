@@ -12,9 +12,9 @@ export function unbindClickoutside(el) {
   }
 }
 
-export function createEvent(keyCode, metaKey) {
+export function createEvent(keyCode, metaKey, name = "keydown") {
     let event = document.createEvent('HTMLEvents');
-    event.initEvent("keydown", true, true);
+    event.initEvent(name, true, true);
     event.eventType = 'message';
     event.keyCode = keyCode;
     event.metaKey = metaKey;
