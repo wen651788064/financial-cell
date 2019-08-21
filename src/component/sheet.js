@@ -90,7 +90,7 @@ function selectorMove(multiple, direction) {
         [ri, ci] = selector.moveIndexes;
     }
 
-    console.log("92", ri, ci, editor.ri, editor.ci)
+    // console.log("92", ri, ci, editor.ri, editor.ci)
     // if((editor.ri != ri && editor.ri != -1) || (editor.ci != ci && editor.ci != -1)) {
     //     return;
     // }
@@ -121,6 +121,7 @@ function selectorMove(multiple, direction) {
         selector.moveIndexes = [ri, ci];
     }
     selectorSet.call(this, multiple, ri, ci);
+    editorSetOffset.call(this);
     scrollbarMove.call(this);
 }
 
@@ -820,6 +821,7 @@ function sheetInitEvents() {
                     editor.clear();
                     overlayerMousedown.call(this, evt);
                     clearSelectors.call(this);
+                    // editor.setCellEnd(data.getSelectedCell());
                     editorSetOffset.call(this);
                 }
             }
@@ -1142,7 +1144,8 @@ export default class Sheet {
             formulas,
             () => this.getTableOffset(),
             data.rows.height,
-            data.cols.width
+            data.cols.width,
+            data
         );
         // data validation
         this.modalValidation = new ModalValidation();

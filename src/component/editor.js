@@ -348,7 +348,7 @@ function dateFormat(d) {
 }
 
 export default class Editor {
-    constructor(formulas, viewFn, rowHeight, rowWidth) {
+    constructor(formulas, viewFn, rowHeight, rowWidth, data) {
         this.viewFn = viewFn;
         this.rowHeight = rowHeight;
         this.formulas = formulas;
@@ -377,6 +377,9 @@ export default class Editor {
                     .on('mousedown', (evt) => {
                         if(evt.detail == 2) {
                             this.show();
+                            setTimeout(() => {
+                                this.setCellEnd(data.getSelectedCell());
+                            })
                         }
                     })
                     .on('compositionstart', evt => {
@@ -449,8 +452,8 @@ export default class Editor {
 
         this.tmp = h('span', 'span_tmp').hide();
         this.textEl.attr('contenteditable', 'true');
-        this.textEl.css('width', `${rowWidth}px`);
-        this.textEl.css('height', `${rowHeight}px`);
+        this.textEl.css('width', `${rowWidth - 3}px`);
+        this.textEl.css('height', `${rowHeight - 2}px`);
         this.textEl.child(this.tmp);
         this.pos = 0;
         this.areaOffset = null;
@@ -488,9 +491,11 @@ export default class Editor {
         if(off) {
             this.textEl.css('caret-color', 'black');
             this.textEl.css('cursor', 'text');
+            this.textEl.css('opacity', '1');
         } else {
             this.textEl.css('caret-color', 'white');
             this.textEl.css('cursor', 'default');
+            this.textEl.css('opacity', '0');
         }
     }
 
@@ -599,6 +604,15 @@ export default class Editor {
             suggest.setOffset(sOffset);
             suggest.hide();
         }
+    }
+
+    setCellEnd(cell) {
+        let text = (cell && cell.formulas) || '';
+        text = text == "" ? (cell && cell.text) || '' : text;
+
+        this.textEl.child(text);
+        this.pos = text.length;
+        set_focus.call(this, this.textEl.el, -1);
     }
 
     setCell(cell, validator, type = 1) {
