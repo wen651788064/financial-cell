@@ -59,6 +59,10 @@ class Spreadsheet {
     locale(lang, message) {
         locale(lang, message);
     }
+
+    removeEvent() {
+        this.sheet.removeEvent();
+    }
 }
 
 const spreadsheet = (el, options = {}) => new Spreadsheet(el, options);
