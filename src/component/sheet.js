@@ -712,6 +712,198 @@ function afterSelector(editor) {
     }
 }
 
+function pasteEvent(evt) {
+    clearClipboard.call(this);
+    mountPaste.call(this, evt, () => {
+        sheetReset.call(this);
+    });
+}
+
+function mouseDownEvent(evt) {
+    // if (!this.focusing) return;
+    const keyCode = evt.keyCode || evt.which;
+    const {
+        key, ctrlKey, shiftKey, altKey, metaKey,
+    } = evt;
+    // console.log('keydown.evt: ', keyCode);
+    if (getChooseImg.call(this)) {
+        console.log(keyCode);
+        switch (keyCode) {
+            case 8:         // delete
+                deleteImg.call(this);
+                break;
+            case 46:         // delete
+                deleteImg.call(this);
+                break;
+        }
+        console.log("831");
+    } else if (ctrlKey || metaKey) {
+        // const { sIndexes, eIndexes } = selector;
+        let what = 'all';
+        if (shiftKey) what = 'text';
+        if (altKey) what = 'format';
+        switch (keyCode) {
+            case 90:
+                // undo: ctrl + z
+                this.undo();
+                evt.preventDefault();
+                break;
+            case 89:
+                // redo: ctrl + y
+                this.redo();
+                evt.preventDefault();
+                break;
+            case 67:
+                // ctrl + c
+                //  加上这里是因为 需要展示虚线
+                if(getChooseImg.call(this))
+                    return;
+                copy.call(this);
+                // table.render();
+                // sheetReset.call(this);
+                evt.preventDefault();
+                break;
+            case 88:
+                // ctrl + x
+                cut.call(this);
+                evt.preventDefault();
+                break;
+            case 85:
+                // ctrl + u
+                toolbar.trigger('underline');
+                evt.preventDefault();
+                break;
+            case 86:
+                // ctrl + v
+
+                paste.call(this, what, () => {
+                    console.log("837")
+                });
+                break;
+            case 37:
+                // ctrl + left
+
+                selectorMove.call(this, shiftKey, 'row-first');
+                evt.preventDefault();
+                break;
+            case 38:
+                // ctrl + up
+                selectorMove.call(this, shiftKey, 'col-first');
+                evt.preventDefault();
+                break;
+            case 39:
+                // ctrl + right
+                selectorMove.call(this, shiftKey, 'row-last');
+                evt.preventDefault();
+                break;
+            case 40:
+                // ctrl + down
+                selectorMove.call(this, shiftKey, 'col-last');
+                evt.preventDefault();
+                break;
+            case 32:
+                // ctrl + space, all cells in col
+                selectorSet.call(this, false, -1, data.selector.ci, false);
+                evt.preventDefault();
+                break;
+            case 66:
+                // ctrl + B
+                toolbar.trigger('font-bold');
+                break;
+            case 73:
+                // ctrl + I
+                toolbar.trigger('font-italic');
+                break;
+            default:
+                break;
+        }
+    } else {
+        // console.log('evt.keyCode:', evt.keyCode);
+        switch (keyCode) {
+            case 32:
+                if (shiftKey) {
+                    // shift + space, all cells in row
+                    selectorSet.call(this, false, data.selector.ri, -1, false);
+                }
+                break;
+            case 27: // esc
+                contextMenu.hide();
+                clearClipboard.call(this);
+                break;
+            case 37: // left
+                selectorMove.call(this, shiftKey, 'left');
+                evt.preventDefault();
+                break;
+            case 38: // up
+                selectorMove.call(this, shiftKey, 'up');
+                evt.preventDefault();
+                break;
+            case 39: // right
+                selectorMove.call(this, shiftKey, 'right');
+                evt.preventDefault();
+                break;
+            case 40: // down
+                selectorMove.call(this, shiftKey, 'down');
+                evt.preventDefault();
+                break;
+            case 9: // tab
+                // lockCells
+                afterSelector.call(this, editor);
+
+                editor.clear();
+                // shift + tab => move left
+                // tab => move right
+                selectorMove.call(this, false, shiftKey ? 'left' : 'right');
+                evt.preventDefault();
+                // 清除各种属性
+                clearSelectors.call(this);
+                break;
+            case 13: // enter
+                // lockCells
+                afterSelector.call(this, editor);
+
+                editor.clear();
+                renderAutoAdapt.call(this);
+                autoRowResizer.call(this);
+                selectorMove.call(this, false, shiftKey ? 'up' : 'down');
+                editorSetOffset.call(this);
+                setTimeout(() => {
+                    let {formula} = data.settings;
+                    if (formula && typeof formula.wland == "function") {
+                        formula.wland(formula, data, table);
+                    }
+                }, 200);
+
+                evt.preventDefault();
+                // 清除各种属性
+                clearSelectors.call(this);
+                break;
+            case 8: // backspace
+                insertDeleteRowColumn.call(this, 'delete-cell-text');
+                // evt.preventDefault();
+                break;
+            default:
+                break;
+        }
+
+        if (key === 'Delete') {
+            insertDeleteRowColumn.call(this, 'delete-cell-text');
+            evt.preventDefault();
+        } else if ((keyCode >= 65 && keyCode <= 90)
+            || (keyCode >= 48 && keyCode <= 57)
+            || (keyCode >= 96 && keyCode <= 105)
+            || evt.key === '='
+        ) {
+            // dataSetCellText.call(this, evt.key, 'input');
+            // editorSet.call(this);
+            // editor.inputEventHandler();
+        } else if (keyCode === 113) {
+            // F2
+            editorSet.call(this);
+        }
+    }
+}
+
 function sheetInitEvents() {
     const {
         overlayerEl,
@@ -935,197 +1127,11 @@ function sheetInitEvents() {
     });
 
     bind(window, 'paste', (evt) => {
-        clearClipboard.call(this);
-        mountPaste.call(this, evt, () => {
-            sheetReset.call(this);
-        });
+        pasteEvent.call(this, evt);
     });
 
     // for selector
-    bind(window, 'keydown', (evt) => {
-        // if (!this.focusing) return;
-        const keyCode = evt.keyCode || evt.which;
-        const {
-            key, ctrlKey, shiftKey, altKey, metaKey,
-        } = evt;
-        // console.log('keydown.evt: ', keyCode);
-        if (getChooseImg.call(this)) {
-            console.log(keyCode);
-            switch (keyCode) {
-                case 8:         // delete
-                    deleteImg.call(this);
-                    break;
-                case 46:         // delete
-                    deleteImg.call(this);
-                    break;
-            }
-            console.log("831");
-        } else if (ctrlKey || metaKey) {
-            // const { sIndexes, eIndexes } = selector;
-            let what = 'all';
-            if (shiftKey) what = 'text';
-            if (altKey) what = 'format';
-            switch (keyCode) {
-                case 90:
-                    // undo: ctrl + z
-                    this.undo();
-                    evt.preventDefault();
-                    break;
-                case 89:
-                    // redo: ctrl + y
-                    this.redo();
-                    evt.preventDefault();
-                    break;
-                case 67:
-                    // ctrl + c
-                    //  加上这里是因为 需要展示虚线
-                    if(getChooseImg.call(this))
-                        return;
-                    copy.call(this);
-                    // table.render();
-                    // sheetReset.call(this);
-                    evt.preventDefault();
-                    break;
-                case 88:
-                    // ctrl + x
-                    cut.call(this);
-                    evt.preventDefault();
-                    break;
-                case 85:
-                    // ctrl + u
-                    toolbar.trigger('underline');
-                    evt.preventDefault();
-                    break;
-                case 86:
-                    // ctrl + v
-
-                    paste.call(this, what, () => {
-                        console.log("837")
-                    });
-                    break;
-                case 37:
-                    // ctrl + left
-
-                    selectorMove.call(this, shiftKey, 'row-first');
-                    evt.preventDefault();
-                    break;
-                case 38:
-                    // ctrl + up
-                    selectorMove.call(this, shiftKey, 'col-first');
-                    evt.preventDefault();
-                    break;
-                case 39:
-                    // ctrl + right
-                    selectorMove.call(this, shiftKey, 'row-last');
-                    evt.preventDefault();
-                    break;
-                case 40:
-                    // ctrl + down
-                    selectorMove.call(this, shiftKey, 'col-last');
-                    evt.preventDefault();
-                    break;
-                case 32:
-                    // ctrl + space, all cells in col
-                    selectorSet.call(this, false, -1, data.selector.ci, false);
-                    evt.preventDefault();
-                    break;
-                case 66:
-                    // ctrl + B
-                    toolbar.trigger('font-bold');
-                    break;
-                case 73:
-                    // ctrl + I
-                    toolbar.trigger('font-italic');
-                    break;
-                default:
-                    break;
-            }
-        } else {
-            // console.log('evt.keyCode:', evt.keyCode);
-            switch (keyCode) {
-                case 32:
-                    if (shiftKey) {
-                        // shift + space, all cells in row
-                        selectorSet.call(this, false, data.selector.ri, -1, false);
-                    }
-                    break;
-                case 27: // esc
-                    contextMenu.hide();
-                    clearClipboard.call(this);
-                    break;
-                case 37: // left
-                    selectorMove.call(this, shiftKey, 'left');
-                    evt.preventDefault();
-                    break;
-                case 38: // up
-                    selectorMove.call(this, shiftKey, 'up');
-                    evt.preventDefault();
-                    break;
-                case 39: // right
-                    selectorMove.call(this, shiftKey, 'right');
-                    evt.preventDefault();
-                    break;
-                case 40: // down
-                    selectorMove.call(this, shiftKey, 'down');
-                    evt.preventDefault();
-                    break;
-                case 9: // tab
-                    // lockCells
-                    afterSelector.call(this, editor);
-
-                    editor.clear();
-                    // shift + tab => move left
-                    // tab => move right
-                    selectorMove.call(this, false, shiftKey ? 'left' : 'right');
-                    evt.preventDefault();
-                    // 清除各种属性
-                    clearSelectors.call(this);
-                    break;
-                case 13: // enter
-                    // lockCells
-                    afterSelector.call(this, editor);
-
-                    editor.clear();
-                    renderAutoAdapt.call(this);
-                    autoRowResizer.call(this);
-                    selectorMove.call(this, false, shiftKey ? 'up' : 'down');
-                    editorSetOffset.call(this);
-                    setTimeout(() => {
-                        let {formula} = data.settings;
-                        if (formula && typeof formula.wland == "function") {
-                            formula.wland(formula, data, table);
-                        }
-                    }, 200);
-
-                    evt.preventDefault();
-                    // 清除各种属性
-                    clearSelectors.call(this);
-                    break;
-                case 8: // backspace
-                    insertDeleteRowColumn.call(this, 'delete-cell-text');
-                    // evt.preventDefault();
-                    break;
-                default:
-                    break;
-            }
-
-            if (key === 'Delete') {
-                insertDeleteRowColumn.call(this, 'delete-cell-text');
-                evt.preventDefault();
-            } else if ((keyCode >= 65 && keyCode <= 90)
-                || (keyCode >= 48 && keyCode <= 57)
-                || (keyCode >= 96 && keyCode <= 105)
-                || evt.key === '='
-            ) {
-                // dataSetCellText.call(this, evt.key, 'input');
-                // editorSet.call(this);
-                // editor.inputEventHandler();
-            } else if (keyCode === 113) {
-                // F2
-                editorSet.call(this);
-            }
-        }
-    });
+    bind(window, 'keydown', evt => mouseDownEvent.call(this));
 }
 
 export {
@@ -1219,12 +1225,7 @@ export default class Sheet {
     }
 
     removeEvent() {
-        unbind(window, 'paste',  (evt) => {
-            clearClipboard.call(this);
-            mountPaste.call(this, evt, () => {
-                sheetReset.call(this);
-            });
-        });
+        pasteEvent.call(this, evt);
 
         unbind(window, 'keydown', (evt) => {
             // if (!this.focusing) return;
