@@ -9,8 +9,6 @@ import zhCN from './locale/zh-cn';
 
 class Spreadsheet {
     constructor(selectors, options = {}) {
-        this.sheet.removeEvent();
-
         let targetEl = selectors;
         if (typeof selectors === 'string') {
             targetEl = document.querySelector(selectors);
@@ -22,6 +20,7 @@ class Spreadsheet {
         // create canvas element
         targetEl.appendChild(rootEl.el);
         this.sheet = new Sheet(rootEl, this.data);
+        this.sheet.removeEvent();
 
         // let btn = document.getElementById('btn2');
         // let clipboard = new Clipboard(btn);
