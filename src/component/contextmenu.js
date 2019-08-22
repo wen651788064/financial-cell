@@ -25,8 +25,8 @@ function buildMenuItem(item) {
     return h('div', `${cssPrefix}-item divider`);
   }
   return h('div', `${cssPrefix}-item`)
-    .on('click', () => {
-      this.itemClick(item.key);
+    .on('click', (evt) => {
+      this.itemClick(item.key, evt);
       this.hide();
     })
     .children(

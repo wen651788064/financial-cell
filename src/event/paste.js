@@ -137,7 +137,6 @@ function mountPaste(e, cb) {
                 let img = h('img', 'paste-img');
                 img.el.src = evt.target.result;
 
-
                 setTimeout(() => {
                     if (p) {
                         return;

@@ -281,6 +281,7 @@ const a = () => {
 
 function paste(what, cb = (p) => {
     if (p) {
+        clearClipboard.call(this);
         sheetReset.call(this);
     }
 }) {
@@ -893,7 +894,7 @@ function sheetInitEvents() {
         }
     };
     // contextmenu
-    contextMenu.itemClick = (type) => {
+    contextMenu.itemClick = (type, evt) => {
         // console.log('type:', type);
         if (type === 'validation') {
             modalValidation.setValue(data.getSelectedValidation());
@@ -902,6 +903,7 @@ function sheetInitEvents() {
         } else if (type === 'cut') {
             cut.call(this);
         } else if (type === 'paste') {
+            console.log(evt);
             paste.call(this, 'all');
         } else if (type === 'paste-value') {
             paste.call(this, 'text');
@@ -921,6 +923,12 @@ function sheetInitEvents() {
     });
 
     bind(window, 'copy', (evt) => {
+        mountCopy.call(this, evt);
+    });
+
+    bind(window, 'cut', (evt) => {
+        console.log("cut", evt);
+        cut.call(this);
         mountCopy.call(this, evt);
     });
 

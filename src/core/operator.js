@@ -78,11 +78,11 @@ const cuttingByPos = (str, pos, space = true) => {
     let value = "";
     let end = false;
     for (let i = pos - 1; i > 0 && end == false; i--) {
-        if(space == false) {
-            end = operation3(str[i]) ? true : false;
-        } else {
+        // if(space == false) {
+        //     end = operation3(str[i]) ? true : false;
+        // } else {
             end = operation(str[i]) ? true : false;
-        }
+        // }
         if (end == false) {
             value += str[i];
         }
@@ -99,7 +99,7 @@ const cuttingByPosEnd = (str, pos) => {
     let end = false;
     for (let i = pos - 1; i < str.length && end == false; i++) {
         end = operation(str[i]) ? true : false;
-        if (end == false) {
+        if (end == false && str[i] != ')') {
             value += str[i];
         }
     }

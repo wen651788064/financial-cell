@@ -449,6 +449,8 @@ export default class Editor {
                                 createEvent.call(this, 67, true);
                             } else if (key_num === 86) {
                                 createEvent.call(this, 86, true);
+                            } else if(key_num === 88) {
+                                createEvent.call(this, 88, true);
                             }
                         }
                     })
@@ -460,9 +462,9 @@ export default class Editor {
             )
             .on('mousemove.stop', () => {
             })
-            // .on('mousedown.stop', () => {
-            //     console.log("466")
-            // });
+            .on('mousedown.stop', () => {
+                console.log("466")
+            });
         this.el = h('div', `${cssPrefix}-editor`)
             .child(this.areaEl);
         this.suggest.bindInputEvents(this.textEl);
