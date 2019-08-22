@@ -56,6 +56,9 @@ export default {
         max: '求最大值',
         min: '求最小值',
         concat: '字符拼接',
+        wland: 'MD.WLAND',
+        wfr: 'MD.WFR',
+        rtd: 'MD.RTD',
     },
     validation: {
         required: '此值必填',
