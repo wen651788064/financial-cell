@@ -30,6 +30,10 @@ let dragOption = {
         // img.top = top + 31;
         let {pictureOffsetLeft, pictureOffsetTop} = self;
 
+        if(top - 31 < 0) {
+            top = 0;
+        }
+
         let range = self.data.getCellRectByXY(left + 60, top + 31);
         range.sri = range.ri;
         range.sci = range.ci;

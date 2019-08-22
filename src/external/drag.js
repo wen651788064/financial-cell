@@ -51,15 +51,19 @@ function Drag(options, self) {
 
                 // console.log( nl, nt);
 
-
-                if(nl > 0) {
+                let drag = false;
+                if (nl > 0) {
+                    drag = false;
                     el.style.left = nl + 'px';
-                }else {
+                } else {
+                    drag = true;
                     el.style.left = 0 + 'px';
                 }
-                if(nt > 0) {
+                if (nt > 0) {
+                    drag = false;
                     el.style.top = nt + 'px';
                 } else {
+                    drag = true;
                     el.style.top = 0 + 'px';
                 }
                 // el.style.left = nl + 'px';
@@ -85,7 +89,7 @@ function Drag(options, self) {
                 el.style.cursor = 'default';
 
                 if (options && options.onEnd) {
-                    options.onEnd.call(el, {left: nl, top: nt}, self);
+                    options.onEnd.call(el, {left: parseInt(el.style.left), top: parseInt(el.style.top)}, self);
                 }
 
                 return false;

@@ -933,7 +933,7 @@ function sheetInitEvents() {
         mountCopy.call(this, evt);
     });
 
-    bind(document, 'paste', (evt) => {
+    bind(window, 'paste', (evt) => {
         clearClipboard.call(this);
         mountPaste.call(this, evt, () => {
             sheetReset.call(this);
