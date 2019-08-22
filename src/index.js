@@ -9,6 +9,8 @@ import zhCN from './locale/zh-cn';
 
 class Spreadsheet {
     constructor(selectors, options = {}) {
+        this.sheet.removeEvent();
+
         let targetEl = selectors;
         if (typeof selectors === 'string') {
             targetEl = document.querySelector(selectors);
