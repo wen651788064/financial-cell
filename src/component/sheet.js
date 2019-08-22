@@ -915,6 +915,7 @@ function sheetInitEvents() {
         }
     };
 
+    let window = this.overlayerEl.el;
     bind(window, 'resize', () => {
         this.reload();
     });
