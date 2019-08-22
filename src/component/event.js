@@ -1,8 +1,22 @@
 /* global window */
+
+let removeEvent = [];
 export function bind(target, name, fn) {
-    target.removeEventListener(name, fn);
     target.addEventListener(name, fn);
+    removeEvent.push({
+        name: name,
+        fn: fn,
+        target: target
+    })
 }
+
+export function remove() {
+    for (let i = 0; i < removeEvent.length; i++) {
+      let re = removeEvent[i];
+        unbind(re.target, re.name, re.fn);
+    }
+}
+
 export function unbind(target, name, fn) {
   target.removeEventListener(name, fn);
 }

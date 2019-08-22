@@ -1,6 +1,6 @@
 /* global window */
 import {h} from './element';
-import {bind, unbind, bindTouch, mouseMoveUp} from './event';
+import {bind, unbind, remove, bindTouch, mouseMoveUp} from './event';
 import Resizer from './resizer';
 import Scrollbar from './scrollbar';
 import Selector from './selector';
@@ -1252,6 +1252,10 @@ export default class Sheet {
     reload() {
         sheetReset.call(this);
         return this;
+    }
+
+    removeEvent() {
+        remove.call(this);
     }
 
     getRect() {
