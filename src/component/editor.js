@@ -517,13 +517,14 @@ export default class Editor {
             this.textEl.el.focus();
             this.areaEl.css('pointer-events', 'auto');
             this.areaEl.css('border', '2px solid #4b89ff');
+            this.areaEl.css('background', 'white');
         } else {
             this.textEl.css('caret-color', 'white');
             this.textEl.css('cursor', 'default');
             this.textEl.css('opacity', '0');
             this.textEl.el.blur();
             this.areaEl.css('pointer-events', 'none');
-
+            this.areaEl.css('background', 'rgba(75, 137, 255, 0.1)');
             this.areaEl.css('border', 'none');
         }
     }
