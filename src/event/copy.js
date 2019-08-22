@@ -34,6 +34,10 @@ function mountCopy(event) {
                     }
                     td.css('background', styles[rows._[i].cells[j].style].bgcolor);
                 }
+
+                if(!rows._[i].cells[j].text) {
+                    rows._[i].cells[j].text = "";
+                }
                 let text = rows._[i].cells[j].text.replace(/ /g, "");
                 td.html(text);
                 args.plain += text;
