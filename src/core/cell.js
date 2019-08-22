@@ -173,7 +173,7 @@ const cellRender = (data, sheetbook, y, x, src, formulaMap, getCellText, cellLis
             // XLSX_CALC.import_functions(formulajs);
             // XLSX_CALC(sheetbook);
 
-            if(sheetbook.Sheets.Sheet1[xy2expr(x, y)].v == undefined) {
+            if(sheetbook.Sheets.Sheet1[xy2expr(x, y)].v == undefined || sheetbook.Sheets.Sheet1[xy2expr(x, y)].v === "") {
                 return "#ERROR!";
             }
 

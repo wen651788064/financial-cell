@@ -1,7 +1,6 @@
 import {cutFirst, cutStr, cutting, cutting2, cuttingByPos, isAbsoluteValue, operation} from "../core/operator";
 import {expr2xy, xy2expr} from "../core/alphabet";
 import {selectorColor} from "../component/color_palette";
-import Selector from "../component/selector";
 import {h} from "../component/element";
 import SelectorCopy from "x-spreadsheet-master/src/component/selector_copy";
 
@@ -21,7 +20,7 @@ function lockCells(evt, _selector) {
         if (_selector) {
             const {
                 sri, sci, eri, eci,
-            } = data.selector.range;
+            } = _selector.selector.range;
             let s1 = xy2expr(sci, sri);
             let s2 = xy2expr(eci, eri);
             let text = s1 == s2 ? s1 : `${s1}:${s2}`;
@@ -166,16 +165,18 @@ function filterSelectors(cut) {
     };
 }
 
+
 function makeSelector(ri, ci, selectors = this.selectors, multiple = false, _selector, mergeSelector) {
     const {data} = this;
     let selector = null;
+    let {inputText} = this.editor;
+    let color = selectorColor(selectors.length);
     if (_selector) {
         selector = _selector;
     } else {
-        selector = new SelectorCopy(data);
         let className = `selector${parseInt(Math.random() * 999999)}`;
+        selector = new SelectorCopy(data, this, className);
         selector.el.attr("class", `${className} clear_selector`);
-        let color = selectorColor(selectors.length);
         selector.setCss(color);
     }
 
@@ -190,10 +191,13 @@ function makeSelector(ri, ci, selectors = this.selectors, multiple = false, _sel
     }
 
     selector.el.css("z-index", "100");
+    let len = inputText.split(xy2expr(ci, ri)).length - 2;
 
     let args = {
         ri: ri,
         ci: ci,
+        index: len,
+        color: color,
         className: selector.el.el.className,
         erpx: xy2expr(ci, ri),
         selector: selector,
@@ -261,7 +265,7 @@ function editingSelectors(text = "") {
             }
         }
 
-        if(enterCode == 1) {
+        if (enterCode == 1) {
             let ri = arr[1], ci = arr[0];
             let args = makeSelector.call(this, ri, ci, selectors_valid);
             selectors_valid.push(args);

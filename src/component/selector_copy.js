@@ -2,37 +2,43 @@ import {h} from './element';
 import {cssPrefix} from '../config';
 import {CellRange} from '../core/cell_range';
 import {mouseMoveUp} from "../component/event";
+import {lockCells} from "../component/formula_editor";
+import {cuttingByPos} from "../core/operator";
+import {expr2xy} from "../core/alphabet";
 
 const selectorHeightBorderWidth = 2 * 2 - 1;
 let startZIndex = 10;
 
 class SelectorElement {
-    constructor(data, selector) {
+    constructor(data, selector, sheet) {
         // this.cornerEl = h('div', `${cssPrefix}-selector-corner`);
         // this.box = h('div', `${cssPrefix}-selector-box`);
         this.data = data;
-        this._selector =  selector;
+        this._selector = selector;
+        this.sheet = sheet;
         this.l = h('div', `${cssPrefix}-selector-box-l`)
             .on('mousedown.stop', evt => {
-                this.moveEvent();
+                this.moveEvent(evt);
             });
         this.r = h('div', `${cssPrefix}-selector-box-r`)
             .on('mousedown.stop', evt => {
-                this.moveEvent();
+                this.moveEvent(evt);
             });
         this.t = h('div', `${cssPrefix}-selector-box-t`)
             .on('mousedown.stop', evt => {
-                this.moveEvent();
+                this.moveEvent(evt);
             });
         this.b = h('div', `${cssPrefix}-selector-box-b`)
             .on('mousedown.stop', evt => {
-                this.moveEvent();
+                this.moveEvent(evt);
             });
 
 
         this.boxinner = h('div', `${cssPrefix}-selector-boxinner`)
             .children(this.b, this.t, this.r, this.l);
-        this.areaEl = h('div', `${cssPrefix}-selector-area`).hide();            // this.boxinner
+        this.areaEl = h('div', `${cssPrefix}-selector-area`)
+            .child(this.boxinner)
+            .hide();            // this.boxinner
         this.clipboardEl = h('div', `${cssPrefix}-selector-clipboard`).hide();
         this.autofillEl = h('div', `${cssPrefix}-selector-autofill`).hide();
         this.el = h('div', `${cssPrefix}-selector`)
@@ -42,23 +48,94 @@ class SelectorElement {
         startZIndex += 1;
     }
 
-    moveEvent() {
+    find(str, cha, num) {
+        let x = str.indexOf(cha);
+        for (let i = 0; i < num; i++) {
+            x = str.indexOf(cha, x + 1);
+        }
+        return x;
+    }
+
+    moveEvent(evt) {
         let {data, _selector} = this;
+        let _move_selectors = null;
         let {selector} = data;
         let {sri, sci, eri, eci, w, h} = selector.range;
         let cellRange = new CellRange(sri, sci, eri, eci, w, h);
         mouseMoveUp(window, (e) => {
-            let {ri, ci} = data.getCellRectByXY(e.pageX, e.pageY - 41);
-            cellRange.move(ri, ci);
-            const coffset = data.getMoveRect(cellRange);
-            _selector.showClipboard2(coffset);
+            this.setBoxinner("none");
+            let {ri, ci} = data.getCellRectByXY(e.layerX, e.layerY);
+            if (ri != -1 && ci != -1) {
+                let {inputText, pos} = this.sheet.editor;
+                let _erpx = cuttingByPos(inputText, pos, true);
+                let {selectors} = this.sheet;
+                for (let i = 0; i < selectors.length; i++) {
+                    let selector = selectors[i];
+                    let {className, erpx} = selector;
+
+                    if (erpx === _erpx && className === _selector.className + " clear_selector") {
+                        _move_selectors = selector;
+                        if (erpx.search(/^[A-Za-z]+\d+:[A-Za-z]+\d+$/) != -1) {
+                            let arr = erpx.split(":");
+                            let e1 = expr2xy(arr[0]);
+                            let e2 = expr2xy(arr[1]);
+                            cellRange = new CellRange(e1[1], e1[0], e2[1], e2[0], w, h);
+                            cellRange.move(ri, ci);
+                            const rect = data.getMoveRect(cellRange);
+                            _move_selectors.selector.range = cellRange;
+                            _move_selectors.selector.setMove(rect);
+                        } else {
+                            _move_selectors.selector.set(ri, ci, true);
+                        }
+                        break;
+                    } else if (erpx !== _erpx && className === _selector.className + " clear_selector") {
+                        let p = this.find(inputText, selector.erpx, selector.index);
+                        console.log(p + selector.erpx.length)
+                        this.sheet.editor.setCursorPos(p + selector.erpx.length);
+                        _move_selectors = selector;
+
+                        if (selector.erpx.search(/^[A-Za-z]+\d+:[A-Za-z]+\d+$/) != -1) {
+                            let arr = erpx.split(":");
+                            let e1 = expr2xy(arr[0]);
+                            let e2 = expr2xy(arr[1]);
+                            cellRange = new CellRange(e1[1], e1[0], e2[1], e2[0], w, h);
+                            cellRange.move(ri, ci);
+                            const rect = data.getMoveRect(cellRange);
+                            _move_selectors.selector.range = cellRange;
+                            _move_selectors.selector.setMove(rect);
+                        } else {
+                            _move_selectors.selector.set(ri, ci, true);
+                        }
+                        break;
+                    }
+                }
+                if (_move_selectors) {
+                    _move_selectors.selector.setCss(_move_selectors.color, false)
+                    // console.log( _move_selectors.selector.setCss(_move_selectors.color, false));
+                    lockCells.call(this.sheet, evt, _move_selectors);
+                }
+            }
         }, (e) => {
+            // 加这个的原因是  e.layerX, e.layerY， 如果不加的话 会点到单元格内的 xy坐标进行结算
+            this.setBoxinner("all");
+            _move_selectors.selector.setCss(_move_selectors.color, true)
             console.log("mouseup", e)
         });
     }
 
-    setCss(b) {
-        this.areaEl.css('border', `2px dashed ${b}`);
+    setBoxinner(pointer) {
+        this.l.css("pointer-events", pointer);
+        this.r.css("pointer-events", pointer);
+        this.t.css("pointer-events", pointer);
+        this.b.css("pointer-events", pointer);
+    }
+
+    setCss(b, key = true) {
+        if (!key) {
+            this.areaEl.css("border", `2px solid ${b}`);
+        } else {
+            this.areaEl.css("border", `2px dashed ${b}`);
+        }
         this.el.css("z-index", "-1");
     }
 
@@ -222,12 +299,13 @@ function setAllClipboardOffset(offset) {
 }
 
 export default class SelectorCopy {
-    constructor(data) {
+    constructor(data, sheet, className) {
         this.data = data;
-        this.br = new SelectorElement(data, this);
-        this.t = new SelectorElement(data, this);
-        this.l = new SelectorElement(data, this);
-        this.tl = new SelectorElement(data, this);
+        this.className = className;
+        this.br = new SelectorElement(data, this, sheet);
+        this.t = new SelectorElement(data, this, sheet);
+        this.l = new SelectorElement(data, this, sheet);
+        this.tl = new SelectorElement(data, this, sheet);
         this.br.el.show();
         this.offset = null;
         this.areaOffset = null;
@@ -249,11 +327,11 @@ export default class SelectorCopy {
         startZIndex += 1;
     }
 
-    setCss(b) {
-        this.br.setCss(b);
-        this.t.setCss(b);
-        this.l.setCss(b);
-        this.tl.setCss(b);
+    setCss(b, key = true) {
+        this.br.setCss(b, key);
+        this.t.setCss(b, key);
+        this.l.setCss(b, key);
+        this.tl.setCss(b, key);
     }
 
     hide() {
@@ -328,6 +406,10 @@ export default class SelectorCopy {
         this.el.show();
     }
 
+    setMove(rect) {
+        setAllAreaOffset.call(this, rect);
+    }
+
     setEnd(ri, ci, moving = true) {
         const {data, lastri, lastci} = this;
         if (moving) {
@@ -339,6 +421,13 @@ export default class SelectorCopy {
 
         setAllAreaOffset.call(this, this.data.getSelectedRect());
 
+    }
+
+    setBoxinner(pointer) {
+        this.br.setBoxinner(pointer);
+        this.t.setBoxinner(pointer);
+        this.l.setBoxinner(pointer);
+        this.tl.setBoxinner(pointer);
     }
 
     reset() {

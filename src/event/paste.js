@@ -13,8 +13,6 @@ let resizeOption = {
     onEnd(data) {
 
     },
-
-
 };
 
 let dragOption = {
@@ -50,6 +48,23 @@ let dragOption = {
     },
 };
 
+function spanDomPackage(spanDom, tableDom) {
+    let table = h("table", "");
+    let tbody = h('tbody', '');
+    let tr = h('tr', '');
+    let td = h('td', '');
+    td.html(spanDom.innerText);
+    td.css('background', spanDom.style['background']);
+    td.css('font-weight', spanDom.style['font-weight']);
+    td.css('color', spanDom.style['color']);
+    tr.child(td);
+    tbody.child(tr);
+    table.child(tbody);
+    tableDom = table.el;
+
+    return
+}
+
 function mountPaste(e, cb) {
     let cbd = e.clipboardData;
     let p = false;
@@ -83,18 +98,19 @@ function mountPaste(e, cb) {
                                 return;
                             }
                             if (spanDom) {
-                                let table = h("table", "");
-                                let tbody = h('tbody', '');
-                                let tr = h('tr', '');
-                                let td = h('td', '');
-                                td.html(spanDom.innerText);
-                                td.css('background', spanDom.style['background']);
-                                td.css('font-weight', spanDom.style['font-weight']);
-                                td.css('color', spanDom.style['color']);
-                                tr.child(td);
-                                tbody.child(tr);
-                                table.child(tbody);
-                                tableDom = table.el;
+                                // let table = h("table", "");
+                                // let tbody = h('tbody', '');
+                                // let tr = h('tr', '');
+                                // let td = h('td', '');
+                                // td.html(spanDom.innerText);
+                                // td.css('background', spanDom.style['background']);
+                                // td.css('font-weight', spanDom.style['font-weight']);
+                                // td.css('color', spanDom.style['color']);
+                                // tr.child(td);
+                                // tbody.child(tr);
+                                // table.child(tbody);
+                                // tableDom = table.el;
+                                tableDom = spanDomPackage.call(this, spanDom, tableDom).el;
                             }
                             if (styleDom) {
                                 let {el} = this;
@@ -134,29 +150,50 @@ function mountPaste(e, cb) {
                 }
             });
         } else if (item.kind === "file" && !p) {
-            let f = item.getAsFile();
-            let reader = new FileReader();
-            reader.onload = (evt) => {
-                let {x, y, overlayerEl, pasteDirectionsArr} = this;
-                let img = h('img', 'paste-img');
-                img.el.src = evt.target.result;
-
-                setTimeout(() => {
-                    if (p) {
-                        return;
-                    }
-                    p = true;
-                    mountImg.call(this, img.el);
-                }, 0);
-            };
-
-            reader.readAsDataURL(f);
+            processImg.call(this, item);
+            // let f = item.getAsFile();
+            // let reader = new FileReader();
+            // reader.onload = (evt) => {
+            //     let {x, y, overlayerEl, pasteDirectionsArr} = this;
+            //     let img = h('img', 'paste-img');
+            //     img.el.src = evt.target.result;
+            //
+            //     setTimeout(() => {
+            //         if (p) {
+            //             return;
+            //         }
+            //         p = true;
+            //         mountImg.call(this, img.el);
+            //     }, 0);
+            // };
+            //
+            // reader.readAsDataURL(f);
         }
     }
     setTimeout(() => {
         if (!p)
             cb();
     })
+}
+
+function processImg(item) {
+    let f = item.getAsFile();
+    let reader = new FileReader();
+    reader.onload = (evt) => {
+        // let {x, y, overlayerEl, pasteDirectionsArr} = this;
+        let img = h('img', 'paste-img');
+        img.el.src = evt.target.result;
+
+        setTimeout(() => {
+            if (p) {
+                return;
+            }
+            p = true;
+            mountImg.call(this, img.el);
+        }, 0);
+    };
+
+    reader.readAsDataURL(f);
 }
 
 function moveArr(top, left) {

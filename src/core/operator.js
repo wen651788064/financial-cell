@@ -74,15 +74,20 @@ const cutFirst = (str) => {
     return s;
 };
 
+const findErpx = (str, pos, erpx) => {
+    str = str.substring(0, pos);
+    return str.lastIndexOf(erpx) + erpx.length;
+};
+
 const cuttingByPos = (str, pos, space = true) => {
     let value = "";
     let end = false;
     for (let i = pos - 1; i > 0 && end == false; i--) {
-        // if(space == false) {
-        //     end = operation3(str[i]) ? true : false;
-        // } else {
-        end = operation(str[i]) ? true : false;
-        // }
+        if (space == false) {
+            end = operation3(str[i]) ? true : false;
+        } else {
+            end = operation(str[i]) ? true : false;
+        }
         if (end == false) {
             value += str[i];
         }
@@ -118,6 +123,80 @@ const cutting = (str) => {
 
 
 const helpFormula = {
+    "MD.RTD": {
+        "title": [
+            {
+                "name": "MD.RTD(",
+                "editor": false
+            },
+            {
+
+                "name": "数值1",
+                "editor": false
+            },
+            {
+
+                "name": "，",
+                "editor": false
+            },
+            {
+                "name": "数值2",
+                "editor": false
+            },
+            {
+
+                "name": "，",
+                "editor": false
+            },
+            {
+                "name": "数值3",
+                "editor": false
+            },
+            {
+                "name": ")",
+                "editor": false
+            }
+        ],
+        "example": [
+            {
+                "name": "MD.RTD(",
+                "editor": false
+            },
+            {
+
+                "name": "\"SINA\"",
+                "editor": false
+            },
+            {
+
+                "name": "，",
+                "editor": false
+            },
+            {
+                "name": "600519",
+                "editor": false
+            },
+            {
+
+                "name": "，",
+                "editor": false
+            },
+            {
+                "name": "\"NOW\"",
+                "editor": false
+            },
+            {
+                "name": ")",
+                "editor": false
+            }
+        ],
+        "content": {
+            "摘要": "股市查询。",
+            "数值1": "第一个参数。",
+            "数值2": "第二个参数。",
+            "数值3": "第三个参数。",
+        }
+    },
     "ADD": {    // 函数名称， 必须要大写， 是一个对象
         "title": [    // 是一个数组， 需要把 （）内的解析出来
             //  ADD(数值1, 数值2)  就被解析成如下所示
@@ -23151,4 +23230,5 @@ export {
     absoluteType,
     operation3,
     cuttingByPosEnd,
+    findErpx,
 }

@@ -176,7 +176,7 @@ function inputEventHandler(evt, txt = "") {
             } else
                 parse.call(this, v);
             let show = false;
-            let cutValue = cuttingByPos(v, this.pos, false);
+            let cutValue = cuttingByPos(v, this.pos, true);
             if (v.length >= this.pos) {
                 let isNumber = v[this.pos] + "";
                 if (isNumber.search(/^[0-9]+.?[0-9]*$/) != -1) {

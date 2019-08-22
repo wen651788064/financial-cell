@@ -769,6 +769,11 @@ function sheetInitEvents() {
                     let _selector = null;
                     let change = 0;
                     mouseMoveUp(window, (e) => {
+
+                        if(_selector && _selector.selector) {
+                            _selector.selector.setBoxinner("none");
+                        }
+
                         if (e.buttons === 1 && !e.shiftKey) {
                             let {ri, ci} = data.getCellRectByXY(e.offsetX, e.offsetY);
                             if (_selector && _selector.selector) {
@@ -781,7 +786,6 @@ function sheetInitEvents() {
                                     let selector = this.selectors[i];
                                     let {erpx} = selector;
 
-                                    console.log(erpx, cuttingByPos(inputText, pos), "722");
                                     if (erpx === cuttingByPos(inputText, pos)) {
                                         _selector = selector;
                                         change = 1;
@@ -794,6 +798,10 @@ function sheetInitEvents() {
                             }
                         }
                     }, () => {
+                        if(_selector && _selector.selector) {
+                            _selector.selector.setBoxinner("auto");
+                        }
+
                         if (this.mergeSelector === false) {
                             if (_selector && !change) {
                                 this.selectors.push(_selector);
@@ -921,20 +929,20 @@ function sheetInitEvents() {
     };
 
 
-    let windows = this.el.el;
-    bind(windows, 'resize', () => {
+    // let windows = this.el.el;
+    bind(window, 'resize', () => {
         this.reload();
     });
 
-    bind(windows, 'click', (evt) => {
+    bind(window, 'click', (evt) => {
         this.focusing = overlayerEl.contains(evt.target);
     });
 
-    bind(windows, 'copy', (evt) => {
+    bind(window, 'copy', (evt) => {
         mountCopy.call(this, evt);
     });
 
-    bind(windows, 'cut', (evt) => {
+    bind(window, 'cut', (evt) => {
         console.log("cut", evt);
         cut.call(this);
         mountCopy.call(this, evt);
