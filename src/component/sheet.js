@@ -371,7 +371,7 @@ function overlayerMousedown(evt) {
             if (dateBegin && isAutofillEl) {
                 let dateDiff = dateEnd.getTime() - dateBegin.getTime();
                 console.log(dateDiff);
-                if(dateDiff > 100) {
+                if(dateDiff > 50) {
                     if (data.autofill(selector.arange, 'all', msg => xtoast('Tip', msg))) {
                         table.render();
                     }

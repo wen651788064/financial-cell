@@ -119,6 +119,9 @@ const toolbarHeight = 41;
 // dst: cellRange
 function canPaste(src, dst, error = () => {
 }) {
+    if(!dst) {
+        return false;
+    }
     const {merges} = this;
     const cellRange = dst.clone();
     const [srn, scn] = src.size();

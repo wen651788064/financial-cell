@@ -69,6 +69,7 @@ function getChooseImg() {
     if (pasteDirectionsArr.length > 0) {
         for (let i = 0; i < pasteDirectionsArr.length; i++) {
             if (pasteDirectionsArr[i].state === true) {
+                this.container.css('pointer-events', 'auto');
                 return pasteDirectionsArr[i];
             }
         }
