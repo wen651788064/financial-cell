@@ -1131,7 +1131,7 @@ function sheetInitEvents() {
     });
 
     // for selector
-    bind(window, 'keydown', evt => mouseDownEvent.call(this));
+    bind(window, 'keydown', evt => mouseDownEvent.call(this, evt));
 }
 
 export {
@@ -1224,15 +1224,6 @@ export default class Sheet {
         }
     }
 
-    removeEvent() {
-        unbind(window, 'paste', evt => {
-            pasteEvent.call(this, evt);
-        })
-
-        unbind(window, 'keydown', (evt) => {
-            mouseDownEvent.call(this, evt);
-        })
-    }
 
     loadData(data) {
         this.data.setData(data);

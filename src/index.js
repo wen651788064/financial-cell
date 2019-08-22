@@ -20,7 +20,7 @@ class Spreadsheet {
         // create canvas element
         targetEl.appendChild(rootEl.el);
         this.sheet = new Sheet(rootEl, this.data);
-        this.sheet.removeEvent();
+        // this.sheet.removeEvent();
 
         // let btn = document.getElementById('btn2');
         // let clipboard = new Clipboard(btn);

@@ -4,8 +4,7 @@
     <meta charset="utf-8">
     <title>菜鸟教程(runoob.com)</title>
     <style>
-        #myDIV
-        {
+        #myDIV {
             background-color: coral;
             border: 1px solid;
             padding: 50px;
@@ -15,20 +14,20 @@
 </head>
 <body>
 
-<div id="myDIV"> div 元素添加了  onmousemove 事件句柄，在你移动鼠标时会显示随机数。
+<div id="myDIV"> div 元素添加了 onmousemove 事件句柄，在你移动鼠标时会显示随机数。
     <p>点击按钮移除 DIV 的事件句柄。</p>
     <button onclick="removeHandler()" id="myBtn">点我</button>
 </div>
 <p id="demo"></p>
 <script>
-    window.addEventListener("paste", myFunction);
+    window.addEventListener("paste",  myFunction);
 
-    function myFunction()
-    {
+    function myFunction(e) {
+        console.log(e);
         document.getElementById("demo").innerHTML = Math.random();
     }
-    function removeHandler()
-    {
+
+    function removeHandler() {
         window.removeEventListener("paste", myFunction);
     }
 </script>
