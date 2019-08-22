@@ -371,7 +371,7 @@ function overlayerMousedown(evt) {
             if (dateBegin && isAutofillEl) {
                 let dateDiff = dateEnd.getTime() - dateBegin.getTime();
                 console.log(dateDiff);
-                if(dateDiff > 300) {
+                if(dateDiff > 100) {
                     if (data.autofill(selector.arange, 'all', msg => xtoast('Tip', msg))) {
                         table.render();
                     }
@@ -1094,7 +1094,7 @@ function sheetInitEvents() {
                         if (formula && typeof formula.wland == "function") {
                             formula.wland(formula, data, table);
                         }
-                    }, 500);
+                    }, 200);
 
                     evt.preventDefault();
                     // 清除各种属性
