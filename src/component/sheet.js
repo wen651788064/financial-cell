@@ -871,7 +871,8 @@ function sheetInitEvents() {
             // editor.setRiCi(-1, -1);
             return;
         }
-
+        let {selector } = this;
+        selector.el.hide();
         //实时更新this.selectors
         let {lock} = editor;
         editor.setMouseDownIndex([]);
