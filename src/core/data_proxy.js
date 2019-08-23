@@ -318,7 +318,7 @@ function getCellColByX(x, scrollOffsetx) {
     const {cols} = this;
     const fsw = this.freezeTotalWidth();
     let inits = cols.indexWidth;
-    if (fsw + cols.indexWidth < x) inits -= scrollOffsetx;
+    if (fsw + cols.indexWidth <= x) inits -= scrollOffsetx;
     const [ci, left, width] = helper.rangeReduceIf(
         0,
         cols.len,

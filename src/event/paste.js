@@ -30,6 +30,8 @@ let dragOption = {
 
         if(top - 31 < 0) {
             top = 0;
+        } else if(left - 60 < 0) {
+            left =  0;
         }
 
         let range = self.data.getCellRectByXY(left + 60, top + 31);
@@ -62,7 +64,7 @@ function spanDomPackage(spanDom, tableDom) {
     table.child(tbody);
     tableDom = table.el;
 
-    return
+    return tableDom;
 }
 
 function mountPaste(e, cb) {
@@ -110,7 +112,7 @@ function mountPaste(e, cb) {
                                 // tbody.child(tr);
                                 // table.child(tbody);
                                 // tableDom = table.el;
-                                tableDom = spanDomPackage.call(this, spanDom, tableDom).el;
+                                tableDom = spanDomPackage.call(this, spanDom, tableDom);
                             }
                             if (styleDom) {
                                 let {el} = this;
@@ -150,24 +152,24 @@ function mountPaste(e, cb) {
                 }
             });
         } else if (item.kind === "file" && !p) {
-            processImg.call(this, item);
-            // let f = item.getAsFile();
-            // let reader = new FileReader();
-            // reader.onload = (evt) => {
-            //     let {x, y, overlayerEl, pasteDirectionsArr} = this;
-            //     let img = h('img', 'paste-img');
-            //     img.el.src = evt.target.result;
-            //
-            //     setTimeout(() => {
-            //         if (p) {
-            //             return;
-            //         }
-            //         p = true;
-            //         mountImg.call(this, img.el);
-            //     }, 0);
-            // };
-            //
-            // reader.readAsDataURL(f);
+            // processImg.call(this, item);
+            let f = item.getAsFile();
+            let reader = new FileReader();
+            reader.onload = (evt) => {
+                let {x, y, overlayerEl, pasteDirectionsArr} = this;
+                let img = h('img', 'paste-img');
+                img.el.src = evt.target.result;
+
+                setTimeout(() => {
+                    if (p) {
+                        return;
+                    }
+                    p = true;
+                    mountImg.call(this, img.el);
+                }, 0);
+            };
+
+            reader.readAsDataURL(f);
         }
     }
     setTimeout(() => {
@@ -408,20 +410,20 @@ function GetInfoFromTable(tableObj) {
             let index = isHaveStyle(styles, args);
             if (index !== -1) {
                 cells[j + ci] = {
-                    text: tableObj.rows[i].cells[j].innerHTML,
+                    text: tableObj.rows[i].cells[j].innerText,
                     style: index,
                 };
                 cells2[j + ci] = {
-                    text: tableObj.rows[i].cells[j].innerHTML,
+                    text: tableObj.rows[i].cells[j].innerText,
                 };
             } else {
                 styles.push(args);
                 cells[j + ci] = {
-                    text: tableObj.rows[i].cells[j].innerHTML,
+                    text: tableObj.rows[i].cells[j].innerText,
                     style: styles.length - 1,
                 };
                 cells2[j + ci] = {
-                    text: tableObj.rows[i].cells[j].innerHTML,
+                    text: tableObj.rows[i].cells[j].innerText,
                 };
             }
             lastRi = i + ri;
