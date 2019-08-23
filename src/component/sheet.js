@@ -970,7 +970,6 @@ function sheetInitEvents() {
                     deleteImg.call(this);
                     break;
             }
-            console.log("831");
         } else if (ctrlKey || metaKey) {
             // const { sIndexes, eIndexes } = selector;
             let what = 'all';

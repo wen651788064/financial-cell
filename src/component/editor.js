@@ -424,6 +424,7 @@ export default class Editor {
                             evt.preventDefault();
                         }
 
+
                         // console.log(this.textEl.el.style['position']);
                         if (this.textEl.el.style['caret-color'] == 'black')
                             return;
