@@ -1139,6 +1139,10 @@ export default class DataProxy {
         this.change(this.getData());
     }
 
+    cutPaste(srcCellRange, dstCellRange) {
+        cutPaste.call(this, srcCellRange, dstCellRange);
+    }
+
     setData(d) {
         const {autoFilter} = this;
         Object.keys(d).forEach((property) => {

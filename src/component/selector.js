@@ -7,10 +7,11 @@ const selectorHeightBorderWidth = 2 * 2 - 1;
 let startZIndex = 10;
 
 class SelectorElement {
-    constructor(data, selector) {
+    constructor(data, selector, sheet) {
         this.cornerEl = h('div', `${cssPrefix}-selector-corner`);
         // this.box = h('div', `${cssPrefix}-selector-box`);
         this.data = data;
+        this.sheet = sheet;
         this._selector =  selector;
         this.l = h('div', `${cssPrefix}-selector-box-l`)
             .on('mousedown.stop', evt => {
@@ -44,17 +45,42 @@ class SelectorElement {
     }
 
     moveEvent() {
-        let {data, _selector} = this;
+        let {data, _selector, sheet} = this;
         let {selector} = data;
-        let {sri, sci, eri, eci, w, h} = selector.range;
+        let {sri, sci, eri, eci, w, h} = _selector.range;
+        let _cellRange = new CellRange(sri, sci, eri, eci, w, h);
         let cellRange = new CellRange(sri, sci, eri, eci, w, h);
+        let {selectorMoveEl} = sheet;
+        selectorMoveEl.set(-1, -1, true);
+        selectorMoveEl.hide();
+
         mouseMoveUp(window, (e) => {
-            let {ri, ci} = data.getCellRectByXY(e.pageX, e.pageY - 41);
-            cellRange.move(ri, ci);
-            const coffset = data.getMoveRect(cellRange);
-            _selector.showClipboard2(coffset);
+            _selector.setBoxinner("none");
+
+            let {ri, ci} = data.getCellRectByXY(e.layerX, e.layerY);
+            if(ri !== -1 && ci !== -1) {
+                cellRange = new CellRange(sri, sci, eri, eci, w, h);
+                cellRange.move(ri, ci);
+                const rect = data.getMoveRect(cellRange);
+                selectorMoveEl.range = cellRange;
+                selectorMoveEl.setMove(rect);
+                selectorMoveEl.el.show();
+            }
         }, (e) => {
-            console.log("mouseup", e)
+            data.cutPaste(_cellRange, cellRange);
+            _selector.setBoxinner("auto");
+            selectorMoveEl.hide();
+
+            const rect = data.getMoveRect(cellRange);
+            selector.range = cellRange;
+            selector.ci = cellRange.sci;
+            selector.ri = cellRange.sri;
+            _selector.indexes = [selector.ri, selector.ci];
+            _selector.moveIndexes = [cellRange.sri, cellRange.sci];
+            _selector.range = cellRange;
+            _selector.setMove(rect);
+
+            sheet.selectorMoveReset();
         });
     }
 
@@ -230,12 +256,12 @@ function setAllClipboardOffset(offset) {
 }
 
 export default class Selector {
-    constructor(data) {
+    constructor(data, sheet) {
         this.data = data;
-        this.br = new SelectorElement(data, this);
-        this.t = new SelectorElement(data, this);
-        this.l = new SelectorElement(data, this);
-        this.tl = new SelectorElement(data, this);
+        this.br = new SelectorElement(data, this, sheet);
+        this.t = new SelectorElement(data, this, sheet);
+        this.l = new SelectorElement(data, this, sheet);
+        this.tl = new SelectorElement(data, this, sheet);
         this.br.el.show();
         this.offset = null;
         this.areaOffset = null;
@@ -362,6 +388,10 @@ export default class Selector {
         // 原因是 从右下角往左上角选中，然后ctrl + c 会有bug  加下面一行的原因
         // this.set(sri, sci);
         this.setEnd(eri, eci);
+    }
+
+    setMove(rect) {
+        setAllAreaOffset.call(this, rect);
     }
 
     showAutofill(ri, ci) {

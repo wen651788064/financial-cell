@@ -444,6 +444,7 @@ function hasEditor(showEditor = true) {
         return this.overlayerCEl = h('div', `${cssPrefix}-overlayer-content`)
             .children(
                 this.editor.el,
+                this.selectorMoveEl.el,
                 this.selector.el,
             );
     } else {
@@ -451,6 +452,7 @@ function hasEditor(showEditor = true) {
             .children(
                 // this.editor.el,
                 this.selector.el,
+                this.selectorMoveEl.el
             );
     }
 }
@@ -1176,7 +1178,9 @@ export default class Sheet {
         // contextMenu
         this.contextMenu = new ContextMenu(() => this.getTableOffset(), !showContextmenu);
         // selector
-        this.selector = new Selector(data);
+        this.selector = new Selector(data, this);
+        this.selectorMoveEl = new Selector(data, this);
+
 
         this.advice = new Advice(data, this);
         this.website = new Website(data);
@@ -1229,6 +1233,11 @@ export default class Sheet {
         }
     }
 
+    selectorMoveReset() {
+        editorSetOffset.call(this);
+        this.editor.setRiCi(this.data.selector.ri, this.data.selector.ci)
+        sheetReset.call(this);
+    }
 
     loadData(data) {
         this.data.setData(data);
@@ -1279,3 +1288,4 @@ export default class Sheet {
         };
     }
 }
+
