@@ -93,7 +93,7 @@ function Drag(options, self) {
                 }
 
                 return false;
-            }
+            };
             // e.stopPropagation();
             if (e.stopPropagation) {
                 e.stopPropagation();

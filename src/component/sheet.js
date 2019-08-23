@@ -354,6 +354,7 @@ function overlayerMousedown(evt) {
         let dateBegin;
         // mouse move up
         mouseMoveUp(window, (e) => {
+            this.selector.setBoxinner("none");
             if(!dateBegin) {
                 dateBegin = new Date();
             }
@@ -377,6 +378,7 @@ function overlayerMousedown(evt) {
                     }
                 }
             }
+            this.selector.setBoxinner("auto");
             dateBegin = null;
             selector.hideAutofill();
             toolbarChangePaintformatPaste.call(this);
@@ -769,7 +771,6 @@ function sheetInitEvents() {
                     let _selector = null;
                     let change = 0;
                     mouseMoveUp(window, (e) => {
-
                         if(_selector && _selector.selector) {
                             _selector.selector.setBoxinner("none");
                         }

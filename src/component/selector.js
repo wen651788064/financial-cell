@@ -33,7 +33,7 @@ class SelectorElement {
         this.boxinner = h('div', `${cssPrefix}-selector-boxinner`)
             .children(this.b, this.t, this.r, this.l);
         this.areaEl = h('div', `${cssPrefix}-selector-area`)
-            .children(this.cornerEl).hide();            // this.boxinner
+            .children(this.cornerEl, this.boxinner).hide();            // this.boxinner
         this.clipboardEl = h('div', `${cssPrefix}-selector-clipboard`).hide();
         this.autofillEl = h('div', `${cssPrefix}-selector-autofill`).hide();
         this.el = h('div', `${cssPrefix}-selector`)
@@ -66,6 +66,13 @@ class SelectorElement {
     setOffset(v) {
         this.el.offset(v).show();
         return this;
+    }
+
+    setBoxinner(pointer) {
+        this.l.css("pointer-events", pointer);
+        this.r.css("pointer-events", pointer);
+        this.t.css("pointer-events", pointer);
+        this.b.css("pointer-events", pointer);
     }
 
     hide() {
@@ -340,6 +347,13 @@ export default class Selector {
 
         setAllAreaOffset.call(this, this.data.getSelectedRect());
 
+    }
+
+    setBoxinner(pointer) {
+        this.br.setBoxinner(pointer);
+        this.t.setBoxinner(pointer);
+        this.l.setBoxinner(pointer);
+        this.tl.setBoxinner(pointer);
     }
 
     reset() {

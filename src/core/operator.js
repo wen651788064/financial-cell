@@ -39,7 +39,7 @@ const operation2 = (s) => {
     return 0;
 };
 
-const cutStr = (str, filter = false) => {
+const cutStr = (str, filter = false, f = false) => {
     str = str.toUpperCase();
     if (str[0] !== "=") {
         return [];
@@ -54,14 +54,24 @@ const cutStr = (str, filter = false) => {
     }
     let express = [];
     arr.filter(i => {
-        if (i.search(/^[A-Z]+\d+$/) != -1 || i.search(/^\$[A-Z]+\$\d+$/) != -1
-            || i.search(/^[A-Za-z]+\d+:[A-Za-z]+\d+$/) != -1
-            || i.search(/^[A-Z]+\$\d+$/) != -1 || i.search(/^\$[A-Z]+\d+$/) != -1)
-            if (express.indexOf(i) == -1 || filter == true)
-                express.push(i);
+        if(f) {
+            if (i.search(/^[A-Z]+\d+$/) != -1
+                || i.search(/^[A-Za-z]+\d+:[A-Za-z]+\d+$/) != -1)
+                if (express.indexOf(i) == -1)
+                    express.push(i);
+        } else {
+            if (i.search(/^[A-Z]+\d+$/) != -1 || i.search(/^\$[A-Z]+\$\d+$/) != -1
+                || i.search(/^[A-Za-z]+\d+:[A-Za-z]+\d+$/) != -1
+                || i.search(/^[A-Z]+\$\d+$/) != -1 || i.search(/^\$[A-Z]+\d+$/) != -1)
+                if (express.indexOf(i) == -1 || filter == true)
+                    express.push(i);
+        }
     });
+
     return express;
 };
+
+
 
 const cutFirst = (str) => {
     let s = "";
@@ -23216,6 +23226,8 @@ const cutting2 = (str) => {
 
     return colors;
 };
+
+
 
 export {
     operator,

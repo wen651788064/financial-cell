@@ -4,6 +4,8 @@ import Drag from "../external/drag";
 import Resize from "../external/resize";
 import {cssPrefix} from "../config";
 import {getChooseImg} from "../event/copy";
+import {cutStr} from "../core/operator";
+import {expr2xy, xy2expr} from "../core/alphabet";
 
 let resizeOption = {
     onBegin(data) {
@@ -67,6 +69,17 @@ function spanDomPackage(spanDom, tableDom) {
     return tableDom;
 }
 
+function process(tableDom, styleDom) {
+    let {el} = this;
+    el.child(tableDom);
+    GetInfoFromTable.call(this, tableDom);
+    tableDom.parentNode.removeChild(tableDom);
+    if (styleDom) {
+        styleDom.parentNode.removeChild(styleDom);
+    }
+    sheetReset.call(this);
+}
+
 function mountPaste(e, cb) {
     let cbd = e.clipboardData;
     let p = false;
@@ -100,18 +113,6 @@ function mountPaste(e, cb) {
                                 return;
                             }
                             if (spanDom) {
-                                // let table = h("table", "");
-                                // let tbody = h('tbody', '');
-                                // let tr = h('tr', '');
-                                // let td = h('td', '');
-                                // td.html(spanDom.innerText);
-                                // td.css('background', spanDom.style['background']);
-                                // td.css('font-weight', spanDom.style['font-weight']);
-                                // td.css('color', spanDom.style['color']);
-                                // tr.child(td);
-                                // tbody.child(tr);
-                                // table.child(tbody);
-                                // tableDom = table.el;
                                 tableDom = spanDomPackage.call(this, spanDom, tableDom);
                             }
                             if (styleDom) {
@@ -138,14 +139,7 @@ function mountPaste(e, cb) {
                         }
 
                         if (tableDom && p == false) {
-                            let {el} = this;
-                            el.child(tableDom);
-                            GetInfoFromTable.call(this, tableDom);
-                            tableDom.parentNode.removeChild(tableDom);
-                            if (styleDom) {
-                                styleDom.parentNode.removeChild(styleDom);
-                            }
-                            sheetReset.call(this);
+                            process.call(this, tableDom, styleDom);
                             p = true;
                         }
                     }
@@ -408,7 +402,63 @@ function GetInfoFromTable(tableObj) {
                 },
             };
             let index = isHaveStyle(styles, args);
-            if (index !== -1) {
+
+            if(tableObj.rows[i].cells[j] && tableObj.rows[i].cells[j].querySelector("tt")) {
+                let eri = tableObj.rows[i].cells[j].childNodes[0].getAttribute('ri');
+                let eci = tableObj.rows[i].cells[j].childNodes[0].getAttribute('ci');
+
+                let arr = tableObj.rows[i].cells[j].innerText.split(/([(-\/,+，*\s=^&])/);
+                let dci = i + ri - eri;
+                let dei = j + ci - eci;
+                console.log( tableObj.rows[i].cells[j].innerText, j, i, dei, dci);
+
+                let newStr = "";
+                let bad = false;
+                for(let i = 0; i < arr.length; i++) {
+                    if(arr[i].search(/^[A-Z]+\d+$/) != -1) {
+                        let ds = expr2xy(arr[i]);
+                        if(ds[0] + dei < 0 || ds[1] + dci < 0) {
+                            bad = true;
+                        }
+                        arr[i] = xy2expr(ds[0] + dei, ds[1] + dci);
+                    } else if(arr[i].search(/^[A-Za-z]+\d+:[A-Za-z]+\d+$/) != -1) {
+                        let a1 = arr[i].split(":")[0];
+                        let a2 = arr[i].split(":")[1];
+                        let ds1 = expr2xy(a1);
+                        let ds2 = expr2xy(a2);
+
+                        if(ds1[0] + dei < 0 || ds1[1] + dci < 0) {
+                            bad = true;
+                        }
+                        if(ds2[0] + dei < 0 || ds2[1] + dci < 0) {
+                            bad = true;
+                        }
+
+                        let s = xy2expr(ds1[0] + dei, ds1[1] + dci) + ":";
+                        s += xy2expr(ds2[0] + dei, ds2[1] + dci)
+                        arr[i] = s;
+                    }
+                    newStr += arr[i];
+                }
+
+                if(bad) {
+                    cells[j + ci] = {
+                        text: "=#REF!",
+                        style: index,
+                    };
+                    cells2[j + ci] = {
+                        text: "=#REF!",
+                    };
+                } else {
+                    cells[j + ci] = {
+                        text: newStr != "" ? newStr : tableObj.rows[i].cells[j].innerText,
+                        style: index,
+                    };
+                    cells2[j + ci] = {
+                        text: newStr != "" ? newStr : tableObj.rows[i].cells[j].innerText,
+                    };
+                }
+            } else if (index !== -1) {
                 cells[j + ci] = {
                     text: tableObj.rows[i].cells[j].innerText,
                     style: index,
@@ -438,12 +488,6 @@ function GetInfoFromTable(tableObj) {
         };
     }
 
-    // let {eci, eri, sci, sri} = data.selector.range;
-    // if (eci != sci || eri != sri) {
-    //     lastRi = eri;
-    //     lastCi = eci;
-    // }
-    // let rect = data.cellRect(lastRi, lastCi);
     const rect = data.getSelectedRect();
     let left = rect.left + rect.width + 60;
     let top = rect.top + rect.height + 31;

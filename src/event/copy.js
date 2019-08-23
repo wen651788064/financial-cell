@@ -1,4 +1,5 @@
 import {h} from "../component/element";
+import {cutStr} from "../core/operator";
 
 function mountCopy(event) {
     event.preventDefault();
@@ -38,8 +39,18 @@ function mountCopy(event) {
                 if(!rows._[i].cells[j].text) {
                     rows._[i].cells[j].text = "";
                 }
-                let text = rows._[i].cells[j].text.replace(/ /g, "");
-                td.html(text);
+
+
+                // 因为 不会复制空格
+                let text = rows._[i].cells[j].text;
+                if(rows._[i].cells[j].formulas && cutStr(rows._[i].cells[j].formulas, false, true).length > 0) {
+                    let hidden = h('tt', '');
+                    hidden.html(text);
+                    hidden.attr('ri', i);
+                    hidden.attr('ci', j);
+                    td.child(hidden.el);
+                } else
+                    td.html(text);
                 args.plain += text;
                 args.plain += "\t";
             } else {

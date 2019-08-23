@@ -63,12 +63,16 @@ class SelectorElement {
         let {sri, sci, eri, eci, w, h} = selector.range;
         let cellRange = new CellRange(sri, sci, eri, eci, w, h);
         mouseMoveUp(window, (e) => {
-            this.setBoxinner("none");
+            let {selectors} = this.sheet;
+            for (let i = 0; i < selectors.length; i++) {
+                let selector = selectors[i];
+                selector.selector.setBoxinner("none");
+            }
+
             let {ri, ci} = data.getCellRectByXY(e.layerX, e.layerY);
             if (ri != -1 && ci != -1) {
                 let {inputText, pos} = this.sheet.editor;
                 let _erpx = cuttingByPos(inputText, pos, true);
-                let {selectors} = this.sheet;
                 for (let i = 0; i < selectors.length; i++) {
                     let selector = selectors[i];
                     let {className, erpx} = selector;
@@ -111,15 +115,18 @@ class SelectorElement {
                 }
                 if (_move_selectors) {
                     _move_selectors.selector.setCss(_move_selectors.color, false)
-                    // console.log( _move_selectors.selector.setCss(_move_selectors.color, false));
                     lockCells.call(this.sheet, evt, _move_selectors);
                 }
             }
         }, (e) => {
             // 加这个的原因是  e.layerX, e.layerY， 如果不加的话 会点到单元格内的 xy坐标进行结算
-            this.setBoxinner("all");
-            _move_selectors.selector.setCss(_move_selectors.color, true)
-            console.log("mouseup", e)
+            let {selectors} = this.sheet;
+            for (let i = 0; i < selectors.length; i++) {
+                let selector = selectors[i];
+                selector.selector.setBoxinner("all");
+            }
+            if(_move_selectors &&  _move_selectors.selector)
+                _move_selectors.selector.setCss(_move_selectors.color, true)
         });
     }
 
