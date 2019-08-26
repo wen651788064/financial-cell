@@ -147,10 +147,12 @@ class Rows {
         const {
             sri, sci, eri, eci,
         } = srcCellRange;
+
         const dsri = dstCellRange.sri;
         const dsci = dstCellRange.sci;
         const deri = dstCellRange.eri;
         const deci = dstCellRange.eci;
+
         const [rn, cn] = srcCellRange.size();
         const [drn, dcn] = dstCellRange.size();
         // console.log(srcIndexes, dstIndexes);

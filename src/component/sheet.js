@@ -23,7 +23,7 @@ import {mountCopy} from "../event/copy";
 import Website from "../component/website";
 import {cuttingByPos} from "../core/operator";
 import {moveCell} from "../event/move";
-import {getChooseImg} from "x-spreadsheet-master/src/event/copy";
+import {getChooseImg} from "../event/copy";
 
 function scrollbarMove() {
     const {
@@ -377,6 +377,7 @@ function overlayerMousedown(evt) {
                     }
                 }
             }
+            this.selector.arange = null;
             this.selector.setBoxinner("auto");
             dateBegin = null;
             selector.hideAutofill();
@@ -420,7 +421,7 @@ function pictureSetOffset() {
     });
 }
 
-function editorSetOffset() {
+function editorSetOffset(show = true) {
     const {editor, data, container} = this;
     const sOffset = data.getSelectedRect();
     const tOffset = this.getTableOffset();
@@ -431,7 +432,7 @@ function editorSetOffset() {
         sPosition = 'bottom';
     }
 
-    editor.setOffset(sOffset, sPosition);
+    editor.setOffset(sOffset, sPosition, show);
     setTimeout(() => {
         editor.setCursorPos(0);
     });
@@ -459,7 +460,8 @@ function hasEditor(showEditor = true) {
 function editorSet(type = 1) {
     const {editor, data, selector} = this;
     editorSetOffset.call(this);
-    editor.setCell(data.getSelectedCell(), data.getSelectedValidator(), type);
+    editor.setCellEnd(data.getSelectedCell());
+    // editor.setCell(data.getSelectedCell(), data.getSelectedValidator(), type);
     selector.el.hide();
     clearClipboard.call(this);
 }
@@ -470,7 +472,7 @@ function verticalScrollbarMove(distance) {
         selector.resetBRLAreaOffset();
         pictureSetOffset.call(this);
         adviceSetOffset.call(this);
-        editorSetOffset.call(this);
+        editorSetOffset.call(this, false);
         table.render();
     });
 }
@@ -481,7 +483,7 @@ function horizontalScrollbarMove(distance) {
         selector.resetBRTAreaOffset();
         pictureSetOffset.call(this);
         adviceSetOffset.call(this);
-        editorSetOffset.call(this);
+        editorSetOffset.call(this, false);
         table.render();
     });
 }

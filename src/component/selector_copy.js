@@ -5,7 +5,7 @@ import {mouseMoveUp} from "../component/event";
 import {lockCells} from "../component/formula_editor";
 import {cuttingByPos} from "../core/operator";
 import {expr2xy} from "../core/alphabet";
-import {cuttingByPosEnd, isAbsoluteValue} from "x-spreadsheet-master/src/core/operator";
+import {cuttingByPosEnd, isAbsoluteValue} from "../core/operator";
 
 const selectorHeightBorderWidth = 2 * 2 - 1;
 let startZIndex = 10;

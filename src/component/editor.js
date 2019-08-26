@@ -3,10 +3,10 @@ import {h} from './element';
 import Suggest from './suggest';
 import Datepicker from './datepicker';
 import {cssPrefix} from '../config';
-import {cutting, cuttingByPos, cuttingByPosEnd, isAbsoluteValue, operation} from "../core/operator";
-import SuggestContent from "../component/suggest_content";
-import {findBracket, suggestContent} from "../component/formula_editor";
-import {createEvent} from "../component/event";
+import {cutting, cuttingByPos, cuttingByPosEnd, isAbsoluteValue, operation,} from '../core/operator';
+import SuggestContent from './suggest_content';
+import {findBracket, suggestContent} from './formula_editor';
+import {createEvent} from './event';
 
 function resetTextareaSize() {
     const {
@@ -34,26 +34,26 @@ function resetTextareaSize() {
 }
 
 const getCursortPosition = function (containerEl) {
-    let range = window.getSelection().getRangeAt(0);
-    let preSelectionRange = range.cloneRange();
+    const range = window.getSelection().getRangeAt(0);
+    const preSelectionRange = range.cloneRange();
     preSelectionRange.selectNodeContents(this.textEl.el);
     preSelectionRange.setEnd(range.startContainer, range.startOffset);
-    let start = preSelectionRange.toString().length;
+    const start = preSelectionRange.toString().length;
 
     // text == ")"
-    let {exist, left, right} = findBracket(start - 1, cutting(this.inputText), this.inputText);
-    Object.keys(this.spanArr).forEach(i => {
+    const {exist, left, right} = findBracket(start - 1, cutting(this.inputText), this.inputText);
+    Object.keys(this.spanArr).forEach((i) => {
         this.spanArr[i].css('background-color', 'rgba(255,255,255,0.1)');
     });
-    let spanLeft = this.spanArr[left];
-    let spanRight = this.spanArr[right];
+    const spanLeft = this.spanArr[left];
+    const spanRight = this.spanArr[right];
     this.suggestContent.hide();
     if (exist && spanLeft && spanRight) {
-        spanLeft.css("background-color", "rgb(229, 229, 229)");
-        spanRight.css("background-color", "rgb(229, 229, 229)");
+        spanLeft.css('background-color', 'rgb(229, 229, 229)');
+        spanRight.css('background-color', 'rgb(229, 229, 229)');
     } else {
-        let {show} = this.suggest;
-        let content = suggestContent.call(this, start, cutting(this.inputText), this.inputText);
+        const {show} = this.suggest;
+        const content = suggestContent.call(this, start, cutting(this.inputText), this.inputText);
         if (content.suggestContent && !show) {
             this.suggestContent.content(content.cut, content.pos);
         }
@@ -66,18 +66,24 @@ function set_focus(el) {
     if (!this) {
         return;
     }
-    let savedSel = {
+    const savedSel = {
         start: this.pos,
-        end: this.pos
+        end: this.pos,
     };
-    let charIndex = 0, range = document.createRange();
+    let charIndex = 0;
+    const
+        range = document.createRange();
     range.setStart(el, 0);
     range.collapse(true);
-    let nodeStack = [el], node, foundStart = false, stop = false;
+    const nodeStack = [el];
+    let node;
+    let foundStart = false;
+    let
+        stop = false;
 
     while (!stop && (node = nodeStack.pop())) {
         if (node.nodeType == 3) {
-            var nextCharIndex = charIndex + node.length;
+            const nextCharIndex = charIndex + node.length;
             if (!foundStart && savedSel.start >= charIndex && savedSel.start <= nextCharIndex) {
                 range.setStart(node, savedSel.start - charIndex);
                 foundStart = true;
@@ -88,22 +94,21 @@ function set_focus(el) {
             }
             charIndex = nextCharIndex;
         } else {
-            var i = node.childNodes.length;
+            let i = node.childNodes.length;
             while (i--) {
                 nodeStack.push(node.childNodes[i]);
             }
         }
     }
 
-    let sel = window.getSelection();
+    const sel = window.getSelection();
     sel.removeAllRanges();
     sel.addRange(range);
-
 }
 
 const setCursorPosition = (elem, index) => {
-    var val = elem.value || elem.textContent;
-    var len = val.length;
+    const val = elem.value || elem.textContent;
+    const len = val.length;
 
     // 超过文本长度直接返回
     if (len < index) return;
@@ -115,10 +120,10 @@ function mouseDownEventHandler(evt) {
     parse2.call(this, this.inputText, this.pos);
 }
 
-function inputEventHandler(evt, txt = "") {
+function inputEventHandler(evt, txt = '') {
     if (evt) {
         const {
-            inputType
+            inputType,
         } = evt;
 
         if (inputType === 'insertFromPaste' && this.textEl.el.style['caret-color'] != 'black') {
@@ -131,41 +136,42 @@ function inputEventHandler(evt, txt = "") {
         }
     }
 
-    if(this.inputText === '') {
-        let {data} = this;
-        let {history} = data;
+    if (this.inputText === '') {
+        const {data} = this;
+        const {history} = data;
         history.add(data.getData());
     }
 
     setTimeout(() => {
         this.show();
-        if (this.chinese == false)
-            return;
-        let v = "";
-        if (txt == "" && evt) {
-            let t1 = "";
+        if (this.chinese == false) return;
+        let v = '';
+        if (txt == '' && evt) {
+            let t1 = '';
             for (let i = 0, len = evt.target.childNodes.length; i < len; i++) {
                 if (evt.target.childNodes[i].nodeType === 1) {
-                    v += evt.target.childNodes[i].innerText
+                    v += evt.target.childNodes[i].innerText;
                 } else if (evt.target.childNodes[i].nodeType === 3) {
                     t1 += evt.target.childNodes[i].nodeValue;
                 }
             }
-            v = t1 !== "" ? t1 : v;
+            v = t1 !== '' ? t1 : v;
         } else {
             v = txt;
         }
         if (this.copy) {
             this.copy = false;
-            v = (evt && evt.data) ? evt.data : "";
+            v = (evt && evt.data) ? evt.data : '';
             this.textEl.html(v);
             this.pos = v.length;
             set_focus.call(this, this.textEl.el, -1);
         }
 
-        const {suggest, textlineEl, validator, textEl, save} = this;
-        this.inputText = v + "";
-        this.inputText = this.inputText.replace(/，/g, ",");
+        const {
+            suggest, textlineEl, validator, textEl, save,
+        } = this;
+        this.inputText = `${v}`;
+        this.inputText = this.inputText.replace(/，/g, ',');
         this.pos = getCursortPosition.call(this, evt);
         console.log(this.chinese, v);
         if (validator) {
@@ -178,21 +184,20 @@ function inputEventHandler(evt, txt = "") {
             const start = v.lastIndexOf('=');
             if (this.pos != -1) {
                 parse2.call(this, v, this.pos);
-            } else
-                parse.call(this, v);
+            } else parse.call(this, v);
             let show = false;
             let cutValue = cuttingByPos(v, this.pos, true);
             if (v.length >= this.pos) {
-                let isNumber = v[this.pos] + "";
+                const isNumber = `${v[this.pos]}`;
                 if (isNumber.search(/^[0-9]+.?[0-9]*$/) != -1) {
                     show = true;
                 } else if (isNumber) {
-                    let c = cuttingByPosEnd(v, this.pos + 1);
+                    const c = cuttingByPosEnd(v, this.pos + 1);
                     cutValue += c;
                 }
             }
 
-            if (start === 0 && v.length > 1 && cutValue != "" && !show && cutValue.trim().length > 0) {
+            if (start === 0 && v.length > 1 && cutValue != '' && !show && cutValue.trim().length > 0) {
                 suggest.search(cutValue);
             } else {
                 suggest.hide();
@@ -200,7 +205,7 @@ function inputEventHandler(evt, txt = "") {
         }
         textlineEl.html(v);
         resetTextareaSize.call(this);
-        if (v && v[0] !== "=") {
+        if (v && v[0] !== '=') {
             // textEl.html(v);
             set_focus.call(this, textEl.el, -1);
         }
@@ -222,16 +227,16 @@ function inputEventHandler(evt, txt = "") {
 
 function keyDownEventHandler(evt) {
     this.pos = getCursortPosition.call(this, evt);
-    if (evt.code === "ArrowRight") {
+    if (evt.code === 'ArrowRight') {
         this.pos = this.pos + 1;
-    } else if (evt.code === "ArrowLeft") {
+    } else if (evt.code === 'ArrowLeft') {
         this.pos = this.pos - 1;
     }
 
     const keyCode = evt.keyCode || evt.which;
-    //this.textEl.el.style['caret-color'] != 'black' 加这个主要防止用户在没有输入的情况下按下esc
-    if (keyCode == 27 && this.textEl.el.style['caret-color'] == 'black' && this.textEl.el.style['opacity'] == '1') {
-        this.change('input', "@~esc");
+    // this.textEl.el.style['caret-color'] != 'black' 加这个主要防止用户在没有输入的情况下按下esc
+    if (keyCode == 27 && this.textEl.el.style['caret-color'] == 'black' && this.textEl.el.style.opacity == '1') {
+        this.change('input', '@~esc');
     } else if (keyCode == 37 || keyCode == 38 || keyCode == 39 || keyCode == 40) {
     }
 }
@@ -311,10 +316,10 @@ function suggestItemClick(it) {
         position = this.inputText.length;
     } else {
         this.pos = getCursortPosition.call(this);
-        let begin = this.pos - cuttingByPos(inputText, this.pos).length;
-        let c = cuttingByPosEnd(inputText, this.pos + 1);
-        let arr = ["", ""];
-        let end = this.pos + c.length;
+        const begin = this.pos - cuttingByPos(inputText, this.pos).length;
+        const c = cuttingByPosEnd(inputText, this.pos + 1);
+        const arr = ['', ''];
+        const end = this.pos + c.length;
         for (let i = 0; i < inputText.length; i++) {
             if (i < begin) {
                 arr[0] += inputText[i];
@@ -355,10 +360,8 @@ function dateFormat(d) {
 
 function isDisplay() {
     if (this.textEl.el.style['caret-color'] == 'black'
-        && this.textEl.el.style['opacity'] == '1')
-        return true;
-    else
-        return false;
+        && this.textEl.el.style.opacity == '1') return true;
+    return false;
 }
 
 export default class Editor {
@@ -392,45 +395,44 @@ export default class Editor {
                     .on('mousedown', (evt) => {
                         if (evt.detail == 2) {
                             if (isDisplay.call(this)) {
-                                return
+                                return;
                             }
                             this.show();
                             setTimeout(() => {
-                                let {ri, ci} = this;
+                                const {ri, ci} = this;
                                 console.log(ri, ci);
                                 this.setCellEnd(data.getSelectedCellRiCi(ri, ci));
-                            })
+                            });
                         }
                     })
-                    .on('compositionstart', evt => {
+                    .on('compositionstart', (evt) => {
                         this.chinese = false;
                     })
-                    .on('compositionend', evt => {
+                    .on('compositionend', (evt) => {
                         this.chinese = true;
                     })
-                    .on('paste', evt => {
+                    .on('paste', (evt) => {
                         if (this.textEl.el.style['caret-color'] == 'black') {
                             // createEvent.call(this, 67, true, "paste");
                             evt.stopPropagation();
                         }
                     })
-                    .on('copy', evt => {
+                    .on('copy', (evt) => {
                         if (this.textEl.el.style['caret-color'] == 'black') {
                             // createEvent.call(this, 86, true, "copy");
-                            evt.stopPropagation()
+                            evt.stopPropagation();
                         }
                     })
-                    .on('keydown', evt => {
+                    .on('keydown', (evt) => {
                         resetTextareaSize.call(this);
                         this.textlineEl.html(evt.currentTarget.innerText);
-                        let key_num = evt.keyCode;
+                        const key_num = evt.keyCode;
                         // ctrl + v 67     ctrl + v  86
-                        if (38 === key_num || 40 === key_num) {
+                        if (key_num === 38 || key_num === 40) {
                             evt.preventDefault();
                         }
 
-                        if (this.textEl.el.style['caret-color'] == 'black')
-                            return;
+                        if (this.textEl.el.style['caret-color'] == 'black') return;
                         const {
                             ctrlKey, metaKey,
                         } = evt;
@@ -447,7 +449,7 @@ export default class Editor {
                         } else if (key_num === 38) {
                             createEvent.call(this, 38, false);
                         } else if (ctrlKey || metaKey) {
-                            if (67 === key_num) {
+                            if (key_num === 67) {
                                 createEvent.call(this, 67, true);
                             } else if (key_num === 86) {
                                 createEvent.call(this, 86, true);
@@ -457,8 +459,7 @@ export default class Editor {
                                 createEvent.call(this, 90, true);
                             }
                         }
-                    })
-                ,
+                    }),
                 this.textlineEl = h('div', 'textline'),
                 this.suggest.el,
                 this.suggestContent.el,
@@ -561,23 +562,23 @@ export default class Editor {
         }
 
         setTimeout(() => {
-            let {ri, ci} = this.data.selector;
+            const {ri, ci} = this.data.selector;
             this.setRiCi(ri, ci);
-        })
+        });
     }
 
-    mount2span(spanArr, pos = -1, begin = -1, content = {suggestContent: false, cut: "", pos: -1}) {
+    mount2span(spanArr, pos = -1, begin = -1, content = {suggestContent: false, cut: '', pos: -1}) {
         if (this.spanArr === spanArr) {
             return;
         }
 
-        let {show} = this.suggest;
+        const {show} = this.suggest;
         if (content.suggestContent && !show) {
             this.suggestContent.content(content.cut, content.pos);
         } else {
             this.suggestContent.hide();
         }
-        Object.keys(spanArr).forEach(i => {
+        Object.keys(spanArr).forEach((i) => {
             spanArr[i].css('background-color', 'rgba(255,255,255,0.1)');
         });
         if (pos !== '-1' && begin != -1 && spanArr[pos]) {
@@ -588,7 +589,7 @@ export default class Editor {
         if (spanArr.length > 0) {
             this.textEl.html('');
             this.tmp = h('span', 'span_tmp').children(...spanArr)
-                .css("top", "0px").css("color", "black");
+                .css('top', '0px').css('color', 'black');
             this.textEl.el.insertBefore(this.tmp.el, this.textEl.el.childNodes[0]);
             // this.textEl.el.removeChild(this.textEl.el.childNodes[this.textEl.el.childNodes.length - 1]);
             set_focus.call(this, this.textEl.el, -1);
@@ -598,22 +599,22 @@ export default class Editor {
     }
 
     handler(text) {
-        let cursorPos = this.pos;
+        const cursorPos = this.pos;
         if (cursorPos >= this.inputText) {
             this.setMouseDownIndex([]);
             return;
         }
-        let textBegin = text.substring(0, cursorPos);
-        let textEnd = text.substring(cursorPos, text.length);
+        const textBegin = text.substring(0, cursorPos);
+        const textEnd = text.substring(cursorPos, text.length);
         parse.call(this, textBegin);
-        if (textEnd !== "") {
+        if (textEnd !== '') {
             this.setMouseDownIndex([textBegin, textEnd]);
         } else {
             this.setMouseDownIndex([]);
         }
     }
 
-    setOffset(offset, suggestPosition = 'top') {
+    setOffset(offset, suggestPosition = 'top', show = true) {
         const {
             textEl, areaEl, suggest, freeze, el,
         } = this;
@@ -643,20 +644,23 @@ export default class Editor {
             sOffset[suggestPosition] = height;
             suggest.setOffset(sOffset);
             suggest.hide();
-            this.show(false);
+
+            if (show) {
+                this.show(false);
+            }
         }
     }
 
     setCellEnd(cell) {
         let text = (cell && cell.formulas) || '';
-        text = text == "" ? (cell && cell.text) || '' : text;
+        text = text == '' ? (cell && cell.text) || '' : text;
 
         this.textEl.child(text);
         this.pos = text.length;
         set_focus.call(this, this.textEl.el, -1);
         this.oldCell = {
             text: (cell && cell.text) || '',
-            formulas: (cell && cell.formulas) || ''
+            formulas: (cell && cell.formulas) || '',
         };
         inputEventHandler.call(this, null, text);
     }
@@ -666,11 +670,11 @@ export default class Editor {
         this.show();
 
         let text = (cell && cell.formulas) || '';
-        text = text == "" ? (cell && cell.text) || '' : text;
+        text = text == '' ? (cell && cell.text) || '' : text;
 
         this.oldCell = {
             text: (cell && cell.text) || '',
-            formulas: (cell && cell.formulas) || ''
+            formulas: (cell && cell.formulas) || '',
         };
         const {el, datepicker, suggest} = this;
         el.show();
@@ -695,17 +699,17 @@ export default class Editor {
             }
         }
 
-        if (type == 2 && text != "" && text[0] == "=") {
+        if (type == 2 && text != '' && text[0] == '=') {
             inputEventHandler.call(this, null, text);
             this.pos = text.length;
             set_focus.call(this, this.textEl.el, text.length);
-        } else if (type == 2 && text[0] != "=") {
+        } else if (type == 2 && text[0] != '=') {
             this.textEl.child(text);
         }
         setTimeout(() => {
             this.textlineEl.html(text);
             resetTextareaSize.call(this);
-        })
+        });
     }
 
     inputEventHandler() {

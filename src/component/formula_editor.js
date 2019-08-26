@@ -1,4 +1,4 @@
-import SelectorCopy from 'x-spreadsheet-master/src/component/selector_copy';
+import SelectorCopy from '../component/selector_copy';
 import {
     cutFirst,
     cutStr,

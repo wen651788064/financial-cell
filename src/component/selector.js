@@ -426,6 +426,8 @@ export default class Selector {
         const {
             sri, sci, eri, eci,
         } = this.range;
+
+
         const [nri, nci] = [ri, ci];
         // const rn = eri - sri;
         // const cn = eci - sci;
