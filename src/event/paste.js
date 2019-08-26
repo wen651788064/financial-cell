@@ -4,8 +4,8 @@ import Drag from "../external/drag";
 import Resize from "../external/resize";
 import {cssPrefix} from "../config";
 import {getChooseImg} from "../event/copy";
-import {cutStr} from "../core/operator";
 import {expr2xy, xy2expr} from "../core/alphabet";
+import {createEvent} from "../component/event";
 
 let resizeOption = {
     onBegin(data) {
@@ -29,10 +29,10 @@ let dragOption = {
         // img.left = left + 70;
         // img.top = top + 31;
 
-        if(top - 31 < 0) {
+        if (top - 31 < 0) {
             top = 0;
-        } else if(left - 60 < 0) {
-            left =  0;
+        } else if (left - 60 < 0) {
+            left = 0;
         }
 
         let range = self.data.getCellRectByXY(left + 60, top + 31);
@@ -229,6 +229,7 @@ function getMaxCoord(ri, ci) {
 function mountImg(imgDom) {
     let img = imgDom;
     let {container, pasteDirectionsArr, data} = this;
+    data.history.addPic(Object.assign([], pasteDirectionsArr), "delete");
     let {ri, ci} = data.selector;
     let {pictureOffsetLeft, pictureOffsetTop} = this;
 
@@ -275,7 +276,7 @@ function mountImg(imgDom) {
             "nextLeft": left + 15,
             "nextTop": top + 15,
         });
-        data.pictures = pasteDirectionsArr;
+        // data.pictures = pasteDirectionsArr;
         this.direction = true;
         div.css("width", `${img.offsetWidth}px`);
         div.css("height", `${img.offsetHeight}px`);
@@ -318,6 +319,24 @@ function deleteImg(d = false) {
     }
 
     Object.keys(direction_delete).forEach(i => {
+        direction_delete[i].img.removeEl();
+    });
+
+    this.pasteDirectionsArr = direction_new;
+}
+
+function deleteAllImg() {
+    let {pasteDirectionsArr} = this;
+    let direction_new = [];
+    let direction_delete = [];
+    this.direction = false;
+    if (pasteDirectionsArr.length > 0) {
+        for (let i = 0; i < pasteDirectionsArr.length; i++) {
+            direction_delete.push(pasteDirectionsArr[i]);
+        }
+    }
+
+    Object.keys(pasteDirectionsArr).forEach(i => {
         direction_delete[i].img.removeEl();
     });
 
@@ -383,8 +402,8 @@ function GetInfoFromTable(tableObj) {
     let rows2 = JSON.parse(JSON.stringify(data.rows._));
     let lastRi = 0, lastCi = 0;
 
-    if(tableObj.rows.length >= data.rows.len - ri + 1) {
-        data.insert('row', tableObj.rows.length  + 5);
+    if (tableObj.rows.length >= data.rows.len - ri + 1) {
+        data.insert('row', tableObj.rows.length + 5);
     }
 
     for (let i = 0; i < tableObj.rows.length; i++) {
@@ -409,34 +428,34 @@ function GetInfoFromTable(tableObj) {
             };
             let index = isHaveStyle(styles, args);
 
-            if(tableObj.rows[i].cells[j] && tableObj.rows[i].cells[j].querySelector("tt")) {
+            if (tableObj.rows[i].cells[j] && tableObj.rows[i].cells[j].querySelector("tt")) {
                 let eri = tableObj.rows[i].cells[j].childNodes[0].getAttribute('ri');
                 let eci = tableObj.rows[i].cells[j].childNodes[0].getAttribute('ci');
 
                 let arr = tableObj.rows[i].cells[j].innerText.split(/([(-\/,+，*\s=^&])/);
                 let dci = i + ri - eri;
                 let dei = j + ci - eci;
-                console.log( tableObj.rows[i].cells[j].innerText, j, i, dei, dci);
+                console.log(tableObj.rows[i].cells[j].innerText, j, i, dei, dci);
 
                 let newStr = "";
                 let bad = false;
-                for(let i = 0; i < arr.length; i++) {
-                    if(arr[i].search(/^[A-Z]+\d+$/) != -1) {
+                for (let i = 0; i < arr.length; i++) {
+                    if (arr[i].search(/^[A-Z]+\d+$/) != -1) {
                         let ds = expr2xy(arr[i]);
-                        if(ds[0] + dei < 0 || ds[1] + dci < 0) {
+                        if (ds[0] + dei < 0 || ds[1] + dci < 0) {
                             bad = true;
                         }
                         arr[i] = xy2expr(ds[0] + dei, ds[1] + dci);
-                    } else if(arr[i].search(/^[A-Za-z]+\d+:[A-Za-z]+\d+$/) != -1) {
+                    } else if (arr[i].search(/^[A-Za-z]+\d+:[A-Za-z]+\d+$/) != -1) {
                         let a1 = arr[i].split(":")[0];
                         let a2 = arr[i].split(":")[1];
                         let ds1 = expr2xy(a1);
                         let ds2 = expr2xy(a2);
 
-                        if(ds1[0] + dei < 0 || ds1[1] + dci < 0) {
+                        if (ds1[0] + dei < 0 || ds1[1] + dci < 0) {
                             bad = true;
                         }
-                        if(ds2[0] + dei < 0 || ds2[1] + dci < 0) {
+                        if (ds2[0] + dei < 0 || ds2[1] + dci < 0) {
                             bad = true;
                         }
 
@@ -447,7 +466,7 @@ function GetInfoFromTable(tableObj) {
                     newStr += arr[i];
                 }
 
-                if(bad) {
+                if (bad) {
                     cells[j + ci] = {
                         text: "=#REF!",
                         style: index,
@@ -513,5 +532,6 @@ export {
     hideDirectionArr,
     deleteImg,
     moveArr,
+    deleteAllImg,
 }
 

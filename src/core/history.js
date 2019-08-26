@@ -1,8 +1,5 @@
 // import helper from '../helper';
-
-function unique(arr) {
-    return Array.from(new Set(arr))
-}
+import {deleteAllImg} from "../event/paste";
 
 export default class History {
     constructor() {
@@ -13,13 +10,13 @@ export default class History {
     add(data) {
         this.undoItems.push(JSON.stringify(data));
         this.redoItems = [];
-        this.undoItems = unique(this.undoItems);
     }
 
-    addPic(data) {
+    addPic(data, operation) {
         this.undoItems.push({
             type: "picture",
-            pic: data
+            pic: data,
+            operation: operation
         });
         this.redoItems = [];
     }
@@ -39,11 +36,10 @@ export default class History {
             redoItems.push(JSON.stringify(currentd));
             if (item && item.type && item.type === 'picture') {
                 let data = item.pic;
+                deleteAllImg.call(sheet);
+                let {container} = sheet;
                 Object.keys(data).forEach(i => {
-                    if (!data[i].img.el || !data[i].img.el.parentNode) {
-                        let {container} = sheet;
-                        container.child(data[i].img);
-                    }
+                    container.child(data[i].img);
                 });
                 sheet.pasteDirectionsArr = data;
             } else {

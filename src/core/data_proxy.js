@@ -522,6 +522,7 @@ export default class DataProxy {
             } else if (property === 'formula') {
                 const cell = rows.getCellOrNew(selector.ri, selector.ci);
                 cell.text = `=${value}()`;
+                cell.formulas = `=${value}()`;
             } else {
                 selector.range.each((ri, ci) => {
                     const cell = rows.getCellOrNew(ri, ci);

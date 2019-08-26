@@ -24,6 +24,7 @@ import Website from "../component/website";
 import {cuttingByPos} from "../core/operator";
 import {moveCell} from "../event/move";
 import {getChooseImg} from "../event/copy";
+import CellRange from "../core/cell_range";
 
 function scrollbarMove() {
     const {
@@ -372,11 +373,11 @@ function overlayerMousedown(evt) {
                 console.log(dateDiff);
                 if (dateDiff > 50) {
                     if (data.autofill(selector.arange, 'all', msg => xtoast('Tip', msg))) {
+                        this.selector.arange = null;
                         table.render();
                     }
                 }
             }
-            this.selector.arange = null;
             this.selector.setBoxinner("auto");
             dateBegin = null;
             selector.hideAutofill();
@@ -421,8 +422,8 @@ function pictureSetOffset() {
 }
 
 function editorSetOffset(show = true) {
-    const {editor, data, container} = this;
-    const sOffset = data.getSelectedRect();
+    const {editor, data} = this;
+    const sOffset = data.getMoveRect(new CellRange(editor.ri, editor.ci, editor.ri, editor.ci));
     const tOffset = this.getTableOffset();
 
     let sPosition = 'top';
@@ -433,8 +434,15 @@ function editorSetOffset(show = true) {
 
     editor.setOffset(sOffset, sPosition, show);
     setTimeout(() => {
-        editor.setCursorPos(0);
+        editor.setCursorPos(editor.inputText.length);
     });
+}
+
+function selectorsSetOffset() {
+    for (let i = 0; i < this.selectors.length; i++) {
+        let selector = this.selectors[i];
+        selector.selector.resetBRLAreaOffset();
+    }
 }
 
 function hasEditor(showEditor = true) {
@@ -463,6 +471,10 @@ function editorSet(type = 1) {
     // editor.setCell(data.getSelectedCell(), data.getSelectedValidator(), type);
     selector.el.hide();
     clearClipboard.call(this);
+
+    setTimeout(() => {
+        editor.setCursorPos(editor.inputText.length);
+    });
 }
 
 function verticalScrollbarMove(distance) {
@@ -471,6 +483,7 @@ function verticalScrollbarMove(distance) {
         selector.resetBRLAreaOffset();
         pictureSetOffset.call(this);
         adviceSetOffset.call(this);
+        selectorsSetOffset.call(this);
         editorSetOffset.call(this, false);
         table.render();
     });
@@ -482,6 +495,7 @@ function horizontalScrollbarMove(distance) {
         selector.resetBRTAreaOffset();
         pictureSetOffset.call(this);
         adviceSetOffset.call(this);
+        selectorsSetOffset.call(this);
         editorSetOffset.call(this, false);
         table.render();
     });
@@ -970,13 +984,20 @@ function sheetInitEvents() {
             console.log(keyCode);
             switch (keyCode) {
                 case 8:         // delete
-                    data.history.addPic(data.getData().pictures);
+                    data.history.addPic(data.getData().pictures, "add");
                     deleteImg.call(this);
                     break;
-                case 46:         // delete
-                    data.history.addPic(data.getData().pictures);
-                    deleteImg.call(this);
-                    break;
+                // case 90:         // delete
+                //     data.history.addPic(data.getData().pictures, "add");
+                //     deleteImg.call(this);
+                //     break;
+            }
+
+            if(ctrlKey || metaKey) {
+                if(90 === keyCode) {
+                    this.undo();
+                    evt.preventDefault();
+                }
             }
         } else if (ctrlKey || metaKey) {
             // const { sIndexes, eIndexes } = selector;
@@ -1016,9 +1037,9 @@ function sheetInitEvents() {
                     break;
                 case 86:
                     // ctrl + v
-                    paste.call(this, what, () => {
-                        console.log("837")
-                    });
+                    // paste.call(this, what, () => {
+                    //     console.log("837")
+                    // });
                     break;
                 case 37:
                     // ctrl + left
