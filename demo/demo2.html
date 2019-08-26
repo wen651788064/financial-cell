@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en" style="height: 100%">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body  style="height: 100%">
+<div  style="height: 100%" id="editor">
+
+</div>
+
+<script>
+    function ss() {
+        fetch("https://proxy.zme.ink/https://www.zhihu.com")
+            .then(x => x.text())
+            .then(function (data) {
+                let frame = document.createElement("iframe");
+                frame.setAttribute("name", "abc");
+                frame.style['width'] = "100%";
+                frame.style['height'] = "100%";
+
+                document.getElementById("editor").appendChild(frame);
+                abc.document.write(data);
+            })
+    }
+</script>
+</body>
+</html>

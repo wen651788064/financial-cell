@@ -1,5 +1,9 @@
 // import helper from '../helper';
 
+function unique(arr) {
+    return Array.from(new Set(arr))
+}
+
 export default class History {
     constructor() {
         this.undoItems = [];
@@ -9,6 +13,7 @@ export default class History {
     add(data) {
         this.undoItems.push(JSON.stringify(data));
         this.redoItems = [];
+        this.undoItems = unique(this.undoItems);
     }
 
     addPic(data) {

@@ -1017,7 +1017,6 @@ export default class DataProxy {
 
     viewHeight() {
         const {view, showToolbar} = this.settings;
-        //   console.log("958", view.height());
         let h = view.height();
         if (showToolbar) {
             h -= toolbarHeight;

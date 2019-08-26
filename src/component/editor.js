@@ -121,16 +121,20 @@ function inputEventHandler(evt, txt = "") {
             inputType
         } = evt;
 
-
         if (inputType === 'insertFromPaste' && this.textEl.el.style['caret-color'] != 'black') {
             this.copy = true;
             return;
         }
 
-        if(inputType === 'historyUndo') {
+        if (inputType === 'historyUndo') {
             return;
         }
+    }
 
+    if(this.inputText === '') {
+        let {data} = this;
+        let {history} = data;
+        history.add(data.getData());
     }
 
     setTimeout(() => {
@@ -538,9 +542,6 @@ export default class Editor {
     }
 
     clear(c = false) {
-        // if (this.inputText !== '') {
-        //     this.change('finished', this.inputText);
-        // }
         this.cell = null;
         this.areaOffset = null;
         this.inputText = '';
