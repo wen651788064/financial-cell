@@ -28,7 +28,6 @@ let dragOption = {
             return;
         // img.left = left + 70;
         // img.top = top + 31;
-        let {pictureOffsetLeft, pictureOffsetTop} = self;
 
         if(top - 31 < 0) {
             top = 0;
@@ -70,7 +69,8 @@ function spanDomPackage(spanDom, tableDom) {
 }
 
 function process(tableDom, styleDom) {
-    let {el} = this;
+    let {el, data} = this;
+    data.history.add(data.getData());
     el.child(tableDom);
     GetInfoFromTable.call(this, tableDom);
     tableDom.parentNode.removeChild(tableDom);
@@ -146,7 +146,6 @@ function mountPaste(e, cb) {
                 }
             });
         } else if (item.kind === "file" && !p) {
-            // processImg.call(this, item);
             let f = item.getAsFile();
             let reader = new FileReader();
             reader.onload = (evt) => {
@@ -256,6 +255,7 @@ function mountImg(imgDom) {
     container.child(div);
     new Drag(dragOption, this).register(div.el);
     setTimeout(() => {
+        let {data} = this;
         let directionsArr = new Resize(resizeOption).register(div.el);
         let index = pasteDirectionsArr.length;
         pasteDirectionsArr.push({
@@ -275,6 +275,7 @@ function mountImg(imgDom) {
             "nextLeft": left + 15,
             "nextTop": top + 15,
         });
+        data.pictures = pasteDirectionsArr;
         this.direction = true;
         div.css("width", `${img.offsetWidth}px`);
         div.css("height", `${img.offsetHeight}px`);

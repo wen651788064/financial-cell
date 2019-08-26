@@ -340,6 +340,7 @@ export default class DataProxy {
         this.name = name || 'sheet';
         this.freeze = [0, 0];
         this.styles = []; // Array<Style>
+        this.pictures = [];
         this.merges = new Merges(); // [CellRange, ...]
         this.rows = new Rows(this.settings.row);
         this.cols = new Cols(this.settings.col);
@@ -403,10 +404,10 @@ export default class DataProxy {
         return this.history.canRedo();
     }
 
-    undo() {
+    undo(sheet) {
         this.history.undo(this.getData(), (d) => {
             this.setData(d);
-        });
+        }, sheet);
     }
 
     redo() {
@@ -1135,6 +1136,11 @@ export default class DataProxy {
         return styles.length - 1;
     }
 
+    // addPicture(pic) {
+    //     const {pictures} = this;
+    //
+    // }
+
     changeData(cb) {
         this.history.add(this.getData());
         cb();
@@ -1166,12 +1172,13 @@ export default class DataProxy {
 
     getData() {
         const {
-            name, freeze, styles, merges, rows, cols, validations, autoFilter,
+            name, freeze, styles, merges, rows, cols, validations, autoFilter, pictures
         } = this;
         return {
             name,
             freeze: xy2expr(freeze[1], freeze[0]),
             styles,
+            pictures,
             merges: merges.getData(),
             rows: rows.getData(),
             cols: cols.getData(),

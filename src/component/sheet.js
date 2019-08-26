@@ -1,6 +1,6 @@
 /* global window */
 import {h} from './element';
-import {bind, unbind, remove, bindTouch, mouseMoveUp} from './event';
+import {bind, bindTouch, mouseMoveUp, remove} from './event';
 import Resizer from './resizer';
 import Scrollbar from './scrollbar';
 import Selector from './selector';
@@ -24,7 +24,6 @@ import Website from "../component/website";
 import {cuttingByPos} from "../core/operator";
 import {moveCell} from "../event/move";
 import {getChooseImg} from "x-spreadsheet-master/src/event/copy";
-import {createEvent} from "../component/event";
 
 function scrollbarMove() {
     const {
@@ -355,7 +354,7 @@ function overlayerMousedown(evt) {
         // mouse move up
         mouseMoveUp(window, (e) => {
             this.selector.setBoxinner("none");
-            if(!dateBegin) {
+            if (!dateBegin) {
                 dateBegin = new Date();
             }
             this.container.css('pointer-events', 'none');
@@ -367,12 +366,12 @@ function overlayerMousedown(evt) {
                 selectorSet.call(this, true, ri, ci, true, true);
             }
         }, () => {
-            let  dateEnd = new Date();
+            let dateEnd = new Date();
 
             if (dateBegin && isAutofillEl) {
                 let dateDiff = dateEnd.getTime() - dateBegin.getTime();
                 console.log(dateDiff);
-                if(dateDiff > 50) {
+                if (dateDiff > 50) {
                     if (data.autofill(selector.arange, 'all', msg => xtoast('Tip', msg))) {
                         table.render();
                     }
@@ -722,6 +721,7 @@ function pasteEvent(evt) {
         sheetReset.call(this);
     });
 }
+
 function sheetInitEvents() {
     const {
         overlayerEl,
@@ -773,7 +773,7 @@ function sheetInitEvents() {
                     let _selector = null;
                     let change = 0;
                     mouseMoveUp(window, (e) => {
-                        if(_selector && _selector.selector) {
+                        if (_selector && _selector.selector) {
                             _selector.selector.setBoxinner("none");
                         }
 
@@ -801,7 +801,7 @@ function sheetInitEvents() {
                             }
                         }
                     }, () => {
-                        if(_selector && _selector.selector) {
+                        if (_selector && _selector.selector) {
                             _selector.selector.setBoxinner("auto");
                         }
 
@@ -887,7 +887,7 @@ function sheetInitEvents() {
             // editor.setRiCi(-1, -1);
             return;
         }
-        let {selector } = this;
+        let {selector} = this;
         selector.el.hide();
         //实时更新this.selectors
         let {lock} = editor;
@@ -943,12 +943,15 @@ function sheetInitEvents() {
 
     bind(window, 'copy', (evt) => {
         mountCopy.call(this, evt);
+        // data.history.add(data.getData());
     });
 
     bind(window, 'cut', (evt) => {
         console.log("cut", evt);
         cut.call(this);
         mountCopy.call(this, evt);
+        let {data} = this;
+        data.history.add(data.getData());
     });
 
     bind(window, 'paste', (evt) => {
@@ -967,9 +970,11 @@ function sheetInitEvents() {
             console.log(keyCode);
             switch (keyCode) {
                 case 8:         // delete
+                    data.history.addPic(data.getData().pictures);
                     deleteImg.call(this);
                     break;
                 case 46:         // delete
+                    data.history.addPic(data.getData().pictures);
                     deleteImg.call(this);
                     break;
             }
@@ -992,7 +997,7 @@ function sheetInitEvents() {
                 case 67:
                     // ctrl + c
                     //  加上这里是因为 需要展示虚线
-                    if(getChooseImg.call(this))
+                    if (getChooseImg.call(this))
                         return;
                     copy.call(this);
                     // table.render();
@@ -1253,7 +1258,7 @@ export default class Sheet {
     }
 
     undo() {
-        this.data.undo();
+        this.data.undo(this);
         sheetReset.call(this);
     }
 

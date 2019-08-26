@@ -127,9 +127,10 @@ function inputEventHandler(evt, txt = "") {
             return;
         }
 
-        // if ('deleteContentBackward' === inputType && this.textEl.el.style['caret-color'] == 'black') {
-        //     return;
-        // }
+        if(inputType === 'historyUndo') {
+            return;
+        }
+
     }
 
     setTimeout(() => {
@@ -225,7 +226,7 @@ function keyDownEventHandler(evt) {
 
     const keyCode = evt.keyCode || evt.which;
     //this.textEl.el.style['caret-color'] != 'black' 加这个主要防止用户在没有输入的情况下按下esc
-    if (keyCode == 27 && this.textEl.el.style['caret-color'] == 'black'  && this.textEl.el.style['opacity'] == '1') {
+    if (keyCode == 27 && this.textEl.el.style['caret-color'] == 'black' && this.textEl.el.style['opacity'] == '1') {
         this.change('input', "@~esc");
     } else if (keyCode == 37 || keyCode == 38 || keyCode == 39 || keyCode == 40) {
     }
@@ -349,7 +350,7 @@ function dateFormat(d) {
 }
 
 function isDisplay() {
-    if(this.textEl.el.style['caret-color'] == 'black'
+    if (this.textEl.el.style['caret-color'] == 'black'
         && this.textEl.el.style['opacity'] == '1')
         return true;
     else
@@ -385,8 +386,8 @@ export default class Editor {
                     .on('click', evt => mouseDownEventHandler.call(this, evt))
                     .on('keyup', evt => keyDownEventHandler.call(this, evt))
                     .on('mousedown', (evt) => {
-                        if(evt.detail == 2) {
-                            if(isDisplay.call(this)) {
+                        if (evt.detail == 2) {
+                            if (isDisplay.call(this)) {
                                 return
                             }
                             this.show();
@@ -424,33 +425,32 @@ export default class Editor {
                             evt.preventDefault();
                         }
 
-
                         if (this.textEl.el.style['caret-color'] == 'black')
                             return;
                         const {
-                             ctrlKey,  metaKey,
+                            ctrlKey, metaKey,
                         } = evt;
 
-                        console.log("404");
-                        console.log(key_num);
                         if (key_num === 8 || key_num === 46) {
                             createEvent.call(this, 8, false);
-                        } else if(key_num === 40) {
+                        } else if (key_num === 40) {
                             this.clear();
                             createEvent.call(this, 40, false);
-                        } else if(key_num === 39) {
+                        } else if (key_num === 39) {
                             createEvent.call(this, 39, false);
-                        } else if(key_num === 37) {
+                        } else if (key_num === 37) {
                             createEvent.call(this, 37, false);
-                        } else if(key_num === 38) {
+                        } else if (key_num === 38) {
                             createEvent.call(this, 38, false);
                         } else if (ctrlKey || metaKey) {
                             if (67 === key_num) {
                                 createEvent.call(this, 67, true);
                             } else if (key_num === 86) {
                                 createEvent.call(this, 86, true);
-                            } else if(key_num === 88) {
+                            } else if (key_num === 88) {
                                 createEvent.call(this, 88, true);
+                            } else if (key_num === 90) {
+                                createEvent.call(this, 90, true);
                             }
                         }
                     })
@@ -463,7 +463,6 @@ export default class Editor {
             .on('mousemove.stop', () => {
             })
             .on('mousedown.stop', () => {
-                console.log("466")
             });
         this.el = h('div', `${cssPrefix}-editor`)
             .child(this.areaEl);
@@ -510,7 +509,7 @@ export default class Editor {
 
 
     show(off = true) {
-        if(off) {
+        if (off) {
             this.textEl.css('caret-color', 'black');
             this.textEl.css('cursor', 'text');
             this.textEl.css('opacity', '1');
@@ -556,7 +555,7 @@ export default class Editor {
         resetSuggestItems.call(this);
         this.datepicker.hide();
 
-        if(c) {
+        if (c) {
             return;
         }
 
