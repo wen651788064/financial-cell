@@ -346,7 +346,6 @@ function overlayerMousedown(evt) {
         if (isAutofillEl) {
             selector.showAutofill(ri, ci);
         } else {
-            console.log("1")
             selectorSet.call(this, false, ri, ci);
         }
 
@@ -922,7 +921,6 @@ function sheetInitEvents() {
         } else if (type === 'cut') {
             cut.call(this);
         } else if (type === 'paste') {
-            console.log(evt);
             paste.call(this, 'all');
         } else if (type === 'paste-value') {
             paste.call(this, 'text');

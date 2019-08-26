@@ -382,6 +382,11 @@ function GetInfoFromTable(tableObj) {
     let styles = data.styles;
     let rows2 = JSON.parse(JSON.stringify(data.rows._));
     let lastRi = 0, lastCi = 0;
+
+    if(tableObj.rows.length >= data.rows.len - ri + 1) {
+        data.insert('row', tableObj.rows.length  + 5);
+    }
+
     for (let i = 0; i < tableObj.rows.length; i++) {
         let cells = {};
         let cells2 = {};
