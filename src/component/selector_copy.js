@@ -5,6 +5,7 @@ import {mouseMoveUp} from "../component/event";
 import {lockCells} from "../component/formula_editor";
 import {cuttingByPos} from "../core/operator";
 import {expr2xy} from "../core/alphabet";
+import {cuttingByPosEnd, isAbsoluteValue} from "x-spreadsheet-master/src/core/operator";
 
 const selectorHeightBorderWidth = 2 * 2 - 1;
 let startZIndex = 10;
@@ -72,7 +73,11 @@ class SelectorElement {
             let {ri, ci} = data.getCellRectByXY(e.layerX, e.layerY);
             if (ri != -1 && ci != -1) {
                 let {inputText, pos} = this.sheet.editor;
-                let _erpx = cuttingByPos(inputText, pos, true);
+                let _erpx = cuttingByPos(inputText, pos - 1, true);
+                if (inputText.length > pos - 1) {
+                    let c = cuttingByPosEnd(inputText, pos - 1);
+                    _erpx += c;
+                }
                 for (let i = 0; i < selectors.length; i++) {
                     let selector = selectors[i];
                     let {className, erpx} = selector;
@@ -94,7 +99,6 @@ class SelectorElement {
                         break;
                     } else if (erpx !== _erpx && className === _selector.className + " clear_selector") {
                         let p = this.find(inputText, selector.erpx, selector.index);
-                        console.log(p + selector.erpx.length)
                         this.sheet.editor.setCursorPos(p + selector.erpx.length);
                         _move_selectors = selector;
 
@@ -115,7 +119,7 @@ class SelectorElement {
                 }
                 if (_move_selectors) {
                     _move_selectors.selector.setCss(_move_selectors.color, false)
-                    lockCells.call(this.sheet, evt, _move_selectors);
+                    lockCells.call(this.sheet, evt, _move_selectors, isAbsoluteValue(_move_selectors.erpx));
                 }
             }
         }, (e) => {
@@ -125,7 +129,7 @@ class SelectorElement {
                 let selector = selectors[i];
                 selector.selector.setBoxinner("all");
             }
-            if(_move_selectors &&  _move_selectors.selector)
+            if (_move_selectors && _move_selectors.selector)
                 _move_selectors.selector.setCss(_move_selectors.color, true)
         });
     }

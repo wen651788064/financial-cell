@@ -39,6 +39,24 @@ const operation2 = (s) => {
     return 0;
 };
 
+
+const value2absolute = (str) => {
+    let s1 = "",   enter = false;
+    for(let i = 0; i < str.length; i++) {
+        if(enter == false && str[i] * 1 >= 0 && str[i] * 1 <= 9) {
+            s1 += "$";
+            enter = true;
+        }
+        s1 += str[i];
+    }
+
+    return {
+        s1: s1,
+        s2: "$" + str,
+        s3: "$" + s1
+    }
+};
+
 const cutStr = (str, filter = false, f = false) => {
     str = str.toUpperCase();
     if (str[0] !== "=") {
@@ -71,7 +89,16 @@ const cutStr = (str, filter = false, f = false) => {
     return express;
 };
 
-
+// A1 => A1:A1
+function changeFormula(cut) {
+  for(let i = 0; i < cut.length; i++) {
+      let c = cut[i];
+      if(c.search(/^[A-Za-z]+\d+:[A-Za-z]+\d+$/) == -1) {
+          cut[i] = `${c}:${c}`;
+      }
+  }
+  return cut;
+}
 
 const cutFirst = (str) => {
     let s = "";
@@ -23157,11 +23184,11 @@ const isAbsoluteValue = (str, rule = 1) => {
     str = str.toUpperCase();
     if (rule == 1) {
         if (str.search(/^\$[A-Z]+\$\d+$/) != -1)
-            return true;
+            return 3;
         if (str.search(/^\$[A-Z]+\d+$/) != -1)
-            return true;
+            return 1;
         if (str.search(/^[A-Z]+\$\d+$/) != -1)
-            return true;
+            return 2;
         return false;
     } else if (rule == 3) {
         if (str.search(/^\$[A-Z]+\$\d+$/) != -1)
@@ -23242,5 +23269,6 @@ export {
     absoluteType,
     operation3,
     cuttingByPosEnd,
-    findErpx,
+    changeFormula,
+    value2absolute,
 }

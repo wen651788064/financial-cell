@@ -1,31 +1,54 @@
-import {cutFirst, cutStr, cutting, cutting2, cuttingByPos, isAbsoluteValue, operation} from "../core/operator";
-import {expr2xy, xy2expr} from "../core/alphabet";
-import {selectorColor} from "../component/color_palette";
-import {h} from "../component/element";
-import SelectorCopy from "x-spreadsheet-master/src/component/selector_copy";
+import SelectorCopy from 'x-spreadsheet-master/src/component/selector_copy';
+import {
+    cutFirst,
+    cutStr,
+    cutting,
+    cutting2,
+    cuttingByPos,
+    isAbsoluteValue,
+    operation,
+    value2absolute,
+} from '../core/operator';
+import {expr2xy, xy2expr} from '../core/alphabet';
+import {selectorColor} from './color_palette';
+import {h} from './element';
 
-function lockCells(evt, _selector) {
+function lockCells(evt, _selector, isAb = false) {
     const {data, editor} = this;
     const {offsetX, offsetY} = evt;
 
     const cellRect = data.getCellRectByXY(offsetX, offsetY);
-    let {ri, ci} = cellRect;
+    const {ri, ci} = cellRect;
 
-    let {inputText, pos} = editor;
-    let input = "";
+    const {inputText, pos} = editor;
+    let input = '';
 
     editor.handler(inputText);
-    let {mousedownIndex} = editor;
+    const {mousedownIndex} = editor;
     if (isAbsoluteValue(cuttingByPos(inputText, pos), 2) || _selector) {
         if (_selector) {
             const {
                 sri, sci, eri, eci,
             } = _selector.selector.range;
-            let s1 = xy2expr(sci, sri);
-            let s2 = xy2expr(eci, eri);
-            let text = s1 == s2 ? s1 : `${s1}:${s2}`;
-            _selector.erpx = text;
 
+            const s1 = xy2expr(sci, sri);
+            const s2 = xy2expr(eci, eri);
+            let text = s1 == s2 ? s1 : `${s1}:${s2}`;
+
+            if (isAb == 2) {
+                const es1 = value2absolute(s1);
+                const es2 = value2absolute(s2);
+                text = es1.s1 == es2.s1 ? es1.s1 : `${es1.s1}:${es2.s1}`;
+            } else if (isAb == 1) {
+                const es1 = value2absolute(s1);
+                const es2 = value2absolute(s2);
+                text = es1.s2 == es2.s2 ? es1.s2 : `${es1.s2}:${es2.s2}`;
+            } else if (isAb == 3) {
+                const es1 = value2absolute(s1);
+                const es2 = value2absolute(s2);
+                text = es1.s3 == es2.s3 ? es1.s3 : `${es1.s3}:${es2.s3}`;
+            }
+            _selector.erpx = text;
             input = inputText.substring(0, pos - cuttingByPos(inputText, pos).length) + text + inputText.substring(pos, inputText.length);
             editor.setText(input);
             editor.setCursorPos(inputText.substring(0, pos - cuttingByPos(inputText, pos).length).length + text.length);
@@ -33,10 +56,10 @@ function lockCells(evt, _selector) {
             // 此情况是例如: =A1  -> 这时再点A2  则变成: =A2
             let enter = 0;
             for (let i = 0; i < this.selectors.length && enter == 0; i++) {
-                let selector = this.selectors[i];
-                let {erpx} = selector;
+                const selector = this.selectors[i];
+                const {erpx} = selector;
                 if (erpx === cuttingByPos(inputText, pos)) {
-                    let {ri, ci} = cellRect;
+                    const {ri, ci} = cellRect;
                     this.selectors[i].ri = ri;
                     this.selectors[i].ci = ci;
                     this.selectors[i].erpx = xy2expr(ci, ri);
@@ -55,10 +78,10 @@ function lockCells(evt, _selector) {
             return;
         }
 
-        let args = makeSelector.call(this, ri, ci);
+        const args = makeSelector.call(this, ri, ci);
         this.selectors.push(args);
         input = `${mousedownIndex[0]}${xy2expr(ci, ri)}${mousedownIndex[1]}`;
-        let judgeText = input.substring(mousedownIndex[0].length + xy2expr(ci, ri).length, input.length);
+        const judgeText = input.substring(mousedownIndex[0].length + xy2expr(ci, ri).length, input.length);
         // 不是的话，需要删除这个
         let number = cutFirst(judgeText.substring(1));
         if (operation(judgeText[0]) && !isAbsoluteValue(number, 2)) {
@@ -69,31 +92,30 @@ function lockCells(evt, _selector) {
         // 不是的话，需要删除这个
         number = cutFirst(mousedownIndex[1]);
 
-        console.log(xy2expr(ci, ri))
-        let cut = cutStr(`${mousedownIndex[0]}${xy2expr(ci, ri)}+4${mousedownIndex[1]}`);
-        let {selectors_delete, selectors_new} = filterSelectors.call(this, cut);
-        Object.keys(selectors_delete).forEach(i => {
-            let selector = selectors_delete[i];
+        console.log(xy2expr(ci, ri));
+        const cut = cutStr(`${mousedownIndex[0]}${xy2expr(ci, ri)}+4${mousedownIndex[1]}`);
+        const {selectors_delete, selectors_new} = filterSelectors.call(this, cut);
+        Object.keys(selectors_delete).forEach((i) => {
+            const selector = selectors_delete[i];
             selector.removeEl();
         });
 
         this.selectors = selectors_new;
 
-        input = input.replace(number, "");
+        input = input.replace(number, '');
         editor.setText(input);
-        let content = suggestContent.call(this, pos - 1, cutting(inputText), inputText);
+        const content = suggestContent.call(this, pos - 1, cutting(inputText), inputText);
         editor.setCursorPos(mousedownIndex[0].length + xy2expr(ci, ri).length);
     } else {
-        let {pos} = editor;
+        const {pos} = editor;
 
-        let args = _selector ? _selector : makeSelector.call(this, ri, ci);
+        const args = _selector || makeSelector.call(this, ri, ci);
         if (pos != -1) {
-            let str = "";
+            let str = '';
             let enter = false;
             let step = pos;
-            let first = "";
-            for (let i = pos; i < inputText.length; i++)
-                first += inputText[i];
+            let first = '';
+            for (let i = pos; i < inputText.length; i++) first += inputText[i];
             let len = cutFirst(first).length;
             for (let i = 0; i < inputText.length; i++) {
                 if (pos == i) {
@@ -113,13 +135,13 @@ function lockCells(evt, _selector) {
                 const {
                     sri, sci, eri, eci,
                 } = data.selector.range;
-                let s1 = xy2expr(sci, sri);
-                let s2 = xy2expr(eci, eri);
+                const s1 = xy2expr(sci, sri);
+                const s2 = xy2expr(eci, eri);
 
                 input = s1 === s2 ? s1 : `${s1}:${s2}`;
                 str = !enter ? str += input : str;
             } else {
-                console.log("121push")
+                console.log('121push');
                 this.selectors.push(args);
                 str = !enter ? str += xy2expr(ci, ri) : str;
             }
@@ -134,7 +156,7 @@ function lockCells(evt, _selector) {
     }
     editor.parse(editor.pos);
     if (this.selectors.length > 0 || _selector) {
-        let {inputText} = editor;
+        const {inputText} = editor;
         div2span.call(this, cutting(inputText), cutting2(inputText));
     }
     // step 3.  在enter或者点击的时候写入到cell中
@@ -142,14 +164,14 @@ function lockCells(evt, _selector) {
 }
 
 function filterSelectors(cut) {
-    let selectors_new = [];
-    let selectors_delete = [];
-    Object.keys(this.selectors).forEach(i => {
-        let selector = this.selectors[i];
-        let {erpx} = selector;
+    const selectors_new = [];
+    const selectors_delete = [];
+    Object.keys(this.selectors).forEach((i) => {
+        const selector = this.selectors[i];
+        const {erpx} = selector;
         let enter = 0;
         for (let i2 = 0; i2 < cut.length && enter === 0; i2++) {
-            if (cut[i2].replace(/\$/g, "") === erpx) {
+            if (cut[i2].replace(/\$/g, '') === erpx) {
                 enter = 1;
                 selectors_new.push(selector);
             }
@@ -160,8 +182,8 @@ function filterSelectors(cut) {
         }
     });
     return {
-        "selectors_delete": selectors_delete,
-        "selectors_new": selectors_new
+        selectors_delete,
+        selectors_new,
     };
 }
 
@@ -169,14 +191,14 @@ function filterSelectors(cut) {
 function makeSelector(ri, ci, selectors = this.selectors, multiple = false, _selector, mergeSelector) {
     const {data} = this;
     let selector = null;
-    let {inputText} = this.editor;
-    let color = selectorColor(selectors.length);
+    const {inputText} = this.editor;
+    const color = selectorColor(selectors.length);
     if (_selector) {
         selector = _selector;
     } else {
-        let className = `selector${parseInt(Math.random() * 999999)}`;
+        const className = `selector${parseInt(Math.random() * 999999)}`;
         selector = new SelectorCopy(data, this, className);
-        selector.el.attr("class", `${className} clear_selector`);
+        selector.el.attr('class', `${className} clear_selector`);
         selector.setCss(color);
     }
 
@@ -190,17 +212,17 @@ function makeSelector(ri, ci, selectors = this.selectors, multiple = false, _sel
         selector.set(ri, ci, false);
     }
 
-    selector.el.css("z-index", "100");
-    let len = inputText.split(xy2expr(ci, ri)).length - 2;
+    selector.el.css('z-index', '100');
+    const len = inputText.split(xy2expr(ci, ri)).length - 2;
 
-    let args = {
-        ri: ri,
-        ci: ci,
+    const args = {
+        ri,
+        ci,
         index: len,
-        color: color,
+        color,
         className: selector.el.el.className,
         erpx: xy2expr(ci, ri),
-        selector: selector,
+        selector,
     };
     if (!mergeSelector) {
         selector.el.show();
@@ -218,7 +240,7 @@ function makeSelector(ri, ci, selectors = this.selectors, multiple = false, _sel
 function clearSelectors() {
     this.selectorsEl.html('');
     this.selectors = [];
-    let {editor, selector} = this;
+    const {editor, selector} = this;
     editor.setLock(false);
 
     // // 这行是在 @~esc的时候加的 原因是要把ri ci赋值为-1
@@ -228,53 +250,54 @@ function clearSelectors() {
 }
 
 // 输入 input
-function editingSelectors(text = "") {
-    if (typeof text === "number") {
+function editingSelectors(text = '') {
+    if (typeof text === 'number') {
         return;
     }
-    let selectors_new = [];
-    let cut = cutStr(text, true);
+    const selectors_new = [];
+    const cut = cutStr(text, true);
     // case 1  过滤 selectors
-    let {selectors_delete} = filterSelectors.call(this, cut);
+    const {selectors_delete} = filterSelectors.call(this, cut);
 
-    Object.keys(selectors_delete).forEach(i => {
-        let selector = selectors_delete[i];
+    Object.keys(selectors_delete).forEach((i) => {
+        const selector = selectors_delete[i];
         selector.removeEl();
     });
 
 
-    let selectors_valid = selectors_new;
+    const selectors_valid = selectors_new;
     // case 2  验证 selectors
-    Object.keys(cut).forEach(i => {
+    Object.keys(cut).forEach((i) => {
         let enterCode = 1;
-        Object.keys(this.selectors).forEach(i => {
-            let {selector} = this.selectors[i];
+        Object.keys(this.selectors).forEach((i) => {
+            const {selector} = this.selectors[i];
             selector.el.removeEl();
         });
 
         // 绝对值
-        let arr = "";
+        let arr = '';
         if (isAbsoluteValue(cut[i])) {
-            let notTrueValue = cut[i].replace(/\$/g, "");
+            const notTrueValue = cut[i].replace(/\$/g, '');
             arr = expr2xy(notTrueValue);
+        } else if (cut[i].search(/^[A-Za-z]+\d+:[A-Za-z]+\d+$/) != -1) {
+            enterCode = 2;
         } else {
-            if (cut[i].search(/^[A-Za-z]+\d+:[A-Za-z]+\d+$/) != -1) {
-                enterCode = 2;
-            } else {
-                arr = expr2xy(cut[i]);
-            }
+            arr = expr2xy(cut[i]);
         }
 
         if (enterCode == 1) {
-            let ri = arr[1], ci = arr[0];
-            let args = makeSelector.call(this, ri, ci, selectors_valid);
+            const ri = arr[1];
+            const
+                ci = arr[0];
+            const args = makeSelector.call(this, ri, ci, selectors_valid);
+            args.erpx = cut[i];
             selectors_valid.push(args);
         } else if (enterCode == 2) {
-            let prx = cut[i].split(":")[0];
-            let lax = cut[i].split(":")[1];
+            const prx = cut[i].split(':')[0];
+            const lax = cut[i].split(':')[1];
 
-            let prx_index = expr2xy(prx);
-            let lax_index = expr2xy(lax);
+            const prx_index = expr2xy(prx);
+            const lax_index = expr2xy(lax);
             let args = makeSelector.call(this, prx_index[1], prx_index[0], selectors_valid, true, null, false);
             args = makeSelector.call(this, lax_index[1], lax_index[0], selectors_valid, true, args.selector, true);
             args.erpx = cut[i];
@@ -283,7 +306,7 @@ function editingSelectors(text = "") {
     });
     this.selectors = selectors_valid;
 
-    if (this.selectors.length > 0 || text[0] == "=") {
+    if (this.selectors.length > 0 || text[0] == '=') {
         div2span.call(this, cutting(text), cutting2(text));
     }
 }
@@ -295,16 +318,16 @@ function findBracketLeft(cut, i) {
     let stop = false;
 
     for (let j = i - 1; j > 0 && stop == false; j--) {
-        if (cut[j] == "(") {
+        if (cut[j] == '(') {
             stop = true;
         }
-        if (cut[j] == ")") {
+        if (cut[j] == ')') {
             has++;
         }
     }
 
     for (let j = i; j > 0 && begin == -1; j--) {
-        if (cut[j] == "(") {
+        if (cut[j] == '(') {
             if (has === 0) {
                 begin = j;
             }
@@ -318,14 +341,14 @@ function findBracketLeft(cut, i) {
 // => { left: 0, right: 0,  exist: false }
 function findBracket(pos, cut, text) {
     let args = {left: 0, right: 0, exist: false};
-    if (text[pos] !== ")") {
+    if (text[pos] !== ')') {
         return args;
     }
-    let right = pos;
-    let left = findBracketLeft.call(this, cut, right);
+    const right = pos;
+    const left = findBracketLeft.call(this, cut, right);
 
     if (left != -1 && right != -1) {
-        args = {left: left, right: right, exist: true};
+        args = {left, right, exist: true};
     }
     return args;
 }
@@ -338,16 +361,16 @@ function findBracketRight(cut, i) {
     let stop = false;
 
     for (let j = i + 1; j < cut.length && stop == false; j++) {
-        if (cut[j] == ")") {
+        if (cut[j] == ')') {
             stop = true;
         }
-        if (cut[j] == "(") {
+        if (cut[j] == '(') {
             has++;
         }
     }
 
     for (let j = i; j < cut.length && begin == -1; j++) {
-        if (cut[j] == ")") {
+        if (cut[j] == ')') {
             if (has === 0) {
                 begin = j;
             }
@@ -364,10 +387,10 @@ function suggestContent(pos, cut, inputText) {
     // step 1. 找到距离pos最近的左、右括号的index
     // step 2. 若1成立，找到该函数名
     // step 3. 找光标前有几个逗号
-    let content = {suggestContent: false, cut: "", pos: 1};
-    let begin = pos - 1;
-    let left = findBracketLeft.call(this, cut, begin);
-    let right = findBracketRight.call(this, cut, left);
+    const content = {suggestContent: false, cut: '', pos: 1};
+    const begin = pos - 1;
+    const left = findBracketLeft.call(this, cut, begin);
+    const right = findBracketRight.call(this, cut, left);
 
     if (left <= begin && left != -1 && (right >= begin || right == -1)) {
         content.suggestContent = true;
@@ -375,8 +398,8 @@ function suggestContent(pos, cut, inputText) {
     }
 
     for (let i = left; i < begin + 1; i++) {
-        if (inputText[i] == ",") {
-            content.pos = content.pos + 2;
+        if (inputText[i] == ',') {
+            content.pos += 2;
         }
     }
 
@@ -386,22 +409,22 @@ function suggestContent(pos, cut, inputText) {
 function div2span(cut, cutcolor) {
     const {editor} = this;
 
-    let spanArr = [];
+    const spanArr = [];
     let begin = -1;
     let end = -1;
-    Object.keys(cut).forEach(i => {
-        let spanEl = h('span', `formula_span${i}`);
-        Object.keys(cutcolor).forEach(i2 => {
+    Object.keys(cut).forEach((i) => {
+        const spanEl = h('span', `formula_span${i}`);
+        Object.keys(cutcolor).forEach((i2) => {
             if (cutcolor[i].code !== -1 && cutcolor[i].data == cut[i]) {
-                let color = selectorColor(cutcolor[i].code);
+                const color = selectorColor(cutcolor[i].code);
                 spanEl.css('color', color);
             }
         });
         spanEl.css('display', 'inline-block');
         spanEl.css('cursor', 'text');
 
-        if (cut[i] == " ") {
-            spanEl.html("&emsp;");
+        if (cut[i] == ' ') {
+            spanEl.html('&emsp;');
         } else {
             spanEl.html(cut[i]);
         }
@@ -410,8 +433,8 @@ function div2span(cut, cutcolor) {
     });
 
     // 高亮
-    let {pos, inputText} = editor;
-    let content = {suggestContent: false, cut: ""};
+    const {pos, inputText} = editor;
+    let content = {suggestContent: false, cut: ''};
     if (inputText[pos - 1] == ')') {
         begin = pos - 1;
         end = findBracketLeft.call(this, cut, begin);
@@ -420,8 +443,8 @@ function div2span(cut, cutcolor) {
     }
 
 
-    if (inputText != "" && spanArr.length <= 0) {
-        let spanEl = h('span', `formula_span`);
+    if (inputText != '' && spanArr.length <= 0) {
+        const spanEl = h('span', 'formula_span');
         spanArr.push(spanEl);
     }
     // 挂载
@@ -435,5 +458,5 @@ export {
     editingSelectors,
     findBracket,
     suggestContent,
-    makeSelector
-}
+    makeSelector,
+};

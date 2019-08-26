@@ -118,7 +118,6 @@ export default class Toolbar {
     this.change = () => {};
     this.widthFn = widthFn;
     const style = data.defaultStyle();
-    console.log('data:', data);
     this.ddFormat = new DropdownFormat();
     this.ddFont = new DropdownFont();
     this.ddFormula = new DropdownFormula();

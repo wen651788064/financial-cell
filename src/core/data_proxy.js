@@ -483,6 +483,8 @@ export default class DataProxy {
         return selector.range;
     }
 
+
+
     calSelectedRangeByStart(ri, ci) {
         const {
             selector, rows, cols, merges,

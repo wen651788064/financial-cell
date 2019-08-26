@@ -2,6 +2,7 @@ import {h} from './element';
 import {cssPrefix} from '../config';
 import {CellRange} from '../core/cell_range';
 import {mouseMoveUp} from "../component/event";
+import {xy2expr} from "../core/alphabet";
 
 const selectorHeightBorderWidth = 2 * 2 - 1;
 let startZIndex = 10;
@@ -12,7 +13,7 @@ class SelectorElement {
         // this.box = h('div', `${cssPrefix}-selector-box`);
         this.data = data;
         this.sheet = sheet;
-        this._selector =  selector;
+        this._selector = selector;
         this.l = h('div', `${cssPrefix}-selector-box-l`)
             .on('mousedown.stop', evt => {
                 this.moveEvent();
@@ -58,7 +59,7 @@ class SelectorElement {
             _selector.setBoxinner("none");
 
             let {ri, ci} = data.getCellRectByXY(e.layerX, e.layerY);
-            if(ri !== -1 && ci !== -1) {
+            if (ri !== -1 && ci !== -1) {
                 cellRange = new CellRange(sri, sci, eri, eci, w, h);
                 cellRange.move(ri, ci);
                 const rect = data.getMoveRect(cellRange);
@@ -79,6 +80,29 @@ class SelectorElement {
             _selector.moveIndexes = [cellRange.sri, cellRange.sci];
             _selector.range = cellRange;
             _selector.setMove(rect);
+
+            // 如果移动的内容被单元格包含，则需要变化
+            let {rows} = data;
+            let arr = [], arr2 = [], arr3 = [];
+            // 多个单元格
+            if (_cellRange.eri != _cellRange.sri || _cellRange.eci != _cellRange.sci) {
+                let a1 = xy2expr(_cellRange.eci, _cellRange.eri);
+                let a2 = xy2expr(_cellRange.sci, _cellRange.sri);
+                arr.push(`${a2}:${a1}`);
+                arr3.push(`${a2}:${a1}`);
+                a1 = xy2expr(cellRange.eci, cellRange.eri);
+                a2 = xy2expr(cellRange.sci, cellRange.sri);
+                arr2.push(`${a2}:${a1}`);
+            } else {
+                _cellRange.each((i, j) => {
+                    arr.push(`${xy2expr(j, i)}:${xy2expr(j, i)}`);
+                    arr3.push(`${xy2expr(j, i)}`)
+                });
+                cellRange.each((i, j) => {
+                    arr2.push(xy2expr(j, i));
+                });
+            }
+            rows.moveChange(arr, arr2, arr3);
 
             sheet.selectorMoveReset();
         });

@@ -425,11 +425,10 @@ export default class Editor {
                         }
 
 
-                        // console.log(this.textEl.el.style['position']);
                         if (this.textEl.el.style['caret-color'] == 'black')
                             return;
                         const {
-                            key, ctrlKey, shiftKey, altKey, metaKey,
+                             ctrlKey,  metaKey,
                         } = evt;
 
                         console.log("404");
@@ -482,7 +481,7 @@ export default class Editor {
         this.inputText = '';
         setTimeout(() => {
             this.show(false);
-        })
+        });
         this.change = () => {
         };
     }
@@ -720,7 +719,6 @@ export default class Editor {
 
     setText(text) {
         this.inputText = text;
-        // console.log('text>>:', text);
         setText.call(this, text, text.length);
         resetTextareaSize.call(this);
         this.textEl.child(this.tmp);

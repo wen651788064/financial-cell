@@ -1011,7 +1011,6 @@ function sheetInitEvents() {
                     break;
                 case 86:
                     // ctrl + v
-
                     paste.call(this, what, () => {
                         console.log("837")
                     });

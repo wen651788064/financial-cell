@@ -12,11 +12,11 @@ function mountCopy(event) {
         return;
     }
 
-
     let args = {
         plain: "",
         html: h("table", ""),
     };
+
     let {selector, rows, styles} = this.data;
     let {sri, eri, sci, eci} = selector.range;
     let tbody = h('tbody', '');
@@ -40,8 +40,6 @@ function mountCopy(event) {
                     rows._[i].cells[j].text = "";
                 }
 
-
-                // 因为 不会复制空格
                 let text = rows._[i].cells[j].text;
                 if(rows._[i].cells[j].formulas && cutStr(rows._[i].cells[j].formulas, false, true).length > 0) {
                     let hidden = h('tt', '');
@@ -67,7 +65,6 @@ function mountCopy(event) {
     console.log(args.html.el, parseDom(args.html.el));
 
     if (event.clipboardData) {
-        console.log(parseDom(args.html.el));
         event.clipboardData.setData("text/html", parseDom(args.html.el));
         event.clipboardData.setData("text/plain", args.plain);
     }
