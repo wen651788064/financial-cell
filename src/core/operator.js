@@ -41,9 +41,9 @@ const operation2 = (s) => {
 
 
 const value2absolute = (str) => {
-    let s1 = "",   enter = false;
-    for(let i = 0; i < str.length; i++) {
-        if(enter == false && str[i] * 1 >= 0 && str[i] * 1 <= 9) {
+    let s1 = "", enter = false;
+    for (let i = 0; i < str.length; i++) {
+        if (enter == false && str[i] * 1 >= 0 && str[i] * 1 <= 9) {
             s1 += "$";
             enter = true;
         }
@@ -72,17 +72,22 @@ const cutStr = (str, filter = false, f = false) => {
     }
     let express = [];
     arr.filter(i => {
-        if(f) {
+        if (f) {
             if (i.search(/^[A-Z]+\d+$/) != -1
                 || i.search(/^[A-Za-z]+\d+:[A-Za-z]+\d+$/) != -1)
                 if (express.indexOf(i) == -1)
                     express.push(i);
         } else {
             if (i.search(/^[A-Z]+\d+$/) != -1 || i.search(/^\$[A-Z]+\$\d+$/) != -1
-                || i.search(/^[A-Za-z]+\d+:[A-Za-z]+\d+$/) != -1
-                || i.search(/^[A-Z]+\$\d+$/) != -1 || i.search(/^\$[A-Z]+\d+$/) != -1)
+                || i.search(/^[A-Z]+\$\d+$/) != -1 || i.search(/^\$[A-Z]+\d+$/) != -1) {
                 if (express.indexOf(i) == -1 || filter == true)
                     express.push(i);
+            } else {
+                let is = i.replace(/\$/g, "");
+                if (is.search(/^[A-Za-z]+\d+:[A-Za-z]+\d+$/) != -1) {
+                    express.push(i);
+                }
+            }
         }
     });
 
@@ -91,13 +96,13 @@ const cutStr = (str, filter = false, f = false) => {
 
 // A1 => A1:A1
 function changeFormula(cut) {
-  for(let i = 0; i < cut.length; i++) {
-      let c = cut[i];
-      if(c.search(/^[A-Za-z]+\d+:[A-Za-z]+\d+$/) == -1) {
-          cut[i] = `${c}:${c}`;
-      }
-  }
-  return cut;
+    for (let i = 0; i < cut.length; i++) {
+        let c = cut[i];
+        if (c.search(/^[A-Za-z]+\d+:[A-Za-z]+\d+$/) == -1) {
+            cut[i] = `${c}:${c}`;
+        }
+    }
+    return cut;
 }
 
 const cutFirst = (str) => {
@@ -23242,18 +23247,27 @@ const cutting2 = (str) => {
                     "data": express[i][i2],
                 });
             color = color + 1;
-        } else {
-            for (let i2 = 0; i2 < express[i].length; i2++)
-                colors.push({
-                    "code": -1,
-                    "data": express[i][i2],
-                });
+        }  else {
+            let sc = s.replace(/\$/g, "");
+            if(sc.search(/^[A-Za-z]+\d+:[A-Za-z]+\d+$/) != -1) {
+                for (let i2 = 0; i2 < express[i].length; i2++)
+                    colors.push({
+                        "code": color,
+                        "data": express[i][i2],
+                    });
+                color = color + 1;
+            } else {
+                for (let i2 = 0; i2 < express[i].length; i2++)
+                    colors.push({
+                        "code": -1,
+                        "data": express[i][i2],
+                    });
+            }
         }
     }
 
     return colors;
 };
-
 
 
 export {

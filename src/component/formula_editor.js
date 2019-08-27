@@ -276,10 +276,11 @@ function editingSelectors(text = '') {
 
         // 绝对值
         let arr = '';
+        let sc = cut[i].replace(/\$/, "");
         if (isAbsoluteValue(cut[i])) {
             const notTrueValue = cut[i].replace(/\$/g, '');
             arr = expr2xy(notTrueValue);
-        } else if (cut[i].search(/^[A-Za-z]+\d+:[A-Za-z]+\d+$/) != -1) {
+        } else if (sc.search(/^[A-Za-z]+\d+:[A-Za-z]+\d+$/) != -1) {
             enterCode = 2;
         } else {
             arr = expr2xy(cut[i]);

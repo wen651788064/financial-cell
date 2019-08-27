@@ -25,6 +25,8 @@ import {cuttingByPos} from "../core/operator";
 import {moveCell} from "../event/move";
 import {getChooseImg} from "../event/copy";
 import CellRange from "../core/cell_range";
+import {process} from "../event/paste";
+import {createEvent} from "./event";
 
 function scrollbarMove() {
     const {
@@ -935,7 +937,10 @@ function sheetInitEvents() {
         } else if (type === 'cut') {
             cut.call(this);
         } else if (type === 'paste') {
-            paste.call(this, 'all');
+            // paste.call(this, 'all');
+            // process.call(this, document.execCommand("copy"));
+            createEvent(1, false, "paste");
+            // console.log(  document.execCommand("paste"));
         } else if (type === 'paste-value') {
             paste.call(this, 'text');
         } else if (type === 'paste-format') {

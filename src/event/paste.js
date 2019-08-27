@@ -68,7 +68,7 @@ function spanDomPackage(spanDom, tableDom) {
     return tableDom;
 }
 
-function process(tableDom, styleDom) {
+export function process(tableDom, styleDom = "") {
     let {el, data} = this;
     data.history.add(data.getData());
     el.child(tableDom);

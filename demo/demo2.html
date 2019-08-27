@@ -5,24 +5,25 @@
     <title>Title</title>
 </head>
 <body  style="height: 100%">
-<div  style="height: 100%" id="editor">
 
 </div>
+<input type='text' id='testInput' value="这是测试问题" onclick='copy(this)'>
+
 
 <script>
-    function ss() {
-        fetch("https://proxy.zme.ink/https://www.zhihu.com")
-            .then(x => x.text())
-            .then(function (data) {
-                let frame = document.createElement("iframe");
-                frame.setAttribute("name", "abc");
-                frame.style['width'] = "100%";
-                frame.style['height'] = "100%";
 
-                document.getElementById("editor").appendChild(frame);
-                abc.document.write(data);
-            })
-    }
+    //模拟点击
+    var obj = document.getElementById("testInput");
+    obj.addEventListener('paste', evt => {
+        document.execCommand("paste");
+        console.log("12")
+
+    });
+
+    window.addEventListener('paste', evt => {
+        console.log("1")
+    })
+
 </script>
 </body>
 </html>
