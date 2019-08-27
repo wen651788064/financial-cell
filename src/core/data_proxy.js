@@ -1200,7 +1200,10 @@ export default class DataProxy {
                 this.freeze = [y, x];
             } else if (property === 'pictures') {
                 processPasteDirectionsArr.call(this, d[property], 'from', sheet);
-                // this[property] = d[property];
+            } else if (property === 'autofilter') {
+                autoFilter.ref = d[property].ref;
+                autoFilter.filters = d[property].filters;
+                autoFilter.sort = d[property].sort;
             } else if (d[property] !== undefined) {
                 this[property] = d[property];
             }
