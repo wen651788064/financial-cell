@@ -415,7 +415,7 @@ function pictureSetOffset() {
     const {data} = this;
     let {pictureOffsetLeft, pictureOffsetTop} = this;
 
-    this.pasteDirectionsArr.forEach(i => {
+    this.data.pasteDirectionsArr.forEach(i => {
         const sOffset = data.getMoveRect(i.range);
         i.img.el.style['top'] = `${sOffset.top + pictureOffsetTop + i.number * 15 + i.offsetTop }px`;
         i.img.el.style['left'] = `${sOffset.left + pictureOffsetLeft + i.number * 15 + i.offsetLeft}px`;
@@ -1220,7 +1220,7 @@ export default class Sheet {
         this.advice = new Advice(data, this);
         this.website = new Website(data);
 
-        this.pasteDirectionsArr = [];
+        // this.pasteDirectionsArr = [];
         // this.pasteOverlay = h('div', `${cssPrefix}-paste-overlay-container`).hide();
 
         this.overlayerCEl = hasEditor.call(this, showEditor);

@@ -71,7 +71,7 @@ function mountCopy(event) {
 }
 
 function getChooseImg() {
-    let {pasteDirectionsArr} = this;
+    let {pasteDirectionsArr} = this.data;
 
     this.direction = false;
     if (pasteDirectionsArr.length > 0) {

@@ -340,7 +340,6 @@ export default class DataProxy {
         this.name = name || 'sheet';
         this.freeze = [0, 0];
         this.styles = []; // Array<Style>
-        this.pictures = [];
         this.merges = new Merges(); // [CellRange, ...]
         this.rows = new Rows(this.settings.row);
         this.cols = new Cols(this.settings.col);
@@ -349,6 +348,8 @@ export default class DataProxy {
         this.comments = {};
         this.showEquation = false;
         this.calc = formulaCalc();
+
+        this.pasteDirectionsArr = [];
         // save data end
 
         // don't save object
@@ -1172,13 +1173,13 @@ export default class DataProxy {
 
     getData() {
         const {
-            name, freeze, styles, merges, rows, cols, validations, autoFilter, pictures
+            name, freeze, styles, merges, rows, cols, validations, autoFilter, pasteDirectionsArr
         } = this;
         return {
             name,
             freeze: xy2expr(freeze[1], freeze[0]),
             styles,
-            pictures,
+            pasteDirectionsArr,
             merges: merges.getData(),
             rows: rows.getData(),
             cols: cols.getData(),

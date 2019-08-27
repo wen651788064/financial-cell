@@ -7,23 +7,15 @@
 <body  style="height: 100%">
 
 </div>
-<input type='text' id='testInput' value="这是测试问题" onclick='copy(this)'>
 
 
 <script>
-
-    //模拟点击
-    var obj = document.getElementById("testInput");
-    obj.addEventListener('paste', evt => {
-        document.execCommand("paste");
-        console.log("12")
-
-    });
-
-    window.addEventListener('paste', evt => {
-        console.log("1")
-    })
-
+    var i = new Image();
+    i.src = "https://ss0.bdstatic.com/70cFuHSh_Q1YnxGkpoWK1HF6hhy/it/u=508387608,2848974022&fm=26&gp=0.jpg";
+    i.onload = function(){
+        // 打印
+        console.log(i.width, i.height);
+    }
 </script>
 </body>
 </html>

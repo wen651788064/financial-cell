@@ -5,7 +5,6 @@ import Resize from "../external/resize";
 import {cssPrefix} from "../config";
 import {getChooseImg} from "../event/copy";
 import {expr2xy, xy2expr} from "../core/alphabet";
-import {createEvent} from "../component/event";
 
 let resizeOption = {
     onBegin(data) {
@@ -149,7 +148,8 @@ function mountPaste(e, cb) {
             let f = item.getAsFile();
             let reader = new FileReader();
             reader.onload = (evt) => {
-                let {x, y, overlayerEl, pasteDirectionsArr} = this;
+                let {x, y, overlayerEl} = this;
+                let {pasteDirectionsArr} = this.data;
                 let img = h('img', 'paste-img');
                 img.el.src = evt.target.result;
 
@@ -192,7 +192,7 @@ function processImg(item) {
 }
 
 function moveArr(top, left) {
-    let {pasteDirectionsArr} = this;
+    let {pasteDirectionsArr} = this.data;
     for (let i = 0; i < pasteDirectionsArr.length; i++) {
         let p = pasteDirectionsArr[i];
         console.log(p.img.el['style'].top, "108");
@@ -204,7 +204,7 @@ function moveArr(top, left) {
 function getMaxCoord(ri, ci) {
     let top = 0;
     let left = 0;
-    let {pasteDirectionsArr} = this;
+    let {pasteDirectionsArr} = this.data;
     let number = 0;
     for (let i = 0; i < pasteDirectionsArr.length; i++) {
         let p = pasteDirectionsArr[i];
@@ -226,67 +226,77 @@ function getMaxCoord(ri, ci) {
     }
 }
 
+
 function mountImg(imgDom) {
-    let img = imgDom;
-    let {container, pasteDirectionsArr, data} = this;
-    data.history.addPic(Object.assign([], pasteDirectionsArr), "delete");
-    let {ri, ci} = data.selector;
-    let {pictureOffsetLeft, pictureOffsetTop} = this;
+    let image = new Image();
+    image.src = imgDom.src;
+    image.onload = () => {
+        let width = image.width;
+        let height = image.height;
+        let img = imgDom;
+        let {container, data} = this;
+        let {pasteDirectionsArr} = data;
+        data.history.addPic(Object.assign([], pasteDirectionsArr), "delete");
+        let {ri, ci} = data.selector;
+        let {pictureOffsetLeft, pictureOffsetTop} = this;
 
-    const rect = data.getSelectedRect();
-    let left = rect.left + pictureOffsetLeft;
-    let top = rect.top + pictureOffsetTop;
-    let number = 0;
-    let choose = getChooseImg.call(this);
-    if (choose) {
-        let args = getMaxCoord.call(this, choose.ri, choose.ci);
-        left = args.left;
-        top = args.top;
-        ri = choose.ri;
-        ci = choose.ci;
-        number = args.number;
-    }
+        const rect = data.getSelectedRect();
+        let left = rect.left + pictureOffsetLeft;
+        let top = rect.top + pictureOffsetTop;
+        let number = 0;
+        let choose = getChooseImg.call(this);
+        if (choose) {
+            let args = getMaxCoord.call(this, choose.ri, choose.ci);
+            left = args.left;
+            top = args.top;
+            ri = choose.ri;
+            ci = choose.ci;
+            number = args.number;
+        }
 
-    let div = h('div', `${cssPrefix}-object-container`)
-        .css("position", "absolute")
-        .css("top", `${top}px`)
-        .css("z-index", `100000`)
-        .css("left", `${left}px`)
-        .child(img);
-    container.child(div);
-    new Drag(dragOption, this).register(div.el);
-    setTimeout(() => {
-        let {data} = this;
-        let directionsArr = new Resize(resizeOption).register(div.el);
-        let index = pasteDirectionsArr.length;
-        pasteDirectionsArr.push({
-            "state": true,
-            "arr": directionsArr,
-            "img": div,
-            "index": index,
-            "img2": img,
-            "ri": ri,
-            "ci": ci,
-            "offsetLeft": 0,
-            "offsetTop": 0,
-            "number": number,
-            "range": data.selector.range,
-            "top": top,
-            "left": left,
-            "nextLeft": left + 15,
-            "nextTop": top + 15,
-        });
-        // data.pictures = pasteDirectionsArr;
-        this.direction = true;
-        div.css("width", `${img.offsetWidth}px`);
-        div.css("height", `${img.offsetHeight}px`);
-        containerHandlerEvent.call(this, directionsArr, index, pasteDirectionsArr);
-        div.on('mousedown', evt => containerHandlerEvent.call(this, directionsArr, index, pasteDirectionsArr));
-    }, 0);
+        let div = h('div', `${cssPrefix}-object-container`)
+            .css("position", "absolute")
+            .css("top", `${top}px`)
+            .css("width", `${width}px`)
+            .css("height", `${height}px`)
+            .css("z-index", `100000`)
+            .css("left", `${left}px`)
+            .child(img);
+        container.child(div);
+        new Drag(dragOption, this).register(div.el);
+        setTimeout(() => {
+            let {data} = this;
+            let directionsArr = new Resize(resizeOption).register(div.el);
+            let index = pasteDirectionsArr.length;
+            pasteDirectionsArr.push({
+                "state": true,
+                "arr": directionsArr,
+                "img": div,
+                "index": index,
+                "img2": img,
+                "ri": ri,
+                "ci": ci,
+                "offsetLeft": 0,
+                "offsetTop": 0,
+                "number": number,
+                "range": data.selector.range,
+                "top": top,
+                "left": left,
+                "nextLeft": left + 15,
+                "nextTop": top + 15,
+            });
+            // data.pictures = pasteDirectionsArr;
+            this.direction = true;
+            div.css("width", `${img.offsetWidth}px`);
+            div.css("height", `${img.offsetHeight}px`);
+            containerHandlerEvent.call(this, directionsArr, index, pasteDirectionsArr);
+            div.on('mousedown', evt => containerHandlerEvent.call(this, directionsArr, index, pasteDirectionsArr));
+        }, 0);
+    };
 }
 
 function hideDirectionArr() {
-    let {pasteDirectionsArr} = this;
+    let {pasteDirectionsArr} = this.data;
     this.direction = false;
     if (pasteDirectionsArr.length > 0) {
         for (let i = 0; i < pasteDirectionsArr.length; i++) {
@@ -304,7 +314,7 @@ function hideDirectionArr() {
 }
 
 function deleteImg(d = false) {
-    let {pasteDirectionsArr} = this;
+    let {pasteDirectionsArr} = this.data;
     let direction_new = [];
     let direction_delete = [];
     this.direction = false;
@@ -326,7 +336,7 @@ function deleteImg(d = false) {
 }
 
 function deleteAllImg() {
-    let {pasteDirectionsArr} = this;
+    let {pasteDirectionsArr} = this.data;
     let direction_new = [];
     let direction_delete = [];
     this.direction = false;

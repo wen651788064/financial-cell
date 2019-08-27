@@ -41,7 +41,7 @@ export default class History {
                 Object.keys(data).forEach(i => {
                     container.child(data[i].img);
                 });
-                sheet.pasteDirectionsArr = data;
+                sheet.data.pasteDirectionsArr = data;
             } else {
                 cb(JSON.parse(item));
             }
