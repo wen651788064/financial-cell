@@ -387,6 +387,16 @@ export default class SelectorCopy {
         this.resetOffset();
     }
 
+    resetSelectorBRLAreaOffset(range) {
+        const offset = this.data.getMoveRect(range);
+        const coffset = this.data.getClipboardRect();
+        setBRAreaOffset.call(this, offset);
+        setLAreaOffset.call(this, offset);
+        setBRClipboardOffset.call(this, coffset);
+        setLClipboardOffset.call(this, coffset);
+        this.resetOffset();
+    }
+
     resetBRLAreaOffset() {
         const offset = this.data.getSelectedRect();
         const coffset = this.data.getClipboardRect();

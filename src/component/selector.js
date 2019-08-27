@@ -366,6 +366,16 @@ export default class Selector {
         this.resetOffset();
     }
 
+    resetSelectorBRLAreaOffset(range) {
+        const offset = this.data.getMoveRect(range);
+        const coffset = this.data.getClipboardRect();
+        setBRAreaOffset.call(this, offset);
+        setLAreaOffset.call(this, offset);
+        setBRClipboardOffset.call(this, coffset);
+        setLClipboardOffset.call(this, coffset);
+        this.resetOffset();
+    }
+
     set(ri, ci, indexesUpdated = true) {
         const {data} = this;
         const cellRange = data.calSelectedRangeByStart(ri, ci);

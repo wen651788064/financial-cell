@@ -24,3 +24,6 @@ npm run dev
 ## LICENSE
 
 MIT
+
+scroll
+ // 只考虑了 eri == sri sci == eci

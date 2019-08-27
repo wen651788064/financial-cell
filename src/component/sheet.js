@@ -118,7 +118,6 @@ function selectorMove(multiple, direction) {
     } else if (direction === 'col-last') {
         ri = rows.len - 1;
     }
-    console.log("92", ri, ci, editor.ri, editor.ci)
 
     if (multiple) {
         selector.moveIndexes = [ri, ci];
@@ -424,8 +423,12 @@ function pictureSetOffset() {
 }
 
 function editorSetOffset(show = true) {
-    const {editor, data} = this;
-    const sOffset = data.getMoveRect(new CellRange(editor.ri, editor.ci, editor.ri, editor.ci));
+    const {
+        selector, data, editor
+    } = this;
+     let [ri, ci] = selector.indexes;
+
+    const sOffset = data.getMoveRect(new CellRange(ri, ci, ri, ci));
     const tOffset = this.getTableOffset();
 
     let sPosition = 'top';
@@ -443,7 +446,7 @@ function editorSetOffset(show = true) {
 function selectorsSetOffset() {
     for (let i = 0; i < this.selectors.length; i++) {
         let selector = this.selectors[i];
-        selector.selector.resetBRLAreaOffset();
+        selector.selector.resetSelectorBRLAreaOffset(new CellRange(selector.ri, selector.ci, selector.ri, selector.ci));
     }
 }
 
@@ -939,7 +942,7 @@ function sheetInitEvents() {
         } else if (type === 'paste') {
             // paste.call(this, 'all');
             // process.call(this, document.execCommand("copy"));
-            createEvent(1, false, "paste");
+            // createEvent(1, false, "paste");
             // console.log(  document.execCommand("paste"));
         } else if (type === 'paste-value') {
             paste.call(this, 'text');
@@ -1132,7 +1135,6 @@ function sheetInitEvents() {
                     renderAutoAdapt.call(this);
                     autoRowResizer.call(this);
                     selectorMove.call(this, false, shiftKey ? 'up' : 'down');
-                    editorSetOffset.call(this);
                     setTimeout(() => {
                         let {formula} = data.settings;
                         if (formula && typeof formula.wland == "function") {
@@ -1141,6 +1143,7 @@ function sheetInitEvents() {
                     }, 200);
 
                     evt.preventDefault();
+                    editorSetOffset.call(this, true);
                     // 清除各种属性
                     clearSelectors.call(this);
                     break;
