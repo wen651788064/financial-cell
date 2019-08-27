@@ -178,12 +178,26 @@ function setStyleBorder(ri, ci, bss) {
 }
 
 function processPasteDirectionsArr(pasteDirectionsArr) {
+    let arr = [];
     for(let i = 0; i < pasteDirectionsArr.length; i++) {
         let item = pasteDirectionsArr[i];
-        item['src'] = item.img2.src;
+        let newItem = {
+            src: item.img2.src,
+            ri: item.ri,
+            ci: item.ci,
+            top: item.top,
+            left: item.left,
+            range: item.range,
+            offsetLeft: item.offsetLeft,
+            offsetTop: item.offsetTop,
+            nextLeft: item.nextLeft,
+            nextTop: item.nextLeft,
+        };
+
+        arr.push(newItem);
     }
 
-    return pasteDirectionsArr;
+    return arr;
 }
 
 function setStyleBorders({mode, style, color}) {
