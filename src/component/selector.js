@@ -56,6 +56,7 @@ class SelectorElement {
         selectorMoveEl.hide();
 
         mouseMoveUp(window, (e) => {
+            sheet.container.css('pointer-events', 'none');
             _selector.setBoxinner("none");
 
             let {ri, ci} = data.getCellRectByXY(e.layerX, e.layerY);
@@ -69,6 +70,7 @@ class SelectorElement {
             }
         }, (e) => {
             data.cutPaste(_cellRange, cellRange);
+            sheet.container.css('pointer-events', 'auto');
             _selector.setBoxinner("auto");
             selectorMoveEl.hide();
 

@@ -793,6 +793,7 @@ function sheetInitEvents() {
                     let _selector = null;
                     let change = 0;
                     mouseMoveUp(window, (e) => {
+                        this.container.css('pointer-events', 'none');
                         if (_selector && _selector.selector) {
                             _selector.selector.setBoxinner("none");
                         }
@@ -821,6 +822,7 @@ function sheetInitEvents() {
                             }
                         }
                     }, () => {
+                        this.container.css('pointer-events', 'auto');
                         if (_selector && _selector.selector) {
                             _selector.selector.setBoxinner("auto");
                         }

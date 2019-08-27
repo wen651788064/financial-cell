@@ -58,13 +58,14 @@ class SelectorElement {
     }
 
     moveEvent(evt) {
-        let {data, _selector} = this;
+        let {data, _selector, sheet} = this;
         let _move_selectors = null;
         let {selector} = data;
         let {sri, sci, eri, eci, w, h} = selector.range;
         let cellRange = new CellRange(sri, sci, eri, eci, w, h);
         mouseMoveUp(window, (e) => {
             let {selectors} = this.sheet;
+            sheet.container.css('pointer-events', 'none');
             for (let i = 0; i < selectors.length; i++) {
                 let selector = selectors[i];
                 selector.selector.setBoxinner("none");
@@ -125,6 +126,7 @@ class SelectorElement {
         }, (e) => {
             // 加这个的原因是  e.layerX, e.layerY， 如果不加的话 会点到单元格内的 xy坐标进行结算
             let {selectors} = this.sheet;
+            sheet.container.css('pointer-events', 'auto');
             for (let i = 0; i < selectors.length; i++) {
                 let selector = selectors[i];
                 selector.selector.setBoxinner("all");
