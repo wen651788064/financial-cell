@@ -1275,7 +1275,7 @@ export default class Sheet {
     }
 
     loadData(data) {
-        this.data.setData(data);
+        this.data.setData(data, this);
         sheetReset.call(this);
         return this;
     }

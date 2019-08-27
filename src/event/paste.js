@@ -5,8 +5,9 @@ import Resize from "../external/resize";
 import {cssPrefix} from "../config";
 import {getChooseImg} from "../event/copy";
 import {expr2xy, xy2expr} from "../core/alphabet";
+import CellRange from "../core/cell_range";
 
-let resizeOption = {
+export let resizeOption = {
     onBegin(data) {
         console.log("obegin", data)
     },
@@ -16,7 +17,7 @@ let resizeOption = {
     },
 };
 
-let dragOption = {
+export let dragOption = {
     onBegin(data) {
         console.log("obegin", data)
     },
@@ -227,7 +228,7 @@ function getMaxCoord(ri, ci) {
 }
 
 
-function mountImg(imgDom) {
+export function mountImg(imgDom, init = false, sri, sci, range) {
     let image = new Image();
     image.src = imgDom.src;
     image.onload = () => {
@@ -238,9 +239,13 @@ function mountImg(imgDom) {
         let {pasteDirectionsArr} = data;
         data.history.addPic(Object.assign([], pasteDirectionsArr), "delete");
         let {ri, ci} = data.selector;
+        if(init) {
+           ri = sri;
+           ci = sci;
+        }
         let {pictureOffsetLeft, pictureOffsetTop} = this;
 
-        const rect = data.getSelectedRect();
+        const rect = data.getMoveRect(new CellRange(ri, ci, ri, ci));
         let left = rect.left + pictureOffsetLeft;
         let top = rect.top + pictureOffsetTop;
         let number = 0;
@@ -279,13 +284,15 @@ function mountImg(imgDom) {
                 "offsetLeft": 0,
                 "offsetTop": 0,
                 "number": number,
-                "range": data.selector.range,
+                "range": init ? range :data.selector.range,
                 "top": top,
                 "left": left,
                 "nextLeft": left + 15,
                 "nextTop": top + 15,
             });
-            this.data.change(this.data.getData());
+            if(!init) {
+                this.data.change(this.data.getData());
+            }
             this.direction = true;
             div.css("width", `${img.offsetWidth}px`);
             div.css("height", `${img.offsetHeight}px`);

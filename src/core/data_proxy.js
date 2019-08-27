@@ -15,6 +15,8 @@ import {CellRange} from './cell_range';
 import {expr2xy, xy2expr} from './alphabet';
 import {t} from '../locale/locale';
 import Moved from '../event/move';
+import {h} from "../component/element";
+import {mountImg} from "../event/paste";
 // private methods
 /*
  * {
@@ -177,8 +179,8 @@ function setStyleBorder(ri, ci, bss) {
     cell.style = this.addStyle(cstyle);
 }
 
-function processPasteDirectionsArr(pasteDirectionsArr, type = 'to') {
-    if(type == 'to') {
+function processPasteDirectionsArr(pasteDirectionsArr, type = 'to', sheet) {
+    if (type == 'to') {
         let arr = [];
         for (let i = 0; i < pasteDirectionsArr.length; i++) {
             let item = pasteDirectionsArr[i];
@@ -199,17 +201,16 @@ function processPasteDirectionsArr(pasteDirectionsArr, type = 'to') {
         }
 
         return arr;
-    } else if(type == 'from') {
-        let arr = [];
-
+    } else if (type == 'from') {
         for (let i = 0; i < pasteDirectionsArr.length; i++) {
             let item = pasteDirectionsArr[i];
-
+            let img = h('img', '');
+            img.el.src = item.src;
+            mountImg.call(sheet, img.el, true, item.ri, item.ci, item.range);
         }
 
+        // this.pasteDirectionsArr = pasteDirectionsArr;
         console.log(pasteDirectionsArr);
-
-
     }
 }
 
@@ -1188,7 +1189,7 @@ export default class DataProxy {
         cutPaste.call(this, srcCellRange, dstCellRange);
     }
 
-    setData(d) {
+    setData(d, sheet = "") {
         const {autoFilter} = this;
         Object.keys(d).forEach((property) => {
             // this.judgeAutoWidth(d.rows);
@@ -1201,7 +1202,7 @@ export default class DataProxy {
                 const [x, y] = expr2xy(d[property]);
                 this.freeze = [y, x];
             } else if (property === 'pictures') {
-                processPasteDirectionsArr(d[property], 'from');
+                processPasteDirectionsArr.call(this, d[property], 'from', sheet);
                 // this[property] = d[property];
             } else if (d[property] !== undefined) {
                 this[property] = d[property];
