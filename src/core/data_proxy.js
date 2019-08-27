@@ -177,6 +177,15 @@ function setStyleBorder(ri, ci, bss) {
     cell.style = this.addStyle(cstyle);
 }
 
+function processPasteDirectionsArr(pasteDirectionsArr) {
+    for(let i = 0; i < pasteDirectionsArr.length; i++) {
+        let item = pasteDirectionsArr[i];
+        item['src'] = item.img2.src;
+    }
+
+    return pasteDirectionsArr;
+}
+
 function setStyleBorders({mode, style, color}) {
     const {styles, selector, rows} = this;
     const {
@@ -1179,7 +1188,7 @@ export default class DataProxy {
             name,
             freeze: xy2expr(freeze[1], freeze[0]),
             styles,
-            pasteDirectionsArr,
+            pictures: processPasteDirectionsArr(pasteDirectionsArr),
             merges: merges.getData(),
             rows: rows.getData(),
             cols: cols.getData(),

@@ -285,7 +285,7 @@ function mountImg(imgDom) {
                 "nextLeft": left + 15,
                 "nextTop": top + 15,
             });
-            // data.pictures = pasteDirectionsArr;
+            this.data.change(this.data.getData());
             this.direction = true;
             div.css("width", `${img.offsetWidth}px`);
             div.css("height", `${img.offsetHeight}px`);
