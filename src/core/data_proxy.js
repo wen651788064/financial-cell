@@ -119,7 +119,7 @@ const toolbarHeight = 41;
 // dst: cellRange
 function canPaste(src, dst, error = () => {
 }) {
-    if(!dst) {
+    if (!dst) {
         return false;
     }
     const {merges} = this;
@@ -177,27 +177,40 @@ function setStyleBorder(ri, ci, bss) {
     cell.style = this.addStyle(cstyle);
 }
 
-function processPasteDirectionsArr(pasteDirectionsArr) {
-    let arr = [];
-    for(let i = 0; i < pasteDirectionsArr.length; i++) {
-        let item = pasteDirectionsArr[i];
-        let newItem = {
-            src: item.img2.src,
-            ri: item.ri,
-            ci: item.ci,
-            top: item.top,
-            left: item.left,
-            range: item.range,
-            offsetLeft: item.offsetLeft,
-            offsetTop: item.offsetTop,
-            nextLeft: item.nextLeft,
-            nextTop: item.nextLeft,
-        };
+function processPasteDirectionsArr(pasteDirectionsArr, type = 'to') {
+    if(type == 'to') {
+        let arr = [];
+        for (let i = 0; i < pasteDirectionsArr.length; i++) {
+            let item = pasteDirectionsArr[i];
+            let newItem = {
+                src: item.img2.src,
+                ri: item.ri,
+                ci: item.ci,
+                top: item.top,
+                left: item.left,
+                range: item.range,
+                offsetLeft: item.offsetLeft,
+                offsetTop: item.offsetTop,
+                nextLeft: item.nextLeft,
+                nextTop: item.nextLeft,
+            };
 
-        arr.push(newItem);
+            arr.push(newItem);
+        }
+
+        return arr;
+    } else if(type == 'from') {
+        let arr = [];
+
+        for (let i = 0; i < pasteDirectionsArr.length; i++) {
+            let item = pasteDirectionsArr[i];
+
+        }
+
+        console.log(pasteDirectionsArr);
+
+
     }
-
-    return arr;
 }
 
 function setStyleBorders({mode, style, color}) {
@@ -453,7 +466,8 @@ export default class DataProxy {
     }
 
     // what: all | text | format
-    paste(what = 'all', error = () => {}) {
+    paste(what = 'all', error = () => {
+    }) {
         // console.log('sIndexes:', sIndexes);
         const {clipboard, selector} = this;
         if (clipboard.isClear()) return false;
@@ -507,7 +521,6 @@ export default class DataProxy {
         // console.log('selector.range:', selector.range);
         return selector.range;
     }
-
 
 
     calSelectedRangeByStart(ri, ci) {
@@ -1187,6 +1200,9 @@ export default class DataProxy {
             } else if (property === 'freeze') {
                 const [x, y] = expr2xy(d[property]);
                 this.freeze = [y, x];
+            } else if (property === 'pictures') {
+                processPasteDirectionsArr(d[property], 'from');
+                // this[property] = d[property];
             } else if (d[property] !== undefined) {
                 this[property] = d[property];
             }
@@ -1202,7 +1218,7 @@ export default class DataProxy {
             name,
             freeze: xy2expr(freeze[1], freeze[0]),
             styles,
-            pictures: processPasteDirectionsArr(pasteDirectionsArr),
+            pictures: processPasteDirectionsArr(pasteDirectionsArr, 'to'),
             merges: merges.getData(),
             rows: rows.getData(),
             cols: cols.getData(),

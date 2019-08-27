@@ -20,17 +20,6 @@ class Spreadsheet {
         // create canvas element
         targetEl.appendChild(rootEl.el);
         this.sheet = new Sheet(rootEl, this.data);
-
-        // let btn = document.getElementById('btn2');
-        // let clipboard = new Clipboard(btn);
-        //
-        // clipboard.on('success', function(e) {
-        //     console.log(e);
-        // });
-        //
-        // clipboard.on('error', function(e) {
-        //     console.log(e);
-        // });
     }
 
     loadData(data) {

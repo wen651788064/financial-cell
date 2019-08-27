@@ -6,7 +6,7 @@ import { tf } from '../locale/locale';
 const menuItems = [
   { key: 'copy', title: tf('contextmenu.copy'), label: 'Ctrl+C' },
   { key: 'cut', title: tf('contextmenu.cut'), label: 'Ctrl+X' },
-  { key: 'paste', title: tf('contextmenu.paste'), label: 'Ctrl+V' },
+  // { key: 'paste', title: tf('contextmenu.paste'), label: 'Ctrl+V' },
   { key: 'paste-value', title: tf('contextmenu.pasteValue'), label: 'Ctrl+Shift+V' },
   { key: 'paste-format', title: tf('contextmenu.pasteFormat'), label: 'Ctrl+Alt+V' },
   { key: 'divider' },
