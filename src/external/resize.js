@@ -1,4 +1,4 @@
-function Resize(options) {
+function Resize(options, self) {
 
     this.register = function (el) {
         var directionsArr = [];
@@ -111,12 +111,12 @@ function Resize(options) {
         }
 
         function setLeft(l) {
-            options.onResize({left: l});
+            options.onResize({left: l}, self);
             el.style.left = l + 'px';
         }
 
         function setTop(t) {
-            options.onResize({top: t});
+            options.onResize({top: t}, self);
             el.style.top = t + 'px';
         }
 
@@ -124,7 +124,7 @@ function Resize(options) {
             if (w < 20) {
                 w = 20;
             }
-            options.onResize({width: w});
+            options.onResize({width: w}, self);
             el.style.width = w + 'px';
         }
 
@@ -133,7 +133,7 @@ function Resize(options) {
             if (h < 20) {
                 h = 20;
             }
-            options.onResize({height: h});
+            options.onResize({height: h}, self);
             el.style.height = h + 'px';
         }
 

@@ -208,9 +208,6 @@ function processPasteDirectionsArr(pasteDirectionsArr, type = 'to', sheet) {
             img.el.src = item.src;
             mountImg.call(sheet, img.el, true, item.ri, item.ci, item.range);
         }
-
-        // this.pasteDirectionsArr = pasteDirectionsArr;
-        console.log(pasteDirectionsArr);
     }
 }
 

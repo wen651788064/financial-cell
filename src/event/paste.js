@@ -15,6 +15,14 @@ export let resizeOption = {
     onEnd(data) {
 
     },
+    onResize(data, self) {
+        let img = getChooseImg.call(self);
+        if (!img)
+            return;
+
+        img.img2.style['width'] = img.img.el.style['width'];
+        img.img2.style['height'] = img.img.el.style['height'];
+    }
 };
 
 export let dragOption = {
@@ -271,7 +279,7 @@ export function mountImg(imgDom, init = false, sri, sci, range) {
         new Drag(dragOption, this).register(div.el);
         setTimeout(() => {
             let {data} = this;
-            let directionsArr = new Resize(resizeOption).register(div.el);
+            let directionsArr = new Resize(resizeOption, this).register(div.el);
             let index = pasteDirectionsArr.length;
             pasteDirectionsArr.push({
                 "state": true,
