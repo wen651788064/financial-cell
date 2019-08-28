@@ -1216,7 +1216,6 @@ export default class Sheet {
         this.selector = new Selector(data, this);
         this.selectorMoveEl = new Selector(data, this);
 
-
         this.advice = new Advice(data, this);
         this.website = new Website(data);
 

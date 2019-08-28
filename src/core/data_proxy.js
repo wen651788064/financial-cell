@@ -1203,7 +1203,7 @@ export default class DataProxy {
                     processPasteDirectionsArr.call(this, d[property], 'from', sheet);
                 }
             } else if (property === 'autofilter') {
-                if (d[property]) {
+                if (d[property] && d[property].ref) {
                     autoFilter.ref = d[property].ref;
                     autoFilter.filters = d[property].filters;
                     autoFilter.sort = d[property].sort;

@@ -304,7 +304,7 @@ export function mountImg(imgDom, init = false, sri, sci, range) {
             this.direction = true;
             div.css("width", `${img.offsetWidth}px`);
             div.css("height", `${img.offsetHeight}px`);
-            containerHandlerEvent.call(this, directionsArr, index, pasteDirectionsArr);
+            containerHandlerEvent.call(this, directionsArr, index, pasteDirectionsArr, init);
             div.on('mousedown', evt => containerHandlerEvent.call(this, directionsArr, index, pasteDirectionsArr));
         }, 0);
     };
@@ -368,19 +368,23 @@ function deleteAllImg() {
     this.pasteDirectionsArr = direction_new;
 }
 
-function containerHandlerEvent(directionsArr, index, pasteDirectionsArr) {
+function containerHandlerEvent(directionsArr, index, pasteDirectionsArr, init) {
     hideDirectionArr.call(this);
     this.direction = true;
     Object.keys(directionsArr).forEach(i => {
         directionsArr[i].style.display = 'block';
     });
 
-    let {selector, editor, data} = this;
-    selector.hide();
-    editor.clear();
+    let {selector, editor} = this;
+    if(!init) {
+        selector.hide();
+        editor.clear();
 
-    pasteDirectionsArr[index].img.css("z-index", "99999999");
-    pasteDirectionsArr[index].state = true;
+        pasteDirectionsArr[index].img.css("z-index", "99999999");
+        pasteDirectionsArr[index].state = true;
+    } else {
+        hideDirectionArr.call(this);
+    }
 }
 
 function equals(x, y) {
