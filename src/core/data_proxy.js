@@ -1199,11 +1199,15 @@ export default class DataProxy {
                 const [x, y] = expr2xy(d[property]);
                 this.freeze = [y, x];
             } else if (property === 'pictures') {
-                processPasteDirectionsArr.call(this, d[property], 'from', sheet);
+                if (d[property]) {
+                    processPasteDirectionsArr.call(this, d[property], 'from', sheet);
+                }
             } else if (property === 'autofilter') {
-                autoFilter.ref = d[property].ref;
-                autoFilter.filters = d[property].filters;
-                autoFilter.sort = d[property].sort;
+                if (d[property]) {
+                    autoFilter.ref = d[property].ref;
+                    autoFilter.filters = d[property].filters;
+                    autoFilter.sort = d[property].sort;
+                }
             } else if (d[property] !== undefined) {
                 this[property] = d[property];
             }
