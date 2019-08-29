@@ -668,7 +668,7 @@ export default class Editor {
             text: (cell && cell.text) || '',
             formulas: (cell && cell.formulas) || '',
         };
-        inputEventHandler.call(this, null, text);
+        inputEventHandler.call(this, null, (cell && cell.text) || text);
     }
 
     setCell(cell, validator, type = 1) {
