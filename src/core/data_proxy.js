@@ -996,7 +996,11 @@ export default class DataProxy {
             history.add(this.getData());
             rows.setCellText(ri, ci, text);
         } else {
-            rows.setCellText(ri, ci, text);
+            if(state == 'end') {
+                rows.setCellAll(ri, ci, text);
+            } else {
+                rows.setCellText(ri, ci, text);
+            }
             this.change(this.getData());
         }
         // validator

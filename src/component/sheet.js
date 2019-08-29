@@ -675,7 +675,7 @@ function insertDeleteRowColumn(type) {
     } else if (type === 'delete-cell-format') {
         data.deleteCell('format');
     } else if (type === 'delete-cell-text') {
-        data.deleteCell();
+        data.deleteCell('text');
     }
     clearClipboard.call(this);
     sheetReset.call(this);

@@ -120,7 +120,7 @@ function mouseDownEventHandler(evt) {
     parse2.call(this, this.inputText, this.pos);
 }
 
-function inputEventHandler(evt, txt = '') {
+function inputEventHandler(evt, txt = '', state = "input") {
     if (evt) {
         const {
             inputType,
@@ -222,7 +222,7 @@ function inputEventHandler(evt, txt = '') {
         //     this.setText("");
         // }
 
-        this.change('input', v);
+        this.change(state, v);
     });
 }
 
@@ -668,7 +668,7 @@ export default class Editor {
             text: (cell && cell.text) || '',
             formulas: (cell && cell.formulas) || '',
         };
-        inputEventHandler.call(this, null, (cell && cell.text) || text);
+        inputEventHandler.call(this, null, (cell && cell.text) || text, "end");
     }
 
     setCell(cell, validator, type = 1) {
