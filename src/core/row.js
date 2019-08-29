@@ -87,7 +87,8 @@ class Rows {
 
     setCellText(ri, ci, text) {
         const cell = this.getCellOrNew(ri, ci);
-        cell.formulas = text;
+
+        cell.formulas = cell.formulas || text;
         cell.text = text;  // todo 自定义公式： text 为公式计算结果, formulas 为公式
     }
 
