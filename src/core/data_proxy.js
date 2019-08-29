@@ -567,6 +567,8 @@ export default class DataProxy {
                     }
                     if (property === 'format') {
                         cstyle.format = value;
+                        cell.text = cell.text.replace("¥", "");
+                        cell.formulas = cell.formulas.replace("¥", "");
                         cell.style = this.addStyle(cstyle);
                     } else if (property === 'font-bold' || property === 'font-italic'
                         || property === 'font-name' || property === 'font-size') {

@@ -909,8 +909,13 @@ function sheetInitEvents() {
             // editor.setRiCi(-1, -1);
             return;
         }
-        let {selector} = this;
-        selector.el.hide();
+
+        if(state == "format") {
+            data.setSelectedCellAttr(state, "rmb");
+            // return;
+        }
+        // let {selector} = this;
+        // selector.el.hide();
         //实时更新this.selectors
         let {lock} = editor;
         editor.setMouseDownIndex([]);
@@ -919,6 +924,10 @@ function sheetInitEvents() {
             return;
         }
         if (this.selectors.length > 0) {
+            return;
+        }
+
+        if(state == "format") {
             return;
         }
 

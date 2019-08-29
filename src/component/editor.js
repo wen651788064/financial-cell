@@ -180,7 +180,7 @@ function inputEventHandler(evt, txt = '') {
             } else {
                 suggest.hide();
             }
-        } else {
+        }else {
             const start = v.lastIndexOf('=');
             if (this.pos != -1) {
                 parse2.call(this, v, this.pos);
@@ -457,6 +457,8 @@ export default class Editor {
                                 createEvent.call(this, 88, true);
                             } else if (key_num === 90) {
                                 createEvent.call(this, 90, true);
+                            }else if (key_num === 66) {
+                                createEvent.call(this, 66, true);
                             }
                         }
                     }),
@@ -543,6 +545,9 @@ export default class Editor {
     }
 
     clear(c = false) {
+        if(this.inputText != '' && this.inputText.replace(/\s/g, "").lastIndexOf('¥') === 0) {
+            this.change('format', this.inputText);
+        }
         this.cell = null;
         this.areaOffset = null;
         this.inputText = '';
@@ -655,7 +660,7 @@ export default class Editor {
         let text = (cell && cell.formulas) || '';
         text = text == '' ? (cell && cell.text) || '' : text;
 
-        this.textEl.child(text);
+        this.textEl.child(text + "");
         this.pos = text.length;
         set_focus.call(this, this.textEl.el, -1);
         this.oldCell = {
