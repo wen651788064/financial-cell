@@ -181,6 +181,7 @@ function inputEventHandler(evt, txt = '') {
                 suggest.hide();
             }
         }else {
+            v = v + "";
             const start = v.lastIndexOf('=');
             if (this.pos != -1) {
                 parse2.call(this, v, this.pos);

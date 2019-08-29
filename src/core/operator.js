@@ -58,6 +58,7 @@ const value2absolute = (str) => {
 };
 
 const cutStr = (str, filter = false, f = false) => {
+    str = str + "";
     str = str.toUpperCase();
     if (str[0] !== "=") {
         return [];
