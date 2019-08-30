@@ -63,6 +63,7 @@ class SelectorElement {
         let {selector} = data;
         let {sri, sci, eri, eci, w, h} = selector.range;
         let cellRange = new CellRange(sri, sci, eri, eci, w, h);
+        let p = -1;
         mouseMoveUp(window, (e) => {
             let {selectors} = this.sheet;
             sheet.container.css('pointer-events', 'none');
@@ -84,7 +85,7 @@ class SelectorElement {
                     let {className, erpx} = selector;
 
                     if (erpx === _erpx && className === _selector.className + " clear_selector") {
-                        _move_selectors = selector;
+                        _move_selectors = _move_selectors ? _move_selectors : selector;
                         if (erpx.search(/^[A-Za-z]+\d+:[A-Za-z]+\d+$/) != -1) {
                             let arr = erpx.split(":");
                             let e1 = expr2xy(arr[0]);
@@ -99,9 +100,9 @@ class SelectorElement {
                         }
                         break;
                     } else if (erpx !== _erpx && className === _selector.className + " clear_selector") {
-                        let p = this.find(inputText, selector.erpx, selector.index);
+                        p = p != -1 ? p :this.find(inputText, selector.erpx, selector.index);
                         this.sheet.editor.setCursorPos(p + selector.erpx.length);
-                        _move_selectors = selector;
+                        _move_selectors = _move_selectors ? _move_selectors : selector;
 
                         if (selector.erpx.search(/^[A-Za-z]+\d+:[A-Za-z]+\d+$/) != -1) {
                             let arr = erpx.split(":");
@@ -120,7 +121,7 @@ class SelectorElement {
                 }
                 if (_move_selectors) {
                     _move_selectors.selector.setCss(_move_selectors.color, false)
-                    lockCells.call(this.sheet, evt, _move_selectors, isAbsoluteValue(_move_selectors.erpx));
+                    lockCells.call(this.sheet, evt, _move_selectors, isAbsoluteValue(_move_selectors.erpx), p);
                 }
             }
         }, (e) => {
@@ -131,8 +132,10 @@ class SelectorElement {
                 let selector = selectors[i];
                 selector.selector.setBoxinner("all");
             }
+            p = -1;
             if (_move_selectors && _move_selectors.selector)
                 _move_selectors.selector.setCss(_move_selectors.color, true)
+            _move_selectors = null;
         });
     }
 

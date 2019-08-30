@@ -120,7 +120,7 @@ function mouseDownEventHandler(evt) {
     parse2.call(this, this.inputText, this.pos);
 }
 
-function inputEventHandler(evt, txt = '', state = "input") {
+function inputEventHandler(evt, txt = '', formulas = '', state = "input") {
     if (evt) {
         const {
             inputType,
@@ -204,7 +204,7 @@ function inputEventHandler(evt, txt = '', state = "input") {
                 suggest.hide();
             }
         }
-        textlineEl.html(v);
+        textlineEl.html(formulas || v);
         resetTextareaSize.call(this);
         if (v && v[0] !== '=') {
             // textEl.html(v);
@@ -668,7 +668,7 @@ export default class Editor {
             text: (cell && cell.text) || '',
             formulas: (cell && cell.formulas) || '',
         };
-        inputEventHandler.call(this, null, (cell && cell.text) || text, "end");
+        inputEventHandler.call(this, null,  (cell && cell.text) || text,  (cell && cell.formulas) || '',  "end");
     }
 
     setCell(cell, validator, type = 1) {

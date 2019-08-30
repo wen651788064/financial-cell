@@ -13,7 +13,7 @@ import {expr2xy, xy2expr} from '../core/alphabet';
 import {selectorColor} from './color_palette';
 import {h} from './element';
 
-function lockCells(evt, _selector, isAb = false) {
+function lockCells(evt, _selector, isAb = false, p = -1) {
     const {data, editor} = this;
     const {offsetX, offsetY} = evt;
 
@@ -49,9 +49,11 @@ function lockCells(evt, _selector, isAb = false) {
                 text = es1.s3 == es2.s3 ? es1.s3 : `${es1.s3}:${es2.s3}`;
             }
             _selector.erpx = text;
-            input = inputText.substring(0, pos - cuttingByPos(inputText, pos).length) + text + inputText.substring(pos, inputText.length);
+            console.log(cuttingByPos(inputText, pos).length);
+            let sp = p != - 1 ? p : pos - cuttingByPos(inputText, pos).length;
+            input = inputText.substring(0, sp) + text + inputText.substring(pos, inputText.length);
             editor.setText(input);
-            editor.setCursorPos(inputText.substring(0, pos - cuttingByPos(inputText, pos).length).length + text.length);
+            editor.setCursorPos(inputText.substring(0, sp).length + text.length);
         } else {
             // 此情况是例如: =A1  -> 这时再点A2  则变成: =A2
             let enter = 0;
