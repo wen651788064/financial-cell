@@ -62,14 +62,20 @@ export let dragOption = {
 function spanDomPackage(spanDom, tableDom) {
     let table = h("table", "");
     let tbody = h('tbody', '');
-    let tr = h('tr', '');
-    let td = h('td', '');
-    td.html(spanDom.innerText);
-    td.css('background', spanDom.style['background']);
-    td.css('font-weight', spanDom.style['font-weight']);
-    td.css('color', spanDom.style['color']);
-    tr.child(td);
-    tbody.child(tr);
+
+    let textArr = spanDom.innerText.split("\n");
+    for(let i = 0; i < textArr.length; i++) {
+        let text = textArr[i];
+        let tr = h('tr', '');
+        let td = h('td', '');
+        td.html(text);
+        td.css('background', spanDom.style['background']);
+        td.css('font-weight', spanDom.style['font-weight']);
+        td.css('color', spanDom.style['color']);
+        tr.child(td);
+        tbody.child(tr);
+    }
+
     table.child(tbody);
     tableDom = table.el;
 
