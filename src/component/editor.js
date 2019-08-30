@@ -722,8 +722,8 @@ export default class Editor {
         });
     }
 
-    inputEventHandler() {
-        inputEventHandler.call(this, null);
+    inputEventHandler(text = '') {
+        inputEventHandler.call(this, null, text);
     }
 
     isDisplay() {

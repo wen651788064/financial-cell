@@ -58,7 +58,12 @@ class Spreadsheet {
             "ri": ri,
             "ci": ci,
         }
-        return editor.isDisplay();
+        return args;
+    }
+
+    setEditorText() {
+        let {editor} = this.sheet;
+        editor.inputEventHandler("=");
     }
 
     removeEvent() {
