@@ -51,7 +51,14 @@ class Spreadsheet {
 
     getEditorStatus() {
         let {editor} = this.sheet;
-        editor.isDisplay();
+        let {inputText, ri, ci} = editor;
+        let args = {
+            "status": editor.isDisplay(),
+            "inputText": inputText,
+            "ri": ri,
+            "ci": ci,
+        }
+        return editor.isDisplay();
     }
 
     removeEvent() {
