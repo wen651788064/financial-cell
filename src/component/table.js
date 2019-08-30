@@ -74,11 +74,11 @@ function parseCell(viewRange) {
                 if(cell.text && cell.text.lastIndexOf("=") === 0) {
                     workbook.Sheets.Sheet1[expr] = {
                         v: '',
-                        f: cell.text.replace(/ /g, '').toUpperCase()
+                        f: cell.text.replace(/ /g, '').toUpperCase().replace(/\"/g, "\"").replace(/\"\"\"\"&/g, "\"'\"&")
                     };
                 } else {
                     workbook.Sheets.Sheet1[expr] = {
-                        v: cell.text.replace(/ /g, ''),
+                        v: cell.text.replace(/ /g, '').toUpperCase().replace(/\"/g, "\""),
                     };
                 }
             }

@@ -989,6 +989,7 @@ export default class DataProxy {
 
     // state: input | finished
     setCellText(ri, ci, text, state) {
+        // text = text.replace(/\"/g)
         const {rows, history, validations} = this;
         console.log(ri, ci);
         if (state === 'finished') {
