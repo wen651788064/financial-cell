@@ -369,10 +369,11 @@ function isDisplay() {
 }
 
 export default class Editor {
-    constructor(formulas, viewFn, rowHeight, rowWidth, data) {
+    constructor(formulas, viewFn, rowHeight, rowWidth, data, sheet) {
         this.viewFn = viewFn;
         this.rowHeight = rowHeight;
         this.formulas = formulas;
+        this.sheet = sheet;
         this.suggest = new Suggest(formulas, (it) => {
             suggestItemClick.call(this, it);
         });
@@ -725,6 +726,7 @@ export default class Editor {
     inputEventHandler(text = '', hide = false) {
         if(hide) {
             this.areaEl.hide();
+            this.sheet.selectorsEl.hide();
         }
         inputEventHandler.call(this, null, text);
     }

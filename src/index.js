@@ -63,7 +63,7 @@ class Spreadsheet {
 
     setEditorText() {
         let {editor} = this.sheet;
-        editor.inputEventHandler("=");
+        editor.inputEventHandler("=", true);
     }
 
     removeEvent() {
