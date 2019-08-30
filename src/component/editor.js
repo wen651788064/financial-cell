@@ -726,6 +726,13 @@ export default class Editor {
         inputEventHandler.call(this, null);
     }
 
+    isDisplay() {
+        if(isDisplay.call(this) && this.inputText.lastIndexOf("=") == 0)
+            return true;
+        else
+            return false
+    }
+
     setCursorPos(pos) {
         this.pos = pos;
         set_focus.call(this, this.textEl.el, pos);

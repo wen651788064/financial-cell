@@ -1,8 +1,7 @@
 import helper from './helper';
 import {expr2expr} from './alphabet';
-import {absoluteType, isAbsoluteValue, value2absolute, changeFormula} from "../core/operator";
+import {absoluteType, changeFormula, cutStr, isAbsoluteValue, value2absolute} from "../core/operator";
 import {expr2xy} from "../core/alphabet";
-import {cutStr} from "../core/operator";
 
 class Rows {
     constructor({len, height}) {
@@ -98,8 +97,8 @@ class Rows {
     }
 
 
-     moveChange(arr, arr2, arr3) {
-        if (arr.length != arr2.length && arr3.length != arr2.length)  {
+    moveChange(arr, arr2, arr3) {
+        if (arr.length != arr2.length && arr3.length != arr2.length) {
             return;
         }
         this.each((ri) => {
@@ -123,12 +122,12 @@ class Rows {
                             s.s3 = s.s3.replace(/\$/g, "\\$");
                             this.setCellAll(ri, ci, cell.text.replace(new RegExp(s.s3, 'g'), es.s3),
                                 cell.formulas.replace(new RegExp(s.s3, 'g'), es.s3));
-                        } else if(formulas.indexOf(s.s2) != -1) {
+                        } else if (formulas.indexOf(s.s2) != -1) {
                             s = value2absolute(arr3[i]);
                             s.s2 = s.s2.replace(/\$/g, "\\$");
                             this.setCellAll(ri, ci, cell.text.replace(new RegExp(s.s2, 'g'), es.s2),
                                 cell.formulas.replace(new RegExp(s.s2, 'g'), es.s2));
-                        } else if(formulas.indexOf(s.s1) != -1) {
+                        } else if (formulas.indexOf(s.s1) != -1) {
                             s = value2absolute(arr3[i]);
                             s.s1 = s.s1.replace(/\$/g, "\\$");
 
@@ -157,97 +156,176 @@ class Rows {
         const [drn, dcn] = dstCellRange.size();
         // console.log(srcIndexes, dstIndexes);
         let isAdd = true;
+        let isCopy = false;
         let dn = 0;
         if (deri < sri || deci < sci) {
             isAdd = false;
             if (deri < sri) dn = drn;
             else dn = dcn;
         }
-        // console.log('drn:', drn, ', dcn:', dcn, dn, isAdd);
-        for (let i = sri; i <= eri; i += 1) {
+
+        let sarr = [];
+        let number = false, diffValue = 0;
+        srcCellRange.each((i, j) => {
             if (this._[i]) {
-                for (let j = sci; j <= eci; j += 1) {
-                    if (this._[i].cells && this._[i].cells[j]) {
-                        for (let ii = dsri; ii <= deri; ii += rn) {
-                            for (let jj = dsci; jj <= deci; jj += cn) {
-                                const nri = ii + (i - sri);
-                                const nci = jj + (j - sci);
-                                const ncell = helper.cloneDeep(this._[i].cells[j]);
-                                // ncell.text
-                                if (autofill && ncell && ncell.text && ncell.text.length > 0) {
-                                    const {text} = ncell;
-                                    let n = (jj - dsci) + (ii - dsri) + 2;
-                                    if (!isAdd) {
-                                        n -= dn + 1;
-                                    }
-                                    if (text[0] === '=') {
-                                        ncell.text = text.replace(/\w{1,3}\d|\w{1,3}\$\d|\$\w{1,3}\d/g, (word) => {
-                                            word = word.toUpperCase();
-                                            if (isAbsoluteValue(word, 3) == false) {
-                                                return word;
-                                            }
-                                            let type = absoluteType(word);
-                                            let [xn, yn] = [0, 0];
-                                            if (sri === dsri && type != 1) {
-                                                xn = n - 1;
-                                                // if (isAdd) xn -= 1;
-                                            } else if (type != 2) {
-                                                if (type == 1 && sri === dsri) {
+                if (this._[i].cells && this._[i].cells[j]) {
+                    const ncell = helper.cloneDeep(this._[i].cells[j]);
+                    let enter = false;
+                    for (let k = 0; enter == false && k < sarr.length; k++) {
+                        if (sarr[k].text === ncell.text) {
+                            enter = true;
+                        }
+                    }
+                    if (enter == false) {
+                        sarr.push(ncell);
+                    }
 
-                                                } else {
-                                                    yn = n - 1;
+                    ncell.text = ncell.text * 1;
+                    if (typeof ncell.text === 'number') {
+                        number = true;
+                    }
+                }
+            }
+        });
+
+        if (sarr.length > 1) {
+            isCopy = true;
+        }
+
+        if (sri == eri && sci == eci) {
+            isCopy = true;
+        }
+
+        let darr = [];
+        dstCellRange.each((i, j) => {
+            darr.push({
+                ri: i,
+                ci: j
+            });
+        });
+
+        if (number && sarr.length > 1) {
+            let last2 = sarr[sarr.length - 2];
+            let last1 = sarr[sarr.length - 1];
+            diffValue = last1.text * 1 - last2.text * 1;
+        }
+
+
+        if (number && isCopy) {
+            if (isAdd) {
+                for(let i = 0; i < darr.length; i++) {
+                    let d = darr[i];
+                    if (this._ && this._[d.ri - 1] && this._[d.ri - 1].cells[d.ci]) {
+                        let ncell = helper.cloneDeep(this._[d.ri - 1].cells[d.ci]);
+                        let last1 = ncell.text * 1;
+
+                        let value = last1 + diffValue;
+                        ncell.text = value + "";
+                        ncell.formulas = value + "";
+                        this.copyRender(darr, d.ri, d.ci, ncell, what, cb);
+                    }
+                }
+            }
+        }
+        else {
+            for (let i = sri; i <= eri; i += 1) {
+                if (this._[i]) {
+                    for (let j = sci; j <= eci; j += 1) {
+                        if (this._[i].cells && this._[i].cells[j]) {
+                            for (let ii = dsri; ii <= deri; ii += rn) {
+                                for (let jj = dsci; jj <= deci; jj += cn) {
+                                    const nri = ii + (i - sri);
+                                    const nci = jj + (j - sci);
+                                    const ncell = helper.cloneDeep(this._[i].cells[j]);
+                                    // ncell.text
+                                    if (autofill && ncell && ncell.text && ncell.text.length > 0 && isCopy) {
+                                        const {text} = ncell;
+                                        let n = (jj - dsci) + (ii - dsri) + 2;
+                                        if (!isAdd) {
+                                            n -= dn + 1;
+                                        }
+                                        if (text[0] === '=') {
+                                            ncell.text = text.replace(/\w{1,3}\d|\w{1,3}\$\d|\$\w{1,3}\d/g, (word) => {
+                                                word = word.toUpperCase();
+                                                if (isAbsoluteValue(word, 3) == false) {
+                                                    return word;
                                                 }
-                                            }
+                                                let type = absoluteType(word);
+                                                let [xn, yn] = [0, 0];
+                                                if (sri === dsri && type != 1) {
+                                                    xn = n - 1;
+                                                    // if (isAdd) xn -= 1;
+                                                } else if (type != 2) {
+                                                    if (type == 1 && sri === dsri) {
 
-                                            // 往下是true  往上是false
-                                            yn += 1;
-                                            let a = expr2xy(word.replace("$", ""), '');
-                                            if ((a[0] - Math.abs(xn) < 0 && xn < 0) || (a[1] - Math.abs(yn) < 0 && yn <= 0)) {
-                                                return "#REF!";
-                                            }
-
-                                            let txt = expr2expr(word.replace("$", ""), xn, yn);
-                                            if (type == 1) {
-                                                txt = "$" + txt;
-                                            } else if (type == 2) {
-                                                let str = "", enter = 1;
-                                                for (let i = 0; i < txt.length; i++) {
-                                                    if (parseInt(txt[i]) >= 0 && parseInt(txt[i]) <= 9 && enter == 1) {
-                                                        str += "$";
-                                                        enter = 2;
+                                                    } else {
+                                                        yn = n - 1;
                                                     }
-                                                    str += txt[i];
                                                 }
-                                                txt = str;
-                                            }
 
-                                            // console.log('xn:', xn, ', yn:', yn, word, expr2expr(word, xn, yn));
-                                            if (txt.replace(/[^-(0-9)]/ig, "") <= 0) {
-                                                return "#REF!";
+                                                // 往下是true  往上是false
+                                                yn += 1;
+                                                let a = expr2xy(word.replace("$", ""), '');
+                                                if ((a[0] - Math.abs(xn) < 0 && xn < 0) || (a[1] - Math.abs(yn) < 0 && yn <= 0)) {
+                                                    return "#REF!";
+                                                }
+
+                                                let txt = expr2expr(word.replace("$", ""), xn, yn);
+                                                if (type == 1) {
+                                                    txt = "$" + txt;
+                                                } else if (type == 2) {
+                                                    let str = "", enter = 1;
+                                                    for (let i = 0; i < txt.length; i++) {
+                                                        if (parseInt(txt[i]) >= 0 && parseInt(txt[i]) <= 9 && enter == 1) {
+                                                            str += "$";
+                                                            enter = 2;
+                                                        }
+                                                        str += txt[i];
+                                                    }
+                                                    txt = str;
+                                                }
+
+                                                // console.log('xn:', xn, ', yn:', yn, word, expr2expr(word, xn, yn));
+                                                if (txt.replace(/[^-(0-9)]/ig, "") <= 0) {
+                                                    return "#REF!";
+                                                }
+                                                return txt;
+                                            });
+                                            if (ncell.text.indexOf("#REF!") != -1) {
+                                                ncell.text = "#REF!";
                                             }
-                                            return txt;
-                                        });
-                                        if (ncell.text.indexOf("#REF!") != -1) {
-                                            ncell.text = "#REF!";
-                                        }
-                                        ncell.formulas = ncell.text;
-                                    } else {
-                                        const result = /[\\.\d]+$/.exec(text);
-                                        // console.log('result:', result);
-                                        if (result !== null) {
-                                            const index = Number(result[0]) + n - 1;
-                                            ncell.text = text.substring(0, result.index) + index;
                                             ncell.formulas = ncell.text;
+                                        } else {
+                                            const result = /[\\.\d]+$/.exec(text);
+                                            // console.log('result:', result);
+                                            if (result !== null) {
+                                                const index = Number(result[0]) + n - 1;
+                                                ncell.text = text.substring(0, result.index) + index;
+                                                ncell.formulas = ncell.text;
+                                            }
                                         }
                                     }
+                                    this.copyRender(darr, nri, nci, ncell, what, cb);
                                 }
-                                this.setCell(nri, nci, ncell, what);
-                                cb(nri, nci, ncell);
                             }
                         }
                     }
                 }
             }
+        }
+        // console.log('drn:', drn, ', dcn:', dcn, dn, isAdd);
+    }
+
+    copyRender(darr, nri, nci, ncell, what, cb) {
+        let as = false;
+        for (let k = 0; as == false && k < darr.length; k++) {
+            if (darr[k].ri == nri && darr[k].ci == nci) {
+                as = true;
+            }
+        }
+        if (as) {
+            this.setCell(nri, nci, ncell, what);
+            cb(nri, nci, ncell);
         }
     }
 

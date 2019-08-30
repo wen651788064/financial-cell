@@ -49,6 +49,11 @@ class Spreadsheet {
         locale(lang, message);
     }
 
+    getEditorStatus() {
+        let {editor} = this.sheet;
+        editor.isDisplay();
+    }
+
     removeEvent() {
         this.sheet.removeEvent();
     }
