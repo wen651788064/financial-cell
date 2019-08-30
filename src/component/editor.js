@@ -668,6 +668,7 @@ export default class Editor {
             text: (cell && cell.text) || '',
             formulas: (cell && cell.formulas) || '',
         };
+        console.log(".")
         inputEventHandler.call(this, null,  (cell && cell.text) || text,  (cell && cell.formulas) || '',  "end");
     }
 
