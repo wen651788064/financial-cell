@@ -722,7 +722,10 @@ export default class Editor {
         });
     }
 
-    inputEventHandler(text = '') {
+    inputEventHandler(text = '', hide = false) {
+        if(hide) {
+            this.areaEl.hide();
+        }
         inputEventHandler.call(this, null, text);
     }
 
