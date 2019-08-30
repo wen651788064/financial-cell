@@ -222,6 +222,9 @@ function inputEventHandler(evt, txt = '', formulas = '', state = "input") {
         //     this.setText("");
         // }
 
+        if(formulas && formulas[0] === '=') {
+            v = formulas;
+        }
         this.change(state, v);
     });
 }
@@ -668,7 +671,7 @@ export default class Editor {
             text: (cell && cell.text) || '',
             formulas: (cell && cell.formulas) || '',
         };
-        console.log(".")
+
         inputEventHandler.call(this, null,  (cell && cell.text) || text,  (cell && cell.formulas) || '',  "end");
     }
 
