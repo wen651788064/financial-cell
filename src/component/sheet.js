@@ -857,10 +857,10 @@ function sheetInitEvents() {
                     if (ri !== -1 && ci !== -1 && inputText[0] === "=") {
                         selectorCellText.call(this, ri, ci, inputText, 'input');
                     }
-                    let {formula} = data.settings;
-                    if (formula && typeof formula.wland == "function") {
-                        formula.wland(formula, data, table);
-                    }
+                    // let {formula} = data.settings;
+                    // if (formula && typeof formula.wland == "function") {
+                    //     formula.wland(formula, data, table);
+                    // }
                     editor.clear();
                     overlayerMousedown.call(this, evt);
                     clearSelectors.call(this);
