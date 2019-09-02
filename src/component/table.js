@@ -89,7 +89,7 @@ export function parseCell(viewRange, state = false, src = '') {
     });
 
     if(state) {
-        workbook.Sheets.Sheet1['A1'] = {v: src, f: ""};
+        workbook.Sheets.Sheet1['A1'] = {v: `=${src}`, f: ""};
     }
 
     try {
