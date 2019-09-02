@@ -67,11 +67,11 @@ class Spreadsheet {
         editor.inputEventHandler(text, true);
     }
 
-    setTextEnd(text, ri, ci) {
+    setTextEnd(cell, ri, ci) {
         let {editor} = this.sheet;
         editor.setCellEnd({
-            text: text,
-            formulas: text
+            text: cell.text,
+            formulas: cell.formulas
         });
         this.sheet.selectorEditorReset(ri, ci);
     }
