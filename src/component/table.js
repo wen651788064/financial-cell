@@ -68,6 +68,7 @@ export function parseCell(viewRange, state = false, src = '') {
         let cell = data.getCell(ri, ci);
         let expr = xy2expr(ci, ri);
         if (cell && cell.text) {
+            cell.text = cell.text + "";
             if (cell.text.indexOf("MD.RTD") != -1) {
                 workbook.Sheets.Sheet1[expr] = {v: "", f: ""};
             } else {
