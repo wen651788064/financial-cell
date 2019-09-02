@@ -665,7 +665,6 @@ export default class Editor {
         let text = (cell && cell.formulas) || '';
         text = text == '' ? (cell && cell.text) || '' : text;
 
-
         this.textEl.child(text + "");
         this.pos = text.length;
         set_focus.call(this, this.textEl.el, -1);

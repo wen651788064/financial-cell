@@ -68,11 +68,13 @@ class Spreadsheet {
     }
 
     setTextEnd(cell, ri, ci) {
-        let {editor} = this.sheet;
+        let {editor, data} = this.sheet;
         editor.setCellEnd({
             text: cell.text,
             formulas: cell.formulas
         });
+        data.setCellAll(ri, ci, cell.text, cell.formulas, '');
+
         this.sheet.selectorEditorReset(ri, ci);
     }
 
