@@ -988,11 +988,11 @@ export default class DataProxy {
         return this.getCellStyleOrDefault(ri, ci);
     }
 
-    getCellByExpr(src, table) {
+    getCellByExpr(src, table, name) {
         let workbook = parseCell.call(table, this.viewRange(), true, src);
         return {
             "text": workbook['Sheets'].Sheet1.A1.v,
-            "formulas": workbook['Sheets'].Sheet1.A1.f,
+            "formulas": "=" + name + workbook['Sheets'].Sheet1.A1.f.split("=")[1],
         };
     }
 

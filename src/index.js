@@ -83,7 +83,7 @@ class Spreadsheet {
             let {erpx} = selectors[i];
             text += erpx;
         }
-        let t = data.getCellByExpr(text, table);
+        let t = data.getCellByExpr(text, table, alias);
 
         return t;
     }
