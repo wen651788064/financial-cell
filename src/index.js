@@ -69,7 +69,6 @@ class Spreadsheet {
 
     setTextEnd(text, ri, ci) {
         let {editor} = this.sheet;
-        editor.setRiCi(ri, ci);
         this.sheet.selectorEditorReset(ri, ci);
         editor.setCellEnd({
             text: text,

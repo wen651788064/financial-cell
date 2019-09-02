@@ -422,11 +422,13 @@ function pictureSetOffset() {
     });
 }
 
-function editorSetOffset(show = true) {
+function editorSetOffset(show = true, cri = -1, cci = -1) {
     const {
         selector, data, editor
     } = this;
      let [ri, ci] = selector.indexes;
+     ri = cri == -1 ? ri : cri;
+     ci = cci == -1 ? ci : cci;
 
     const sOffset = data.getMoveRect(new CellRange(ri, ci, ri, ci));
     const tOffset = this.getTableOffset();
@@ -1284,7 +1286,7 @@ export default class Sheet {
     }
 
     selectorEditorReset(ri, ci) {
-        editorSetOffset.call(this);
+        editorSetOffset.call(this,  ri, ci);
         this.editor.setRiCi(ri, ci);
         sheetReset.call(this);
     }
