@@ -77,13 +77,13 @@ class Spreadsheet {
     }
 
     getText(alias) {
-        let {selectors, data} = this.sheet;
+        let {selectors, data, table} = this.sheet;
         let text = "";
         for(let i = 0; i < selectors.length; i++) {
             let {erpx} = selectors[i];
             text += erpx;
         }
-        let t = data.getCellByExpr(text);
+        let t = data.getCellByExpr(text, table);
 
         return t;
     }
