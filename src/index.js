@@ -84,8 +84,6 @@ class Spreadsheet {
             text += erpx;
         }
         let t = data.getCellByExpr(text);
-        t.text = `=${t.text}`;
-        t.formulas = `=${t.formulas}`;
 
         return t;
     }

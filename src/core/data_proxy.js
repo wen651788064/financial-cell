@@ -988,8 +988,25 @@ export default class DataProxy {
     }
 
     getCellByExpr(src) {
-        let [ri, ci] = expr2xy(src);
-        return this.getCell(ri, ci);
+        if(src.indexOf(":") != -1) {
+            let arr = src.split(":");
+            let a1 = expr2xy(arr[0]);
+            let a2 = expr2xy(arr[1]);
+            let s1 = this.getCell(a1[1], a1[0]);
+            let s2 = this.getCell(a2[1], a2[0]);
+            return {
+                "text": "=" + s1.text + ":" + s2.text,
+                "formulas": "=" + s2.formulas + ":" + s2.formulas
+            };
+        } else {
+            let a1 = expr2xy(src);
+            let s1 = this.getCell(a1[1], a1[0]);
+
+            return {
+                "text": "=" + s1.text,
+                "formulas": "=" + s1.formulas
+            };
+        }
     }
 
     // state: input | finished
