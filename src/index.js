@@ -77,14 +77,17 @@ class Spreadsheet {
     }
 
     getText(alias) {
-        let {selectors} = this.sheet;
+        let {selectors, data} = this.sheet;
         let text = "";
         for(let i = 0; i < selectors.length; i++) {
             let {erpx} = selectors[i];
             text += erpx;
         }
+        let t = data.getCellByExpr(text);
+        t.text = `=${t.text}`;
+        t.formulas = `=${t.formulas}`;
 
-        return `=${alias}!${text}`;
+        return t;
     }
 
     removeEvent() {

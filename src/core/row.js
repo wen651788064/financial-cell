@@ -313,7 +313,6 @@ class Rows {
                 }
             }
         }
-        // console.log('drn:', drn, ', dcn:', dcn, dn, isAdd);
     }
 
     copyRender(darr, nri, nci, ncell, what, cb) {

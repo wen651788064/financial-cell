@@ -987,6 +987,11 @@ export default class DataProxy {
         return this.getCellStyleOrDefault(ri, ci);
     }
 
+    getCellByExpr(src) {
+        let [ri, ci] = expr2xy(src);
+        return this.getCell(ri, ci);
+    }
+
     // state: input | finished
     setCellText(ri, ci, text, state) {
         // text = text.replace(/\"/g)
