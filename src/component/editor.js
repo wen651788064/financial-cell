@@ -726,7 +726,7 @@ export default class Editor {
     inputEventHandler(text = '', hide = false) {
         if(hide) {
             this.areaEl.hide();
-            this.sheet.selectorsEl.hide();
+            this.sheet.selector.hide();
         }
         inputEventHandler.call(this, null, text);
     }

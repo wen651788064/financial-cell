@@ -61,9 +61,16 @@ class Spreadsheet {
         return args;
     }
 
-    setEditorText() {
+    setEditorText(text = '') {
         let {editor} = this.sheet;
-        editor.inputEventHandler("=", true);
+        text = text != '' ? text : '=';
+        editor.inputEventHandler(text, true);
+    }
+
+    setTextEnd(text, ri, ci) {
+        let {editor} = this.sheet;
+        editor.setRiCi(ri, ci);
+        editor.setCellEnd(text);
     }
 
     removeEvent() {
