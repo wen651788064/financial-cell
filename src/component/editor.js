@@ -674,6 +674,9 @@ export default class Editor {
         };
 
         inputEventHandler.call(this, null,  (cell && cell.text) || text,  (cell && cell.formulas) || '',  "end");
+        setTimeout(() => {
+            set_focus.call(this, this.textEl.el, -1);
+        })
     }
 
     setCell(cell, validator, type = 1) {

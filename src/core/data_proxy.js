@@ -1011,7 +1011,8 @@ export default class DataProxy {
             } else {
                 rows.setCellText(ri, ci, text);
             }
-            this.change(this.getData());
+            // 不应该没打开一个单元格就 change一次
+            // this.change(this.getData());
         }
         // validator
         validations.validate(ri, ci, text);

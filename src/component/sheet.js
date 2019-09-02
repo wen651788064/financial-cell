@@ -430,7 +430,7 @@ function editorSetOffset(show = true, cri = -1, cci = -1) {
      ri = cri == -1 ? ri : cri;
      ci = cci == -1 ? ci : cci;
 
-    const sOffset = data.getMoveRect(new CellRange(ri, ci, ri, ci));
+    const sOffset = data.getMoveRect(new CellRange(ri, ci, selector.range.eri, selector.range.eci));
     const tOffset = this.getTableOffset();
 
     let sPosition = 'top';
