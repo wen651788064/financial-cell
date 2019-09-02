@@ -1287,7 +1287,7 @@ export default class Sheet {
 
     selectorEditorReset(ri, ci) {
         selectorSet.call(this, false, ri, ci);
-        editorSetOffset.call(this,  ri, ci);
+        editorSetOffset.call(this, true, ri, ci);
         this.editor.setRiCi(ri, ci);
         sheetReset.call(this);
     }
