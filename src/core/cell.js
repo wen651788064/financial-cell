@@ -179,7 +179,7 @@ const cellRender = (data, sheetbook, y, x, src, formulaMap, getCellText, cellLis
             sheetbook.Sheets.Sheet1[xy2expr(x, y)].v = sheetbook.Sheets.Sheet1[xy2expr(x, y)].v + "";
 
             // let value = sheetbook.Sheets.Sheet1[xy2expr(x, y)].v ? sheetbook.Sheets.Sheet1[xy2expr(x, y)].v : "NaN";
-            return sheetbook.Sheets.Sheet1[xy2expr(x, y)].v.replace(/'/g, "\"");
+            return sheetbook.Sheets.Sheet1[xy2expr(x, y)].w ? sheetbook.Sheets.Sheet1[xy2expr(x, y)].w :sheetbook.Sheets.Sheet1[xy2expr(x, y)].v.replace(/'/g, "\"");
         }
         const stack = infixExprToSuffixExpr(src.substring(1));
         if (stack.length <= 0) return src;

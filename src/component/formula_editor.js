@@ -159,7 +159,32 @@ function lockCells(evt, _selector, isAb = false, p = -1) {
     editor.parse(editor.pos);
     if (this.selectors.length > 0 || _selector) {
         const {inputText} = editor;
-        div2span.call(this, cutting(inputText), cutting2(inputText));
+        // 处理 合并单元格
+        let it = inputText, enter = false;
+        let {merges} = this.data;
+        Object.keys(merges._).forEach(i => {
+            let m = merges._[i];
+            const cut = cutStr(it, true);
+            for(let i = 0; i < cut.length; i++) {
+                if(cut[i].indexOf(":") != -1) {
+                    let a1 = cut[i].split(":")[0];
+                    let a2 = cut[i].split(":")[1];
+                    let e1 = expr2xy(a1);
+                    let e2 = expr2xy(a2);
+
+                    if(m.sci >= e1[0] && m.sri >= e1[1] && m.eci <= e2[0] && m.eri <= e2[1]) {
+                        it = it.replace(new RegExp(cut[i], 'g'), a1);
+                        enter = true;
+                    }
+                }
+            }
+        });
+        div2span.call(this, cutting(it), cutting2(it));
+        if(enter) {
+            setTimeout(() => {
+                editor.setCursorPos(it.length);
+            }, 10);
+        }
     }
     // step 3.  在enter或者点击的时候写入到cell中
     // dataSetCellText.call(this, input, 'input');
@@ -217,13 +242,32 @@ function makeSelector(ri, ci, selectors = this.selectors, multiple = false, _sel
     selector.el.css('z-index', '100');
     const len = inputText.split(xy2expr(ci, ri)).length - 2;
 
+    let it = xy2expr(ci, ri);
+    let {merges} = data;
+    Object.keys(merges._).forEach(i => {
+        let m = merges._[i];
+        const cut = cutStr(it, true);
+        for(let i = 0; i < cut.length; i++) {
+            if(cut[i].indexOf(":") != -1) {
+                let a1 = cut[i].split(":")[0];
+                let a2 = cut[i].split(":")[1];
+                let e1 = expr2xy(a1);
+                let e2 = expr2xy(a2);
+
+                if(m.sci >= e1[0] && m.sri >= e1[1] && m.eci <= e2[0] && m.eri <= e2[1]) {
+                    it = it.replace(new RegExp(cut[i], 'g'), a1);
+                }
+            }
+        }
+    });
+
     const args = {
         ri,
         ci,
         index: len,
         color,
         className: selector.el.el.className,
-        erpx: xy2expr(ci, ri),
+        erpx: it,
         selector,
     };
     if (!mergeSelector) {

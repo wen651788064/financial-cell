@@ -21,12 +21,13 @@ import {clearSelectors, editingSelectors, lockCells, makeSelector} from "../comp
 import {deleteImg, hideDirectionArr, mountPaste} from "../event/paste";
 import {mountCopy} from "../event/copy";
 import Website from "../component/website";
-import {cuttingByPos} from "../core/operator";
+import {cutStr, cuttingByPos} from "../core/operator";
 import {moveCell} from "../event/move";
 import {getChooseImg} from "../event/copy";
 import CellRange from "../core/cell_range";
 import {process} from "../event/paste";
 import {createEvent} from "./event";
+import {expr2xy} from "../core/alphabet";
 
 function scrollbarMove() {
     const {
@@ -800,27 +801,51 @@ function sheetInitEvents() {
                             _selector.selector.setBoxinner("none");
                         }
 
-                        if (e.buttons === 1 && !e.shiftKey) {
-                            let {ri, ci} = data.getCellRectByXY(e.offsetX, e.offsetY);
-                            if (_selector && _selector.selector) {
-                                _selector = makeSelector.call(this, ri, ci, this.selectors, true, _selector.selector, true);
-                                lockCells.call(this, evt, _selector);
-                                this.mergeSelector = true;
-                            } else {
-                                let {inputText, pos} = editor;
-                                for (let i = 0; i < this.selectors.length; i++) {
-                                    let selector = this.selectors[i];
-                                    let {erpx} = selector;
+                        let enter = true;
+                        let {merges} = data;
+                        let {inputText} = editor;
+                        let it = inputText;
 
-                                    if (erpx === cuttingByPos(inputText, pos)) {
-                                        _selector = selector;
-                                        change = 1;
-                                        _selector.selector.set(ri, ci, true);
-                                        break;
+                        Object.keys(merges._).forEach(i => {
+                            let m = merges._[i];
+                            const cut = cutStr(it, true);
+                            for(let i = 0; i < cut.length; i++) {
+                                if(cut[i].indexOf(":") != -1) {
+                                    let a1 = cut[i].split(":")[0];
+                                    let a2 = cut[i].split(":")[1];
+                                    let e1 = expr2xy(a1);
+                                    let e2 = expr2xy(a2);
+
+                                    if(m.sci >= e1[0] && m.sri >= e1[1] && m.eci <= e2[0] && m.eri <= e2[1]) {
+                                        enter = false;
                                     }
                                 }
+                            }
+                        });
 
-                                _selector = _selector ? _selector : makeSelector.call(this, ri, ci, this.selectors, true, null, false);
+                        if(!enter) {
+                            if (e.buttons === 1 && !e.shiftKey) {
+                                let {ri, ci} = data.getCellRectByXY(e.offsetX, e.offsetY);
+                                if (_selector && _selector.selector) {
+                                    _selector = makeSelector.call(this, ri, ci, this.selectors, true, _selector.selector, true);
+                                    lockCells.call(this, evt, _selector);
+                                    this.mergeSelector = true;
+                                } else {
+                                    let {inputText, pos} = editor;
+                                    for (let i = 0; i < this.selectors.length; i++) {
+                                        let selector = this.selectors[i];
+                                        let {erpx} = selector;
+
+                                        if (erpx === cuttingByPos(inputText, pos)) {
+                                            _selector = selector;
+                                            change = 1;
+                                            _selector.selector.set(ri, ci, true);
+                                            break;
+                                        }
+                                    }
+
+                                    _selector = _selector ? _selector : makeSelector.call(this, ri, ci, this.selectors, true, null, false);
+                                }
                             }
                         }
                     }, () => {
