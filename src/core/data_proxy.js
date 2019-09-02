@@ -989,22 +989,11 @@ export default class DataProxy {
     }
 
     getCellByExpr(src, table) {
-        if(src.indexOf(":") != -1) {
-            let workbook = parseCell.call(table, this.viewRange(), true, src);
-            console.log(workbook);
-            return {
-                "text": "=" + src,
-                "formulas": "=" + s1.formulas + ":" + s2.formulas
-            };
-        } else {
-            let a1 = expr2xy(src);
-            let s1 = this.getCell(a1[1], a1[0]);
-
-            return {
-                "text": "=" + src,
-                "formulas": "=" + s1.formulas
-            };
-        }
+        let workbook = parseCell.call(table, this.viewRange(), true, src);
+        return {
+            "text": workbook['Sheets'].Sheet1.A1.v,
+            "formulas": workbook['Sheets'].Sheet1.A1.f,
+        };
     }
 
     // state: input | finished
