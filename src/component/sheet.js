@@ -1286,6 +1286,8 @@ export default class Sheet {
     }
 
     selectorEditorReset(ri, ci) {
+        let {selector} = this;
+        selector.hide();
         selectorSet.call(this, false, ri, ci);
         editorSetOffset.call(this, true, ri, ci);
         this.editor.setRiCi(ri, ci);
