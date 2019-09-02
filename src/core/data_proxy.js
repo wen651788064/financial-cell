@@ -17,6 +17,7 @@ import {t} from '../locale/locale';
 import Moved from '../event/move';
 import {h} from "../component/element";
 import {mountImg} from "../event/paste";
+import {parseCell} from "../component/table";
 // private methods
 /*
  * {
@@ -989,11 +990,9 @@ export default class DataProxy {
 
     getCellByExpr(src) {
         if(src.indexOf(":") != -1) {
-            let arr = src.split(":");
-            let a1 = expr2xy(arr[0]);
-            let a2 = expr2xy(arr[1]);
-            let s1 = this.getCell(a1[1], a1[0]);
-            let s2 = this.getCell(a2[1], a2[0]);
+            this.setCellAll(0, 0, "", src, 'input');
+            let workbook = parseCell.call(this, this.viewRange());
+            console.log(workbook);
             return {
                 "text": "=" + src,
                 "formulas": "=" + s1.formulas + ":" + s2.formulas

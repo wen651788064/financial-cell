@@ -57,7 +57,7 @@ function getCellTextStyle(rindex, cindex) {
 }
 
 
-function parseCell(viewRange) {
+export function parseCell(viewRange) {
     let {data} = this;
     let {calc, rows} = data;
     let workbook = [];
@@ -92,7 +92,6 @@ function parseCell(viewRange) {
     } catch (e) {
         console.error(e);
     }
-    console.log(workbook);
     return workbook;
 }
 
