@@ -990,8 +990,7 @@ export default class DataProxy {
 
     getCellByExpr(src, table) {
         if(src.indexOf(":") != -1) {
-            this.setCellAll(0, 0, "", src, 'input');
-            let workbook = parseCell.call(table, this.viewRange());
+            let workbook = parseCell.call(table, this.viewRange(), true, src);
             console.log(workbook);
             return {
                 "text": "=" + src,

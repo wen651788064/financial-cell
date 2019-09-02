@@ -57,7 +57,7 @@ function getCellTextStyle(rindex, cindex) {
 }
 
 
-export function parseCell(viewRange) {
+export function parseCell(viewRange, state = false, src = '') {
     let {data} = this;
     let {calc, rows} = data;
     let workbook = [];
@@ -87,6 +87,11 @@ export function parseCell(viewRange) {
             workbook.Sheets.Sheet1[expr] = {v: 0, f: 0};
         }
     });
+
+    if(state) {
+        workbook.Sheets.Sheet1['A1'] = src;
+    }
+
     try {
         calc(workbook);
     } catch (e) {
