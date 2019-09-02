@@ -70,7 +70,11 @@ class Spreadsheet {
     setTextEnd(text, ri, ci) {
         let {editor} = this.sheet;
         editor.setRiCi(ri, ci);
-        editor.setCellEnd(text);
+        this.sheet.selectorEditorReset(ri, ci);
+        editor.setCellEnd({
+            text: text,
+            formulas: text
+        });
     }
 
     removeEvent() {

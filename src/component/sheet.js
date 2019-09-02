@@ -1283,6 +1283,12 @@ export default class Sheet {
         sheetReset.call(this);
     }
 
+    selectorEditorReset(ri, ci) {
+        editorSetOffset.call(this);
+        this.editor.setRiCi(ri, ci);
+        sheetReset.call(this);
+    }
+
     loadData(data) {
         this.data.setData(data, this);
         sheetReset.call(this);
