@@ -76,6 +76,17 @@ class Spreadsheet {
         this.sheet.selectorEditorReset(ri, ci);
     }
 
+    getText() {
+        let {selectors} = this.sheet;
+        let text = "";
+        for(let i = 0; i < selectors.length; i++) {
+            let {erpx} = selectors[i];
+            text += erpx;
+        }
+
+        return `=${text}`;
+    }
+
     removeEvent() {
         this.sheet.removeEvent();
     }
