@@ -76,7 +76,7 @@ class Spreadsheet {
         this.sheet.selectorEditorReset(ri, ci);
     }
 
-    getText() {
+    getText(alias) {
         let {selectors} = this.sheet;
         let text = "";
         for(let i = 0; i < selectors.length; i++) {
@@ -84,7 +84,7 @@ class Spreadsheet {
             text += erpx;
         }
 
-        return `=${text}`;
+        return `=${alias}!${text}`;
     }
 
     removeEvent() {

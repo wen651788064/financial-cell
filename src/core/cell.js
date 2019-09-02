@@ -176,6 +176,7 @@ const cellRender = (data, sheetbook, y, x, src, formulaMap, getCellText, cellLis
             if(sheetbook.Sheets.Sheet1[xy2expr(x, y)].v == undefined || sheetbook.Sheets.Sheet1[xy2expr(x, y)].v === "") {
                 return "#ERROR!";
             }
+            sheetbook.Sheets.Sheet1[xy2expr(x, y)].v = sheetbook.Sheets.Sheet1[xy2expr(x, y)].v + "";
 
             // let value = sheetbook.Sheets.Sheet1[xy2expr(x, y)].v ? sheetbook.Sheets.Sheet1[xy2expr(x, y)].v : "NaN";
             return sheetbook.Sheets.Sheet1[xy2expr(x, y)].v.replace(/'/g, "\"");
