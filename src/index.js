@@ -73,7 +73,7 @@ class Spreadsheet {
             text: cell.text,
             formulas: cell.formulas
         });
-        data.setCellAll(ri, ci, cell.text, cell.formulas, '');
+        data.setCellAll(ri, ci, cell.text + "", cell.formulas + "", '');
 
         this.sheet.selectorEditorReset(ri, ci);
     }
