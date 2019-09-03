@@ -1,4 +1,5 @@
 import {splitStr} from "../core/operator";
+import helper from "../core/helper";
 
 class ApplicationSample {
     constructor(alias) {
@@ -27,7 +28,7 @@ export default class ApplicationFactory {
             this._calc = res.data.calc;
             this.lock = false;
         }
-        let _calc2 = this._calc;
+        let _calc2 = helper.cloneDeep(this._calc);
 
         _calc2.push(sheet);
         let data = {};
