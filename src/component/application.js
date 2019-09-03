@@ -66,19 +66,20 @@ export default class ApplicationFactory {
         }
     }
 
-    setData() {
+    async setData() {
         let arr = [];
-        for(let i = 0; i < this.factory.length; i++) {
+        for (let i = 0; i < this.factory.length; i++) {
             arr.push(this.factory[i].alias);
         }
 
         const {cb} = this;
-        let ress = cb.getData(cb.axios, arr, cb.user_id);
-        ress.then(res => {
-            if (res.data != '') {
-                this._ = res.data.data;
-                this._calc = res.data.calc;
-            }
-        })
+        let ress = await cb.getData(cb.axios, arr, cb.user_id);
+        console.log(ress);
+        // arr = [];
+        // ress.then(res => {
+        //     if (res.data != '') {
+        //         arr = [...res.data.calc];
+        //     }
+        // })
     }
 }
