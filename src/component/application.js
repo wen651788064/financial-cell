@@ -1,23 +1,8 @@
 import {splitStr} from "../core/operator";
 
 class ApplicationSample {
-    constructor(alias, cb) {
-        this._ = {};
-        this._calc = {};
+    constructor(alias) {
         this.alias = alias;
-        this.cb = cb;
-    }
-
-
-    async setData() {
-        const {cb} = this;
-        let ress = cb.getData(cb.axios, this.alias, cb.user_id);
-        await ress.then(res => {
-            if (res.data != '') {
-                this._ = res.data.data;
-                this._calc = res.data.calc;
-            }
-        })
     }
 }
 
@@ -25,15 +10,17 @@ export default class ApplicationFactory {
     constructor(cb) {
         this.factory = [];
         this.cb = cb;
+        this._ = [];
+        this._calc = [];
     }
 
     createSample(text) {
         let sample = new ApplicationSample(text, this.cb);
-        sample.setData();
         this.factory.push(sample);
     }
 
     getSamples(sheet) {
+        this.setData();
         for (let i = 0; i < this.factory.length; i++) {
             let f = this.factory[i];
             sheet[f.alias] = f._calc;
@@ -77,5 +64,21 @@ export default class ApplicationFactory {
         if (needPush.length > 0) {
             this.createSample(...needPush);
         }
+    }
+
+    setData() {
+        let arr = [];
+        for(let i = 0; i < this.factory.length; i++) {
+            arr.push(this.factory[i].alias);
+        }
+
+        const {cb} = this;
+        let ress = cb.getData(cb.axios, arr, cb.user_id);
+        ress.then(res => {
+            if (res.data != '') {
+                this._ = res.data.data;
+                this._calc = res.data.calc;
+            }
+        })
     }
 }
