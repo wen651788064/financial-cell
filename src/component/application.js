@@ -19,11 +19,10 @@ export default class ApplicationFactory {
         this.factory.push(sample);
     }
 
-    getSamples(sheet) {
-        this.setData().then(res => {
-            this._calc.push(sheet);
-            return new Promise(resolve => resolve(this._calc));
-        });
+    async getSamples(sheet) {
+        let res = await this.setData();
+        this._calc = res.data.calc;
+        this._calc.push(sheet);
     }
 
     async push(text) {
