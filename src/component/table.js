@@ -72,10 +72,12 @@ export function parseCell(viewRange, state = false, src = '') {
             cell.text = cell.text + "";
             if (cell.text.indexOf("MD.RTD") != -1) {
                 workbook.Sheets.Sheet1[expr] = {v: "", f: ""};
-            } else if(cell.formulas && cell.formulas.lastIndexOf("=") == 0 && cell.formulas.search(/[0-9a-zA-Z]+![A-Za-z]+\d+/) != -1) {
-                console.log("76")
+            } else if (cell.formulas && cell.formulas.lastIndexOf("=") == 0 && cell.formulas.search(/[0-9a-zA-Z]+![A-Za-z]+\d+/) != -1) {
+                console.log("76");
+                let {factory} = this;
+                factory.push(cell.formulas);
             } else {
-                if(cell.text && cell.text.lastIndexOf("=") === 0) {
+                if (cell.text && cell.text.lastIndexOf("=") === 0) {
                     workbook.Sheets.Sheet1[expr] = {
                         v: '',
                         f: cell.text.replace(/ /g, '').toUpperCase().replace(/\"/g, "\"").replace(/\"\"\"\"&/g, "\"'\"&")
@@ -92,7 +94,7 @@ export function parseCell(viewRange, state = false, src = '') {
         }
     });
 
-    if(state) {
+    if (state) {
         workbook.Sheets.Sheet1['A1'] = {v: '', f: `=${src}`};
     }
 
@@ -395,7 +397,7 @@ class Table {
     constructor(el, data) {
         this.el = el;
         this.draw = new Draw(el, data.viewWidth(), data.viewHeight());
-        this.factory = new ApplicationFactory();
+        this.factory = new ApplicationFactory(data.methods);
         this.data = data;
         this.autoAdaptList = [];
     }

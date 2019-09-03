@@ -23224,6 +23224,11 @@ const absoluteType = (str) => {
     return -1;
 };
 
+const splitStr = (str) => {
+    let arr = str.split(/([(-\/,+，*\s=^&])/);
+    return arr;
+};
+
 const cutting2 = (str) => {
     let arr = str.split(/([(-\/,+，*\s=^&])/);
 
@@ -23286,4 +23291,5 @@ export {
     cuttingByPosEnd,
     changeFormula,
     value2absolute,
+    splitStr,
 }

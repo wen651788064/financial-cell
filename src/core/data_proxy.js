@@ -369,10 +369,11 @@ function getCellColByX(x, scrollOffsetx) {
 }
 
 export default class DataProxy {
-    constructor(name, settings) {
+    constructor(name, settings, methods) {
         this.settings = helper.merge(defaultSettings, settings || {});
         // save data begin
         this.name = name || 'sheet';
+        this.methods = methods;
         this.freeze = [0, 0];
         this.styles = []; // Array<Style>
         this.merges = new Merges(); // [CellRange, ...]
