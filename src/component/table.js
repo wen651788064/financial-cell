@@ -231,24 +231,25 @@ function renderAutofilter(viewRange) {
 }
 
 function renderContent(viewRange, fw, fh, tx, ty) {
-    const {draw, data} = this;
-    draw.save();
-    draw.translate(fw, fh)
-        .translate(tx, ty);
-
-    const {exceptRowSet} = data;
-
-    const filteredTranslateFunc = (ri) => {
-        const ret = exceptRowSet.has(ri);
-        if (ret) {
-            const height = data.rows.getHeight(ri);
-            draw.translate(0, -height);
-        }
-        return !ret;
-    };
-    // 1 render cell
-    draw.save();
     parseCell.call(this, viewRange).then(sheetbook => {
+        const {draw, data} = this;
+        draw.save();
+        draw.translate(fw, fh)
+            .translate(tx, ty);
+
+        const {exceptRowSet} = data;
+
+        const filteredTranslateFunc = (ri) => {
+            const ret = exceptRowSet.has(ri);
+            if (ret) {
+                const height = data.rows.getHeight(ri);
+                draw.translate(0, -height);
+            }
+            return !ret;
+        };
+        // 1 render cell
+        draw.save();
+
         viewRange.each((ri, ci) => {
             renderCell.call(this, ri, ci, sheetbook);
         }, ri => filteredTranslateFunc(ri));
