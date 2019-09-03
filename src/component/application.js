@@ -22,7 +22,7 @@ export default class ApplicationFactory {
     getSamples(sheet) {
         this.setData().then(res => {
             this._calc.push(sheet);
-            return new Promise(resolve => resolve());
+            return new Promise(resolve => resolve(this._calc));
         });
     }
 
