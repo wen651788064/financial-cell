@@ -3,14 +3,20 @@ import {splitStr} from "../core/operator";
 class ApplicationSample {
     constructor(alias, cb) {
         this._ = {};
+        this._calc = {};
         this.alias = alias;
         this.cb = cb;
     }
+
 
     setData() {
         const {cb} = this;
         cb.getData(cb.axios, this.alias, cb.user_id).then(res => {
             console.log(res);
+            if(res.data != '') {
+                this._ = res.data.data;
+                this._calc = res.data.calc;
+            }
         });
     }
 }
