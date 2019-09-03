@@ -94,8 +94,10 @@ export async function parseCell(viewRange, state = false, src = '') {
     });
 
     let {factory} = this;
-    workbook.Sheets = await factory.getSamples(workbook.Sheets);
-
+    let s = await factory.getSamples(workbook.Sheets);
+    Object.keys(s).forEach(i => {
+        workbook.Sheets[i] = s[i];
+    });
     console.log(workbook.Sheets);
 
     if (state) {
