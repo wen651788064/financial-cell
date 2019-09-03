@@ -76,6 +76,10 @@ class Spreadsheet {
         data.setCellAll(ri, ci, cell.text + "", cell.formulas + "", '');
 
         this.sheet.selectorEditorReset(ri, ci);
+
+        setTimeout(() => {
+            editor.setCursorPos(cell.formulas.length);
+        })
     }
 
     getText(alias) {
