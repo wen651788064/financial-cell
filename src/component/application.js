@@ -9,9 +9,9 @@ class ApplicationSample {
     }
 
 
-    async setData() {
+    setData() {
         const {cb} = this;
-        let res = await cb.getData(cb.axios, this.alias, cb.user_id);
+        let res = cb.getData(cb.axios, this.alias, cb.user_id);
         if (res.data != '') {
             this._ = res.data.data;
             this._calc = res.data.calc;
