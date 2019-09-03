@@ -25,7 +25,9 @@ export default class ApplicationFactory {
         this._calc.push(sheet);
         let data = {};
         Object.keys(this._calc).forEach(i => {
-            data[i] = this._calc[i];
+            Object.keys(this._calc[i]).forEach(is => {
+                data[is] = this._calc[i][is];
+            });
         });
         return data;
     }
