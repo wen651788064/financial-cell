@@ -34,27 +34,29 @@ export default class ApplicationFactory {
             }
         }
 
-        if(result.length <= 0)
+        if (result.length <= 0)
             return;
 
         let {factory} = this;
         let needPush = [];
-        for(let i = 0; i < result.length; i++) {
+        for (let i = 0; i < result.length; i++) {
             let r = result[i];
             let enter = false;
 
-            for(let j = 0; enter == false && j < factory.length; j++) {
+            for (let j = 0; enter == false && j < factory.length; j++) {
                 let f = factory[j];
 
-                if(r.split("!")[0] == f.alias) {
+                if (r.split("!")[0] == f.alias) {
                     enter = true;
                 }
             }
 
-            if(!enter) {
+            if (!enter) {
                 needPush.push(r.split("!")[0]);
             }
         }
-        this.createSample(...needPush);
+        if (needPush.length > 0) {
+            this.createSample(...needPush);
+        }
     }
 }
