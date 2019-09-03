@@ -5,6 +5,7 @@ import {formulam} from '../core/formula';
 import {formatm} from '../core/format';
 import {isMinus} from "../utils/number_util";
 import {Draw, DrawBox, npx, thinLineWidth,} from '../canvas/draw';
+import ApplicationFactory from "./application";
 
 var formulajs = require('formulajs');
 // gobal var
@@ -71,6 +72,8 @@ export function parseCell(viewRange, state = false, src = '') {
             cell.text = cell.text + "";
             if (cell.text.indexOf("MD.RTD") != -1) {
                 workbook.Sheets.Sheet1[expr] = {v: "", f: ""};
+            } else if(cell.text.lastIndexOf("=") == 0 && cell.text.search(/^[0-9a-zA-Z]+:[A-Za-z]+\d+/) != -1) {
+                console.log("76")
             } else {
                 if(cell.text && cell.text.lastIndexOf("=") === 0) {
                     workbook.Sheets.Sheet1[expr] = {
@@ -392,6 +395,7 @@ class Table {
     constructor(el, data) {
         this.el = el;
         this.draw = new Draw(el, data.viewWidth(), data.viewHeight());
+        this.factory = new ApplicationFactory();
         this.data = data;
         this.autoAdaptList = [];
     }
