@@ -877,7 +877,7 @@ function sheetInitEvents() {
                         this.mergeSelector = false;
                     });
                 }
-                if (!editor.getLock()) {
+                if (!editor.getLock() && !editor.isCors) {
                     let {inputText, ri, ci} = editor;
                     if (ri !== -1 && ci !== -1 && inputText[0] === "=") {
                         selectorCellText.call(this, ri, ci, inputText, 'input');
