@@ -9,11 +9,11 @@ class ApplicationSample {
     }
 
 
-    setData() {
+    async setData() {
         const {cb} = this;
-        cb.getData(cb.axios, this.alias, cb.user_id).then(res => {
+        await cb.getData(cb.axios, this.alias, cb.user_id).then(res => {
             console.log(res);
-            if(res.data != '') {
+            if (res.data != '') {
                 this._ = res.data.data;
                 this._calc = res.data.calc;
             }
@@ -27,10 +27,19 @@ export default class ApplicationFactory {
         this.cb = cb;
     }
 
-    createSample(text) {
+    async createSample(text) {
         let sample = new ApplicationSample(text, this.cb);
-        sample.setData();
+        await sample.setData();
         this.factory.push(sample);
+    }
+
+    getSamples(sheet) {
+        for (let i = 0; i < this.factory.length; i++) {
+            let f = this.factory[i];
+            sheet[f.alias] = f._calc;
+        }
+
+        return sheet;
     }
 
     push(text) {

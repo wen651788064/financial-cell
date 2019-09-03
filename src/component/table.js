@@ -73,7 +73,6 @@ export function parseCell(viewRange, state = false, src = '') {
             if (cell.text.indexOf("MD.RTD") != -1) {
                 workbook.Sheets.Sheet1[expr] = {v: "", f: ""};
             } else if (cell.formulas && cell.formulas.lastIndexOf("=") == 0 && cell.formulas.search(/[0-9a-zA-Z]+![A-Za-z]+\d+/) != -1) {
-                console.log("76");
                 let {factory} = this;
                 factory.push(cell.formulas);
             } else {
@@ -93,6 +92,10 @@ export function parseCell(viewRange, state = false, src = '') {
             workbook.Sheets.Sheet1[expr] = {v: 0, f: 0};
         }
     });
+
+    let {factory} = this;
+    let s = factory.getSamples(workbook.Sheets);
+    console.log(s);
 
     if (state) {
         workbook.Sheets.Sheet1['A1'] = {v: '', f: `=${src}`};
