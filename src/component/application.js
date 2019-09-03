@@ -23,6 +23,8 @@ export default class ApplicationFactory {
         let res = await this.setData();
         this._calc = res.data.calc;
         this._calc.push(sheet);
+
+        return this._calc;
     }
 
     async push(text) {
