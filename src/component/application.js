@@ -20,13 +20,10 @@ export default class ApplicationFactory {
     }
 
     getSamples(sheet) {
-        this.setData();
-        for (let i = 0; i < this.factory.length; i++) {
-            let f = this.factory[i];
-            sheet[f.alias] = f._calc;
-        }
-
-        return sheet;
+        this.setData().then(res => {
+            this._calc.push(sheet);
+            return new Promise(resolve => resolve());
+        });
     }
 
     async push(text) {
@@ -66,20 +63,14 @@ export default class ApplicationFactory {
         }
     }
 
-    async setData() {
+    setData() {
         let arr = [];
         for (let i = 0; i < this.factory.length; i++) {
             arr.push(this.factory[i].alias);
         }
 
         const {cb} = this;
-        let ress = await cb.getData(cb.axios, arr, cb.user_id);
-        console.log(ress);
-        // arr = [];
-        // ress.then(res => {
-        //     if (res.data != '') {
-        //         arr = [...res.data.calc];
-        //     }
-        // })
+        let ress = cb.getData(cb.axios, arr, cb.user_id);
+        return ress;
     }
 }
