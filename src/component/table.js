@@ -229,7 +229,7 @@ function renderAutofilter(viewRange) {
     // renderFlexible.call(this, 1, 1)
 }
 
-function renderContent(viewRange, fw, fh, tx, ty) {
+async function renderContent(viewRange, fw, fh, tx, ty) {
     const {draw, data} = this;
     draw.save();
     draw.translate(fw, fh)
@@ -247,7 +247,7 @@ function renderContent(viewRange, fw, fh, tx, ty) {
     };
     // 1 render cell
     draw.save();
-    const sheetbook = parseCell.call(this, viewRange);
+    const sheetbook = await parseCell.call(this, viewRange);
     viewRange.each((ri, ci) => {
         renderCell.call(this, ri, ci, sheetbook);
     }, ri => filteredTranslateFunc(ri));
