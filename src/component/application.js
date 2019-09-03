@@ -26,7 +26,8 @@ export default class ApplicationFactory {
     push(text) {
         let arr = splitStr(text);
         let result = [];
-        for (let str in arr) {
+        for (let i = 0; i < arr.length; i++) {
+            let str = arr[i];
             let _exec = /[0-9a-zA-Z]+![A-Za-z]+\d+/.exec(str);
             if (_exec && _exec[0]) {
                 result.push(_exec[0]);
