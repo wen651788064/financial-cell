@@ -25,18 +25,17 @@ export default class ApplicationFactory {
         if( this.lock) {
             let res = await this.setData();
             this._calc = res.data.calc;
-            this._calc2 = res.data.calc;
             this.lock = false;
         }
+        let _calc2 = this._calc;
 
-        this._calc.push(sheet);
+        _calc2.push(sheet);
         let data = {};
-        Object.keys(this._calc).forEach(i => {
-            Object.keys(this._calc[i]).forEach(is => {
-                data[is] = this._calc[i][is];
+        Object.keys(_calc2).forEach(i => {
+            Object.keys(_calc2[i]).forEach(is => {
+                data[is] = _calc2[i][is];
             });
         });
-        this._calc = this._calc2;
 
         return data;
     }
