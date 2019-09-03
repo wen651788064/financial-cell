@@ -9,8 +9,9 @@ class ApplicationSample {
 
     setData() {
         const {cb} = this;
-        let result = cb.getData(cb.axios, this.alias, cb.user_id);
-        console.log(result);
+        cb.getData(cb.axios, this.alias, cb.user_id).then(res => {
+            console.log(res);
+        });
     }
 }
 
