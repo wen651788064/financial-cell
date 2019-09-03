@@ -39,10 +39,13 @@ export default class ApplicationFactory {
 
         let {factory} = this;
         let needPush = [];
-        for(let r in result) {
+        for(let i = 0; i < result.length; i++) {
+            let r = result[i];
             let enter = false;
 
-            for(let f in factory) {
+            for(let j = 0; j < factory.length; j++) {
+                let f = factory[j];
+
                 if(r == f.alias) {
                     enter = true;
                 }
