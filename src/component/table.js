@@ -72,10 +72,11 @@ export async function parseCell(viewRange, state = false, src = '') {
             cell.text = cell.text + "";
             if (cell.text.indexOf("MD.RTD") != -1) {
                 workbook.Sheets.qwckdw1[expr] = {v: "", f: ""};
-            } else if (cell.formulas && cell.formulas.lastIndexOf("=") == 0 && cell.formulas.search(/[0-9a-zA-Z]+![A-Za-z]+\d+/) != -1) {
-                let {factory} = this;
-                factory.push(cell.formulas);
             } else {
+                if (cell.formulas && cell.formulas.lastIndexOf("=") == 0 && cell.formulas.search(/[0-9a-zA-Z]+![A-Za-z]+\d+/) != -1) {
+                    let {factory} = this;
+                    factory.push(cell.formulas);
+                }
                 if (cell.text && cell.text.lastIndexOf("=") === 0) {
                     workbook.Sheets.qwckdw1[expr] = {
                         v: '',
