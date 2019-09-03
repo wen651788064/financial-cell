@@ -58,7 +58,7 @@ function getCellTextStyle(rindex, cindex) {
 }
 
 
-export function parseCell(viewRange, state = false, src = '') {
+export async function parseCell(viewRange, state = false, src = '') {
     let {data} = this;
     let {calc, rows} = data;
     let workbook = [];
@@ -94,7 +94,7 @@ export function parseCell(viewRange, state = false, src = '') {
     });
 
     let {factory} = this;
-    let s = factory.getSamples(workbook.Sheets);
+    let s = await factory.getSamples(workbook.Sheets);
     console.log(s);
 
     if (state) {
