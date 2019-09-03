@@ -8,7 +8,9 @@ class ApplicationSample {
     }
 
     setData() {
-        this.cb();
+        const {cb} = this;
+        let result = cb.getData(cb.axios, cb.alias, cb.user_id);
+        console.log(result);
     }
 }
 
@@ -20,6 +22,7 @@ export default class ApplicationFactory {
 
     createSample(text) {
         let sample = new ApplicationSample(text, this.cb);
+        sample.setData();
         this.factory.push(sample);
     }
 
