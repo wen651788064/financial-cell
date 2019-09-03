@@ -792,7 +792,7 @@ function sheetInitEvents() {
                 }
                 editorSet.call(this, 2);
             } else {
-                if (editor.getLock()) {
+                if (editor.getLock() || editor.isCors) {
                     let _selector = null;
                     let change = 0;
                     mouseMoveUp(window, (e) => {

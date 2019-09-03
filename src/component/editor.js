@@ -390,6 +390,7 @@ export default class Editor {
         this.state = 1;
         this.data = data;
         this.datepicker = new Datepicker();
+        this.isCors = false;
         this.datepicker.change((d) => {
             this.setText(dateFormat(d));
             this.clear();
@@ -738,6 +739,7 @@ export default class Editor {
         if(hide) {
             this.areaEl.hide();
             this.sheet.selector.hide();
+            this.isCors = true;
         }
         inputEventHandler.call(this, null, text);
     }
