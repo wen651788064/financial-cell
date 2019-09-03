@@ -1,58 +1,60 @@
+
 <!DOCTYPE html>
-<html lang="en" style="height: 100%">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
 </head>
-<body  style="height: 100%">
+<style>
+    #main_table{
+        float: left;
+        table-layout: fixed;/*使table的宽度固定*/
+        width: 500px;/*给table一个宽度*/
 
+    }
+    .host_style{
+        width: 250px;/*给td定一个宽度,在这里有3个td，
+        其他3个td都没有设置宽度，所以这3个td的宽度之和是
+        table的定义的宽度-td(定义了宽度)*/
+    }
+    button{width: 50px;
+        height: 30px;
+        float: left;
+        margin-bottom: 10px;
+        margin-right: 6px}
+</style>
+<script></script>
+<body>
+<div style="width: 200px;margin: 10%;">
+
+    <button value="all">all</button>
+    <button value="invert">invert</button>
+    <button value="edit">edit</button>
+
+    <table id='main_table' border="1px solid" >
+        <tr>
+            <td><div style="float: right">asdsad</div></td>
+            <td class="host_style" style="height: 1px"></td>
+            <td></td>
+            <td></td>
+        </tr>
+
+        <tr>
+            <td>1</td>
+            <td>1</td>
+            <td>1</td>
+            <td>1</td>
+        </tr>
+
+        <tr>
+            <td>1</td>
+            <td>1</td>
+            <td>1</td>
+            <td>1</td>
+        </tr>
+
+    </table>
 </div>
 
 
-<script>
-    class Subject {
-        constructor() {
-            this.state = 0
-            this.observers = []
-        }
-        getState() {
-            return this.state
-        }
-        setState(state) {
-            this.state = state
-            this.notifyAllObservers()
-        }
-        attach(observer) {
-            this.observers.push(observer)
-        }
-        notifyAllObservers() {
-            this.observers.forEach(observer => {
-                observer.update()
-            })
-        }
-    }
-
-    // 观察者，等待被触发
-    class Observer {
-        constructor(name, subject) {
-            this.name = name
-            this.subject = subject
-            this.subject.attach(this)
-        }
-        update() {
-            console.log(`${this.name} update, state: ${this.subject.getState()}`)
-        }
-    }
-
-    // 测试代码
-    let s = new Subject()
-    let o1 = new Observer('o1', s)
-    let o2 = new Observer('o2', s)
-    let o3 = new Observer('o3', s)
-
-    s.setState(1)
-    s.setState(2)
-    s.setState(3)
-</script>
 </body>
-</html>

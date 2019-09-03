@@ -12,6 +12,7 @@ export default class ApplicationFactory {
         this.cb = cb;
         this._ = [];
         this._calc = [];
+        this._calc2 = [];
         this.lock = false;
     }
 
@@ -24,6 +25,8 @@ export default class ApplicationFactory {
         if( this.lock) {
             let res = await this.setData();
             this._calc = res.data.calc;
+            this._calc2 = res.data.calc;
+            this.lock = false;
         }
 
         this._calc.push(sheet);
@@ -33,7 +36,8 @@ export default class ApplicationFactory {
                 data[is] = this._calc[i][is];
             });
         });
-        this.lock = false;
+        this._calc = this._calc2;
+
         return data;
     }
 
