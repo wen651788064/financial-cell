@@ -94,8 +94,9 @@ export async function parseCell(viewRange, state = false, src = '') {
     });
 
     let {factory} = this;
-    let s = await factory.getSamples(workbook.Sheets);
-    console.log(s);
+    workbook.Sheets = await factory.getSamples(workbook.Sheets);
+
+    console.log(workbook.Sheets);
 
     if (state) {
         workbook.Sheets.qwckdw1['A1'] = {v: '', f: `=${src}`};
