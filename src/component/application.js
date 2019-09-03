@@ -43,16 +43,16 @@ export default class ApplicationFactory {
             let r = result[i];
             let enter = false;
 
-            for(let j = 0; j < factory.length; j++) {
+            for(let j = 0; enter == false && j < factory.length; j++) {
                 let f = factory[j];
 
-                if(r == f.alias) {
+                if(r.split("!")[0] == f.alias) {
                     enter = true;
                 }
             }
 
             if(!enter) {
-                needPush.push(r);
+                needPush.push(r.split("!")[0]);
             }
         }
         this.createSample(...needPush);
