@@ -9,15 +9,15 @@ class ApplicationSample {
     }
 
 
-    setData() {
+    async setData() {
         const {cb} = this;
-        cb.getData(cb.axios, this.alias, cb.user_id).then(res => {
-            console.log(res);
-            if (res.data != '') {
-                this._ = res.data.data;
-                this._calc = res.data.calc;
-            }
-        });
+        let res = await cb.getData(cb.axios, this.alias, cb.user_id);
+        res.then(res => {
+                if (res.data != '') {
+                    this._ = res.data.data;
+                    this._calc = res.data.calc;
+                }
+            });
     }
 }
 
@@ -29,7 +29,7 @@ export default class ApplicationFactory {
 
     createSample(text) {
         let sample = new ApplicationSample(text, this.cb);
-         sample.setData();
+        sample.setData();
         this.factory.push(sample);
     }
 
@@ -43,10 +43,6 @@ export default class ApplicationFactory {
     }
 
     async push(text) {
-        await this.push2(text);
-    }
-
-    push2(text) {
         let arr = splitStr(text);
         let result = [];
         for (let i = 0; i < arr.length; i++) {
