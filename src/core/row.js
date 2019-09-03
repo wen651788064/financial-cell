@@ -3,6 +3,7 @@ import {expr2expr} from './alphabet';
 import {absoluteType, changeFormula, cutStr, isAbsoluteValue, value2absolute} from "../core/operator";
 import {expr2xy} from "../core/alphabet";
 import CellRange from "./cell_range";
+import dayjs from 'dayjs'
 
 class Rows {
     constructor({len, height}) {
@@ -156,7 +157,13 @@ class Rows {
         const [rn, cn] = srcCellRange.size();
         const [drn, dcn] = dstCellRange.size();
 
-        for(let i = 0; i < cn; i++) {
+        let level = false;
+        if(sri == dsri && deri == eri) {
+            level = true;
+        }
+
+        let len = level ? rn : cn;
+        for (let i = 0; i < len; i++) {
             let isAdd = true;       // 往上是false, 往下是true
             let isCopy = false;
             let dn = 0;
@@ -166,10 +173,19 @@ class Rows {
                 else dn = dcn;
             }
 
-            let fackSRange = new CellRange(sri, sci + i, eri, sci + i);
-            let fackDRange = new CellRange(dsri, dsci + i, deri, dsci + i);
+            let fackSRange = "";
+            let fackDRange = "";
+            if(!level) {
+                fackSRange = new CellRange(sri, sci + i, eri, sci + i);
+                fackDRange = new CellRange(dsri, dsci + i, deri, dsci + i);
+            } else if(level) {
+                fackSRange = new CellRange(sri + i , sci, sri + i , eci);
+                fackDRange = new CellRange(dsri + i , dsci, dsri + i, deci);
+            }
+
             let sarr = [];
-            let number = false, diffValue = 0;
+            // console.log(dayjs("20asd1-01").isValid() , "173");
+            let number = true, diffValue = 0, nA = true, nD = true;
             fackSRange.each((i, j) => {
                 let und = false;
                 if (this._[i]) {
@@ -185,18 +201,32 @@ class Rows {
                             sarr.push(ncell);
                         }
 
-                        ncell.text = ncell.text * 1;
-                        if (typeof ncell.text === 'number') {
+                        let ns = ncell.text * 1;
+                        if ((ns || ns == 0) && typeof ns === 'number' && number == true) {
                             number = true;
+                            nA = false;
+                            nD = false;
+                        } else if (ncell.text && nA == true && ncell.text.search(/^[0-9a-zA-Z]+$/, 'g') != -1) {
+                            nA = true;
+                            number = false;
+                            nD = false;
+                        } else if(ncell.text && nD == true && dayjs(ncell.text).isValid()) {
+                            nA = false;
+                            number = false;
+                            nD = true;
+                        } else{
+                            nA = false;
+                            number = false;
+                            nD = false;
                         }
-                    }  else {
+                    } else {
                         und = true;
                     }
                 } else {
                     und = true;
                 }
 
-                if(und) {
+                if (und) {
                     sarr.push({
                         text: 0,
                         formulas: 0
@@ -220,14 +250,85 @@ class Rows {
                 });
             });
 
-            if (number && sarr.length > 1) {
-                let last2 = sarr[sarr.length - 2];
-                let last1 = sarr[sarr.length - 1];
-                diffValue = last1.text * 1 - last2.text * 1;
-            }
-
 
             if (number && isCopy) {
+                if (isAdd) {
+                    if (number && sarr.length > 1) {
+                        let last2 = sarr[sarr.length - 2];
+                        let last1 = sarr[sarr.length - 1];
+                        diffValue = last1.text * 1 - last2.text * 1;
+                    }
+                    for (let i = 0; i < darr.length; i++) {
+                        let d = darr[i];
+                        let ncell = "";
+                        if(!level) {
+                            if (!this._ || !this._[d.ri - 1] || !this._[d.ri - 1].cells[d.ci]) {
+                                ncell = {
+                                    text: 0,
+                                    formulas: 0,
+                                }
+                            } else {
+                                ncell = helper.cloneDeep(this._[d.ri - 1].cells[d.ci]);
+                            }
+                        } else {
+                            if (!this._ || !this._[d.ri] || !this._[d.ri].cells[d.ci - 1]) {
+                                ncell = {
+                                    text: 0,
+                                    formulas: 0,
+                                }
+                            } else {
+                                ncell = helper.cloneDeep(this._[d.ri].cells[d.ci - 1]);
+                            }
+                        }
+                        if(ncell.text != '') {
+                            let last1 = ncell.text * 1;
+
+                            let value = last1 + diffValue;
+                            ncell.text = value + "";
+                            ncell.formulas = value + "";
+                            this.copyRender(darr, d.ri, d.ci, ncell, what, cb);
+                        }
+                    }
+                } else {
+                    if (number && sarr.length > 1) {
+                        let last2 = sarr[1];
+                        let last1 = sarr[0];
+                        diffValue = last1.text * 1 - last2.text * 1;
+                    }
+
+                    for (let i = darr.length - 1; i >= 0; i--) {
+                        let d = darr[i];
+                        let ncell = "";
+                       if(!level) {
+                           if (!this._ || !this._[d.ri + 1] || !this._[d.ri + 1].cells[d.ci]) {
+                               ncell = {
+                                   text: 0,
+                                   formulas: 0,
+                               }
+                           } else {
+                               ncell = helper.cloneDeep(this._[d.ri + 1].cells[d.ci]);
+                           }
+                       } else {
+                           if (!this._ || !this._[d.ri] || !this._[d.ri].cells[d.ci + 1]) {
+                               ncell = {
+                                   text: 0,
+                                   formulas: 0,
+                               }
+                           } else {
+                               ncell = helper.cloneDeep(this._[d.ri].cells[d.ci + 1]);
+                           }
+                       }
+                        if(ncell.text != '') {
+                            let last1 = ncell.text * 1;
+
+                            let value = last1 + diffValue;
+                            ncell.text = value + "";
+                            ncell.formulas = value + "";
+                            this.copyRender(darr, d.ri, d.ci, ncell, what, cb);
+                        }
+                    }
+                }
+            } else if(nD && isCopy) {
                 if (isAdd) {
                     for (let i = 0; i < darr.length; i++) {
                         let d = darr[i];
@@ -240,20 +341,22 @@ class Rows {
                         } else {
                             ncell = helper.cloneDeep(this._[d.ri - 1].cells[d.ci]);
                         }
-                        let last1 = ncell.text * 1;
+                        if(ncell.text != '') {
+                            let last1 = ncell.text;
 
-                        let value = last1 + diffValue;
-                        ncell.text = value + "";
-                        ncell.formulas = value + "";
-                        this.copyRender(darr, d.ri, d.ci, ncell, what, cb);
+                            let value = dayjs(last1).add(1, 'day').format('YYYY-MM-DD');
+                            ncell.text = value + "";
+                            ncell.formulas = value + "";
+                            this.copyRender(darr, d.ri, d.ci, ncell, what, cb);
+                        }
                     }
                 }
-            }
-            else {
+            } else {
                 for (let i = sri; i <= eri; i += 1) {
                     if (this._[i]) {
                         for (let j = sci; j <= eci; j += 1) {
                             if (this._[i].cells && this._[i].cells[j]) {
+                                let added = 1;
                                 for (let ii = dsri; ii <= deri; ii += rn) {
                                     for (let jj = dsci; jj <= deci; jj += cn) {
                                         const nri = ii + (i - sri);
@@ -321,7 +424,8 @@ class Rows {
                                                 const result = /[\\.\d]+$/.exec(text);
                                                 // console.log('result:', result);
                                                 if (result !== null) {
-                                                    const index = Number(result[0]) + n - 1;
+                                                    const index = Number(result[0]) + added;
+                                                    added += 1;
                                                     ncell.text = text.substring(0, result.index) + index;
                                                     ncell.formulas = ncell.text;
                                                 }

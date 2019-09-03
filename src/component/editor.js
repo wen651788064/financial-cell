@@ -268,6 +268,10 @@ function parse(v) {
     if (isAbsoluteValue(cuttingByPos(v, this.pos), 2)) {
         this.setLock(true);
     }
+
+    if (start !== 0) {
+        this.setLock(false);
+    }
 }
 
 function parse2(v, pos) {
@@ -290,6 +294,10 @@ function parse2(v, pos) {
 
     if (isAbsoluteValue(cuttingByPos(v, pos), 2)) {
         this.setLock(true);
+    }
+
+    if (start !== 0) {
+        this.setLock(false);
     }
 }
 

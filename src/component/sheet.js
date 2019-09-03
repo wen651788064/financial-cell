@@ -823,7 +823,7 @@ function sheetInitEvents() {
                             }
                         });
 
-                        if(!enter) {
+                        if(enter) {
                             if (e.buttons === 1 && !e.shiftKey) {
                                 let {ri, ci} = data.getCellRectByXY(e.offsetX, e.offsetY);
                                 if (_selector && _selector.selector) {

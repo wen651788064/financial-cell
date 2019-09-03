@@ -1012,7 +1012,7 @@ export default class DataProxy {
                 rows.setCellText(ri, ci, text);
             }
             // 不应该没打开一个单元格就 change一次
-            this.change(this.getData());
+           //  this.change(this.getData());
         }
         // validator
         validations.validate(ri, ci, text);
