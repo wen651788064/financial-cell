@@ -12,6 +12,7 @@ export default class ApplicationFactory {
         this.cb = cb;
         this._ = [];
         this._calc = [];
+        this.lock = false;
     }
 
     createSample(text) {
@@ -20,8 +21,11 @@ export default class ApplicationFactory {
     }
 
     async getSamples(sheet) {
-        let res = await this.setData();
-        this._calc = res.data.calc;
+        if( this.lock) {
+            let res = await this.setData();
+            this._calc = res.data.calc;
+        }
+
         this._calc.push(sheet);
         let data = {};
         Object.keys(this._calc).forEach(i => {
@@ -29,6 +33,7 @@ export default class ApplicationFactory {
                 data[is] = this._calc[i][is];
             });
         });
+        this.lock = false;
         return data;
     }
 
@@ -66,6 +71,7 @@ export default class ApplicationFactory {
         }
         if (needPush.length > 0) {
             this.createSample(...needPush);
+            this.lock = true;
         }
     }
 
