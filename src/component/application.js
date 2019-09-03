@@ -11,8 +11,8 @@ class ApplicationSample {
 
     async setData() {
         const {cb} = this;
-        let res = await cb.getData(cb.axios, this.alias, cb.user_id);
-        res.then(res => {
+        let result = await cb.getData(cb.axios, this.alias, cb.user_id);
+        result.then(res => {
                 if (res.data != '') {
                     this._ = res.data.data;
                     this._calc = res.data.calc;
