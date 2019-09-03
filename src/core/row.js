@@ -548,6 +548,7 @@ class Rows {
                 } else if (what === 'text') {
                     if (cell.text) delete cell.text;
                     if (cell.value) delete cell.value;
+                    if (cell.formulas) delete cell.formulas;
                 } else if (what === 'format') {
                     if (cell.style !== undefined) delete cell.style;
                     if (cell.merge) delete cell.merge;
