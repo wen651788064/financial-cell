@@ -9,9 +9,9 @@ class ApplicationSample {
     }
 
 
-    async setData() {
+    setData() {
         const {cb} = this;
-        await cb.getData(cb.axios, this.alias, cb.user_id).then(res => {
+        cb.getData(cb.axios, this.alias, cb.user_id).then(res => {
             console.log(res);
             if (res.data != '') {
                 this._ = res.data.data;
@@ -42,7 +42,11 @@ export default class ApplicationFactory {
         return sheet;
     }
 
-    push(text) {
+    async push(text) {
+        await this.push2(text);
+    }
+
+    push2(text) {
         let arr = splitStr(text);
         let result = [];
         for (let i = 0; i < arr.length; i++) {

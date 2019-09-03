@@ -63,7 +63,7 @@ export function parseCell(viewRange, state = false, src = '') {
     let {calc, rows} = data;
     let workbook = [];
     workbook.Sheets = {};
-    workbook.Sheets.Sheet1 = {};
+    workbook.Sheets.qwckdw1 = {};
 
     viewRange.each2((ri, ci) => {
         let cell = data.getCell(ri, ci);
@@ -71,25 +71,25 @@ export function parseCell(viewRange, state = false, src = '') {
         if (cell && cell.text) {
             cell.text = cell.text + "";
             if (cell.text.indexOf("MD.RTD") != -1) {
-                workbook.Sheets.Sheet1[expr] = {v: "", f: ""};
+                workbook.Sheets.qwckdw1[expr] = {v: "", f: ""};
             } else if (cell.formulas && cell.formulas.lastIndexOf("=") == 0 && cell.formulas.search(/[0-9a-zA-Z]+![A-Za-z]+\d+/) != -1) {
                 let {factory} = this;
                 factory.push(cell.formulas);
             } else {
                 if (cell.text && cell.text.lastIndexOf("=") === 0) {
-                    workbook.Sheets.Sheet1[expr] = {
+                    workbook.Sheets.qwckdw1[expr] = {
                         v: '',
                         f: cell.text.replace(/ /g, '').toUpperCase().replace(/\"/g, "\"").replace(/\"\"\"\"&/g, "\"'\"&")
                     };
                 } else {
-                    workbook.Sheets.Sheet1[expr] = {
+                    workbook.Sheets.qwckdw1[expr] = {
                         v: cell.text.replace(/ /g, '').toUpperCase().replace(/\"/g, "\""),
                     };
                 }
             }
         }
         else {
-            workbook.Sheets.Sheet1[expr] = {v: 0, f: 0};
+            workbook.Sheets.qwckdw1[expr] = {v: 0, f: 0};
         }
     });
 
@@ -98,7 +98,7 @@ export function parseCell(viewRange, state = false, src = '') {
     console.log(s);
 
     if (state) {
-        workbook.Sheets.Sheet1['A1'] = {v: '', f: `=${src}`};
+        workbook.Sheets.qwckdw1['A1'] = {v: '', f: `=${src}`};
     }
 
     try {
