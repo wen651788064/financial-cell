@@ -80,7 +80,7 @@ export async function parseCell(viewRange, state = false, src = '') {
                 if (cell.text && cell.text.lastIndexOf("=") === 0) {
                     workbook.Sheets.qwckdw1[expr] = {
                         v: '',
-                        f: cell.text.replace(/ /g, '').toUpperCase().replace(/\"/g, "\"").replace(/\"\"\"\"&/g, "\"'\"&")
+                        f: cell.text.replace(/ /g, '').replace(/\"/g, "\"").replace(/\"\"\"\"&/g, "\"'\"&")
                     };
                 } else {
                     workbook.Sheets.qwckdw1[expr] = {
