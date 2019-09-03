@@ -11,13 +11,11 @@ class ApplicationSample {
 
     async setData() {
         const {cb} = this;
-        let result = await cb.getData(cb.axios, this.alias, cb.user_id);
-        result.then(res => {
-                if (res.data != '') {
-                    this._ = res.data.data;
-                    this._calc = res.data.calc;
-                }
-            });
+        let res = await cb.getData(cb.axios, this.alias, cb.user_id);
+        if (res.data != '') {
+            this._ = res.data.data;
+            this._calc = res.data.calc;
+        }
     }
 }
 
