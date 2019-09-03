@@ -27,9 +27,9 @@ export default class ApplicationFactory {
         this.cb = cb;
     }
 
-    async createSample(text) {
+    createSample(text) {
         let sample = new ApplicationSample(text, this.cb);
-        await sample.setData();
+         sample.setData();
         this.factory.push(sample);
     }
 
