@@ -379,6 +379,7 @@ export default class Editor {
         this.rowHeight = rowHeight;
         this.formulas = formulas;
         this.sheet = sheet;
+        this.display = false;
         this.suggest = new Suggest(formulas, (it) => {
             suggestItemClick.call(this, it);
         });
@@ -556,6 +557,7 @@ export default class Editor {
     }
 
     clear(c = false) {
+        this.display = isDisplay.call(this);
         if(this.inputText != '' && this.inputText.replace(/\s/g, "").lastIndexOf('¥') === 0) {
             this.change('format', this.inputText);
         }
@@ -582,7 +584,7 @@ export default class Editor {
             this.setRiCi(ri, ci);
         });
 
-        return isDisplay.call(this);
+        return this.display;
     }
 
     mount2span(spanArr, pos = -1, begin = -1, content = {suggestContent: false, cut: '', pos: -1}) {

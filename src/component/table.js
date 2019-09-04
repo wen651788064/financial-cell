@@ -282,6 +282,9 @@ function renderAutofilter(viewRange) {
 }
 
 async function renderContent(viewRange, fw, fh, tx, ty) {
+    if(!this.editor.display) {
+        return;
+    }
     let args = await parseCell.call(this, viewRange);
     if(args.state) {
         this.render();
@@ -458,11 +461,11 @@ function renderFreezeHighlightLine(fw, fh, ftw, fth) {
 
 /** end */
 class Table {
-    constructor(el, data) {
+    constructor(el, data, editor) {
         this.el = el;
         this.draw = new Draw(el, data.viewWidth(), data.viewHeight());
         this.factory = new ApplicationFactory(data.methods, data.name);
-
+        this.editor = editor;
         this.data = data;
         this.autoAdaptList = [];
     }

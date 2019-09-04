@@ -1303,7 +1303,7 @@ export default class Sheet {
         );
 
         // table
-        this.table = new Table(this.tableEl.el, data);
+        this.table = new Table(this.tableEl.el, data, this.editor);
         sheetInitEvents.call(this);
         sheetReset.call(this);
         // init selector [0, 0]
