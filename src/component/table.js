@@ -107,7 +107,7 @@ async function parseCell(viewRange, state = false, src = '') {
         workbook.Sheets[data.name]['A1'] = {v: '', f: `=${src}`};
     }
 
-    if(this.editor.display) {
+    if (this.editor.display) {
         try {
             calc(workbook);
         } catch (e) {
@@ -288,64 +288,62 @@ function renderAutofilter(viewRange) {
 }
 
 async function renderContent(viewRange, fw, fh, tx, ty) {
-    setTimeout(async () => {
-        let args = await parseCell.call(this, viewRange);
-        if(args.state) {
-            this.render();
-            return;
+    let args = await parseCell.call(this, viewRange);
+    if (args.state) {
+        this.render();
+        return;
+    }
+    let sheetbook = args.data;
+    const {draw, data} = this;
+    draw.save();
+    draw.translate(fw, fh)
+        .translate(tx, ty);
+
+    const {exceptRowSet} = data;
+
+    const filteredTranslateFunc = (ri) => {
+        const ret = exceptRowSet.has(ri);
+        if (ret) {
+            const height = data.rows.getHeight(ri);
+            draw.translate(0, -height);
         }
-        let sheetbook = args.data;
-        const {draw, data} = this;
-        draw.save();
-        draw.translate(fw, fh)
-            .translate(tx, ty);
+        return !ret;
+    };
+    // 1 render cell
+    draw.save();
 
-        const {exceptRowSet} = data;
+    viewRange.each((ri, ci) => {
+        renderCell.call(this, ri, ci, sheetbook);
+    }, ri => filteredTranslateFunc(ri));
+    draw.restore();
+    // 2 render cell border
+    // draw.save();
+    // renderCellBorders.call(this, bboxes, (ri) => filteredTranslateFunc(ri));
+    // draw.restore();
 
-        const filteredTranslateFunc = (ri) => {
-            const ret = exceptRowSet.has(ri);
-            if (ret) {
-                const height = data.rows.getHeight(ri);
-                draw.translate(0, -height);
-            }
-            return !ret;
-        };
-        // 1 render cell
-        draw.save();
-
-        viewRange.each((ri, ci) => {
-            renderCell.call(this, ri, ci, sheetbook);
-        }, ri => filteredTranslateFunc(ri));
-        draw.restore();
-        // 2 render cell border
-        // draw.save();
-        // renderCellBorders.call(this, bboxes, (ri) => filteredTranslateFunc(ri));
-        // draw.restore();
-
-        // / bboxes = [];
-        // 3 render mergeCell
-        const rset = new Set();
-        draw.save();
-        data.eachMergesInView(viewRange, ({sri, sci, eri}) => {
-            if (!exceptRowSet.has(sri)) {
-                renderCell.call(this, sri, sci, sheetbook);
-            } else if (!rset.has(sri)) {
-                rset.add(sri);
-                const height = data.rows.sumHeight(sri, eri + 1);
-                draw.translate(0, -height);
-            }
-        });
-        draw.restore();
-
-
-        // 4 render autofilter
-        renderAutofilter.call(this, viewRange);
-
-        // 5 render flex
-        renderFlexible.call(this);
-
-        draw.restore();
+    // / bboxes = [];
+    // 3 render mergeCell
+    const rset = new Set();
+    draw.save();
+    data.eachMergesInView(viewRange, ({sri, sci, eri}) => {
+        if (!exceptRowSet.has(sri)) {
+            renderCell.call(this, sri, sci, sheetbook);
+        } else if (!rset.has(sri)) {
+            rset.add(sri);
+            const height = data.rows.sumHeight(sri, eri + 1);
+            draw.translate(0, -height);
+        }
     });
+    draw.restore();
+
+
+    // 4 render autofilter
+    renderAutofilter.call(this, viewRange);
+
+    // 5 render flex
+    renderFlexible.call(this);
+
+    draw.restore();
 }
 
 function renderSelectedHeaderCell(x, y, w, h) {
