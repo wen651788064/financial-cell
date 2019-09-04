@@ -88,11 +88,15 @@ function selectorMove(multiple, direction) {
         selector, data, editor
     } = this;
     const {rows, cols} = data;
+    if(editor.isCors) {
+        selector.indexes = [editor.ri, editor.ci];
+    }
     let [ri, ci] = selector.indexes;
     const {eri, eci} = selector.range;
     if (multiple) {
         [ri, ci] = selector.moveIndexes;
     }
+
 
     // console.log("92", ri, ci, editor.ri, editor.ci)
     // if((editor.ri != ri && editor.ri != -1) || (editor.ci != ci && editor.ci != -1)) {
@@ -656,7 +660,7 @@ function dataSetCellText(text, state = 'finished') {
     const {data, table, editor} = this;
     // const [ri, ci] = selector.indexes;
     let {ri, ci} = data.selector;
-    if ((editor.ri != ri && editor.ri != -1) || (editor.ci != ci && editor.ci != -1)) {
+    if ((editor.ri != ri && editor.ri != -1) || (editor.ci != ci && editor.ci != -1) && !editor.isCors) {
         return;
     }
     data.setSelectedCellText(text, state);
