@@ -20,7 +20,7 @@ function lockCells(evt, _selector, isAb = false, p = -1) {
     const cellRect = data.getCellRectByXY(offsetX, offsetY);
     const {ri, ci} = cellRect;
 
-    const {inputText, pos} = editor;
+    let {inputText, pos} = editor;
     let input = '';
 
     editor.handler(inputText);
@@ -49,8 +49,12 @@ function lockCells(evt, _selector, isAb = false, p = -1) {
                 text = es1.s3 == es2.s3 ? es1.s3 : `${es1.s3}:${es2.s3}`;
             }
             _selector.erpx = text;
-            console.log(cuttingByPos(inputText, pos).length);
-            let sp = p != - 1 ? p : pos - cuttingByPos(inputText, pos).length;
+            let {isCors} = editor;
+            if (isCors) {
+                pos = 1;
+            }
+
+            let sp = p != -1 ? p : pos - cuttingByPos(inputText, pos).length;
             input = inputText.substring(0, sp) + text + inputText.substring(pos, inputText.length);
             editor.setText(input);
             editor.setCursorPos(inputText.substring(0, sp).length + text.length);
@@ -165,14 +169,14 @@ function lockCells(evt, _selector, isAb = false, p = -1) {
         Object.keys(merges._).forEach(i => {
             let m = merges._[i];
             const cut = cutStr(it, true);
-            for(let i = 0; i < cut.length; i++) {
-                if(cut[i].indexOf(":") != -1) {
+            for (let i = 0; i < cut.length; i++) {
+                if (cut[i].indexOf(":") != -1) {
                     let a1 = cut[i].split(":")[0];
                     let a2 = cut[i].split(":")[1];
                     let e1 = expr2xy(a1);
                     let e2 = expr2xy(a2);
 
-                    if(m.sci >= e1[0] && m.sri >= e1[1] && m.eci <= e2[0] && m.eri <= e2[1]) {
+                    if (m.sci >= e1[0] && m.sri >= e1[1] && m.eci <= e2[0] && m.eri <= e2[1]) {
                         it = it.replace(new RegExp(cut[i], 'g'), a1);
                         enter = true;
                     }
@@ -180,7 +184,7 @@ function lockCells(evt, _selector, isAb = false, p = -1) {
             }
         });
         div2span.call(this, cutting(it), cutting2(it));
-        if(enter) {
+        if (enter) {
             setTimeout(() => {
                 editor.setCursorPos(it.length);
             }, 10);
@@ -247,14 +251,14 @@ function makeSelector(ri, ci, selectors = this.selectors, multiple = false, _sel
     Object.keys(merges._).forEach(i => {
         let m = merges._[i];
         const cut = cutStr(it, true);
-        for(let i = 0; i < cut.length; i++) {
-            if(cut[i].indexOf(":") != -1) {
+        for (let i = 0; i < cut.length; i++) {
+            if (cut[i].indexOf(":") != -1) {
                 let a1 = cut[i].split(":")[0];
                 let a2 = cut[i].split(":")[1];
                 let e1 = expr2xy(a1);
                 let e2 = expr2xy(a2);
 
-                if(m.sci >= e1[0] && m.sri >= e1[1] && m.eci <= e2[0] && m.eri <= e2[1]) {
+                if (m.sci >= e1[0] && m.sri >= e1[1] && m.eci <= e2[0] && m.eri <= e2[1]) {
                     it = it.replace(new RegExp(cut[i], 'g'), a1);
                 }
             }

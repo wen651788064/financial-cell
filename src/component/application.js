@@ -24,9 +24,9 @@ export default class ApplicationFactory {
 
     async getSamples(sheet) {
         if( this.lock) {
+            this.lock = false;
             let res = await this.setData();
             this._calc = res.data.calc;
-            this.lock = false;
         }
         let _calc2 = helper.cloneDeep(this._calc);
 
