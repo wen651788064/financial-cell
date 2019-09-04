@@ -660,7 +660,7 @@ function dataSetCellText(text, state = 'finished') {
     const {data, table, editor} = this;
     // const [ri, ci] = selector.indexes;
     let {ri, ci} = data.selector;
-    if ((editor.ri != ri && editor.ri != -1) || (editor.ci != ci && editor.ci != -1) && !editor.isCors) {
+    if ((editor.ri != ri && editor.ri != -1) || (editor.ci != ci && editor.ci != -1)) {
         return;
     }
     data.setSelectedCellText(text, state);
@@ -736,6 +736,9 @@ function sortFilterChange(ci, order, operator, value) {
 }
 
 function afterSelector(editor) {
+    if(editor.isCors) {
+        return;
+    }
     if (editor.getLock() || editor.state === 2) {
         let {inputText, ri, ci} = editor;
         selectorCellText.call(this, ri, ci, inputText, 'input');
