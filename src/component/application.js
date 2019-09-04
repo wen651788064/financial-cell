@@ -8,10 +8,11 @@ class ApplicationSample {
 }
 
 export default class ApplicationFactory {
-    constructor(cb) {
+    constructor(cb, name) {
         this.factory = [];
         this.cb = cb;
         this._ = [];
+        this.name = name;
         this._calc = [];
         this._calc2 = [];
         this.lock = false;
@@ -88,7 +89,7 @@ export default class ApplicationFactory {
         }
 
         const {cb} = this;
-        let ress = await cb.getData(cb.axios, arr, cb.user_id);
+        let ress = await cb.getData(cb.axios, arr, cb.user_id, this.name);
         return ress;
     }
 }

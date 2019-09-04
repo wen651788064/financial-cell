@@ -8,13 +8,13 @@ import './index.less';
 import zhCN from './locale/zh-cn';
 
 class Spreadsheet {
-    constructor(selectors, options = {}, methods = {}) {
+    constructor(selectors, options = {}, methods = {}, alias = 'sheet1') {
         let targetEl = selectors;
         if (typeof selectors === 'string') {
             targetEl = document.querySelector(selectors);
         }
         this.locale('zh-cn', zhCN);
-        this.data = new DataProxy('sheet1', options, methods);
+        this.data = new DataProxy(alias, options, methods);
         const rootEl = h('div', `${cssPrefix}`)
             .on('contextmenu', evt => evt.preventDefault());
         // create canvas element
