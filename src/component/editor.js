@@ -18,7 +18,7 @@ function resetTextareaSize() {
     const tlineWidth = textlineEl.offset().width + 9 + 15;
     const maxWidth = this.viewFn().width - areaOffset.left - 9;
     // console.log('tlineWidth:', tlineWidth, ':', maxWidth);
-    if (tlineWidth > areaOffset.width) {
+    if (tlineWidth > areaOffset.width && areaOffset.width != 0) {
         let twidth = tlineWidth;
         if (tlineWidth > maxWidth) {
             twidth = maxWidth - 15;
