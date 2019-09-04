@@ -64,6 +64,7 @@ async function parseCell(viewRange, state = false, src = '') {
     let workbook = [];
     workbook.Sheets = {};
     workbook.Sheets.qwckdw1 = {};
+    let enter = false;
 
     viewRange.each2((ri, ci) => {
         let cell = data.getCell(ri, ci);
@@ -76,6 +77,7 @@ async function parseCell(viewRange, state = false, src = '') {
                 if (cell.formulas && cell.formulas.lastIndexOf("=") == 0 && cell.formulas.search(/[0-9a-zA-Z]+![A-Za-z]+\d+/) != -1) {
                     let {factory} = this;
                     factory.push(cell.formulas);
+                    enter = true;
                 }
                 if (cell.text && cell.text.lastIndexOf("=") === 0) {
                     workbook.Sheets.qwckdw1[expr] = {
@@ -109,7 +111,11 @@ async function parseCell(viewRange, state = false, src = '') {
     } catch (e) {
         console.error(e);
     }
-    return workbook;
+
+    return {
+        "state": enter,
+        "data": workbook
+    };
 }
 
 export function parseCell2(viewRange, state = false, src = '') {
@@ -275,8 +281,12 @@ function renderAutofilter(viewRange) {
 }
 
 async function renderContent(viewRange, fw, fh, tx, ty) {
-    this.clear();
-    let sheetbook = await parseCell.call(this, viewRange);
+    let args = await parseCell.call(this, viewRange);
+    if(args.state) {
+        this.table.render();
+        return;
+    }
+    let sheetbook = args.data;
     const {draw, data} = this;
     draw.save();
     draw.translate(fw, fh)
