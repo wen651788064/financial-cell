@@ -493,11 +493,11 @@ function editorSet(type = 1) {
 function verticalScrollbarMove(distance) {
     const {data, table, selector} = this;
     data.scrolly(distance, () => {
-        selector.resetBRLAreaOffset();
-        pictureSetOffset.call(this);
-        adviceSetOffset.call(this);
-        selectorsSetOffset.call(this);
-        editorSetOffset.call(this, false);
+        // selector.resetBRLAreaOffset();
+        // pictureSetOffset.call(this);
+        // adviceSetOffset.call(this);
+        // selectorsSetOffset.call(this);
+        // editorSetOffset.call(this, false);
         table.render();
     });
 }
