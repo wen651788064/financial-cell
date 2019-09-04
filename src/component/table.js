@@ -58,7 +58,7 @@ function getCellTextStyle(rindex, cindex) {
 }
 
 
-export async function parseCell(viewRange, state = false, src = '') {
+async function parseCell(viewRange, state = false, src = '') {
     let {data} = this;
     let {calc, rows} = data;
     let workbook = [];
@@ -100,6 +100,51 @@ export async function parseCell(viewRange, state = false, src = '') {
         workbook.Sheets[i] = s[i];
     });
     console.log(workbook.Sheets);
+
+    if (state) {
+        workbook.Sheets.qwckdw1['A1'] = {v: '', f: `=${src}`};
+    }
+
+    try {
+        calc(workbook);
+    } catch (e) {
+        console.error(e);
+    }
+    return workbook;
+}
+
+export function parseCell2(viewRange, state = false, src = '') {
+    let {data} = this;
+    let {calc, rows} = data;
+    let workbook = [];
+    workbook.Sheets = {};
+    workbook.Sheets.qwckdw1 = {};
+
+    viewRange.each2((ri, ci) => {
+        let cell = data.getCell(ri, ci);
+        let expr = xy2expr(ci, ri);
+        if (cell && cell.text) {
+            cell.text = cell.text + "";
+            if (cell.text.indexOf("MD.RTD") != -1) {
+                workbook.Sheets.qwckdw1[expr] = {v: "", f: ""};
+            } else {
+                if (cell.text && cell.text.lastIndexOf("=") === 0) {
+                    workbook.Sheets.qwckdw1[expr] = {
+                        v: '',
+                        f: cell.text.replace(/ /g, '').replace(/\"/g, "\"").replace(/\"\"\"\"&/g, "\"'\"&")
+                    };
+                } else {
+                    workbook.Sheets.qwckdw1[expr] = {
+                        v: cell.text.replace(/ /g, '').toUpperCase().replace(/\"/g, "\""),
+                    };
+                }
+            }
+        }
+        else {
+            workbook.Sheets.qwckdw1[expr] = {v: 0, f: 0};
+        }
+    });
+
 
     if (state) {
         workbook.Sheets.qwckdw1['A1'] = {v: '', f: `=${src}`};

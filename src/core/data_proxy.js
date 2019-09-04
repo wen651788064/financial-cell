@@ -17,7 +17,7 @@ import {t} from '../locale/locale';
 import Moved from '../event/move';
 import {h} from "../component/element";
 import {mountImg} from "../event/paste";
-import {parseCell} from "../component/table";
+import {parseCell2} from "../component/table";
 // private methods
 /*
  * {
@@ -990,12 +990,11 @@ export default class DataProxy {
     }
 
     getCellByExpr(src, table, name) {
-        parseCell.call(table, this.viewRange(), true, src).then(workbook => {
-            return {
-                "text": workbook['Sheets'].Sheet1.A1.w ? workbook['Sheets'].Sheet1.A1.w : workbook['Sheets'].Sheet1.A1.v,
-                "formulas": "=" + `${name}!` + workbook['Sheets'].Sheet1.A1.f.split("=")[1],
-            };
-        });
+        let workbook = parseCell2.call(table, this.viewRange(), true, src);
+        return {
+            "text": workbook['Sheets'].Sheet1.A1.w ? workbook['Sheets'].Sheet1.A1.w : workbook['Sheets'].Sheet1.A1.v,
+            "formulas": "=" + `${name}!` + workbook['Sheets'].Sheet1.A1.f.split("=")[1],
+        };
     }
 
     // state: input | finished
