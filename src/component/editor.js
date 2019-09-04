@@ -205,6 +205,7 @@ function inputEventHandler(evt, txt = '', formulas = '', state = "input") {
             }
         }
         textlineEl.html(formulas || v);
+        this.inputText = formulas || v;
         resetTextareaSize.call(this);
         if (v && v[0] !== '=') {
             // textEl.html(v);
