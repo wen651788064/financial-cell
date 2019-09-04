@@ -249,9 +249,6 @@ function keyDownEventHandler(evt) {
 }
 
 function parse(v) {
-    if (!isNaN(v)) {
-        return;
-    }
     const start = v.lastIndexOf('=');
 
 
@@ -278,9 +275,6 @@ function parse(v) {
 }
 
 function parse2(v, pos) {
-    if (!isNaN(v)) {
-        return;
-    }
     const start = v.lastIndexOf('=');
     if (start === 0 && v.length >= 1 && operation(v[pos - 1])) {
         this.setLock(true);
