@@ -274,8 +274,8 @@ function renderAutofilter(viewRange) {
     // renderFlexible.call(this, 1, 1)
 }
 
-function renderContent(viewRange, fw, fh, tx, ty) {
-    parseCell.call(this, viewRange).then(sheetbook => {
+async function renderContent(viewRange, fw, fh, tx, ty) {
+    await parseCell.call(this, viewRange).then(sheetbook => {
         const {draw, data} = this;
         draw.save();
         draw.translate(fw, fh)
