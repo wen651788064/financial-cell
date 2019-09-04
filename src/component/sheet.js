@@ -736,11 +736,10 @@ function sortFilterChange(ci, order, operator, value) {
 }
 
 function afterSelector(editor) {
-    if(editor.isCors) {
-        return;
-    }
     if (editor.getLock() || editor.state === 2) {
         let {inputText, ri, ci} = editor;
+        let {selector} = this;
+        selector.indexes = [ri, ci];
         selectorCellText.call(this, ri, ci, inputText, 'input');
     }
 }
