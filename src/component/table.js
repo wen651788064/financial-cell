@@ -283,7 +283,7 @@ function renderAutofilter(viewRange) {
 async function renderContent(viewRange, fw, fh, tx, ty) {
     let args = await parseCell.call(this, viewRange);
     if(args.state) {
-        this.table.render();
+        this.render();
         return;
     }
     let sheetbook = args.data;
