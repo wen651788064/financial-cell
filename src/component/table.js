@@ -282,9 +282,6 @@ function renderAutofilter(viewRange) {
 }
 
 async function renderContent(viewRange, fw, fh, tx, ty) {
-    if(!this.editor.display) {
-        return;
-    }
     let args = await parseCell.call(this, viewRange);
     if(args.state) {
         this.render();
@@ -509,6 +506,10 @@ class Table {
     }
 
     render() {
+        if(!this.editor.display) {
+            return;
+        }
+
         // resize canvas
         const {data} = this;
         const {rows, cols} = data;
