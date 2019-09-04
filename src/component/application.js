@@ -81,14 +81,14 @@ export default class ApplicationFactory {
         }
     }
 
-    setData() {
+    async setData() {
         let arr = [];
         for (let i = 0; i < this.factory.length; i++) {
             arr.push(this.factory[i].alias);
         }
 
         const {cb} = this;
-        let ress = cb.getData(cb.axios, arr, cb.user_id);
+        let ress = await cb.getData(cb.axios, arr, cb.user_id);
         return ress;
     }
 }
