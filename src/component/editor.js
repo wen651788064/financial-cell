@@ -379,7 +379,7 @@ export default class Editor {
         this.rowHeight = rowHeight;
         this.formulas = formulas;
         this.sheet = sheet;
-        this.display = false;
+        this.display = true;
         this.suggest = new Suggest(formulas, (it) => {
             suggestItemClick.call(this, it);
         });
