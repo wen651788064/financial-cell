@@ -470,7 +470,7 @@ class Rows {
                 }
 
                 ncellmm[nri] = ncellmm[nri] || {cells: {}};
-                if(ncellmm[nri].cells[nci] && !ncellmm[nri].cells[nci].text && !ncellmm[nri].cells[nci].formulas) {
+                if(this._[ri].cells[ci].text != '' && this._[ri].cells[ci].formulas != '') {
                     ncellmm[nri].cells[nci] = this._[ri].cells[ci];
                 }
             });
