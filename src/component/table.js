@@ -77,7 +77,7 @@ async function parseCell(viewRange, state = false, src = '') {
                 if (cell.formulas && cell.formulas.lastIndexOf("=") == 0 && cell.formulas.search(/[0-9a-zA-Z]+![A-Za-z]+\d+/) != -1) {
                     let {factory} = this;
                     factory.push(cell.formulas);
-                    enter = true;
+                    enter = factory.lock;
                 }
                 if (cell.text && cell.text.lastIndexOf("=") === 0) {
                     workbook.Sheets.qwckdw1[expr] = {
