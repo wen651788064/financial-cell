@@ -72,14 +72,13 @@ function selectorSet(multiple, ri, ci, indexesUpdated = true, moving = false) {
     toolbar.reset();
 
     // add
-    // if (this.render_timer) {
-    //     clearTimeout(this.render_timer)
-    // }
-    //
-    // this.render_timer = setTimeout(() => {
-    //     table.render();
-    // }, 50);
-    table.render();
+    if (this.render_timer) {
+        clearTimeout(this.render_timer)
+    }
+
+    this.render_timer = setTimeout(() => {
+        table.render();
+    }, 100);
 }
 
 // multiple: boolean
