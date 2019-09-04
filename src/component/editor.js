@@ -146,6 +146,7 @@ function inputEventHandler(evt, txt = '', formulas = '', state = "input") {
         this.show();
         if (this.chinese == false) return;
         let v = '';
+        this.sheet.selector.hide();
         if (txt == '' && evt) {
             let t1 = '';
             for (let i = 0, len = evt.target.childNodes.length; i < len; i++) {
