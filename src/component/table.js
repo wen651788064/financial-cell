@@ -6,6 +6,7 @@ import {formatm} from '../core/format';
 import {isMinus} from "../utils/number_util";
 import {Draw, DrawBox, npx, thinLineWidth,} from '../canvas/draw';
 import ApplicationFactory from "./application";
+import {isSheetVale} from "../core/operator";
 
 var formulajs = require('formulajs');
 // gobal var
@@ -74,7 +75,7 @@ async function parseCell(viewRange, state = false, src = '') {
             if (cell.text.indexOf("MD.RTD") != -1) {
                 workbook.Sheets.qwckdw1[expr] = {v: "", f: ""};
             } else {
-                if (cell.formulas && cell.formulas.lastIndexOf("=") == 0 && cell.formulas.search(/[\u4E00-\u9FA50-9a-zA-Z]+![A-Za-z]+\d+/) != -1) {
+                if (cell.formulas && cell.formulas.lastIndexOf("=") == 0 && isSheetVale(cell.formulas)) {
                     let {factory} = this;
                     factory.push(cell.formulas);
                     enter = factory.lock;

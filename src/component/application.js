@@ -47,7 +47,7 @@ export default class ApplicationFactory {
         let arr = splitStr(text);
         let result = [];
         for (let i = 0; i < arr.length; i++) {
-            let str = arr[i];
+            let str = arr[i].replace(/\$/g, '');
             let _exec = /[\u4E00-\u9FA50-9a-zA-Z]+![A-Za-z]+\d+/.exec(str);
             if (_exec && _exec[0]) {
                 result.push(_exec[0]);

@@ -23186,6 +23186,20 @@ const helpFormula = {
     },
 };
 
+
+const isSheetVale = (str) => {
+    str = str.toUpperCase();
+    if (str.search(/[\u4E00-\u9FA50-9a-zA-Z]+![A-Za-z]+\$\d+/) != -1)
+        return true;
+    if (str.search(/[\u4E00-\u9FA50-9a-zA-Z]+!\$[A-Za-z]+\d+/) != -1)
+        return true;
+    if (str.search(/[\u4E00-\u9FA50-9a-zA-Z]+!\$[A-Za-z]+\$\d+/) != -1)
+        return true;
+    if (str.search(/[\u4E00-\u9FA50-9a-zA-Z]+![A-Za-z]+\d+/) != -1)
+        return true;
+    return false;
+}
+
 const isAbsoluteValue = (str, rule = 1) => {
     str = str.toUpperCase();
     if (rule == 1) {
@@ -23292,4 +23306,5 @@ export {
     changeFormula,
     value2absolute,
     splitStr,
+    isSheetVale,
 }
