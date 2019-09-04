@@ -169,18 +169,18 @@ const cellRender = (data, sheetbook, y, x, src, formulaMap, getCellText, cellLis
             // let {formula} = data.settings;=MD.RTD("sina", "162411", "now")
             // formula.wland(formula, data);
             return src.toUpperCase();
-        } else if (src.substring(1) && sheetbook.Sheets.qwckdw1[xy2expr(x, y)]) {
+        } else if (src.substring(1) && sheetbook.Sheets[data.name][xy2expr(x, y)]) {
             // sheetbook.Sheets.Sheet1[xy2expr(x, y)].f = src.substring(1).toUpperCase();
             // XLSX_CALC.import_functions(formulajs);
             // XLSX_CALC(sheetbook);
 
-            if(sheetbook.Sheets.qwckdw1[xy2expr(x, y)].v == undefined || sheetbook.Sheets.qwckdw1[xy2expr(x, y)].v === "") {
+            if(sheetbook.Sheets[data.name][xy2expr(x, y)].v == undefined || sheetbook.Sheets[data.name][xy2expr(x, y)].v === "") {
                 return "#ERROR!";
             }
-            sheetbook.Sheets.qwckdw1[xy2expr(x, y)].v = sheetbook.Sheets.qwckdw1[xy2expr(x, y)].v + "";
+            sheetbook.Sheets[data.name][xy2expr(x, y)].v = sheetbook.Sheets[data.name][xy2expr(x, y)].v + "";
 
             // let value = sheetbook.Sheets.Sheet1[xy2expr(x, y)].v ? sheetbook.Sheets.Sheet1[xy2expr(x, y)].v : "NaN";
-            return sheetbook.Sheets.qwckdw1[xy2expr(x, y)].w ? sheetbook.Sheets.qwckdw1[xy2expr(x, y)].w :sheetbook.Sheets.qwckdw1[xy2expr(x, y)].v.replace(/'/g, "\"");
+            return sheetbook.Sheets[data.name][xy2expr(x, y)].w ? sheetbook.Sheets[data.name][xy2expr(x, y)].w :sheetbook.Sheets[data.name][xy2expr(x, y)].v.replace(/'/g, "\"");
         }
         const stack = infixExprToSuffixExpr(src.substring(1));
         if (stack.length <= 0) return src;

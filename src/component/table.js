@@ -64,7 +64,7 @@ async function parseCell(viewRange, state = false, src = '') {
     let {calc, rows} = data;
     let workbook = [];
     workbook.Sheets = {};
-    workbook.Sheets.qwckdw1 = {};
+    workbook.Sheets[data.name] = {};
     let enter = false;
 
     viewRange.each2((ri, ci) => {
@@ -73,7 +73,7 @@ async function parseCell(viewRange, state = false, src = '') {
         if (cell && cell.text) {
             cell.text = cell.text + "";
             if (cell.text.indexOf("MD.RTD") != -1) {
-                workbook.Sheets.qwckdw1[expr] = {v: "", f: ""};
+                workbook.Sheets[data.name][expr] = {v: "", f: ""};
             } else {
                 if (cell.formulas && cell.formulas.lastIndexOf("=") == 0 && isSheetVale(cell.formulas)) {
                     let {factory} = this;
@@ -81,19 +81,19 @@ async function parseCell(viewRange, state = false, src = '') {
                     enter = factory.lock;
                 }
                 if (cell.text && cell.text.lastIndexOf("=") === 0) {
-                    workbook.Sheets.qwckdw1[expr] = {
+                    workbook.Sheets[data.name][expr] = {
                         v: '',
                         f: cell.text.replace(/ /g, '').replace(/\"/g, "\"").replace(/\"\"\"\"&/g, "\"'\"&")
                     };
                 } else {
-                    workbook.Sheets.qwckdw1[expr] = {
+                    workbook.Sheets[data.name][expr] = {
                         v: cell.text.replace(/ /g, '').toUpperCase().replace(/\"/g, "\""),
                     };
                 }
             }
         }
         else {
-            workbook.Sheets.qwckdw1[expr] = {v: 0, f: 0};
+            workbook.Sheets[data.name][expr] = {v: 0, f: 0};
         }
     });
 
@@ -104,7 +104,7 @@ async function parseCell(viewRange, state = false, src = '') {
     });
 
     if (state) {
-        workbook.Sheets.qwckdw1['A1'] = {v: '', f: `=${src}`};
+        workbook.Sheets[data.name]['A1'] = {v: '', f: `=${src}`};
     }
 
     try {
@@ -124,7 +124,7 @@ export function parseCell2(viewRange, state = false, src = '') {
     let {calc, rows} = data;
     let workbook = [];
     workbook.Sheets = {};
-    workbook.Sheets.qwckdw1 = {};
+    workbook.Sheets[data.name] = {};
 
     viewRange.each2((ri, ci) => {
         let cell = data.getCell(ri, ci);
@@ -132,28 +132,28 @@ export function parseCell2(viewRange, state = false, src = '') {
         if (cell && cell.text) {
             cell.text = cell.text + "";
             if (cell.text.indexOf("MD.RTD") != -1) {
-                workbook.Sheets.qwckdw1[expr] = {v: "", f: ""};
+                workbook.Sheets[data.name][expr] = {v: "", f: ""};
             } else {
                 if (cell.text && cell.text.lastIndexOf("=") === 0) {
-                    workbook.Sheets.qwckdw1[expr] = {
+                    workbook.Sheets[data.name][expr] = {
                         v: '',
                         f: cell.text.replace(/ /g, '').replace(/\"/g, "\"").replace(/\"\"\"\"&/g, "\"'\"&")
                     };
                 } else {
-                    workbook.Sheets.qwckdw1[expr] = {
+                    workbook.Sheets[data.name][expr] = {
                         v: cell.text.replace(/ /g, '').toUpperCase().replace(/\"/g, "\""),
                     };
                 }
             }
         }
         else {
-            workbook.Sheets.qwckdw1[expr] = {v: 0, f: 0};
+            workbook.Sheets[data.name][expr] = {v: 0, f: 0};
         }
     });
 
 
     if (state) {
-        workbook.Sheets.qwckdw1['A1'] = {v: '', f: `=${src}`};
+        workbook.Sheets[data.name]['A1'] = {v: '', f: `=${src}`};
     }
 
     try {
