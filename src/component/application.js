@@ -16,6 +16,8 @@ export default class ApplicationFactory {
         this._calc = [];
         this._calc2 = [];
         this.lock = false;
+
+        this.data = [];
     }
 
     createSample(text) {

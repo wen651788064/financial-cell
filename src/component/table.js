@@ -107,10 +107,16 @@ async function parseCell(viewRange, state = false, src = '') {
         workbook.Sheets[data.name]['A1'] = {v: '', f: `=${src}`};
     }
 
-    try {
-        calc(workbook);
-    } catch (e) {
-        console.error(e);
+    if(this.editor.display) {
+        try {
+            calc(workbook);
+        } catch (e) {
+            console.error(e);
+        }
+        let {factory} = this;
+        factory.data = workbook;
+    } else {
+        workbook = factory.data;
     }
 
     return {
