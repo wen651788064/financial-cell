@@ -74,7 +74,7 @@ async function parseCell(viewRange, state = false, src = '') {
             if (cell.text.indexOf("MD.RTD") != -1) {
                 workbook.Sheets.qwckdw1[expr] = {v: "", f: ""};
             } else {
-                if (cell.formulas && cell.formulas.lastIndexOf("=") == 0 && cell.formulas.search(/[0-9a-zA-Z]+![A-Za-z]+\d+/) != -1) {
+                if (cell.formulas && cell.formulas.lastIndexOf("=") == 0 && cell.formulas.search(/[\u4E00-\u9FA50-9a-zA-Z]+![A-Za-z]+\d+/) != -1) {
                     let {factory} = this;
                     factory.push(cell.formulas);
                     enter = factory.lock;
