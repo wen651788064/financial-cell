@@ -506,10 +506,6 @@ class Table {
     }
 
     render() {
-        if(!this.editor.display) {
-            return;
-        }
-
         // resize canvas
         const {data} = this;
         const {rows, cols} = data;
