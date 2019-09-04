@@ -99,7 +99,6 @@ async function parseCell(viewRange, state = false, src = '') {
     Object.keys(s).forEach(i => {
         workbook.Sheets[i] = s[i];
     });
-    console.log(workbook.Sheets);
 
     if (state) {
         workbook.Sheets.qwckdw1['A1'] = {v: '', f: `=${src}`};
@@ -452,6 +451,7 @@ class Table {
         this.el = el;
         this.draw = new Draw(el, data.viewWidth(), data.viewHeight());
         this.factory = new ApplicationFactory(data.methods);
+
         this.data = data;
         this.autoAdaptList = [];
     }

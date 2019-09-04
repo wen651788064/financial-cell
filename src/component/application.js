@@ -42,6 +42,8 @@ export default class ApplicationFactory {
     }
 
     async push(text) {
+        if(!this.cb || !this.cb.getData)
+            return;
         let arr = splitStr(text);
         let result = [];
         for (let i = 0; i < arr.length; i++) {

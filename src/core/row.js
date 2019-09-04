@@ -237,8 +237,7 @@ class Rows {
             if (sarr.length > 1) {
                 isCopy = true;
             }
-
-            if (sri == eri && sci == eci) {
+            if (sri == eri && sci + i == sci + i) {
                 isCopy = true;
             }
 
@@ -257,6 +256,8 @@ class Rows {
                         let last2 = sarr[sarr.length - 2];
                         let last1 = sarr[sarr.length - 1];
                         diffValue = last1.text * 1 - last2.text * 1;
+                    } else {
+                        diffValue = 1;
                     }
                     for (let i = 0; i < darr.length; i++) {
                         let d = darr[i];
@@ -294,6 +295,8 @@ class Rows {
                         let last2 = sarr[1];
                         let last1 = sarr[0];
                         diffValue = last1.text * 1 - last2.text * 1;
+                    } else {
+                        diffValue = -1;
                     }
 
                     for (let i = darr.length - 1; i >= 0; i--) {

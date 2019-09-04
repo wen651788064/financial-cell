@@ -8,7 +8,7 @@ import './index.less';
 import zhCN from './locale/zh-cn';
 
 class Spreadsheet {
-    constructor(selectors, options = {}, methods) {
+    constructor(selectors, options = {}, methods = {}) {
         let targetEl = selectors;
         if (typeof selectors === 'string') {
             targetEl = document.querySelector(selectors);
