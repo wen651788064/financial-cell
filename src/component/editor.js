@@ -574,13 +574,15 @@ export default class Editor {
         this.datepicker.hide();
 
         if (c) {
-            return;
+            return false;
         }
 
         setTimeout(() => {
             const {ri, ci} = this.data.selector;
             this.setRiCi(ri, ci);
         });
+
+        return isDisplay.call(this);
     }
 
     mount2span(spanArr, pos = -1, begin = -1, content = {suggestContent: false, cut: '', pos: -1}) {

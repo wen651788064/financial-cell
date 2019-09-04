@@ -129,6 +129,7 @@ function selectorMove(multiple, direction) {
     }
     selectorSet.call(this, multiple, ri, ci);
     editor.clear();
+
     editorSetOffset.call(this);
     scrollbarMove.call(this);
 }
@@ -888,11 +889,14 @@ function sheetInitEvents() {
                     if (ri !== -1 && ci !== -1 && inputText[0] === "=") {
                         selectorCellText.call(this, ri, ci, inputText, 'input');
                     }
-                    // let {formula} = data.settings;
-                    // if (formula && typeof formula.wland == "function") {
-                    //     formula.wland(formula, data, table);
-                    // }
-                    editor.clear();
+
+                    let state = editor.clear();
+                    if(state) {
+                        let {formula} = data.settings;
+                        if (formula && typeof formula.wland == "function") {
+                            formula.wland(formula, data, table);
+                        }
+                    }
                     overlayerMousedown.call(this, evt);
                     clearSelectors.call(this);
                     editorSetOffset.call(this);
