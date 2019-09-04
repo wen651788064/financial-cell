@@ -288,7 +288,7 @@ function renderAutofilter(viewRange) {
 }
 
 async function renderContent(viewRange, fw, fh, tx, ty) {
-    setTimeout(() => {
+    setTimeout(async () => {
         let args = await parseCell.call(this, viewRange);
         if(args.state) {
             this.render();
