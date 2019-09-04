@@ -486,7 +486,7 @@ class Table {
                 renderContent.call(this, vr, fw, fh, -x, 0);
                 renderFixedHeaders.call(this, 'top', vr, fw, fh, tx, 0);
             }
-            // 3
+            // 3x
             if (fci > 0) {
                 const vr = viewRange.clone();
                 vr.sci = 0;
