@@ -992,8 +992,8 @@ export default class DataProxy {
     getCellByExpr(src, table, name) {
         let workbook = parseCell2.call(table, this.viewRange(), true, src);
         return {
-            "text": workbook['Sheets'].Sheet1.A1.w ? workbook['Sheets'].Sheet1.A1.w : workbook['Sheets'].Sheet1.A1.v,
-            "formulas": "=" + `${name}!` + workbook['Sheets'].Sheet1.A1.f.split("=")[1],
+            "text": workbook['Sheets'].qwckdw1.A1.w ? workbook['Sheets'].qwckdw1.A1.w : workbook['Sheets'].qwckdw1.A1.v,
+            "formulas": "=" + `${name}!` + workbook['Sheets'].qwckdw1.A1.f.split("=")[1],
         };
     }
 
