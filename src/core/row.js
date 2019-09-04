@@ -468,8 +468,11 @@ class Rows {
                     nri = dstCellRange.sri + (nri - srcCellRange.sri);
                     nci = dstCellRange.sci + (nci - srcCellRange.sci);
                 }
+
                 ncellmm[nri] = ncellmm[nri] || {cells: {}};
-                ncellmm[nri].cells[nci] = this._[ri].cells[ci];
+                if(ncellmm[nri].cells[nci] && !ncellmm[nri].cells[nci].text && !ncellmm[nri].cells[nci].formulas) {
+                    ncellmm[nri].cells[nci] = this._[ri].cells[ci];
+                }
             });
         });
         this._ = ncellmm;
