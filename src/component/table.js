@@ -275,6 +275,7 @@ function renderAutofilter(viewRange) {
 }
 
 async function renderContent(viewRange, fw, fh, tx, ty) {
+    this.clear();
     let sheetbook = await parseCell.call(this, viewRange);
     const {draw, data} = this;
     draw.save();
