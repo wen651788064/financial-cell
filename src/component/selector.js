@@ -104,9 +104,38 @@ class SelectorElement {
                     arr2.push(xy2expr(j, i));
                 });
             }
-            rows.moveChange(arr, arr2, arr3);
 
-            sheet.selectorMoveReset();
+            if (window.Worker) {
+                const myWorker = new Worker("");
+
+                first.onchange = function () {
+                    myWorker.postMessage([first.value, second.value]);
+                    console.log('Message posted to worker');
+                }
+
+                second.onchange = function () {
+                    myWorker.postMessage([first.value, second.value]);
+                    console.log('Message posted to worker');
+                }
+
+                myWorker.onmessage = function (e) {
+                    result.textContent = e.data;
+                    console.log('Message received from worker');
+                }
+            } else {
+                console.log('Your browser doesn\'t support web workers.')
+            }
+
+
+            const myWorker = new Worker("../worker/worker");
+            myWorker.postMessage([arr, arr2, arr3, this]);
+            console.log('Message posted to worker');
+
+            myWorker.onmessage = function (e) {
+                console.log('Message received from worker');
+            };
+            // rows.moveChange(arr, arr2, arr3);
+            // sheet.selectorMoveReset();
         });
     }
 

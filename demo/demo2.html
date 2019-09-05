@@ -1,60 +1,37 @@
-
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title></title>
 </head>
-<style>
-    #main_table{
-        float: left;
-        table-layout: fixed;/*使table的宽度固定*/
-        width: 500px;/*给table一个宽度*/
-
-    }
-    .host_style{
-        width: 250px;/*给td定一个宽度,在这里有3个td，
-        其他3个td都没有设置宽度，所以这3个td的宽度之和是
-        table的定义的宽度-td(定义了宽度)*/
-    }
-    button{width: 50px;
-        height: 30px;
-        float: left;
-        margin-bottom: 10px;
-        margin-right: 6px}
-</style>
-<script></script>
 <body>
-<div style="width: 200px;margin: 10%;">
+<input type="button" id="box" value="点击我" />
+<input type="button" value="停止子线程的耗时操作" id="stop1" />
+<h1 id="num"></h1>
 
-    <button value="all">all</button>
-    <button value="invert">invert</button>
-    <button value="edit">edit</button>
+<script type="text/javascript">
 
-    <table id='main_table' border="1px solid" >
-        <tr>
-            <td><div style="float: right">asdsad</div></td>
-            <td class="host_style" style="height: 1px"></td>
-            <td></td>
-            <td></td>
-        </tr>
+    //创建一个worker对象（创建一个子线程）
+    var webworker;
+    if (typeof Worker != "undefined") {
+        //参数是耗时操作
+        webworker = new Worker("./webworker.js");
 
-        <tr>
-            <td>1</td>
-            <td>1</td>
-            <td>1</td>
-            <td>1</td>
-        </tr>
+        //监听子线程中运行的耗时操作，如果运行完毕，
+        //回调到这里（主线程）更新UI代码
+        webworker.onmessage = function (e) {
+            num.innerHTML = e.data;
+        }
 
-        <tr>
-            <td>1</td>
-            <td>1</td>
-            <td>1</td>
-            <td>1</td>
-        </tr>
-
-    </table>
-</div>
-
-
+    } else {
+        throw new Error ("不支持Worker对象");
+    }
+    box.onclick = function () {
+        alert("哈哈哈哈哈哈");
+    }
+    stop1.onclick = function () {
+        webworker.terminate();
+    }
+</script>
 </body>
+</html>
