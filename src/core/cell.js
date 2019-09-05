@@ -169,7 +169,7 @@ const cellRender = (data, sheetbook, y, x, src, formulaMap, getCellText, cellLis
             // let {formula} = data.settings;=MD.RTD("sina", "162411", "now")
             // formula.wland(formula, data);
             return src.toUpperCase();
-        } else if (src.substring(1) && sheetbook.Sheets[data.name][xy2expr(x, y)]) {
+        } else if (src.substring(1) && sheetbook.Sheets[data.name] && sheetbook.Sheets[data.name][xy2expr(x, y)]) {
             // sheetbook.Sheets.Sheet1[xy2expr(x, y)].f = src.substring(1).toUpperCase();
             // XLSX_CALC.import_functions(formulajs);
             // XLSX_CALC(sheetbook);
