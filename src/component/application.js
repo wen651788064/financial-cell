@@ -16,13 +16,19 @@ export default class ApplicationFactory {
         this._calc = [];
         this._calc2 = [];
         this.lock = false;
-
         this.data = [];
     }
 
     createSample(text) {
         let sample = new ApplicationSample(text, this.cb);
         this.factory.push(sample);
+    }
+
+    calcDiff(alias, newData) {
+
+        newData = newData[alias];
+        let oldData = this.data[alias];
+        console.log();
     }
 
     async getSamples(sheet) {
