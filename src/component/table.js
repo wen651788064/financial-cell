@@ -111,6 +111,7 @@ async function parseCell(viewRange, state = false, src = '') {
         // factory.c();
         try {
             console.time('x');
+            let {factory} = this;
             factory.calcDiff(workbook);
             calc(workbook);
             console.timeEnd('x');
