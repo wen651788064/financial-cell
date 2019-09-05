@@ -82,6 +82,7 @@ class SelectorElement {
             _selector.moveIndexes = [cellRange.sri, cellRange.sci];
             _selector.range = cellRange;
             _selector.setMove(rect);
+            sheet.selectorMoveReset();
 
             // 如果移动的内容被单元格包含，则需要变化
             let {rows} = data;
@@ -106,7 +107,6 @@ class SelectorElement {
             }
 
             setTimeout(() => {
-                sheet.selectorMoveReset();
                 rows.moveChange(arr, arr2, arr3);
                 sheet.selectorMoveReset();
             })
