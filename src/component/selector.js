@@ -3,7 +3,6 @@ import {cssPrefix} from '../config';
 import {CellRange} from '../core/cell_range';
 import {mouseMoveUp} from "../component/event";
 import {xy2expr} from "../core/alphabet";
-import {changeFormula, cutStr} from "../core/operator";
 
 const selectorHeightBorderWidth = 2 * 2 - 1;
 let startZIndex = 10;
@@ -106,63 +105,10 @@ class SelectorElement {
                 });
             }
 
-            const myWorker = new Worker("./worker");
-            myWorker.onmessage = function(e) {
-                console.log('Worker: Message received from main script');
-                let arr = e.data[0];
-                let arr2 = e.data[0];
-                let arr3 = e.data[0];
-
-                if (arr.length != arr2.length && arr3.length != arr2.length) {
-                    return;
-                }
-                this.each((ri) => {
-                    this.eachCells(ri, (ci) => {
-                        for (let i = 0; i < arr.length; i++) {
-                            let cell = this.getCell(ri, ci);
-                            let s1 = arr[i];
-                            let formulas = changeFormula(cutStr(cell.formulas));
-
-                            if (formulas.indexOf(s1) != -1) {
-                                let ca = arr3[i].replace(/\$/g, "\\$");
-
-                                this.setCellAll(ri, ci, cell.text.replace(new RegExp(ca, 'g'), arr2[i]),
-                                    cell.formulas.replace(ca, arr2[i]));
-                            } else {
-                                let s = value2absolute(s1);
-                                let es = value2absolute(arr2[i]);
-                                if (formulas.indexOf(s.s3) != -1) {
-                                    s = value2absolute(arr3[i]);
-
-                                    s.s3 = s.s3.replace(/\$/g, "\\$");
-                                    this.setCellAll(ri, ci, cell.text.replace(new RegExp(s.s3, 'g'), es.s3),
-                                        cell.formulas.replace(new RegExp(s.s3, 'g'), es.s3));
-                                } else if (formulas.indexOf(s.s2) != -1) {
-                                    s = value2absolute(arr3[i]);
-                                    s.s2 = s.s2.replace(/\$/g, "\\$");
-                                    this.setCellAll(ri, ci, cell.text.replace(new RegExp(s.s2, 'g'), es.s2),
-                                        cell.formulas.replace(new RegExp(s.s2, 'g'), es.s2));
-                                } else if (formulas.indexOf(s.s1) != -1) {
-                                    s = value2absolute(arr3[i]);
-                                    s.s1 = s.s1.replace(/\$/g, "\\$");
-
-                                    this.setCellAll(ri, ci, cell.text.replace(new RegExp(s.s1, 'g'), es.s1),
-                                        cell.formulas.replace(new RegExp(s.s1, 'g'), es.s1));
-                                }
-                            }
-                        }
-                    });
-                });
-                postMessage("");
-            };
-            myWorker.postMessage([arr, arr2, arr3, this]);
-            console.log('Message posted to worker');
-
-            myWorker.onmessage = function (e) {
-                console.log('Message received from worker');
-            };
-            // rows.moveChange(arr, arr2, arr3);
-            // sheet.selectorMoveReset();
+            setTimeout(() => {
+                rows.moveChange(arr, arr2, arr3);
+                sheet.selectorMoveReset();
+            })
         });
     }
 
