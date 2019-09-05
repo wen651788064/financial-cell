@@ -296,13 +296,8 @@ function renderAutofilter(viewRange) {
     // renderFlexible.call(this, 1, 1)
 }
 
-async function renderContent(viewRange, fw, fh, tx, ty) {
-    let args = await parseCell.call(this, viewRange);
-    if (args.state) {
-        this.render();
-        return false;
-    }
-    let sheetbook = args.data;
+async function renderContent(viewRange, fw, fh, tx, ty, sheetbook) {
+    // let sheetbook = args.data;
     const {draw, data} = this;
     draw.save();
     draw.translate(fw, fh)
@@ -525,13 +520,20 @@ class Table {
         const {data} = this;
         const {rows, cols} = data;
         this.draw.resize(data.viewWidth(), data.viewHeight());
-        this.clear();
+        let viewRange = data.viewRange();
+
+        let args = await parseCell.call(this, viewRange);
+        if (args.state) {
+            this.render();
+            return false;
+        } else {
+            this.clear();
+        }
 
         const tx = data.freezeTotalWidth();
         const ty = data.freezeTotalHeight();
         const {x, y} = data.scroll;
 
-        let viewRange = data.viewRange();
         // fixed width of header
         const fw = cols.indexWidth;
         // fixed height of header
@@ -539,7 +541,7 @@ class Table {
 
         renderContentGrid.call(this, viewRange, fw, fh, tx, ty);
 
-        await renderContent.call(this, viewRange, fw, fh, -x, -y);
+        renderContent.call(this, viewRange, fw, fh, -x, -y, args.workbook);
 
         renderFixedHeaders.call(this, 'all', viewRange, fw, fh, tx, ty);
 
