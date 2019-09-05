@@ -522,7 +522,7 @@ class Table {
         this.draw.resize(data.viewWidth(), data.viewHeight());
         let viewRange = data.viewRange();
 
-        let args = parseCell.call(this, viewRange);
+        let args = await parseCell.call(this, viewRange);
         if (args.state) {
             this.render();
             return false;
