@@ -110,7 +110,8 @@ async function parseCell(viewRange, state = false, src = '') {
     if (this.editor.display) {
         // factory.c();
         try {
-            console.time('x')
+            console.time('x');
+            factory.calcDiff(workbook);
             calc(workbook);
             console.timeEnd('x');
         } catch (e) {
