@@ -26,7 +26,7 @@ export default class ApplicationFactory {
 
     calcDiff(alias) {
         const {cb} = this;
-        cb.getData(cb.axios, alias, 1, "...");
+        cb.getData(cb.axios, this.data , 1, "...");
     }
 
     async getSamples(sheet) {
