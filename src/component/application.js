@@ -24,10 +24,10 @@ export default class ApplicationFactory {
         this.factory.push(sample);
     }
 
-    async getSamples(sheet) {
+    getSamples(sheet) {
         if( this.lock) {
             this.lock = false;
-            let res = await this.setData();
+            let res = this.setData();
             this._calc = res.data.calc;
         }
         let _calc2 = helper.cloneDeep(this._calc);
@@ -83,14 +83,14 @@ export default class ApplicationFactory {
         }
     }
 
-    async setData() {
+    setData() {
         let arr = [];
         for (let i = 0; i < this.factory.length; i++) {
             arr.push(this.factory[i].alias);
         }
 
         const {cb} = this;
-        let ress = await cb.getData(cb.axios, arr, cb.user_id, this.name);
+        let ress = cb.getData(cb.axios, arr, cb.user_id, this.name);
         return ress;
     }
 }
