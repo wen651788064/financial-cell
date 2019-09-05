@@ -471,7 +471,7 @@ class Table {
     constructor(el, data, editor) {
         this.el = el;
         this.draw = new Draw(el, data.viewWidth(), data.viewHeight());
-        this.factory = new ApplicationFactory(data.methods, data.name, this.render);
+        this.factory = new ApplicationFactory(data.methods, data.name, this);
         this.editor = editor;
         this.data = data;
         this.autoAdaptList = [];
