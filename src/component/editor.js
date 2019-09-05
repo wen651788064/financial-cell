@@ -664,7 +664,7 @@ export default class Editor {
             sOffset[suggestPosition] = height;
             suggest.setOffset(sOffset);
             suggest.hide();
-
+            resetTextareaSize.call(this);
             if (show) {
                 this.show(false);
             }

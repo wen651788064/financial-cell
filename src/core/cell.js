@@ -174,7 +174,7 @@ const cellRender = (data, sheetbook, y, x, src, formulaMap, getCellText, cellLis
             // XLSX_CALC.import_functions(formulajs);
             // XLSX_CALC(sheetbook);
 
-            if(sheetbook.Sheets[data.name][xy2expr(x, y)].v == undefined || sheetbook.Sheets[data.name][xy2expr(x, y)].v === "") {
+            if(sheetbook.Sheets[data.name][xy2expr(x, y)].f.search(/\((\+|\-|\*|\/)/) != -1 || sheetbook.Sheets[data.name][xy2expr(x, y)].v == undefined || sheetbook.Sheets[data.name][xy2expr(x, y)].v === "") {
                 return "#ERROR!";
             }
             sheetbook.Sheets[data.name][xy2expr(x, y)].v = sheetbook.Sheets[data.name][xy2expr(x, y)].v + "";

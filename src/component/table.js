@@ -520,7 +520,7 @@ class Table {
         return style;
     }
 
-    async render() {
+    render() {
         // resize canvas
         const {data} = this;
         const {rows, cols} = data;
@@ -539,7 +539,7 @@ class Table {
 
         renderContentGrid.call(this, viewRange, fw, fh, tx, ty);
 
-        await renderContent.call(this, viewRange, fw, fh, -x, -y);
+        renderContent.call(this, viewRange, fw, fh, -x, -y);
 
         renderFixedHeaders.call(this, 'all', viewRange, fw, fh, tx, ty);
 
