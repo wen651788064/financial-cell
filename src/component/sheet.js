@@ -504,7 +504,7 @@ function verticalScrollbarMove(distance) {
 }
 
 function horizontalScrollbarMove(distance) {
-    const {data, table, selector} = this;
+    const {data, table, selector, editor} = this;
     data.scrollx(distance, () => {
         editor.display = false;
         selector.resetBRTAreaOffset();
