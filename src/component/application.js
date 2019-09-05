@@ -24,11 +24,6 @@ export default class ApplicationFactory {
         this.factory.push(sample);
     }
 
-    calcDiff(alias) {
-        const {cb} = this;
-        cb.getData(cb.axios, this.data , 1, "...");
-    }
-
     async getSamples(sheet) {
         if( this.lock) {
             this.lock = false;
