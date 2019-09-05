@@ -117,7 +117,7 @@ async function parseCell(viewRange, state = false, src = '') {
         // factory.c();
         try {
             console.time('x');
-            // calc(workbook);
+            calc(workbook);
             console.timeEnd('x');
         } catch (e) {
             console.error(e);
@@ -471,7 +471,7 @@ class Table {
     constructor(el, data, editor) {
         this.el = el;
         this.draw = new Draw(el, data.viewWidth(), data.viewHeight());
-        this.factory = new ApplicationFactory(data.methods, data.name);
+        this.factory = new ApplicationFactory(data.methods, data.name, this.render);
         this.editor = editor;
         this.data = data;
         this.autoAdaptList = [];
@@ -515,19 +515,25 @@ class Table {
         return style;
     }
 
-    async render() {
+    async render(temp = false, data) {
         // resize canvas
         const {data} = this;
         const {rows, cols} = data;
         this.draw.resize(data.viewWidth(), data.viewHeight());
         let viewRange = data.viewRange();
 
-        let args = await parseCell.call(this, viewRange);
-        if (args.state) {
-            this.render();
-            return false;
+        let workbook = "";
+        if(!temp) {
+            let args = await parseCell.call(this, viewRange);
+            if (args.state) {
+                this.render();
+                return;
+            } else {
+                this.clear();
+            }
+            workbook = args.data;
         } else {
-            this.clear();
+            workbook = data;
         }
 
         const tx = data.freezeTotalWidth();
@@ -541,7 +547,7 @@ class Table {
 
         renderContentGrid.call(this, viewRange, fw, fh, tx, ty);
 
-        renderContent.call(this, viewRange, fw, fh, -x, -y, args.data);
+        renderContent.call(this, viewRange, fw, fh, -x, -y,workbook);
 
         renderFixedHeaders.call(this, 'all', viewRange, fw, fh, tx, ty);
 
@@ -556,7 +562,7 @@ class Table {
                 vr.eri = fri - 1;
                 vr.h = ty;
                 renderContentGrid.call(this, vr, fw, fh, tx, 0);
-                renderContent.call(this, vr, fw, fh, -x, 0);
+                renderContent.call(this, vr, fw, fh, -x, 0, workbook);
                 renderFixedHeaders.call(this, 'top', vr, fw, fh, tx, 0);
             }
             // 3x
@@ -567,13 +573,13 @@ class Table {
                 vr.w = tx;
                 renderContentGrid.call(this, vr, fw, fh, 0, ty);
                 renderFixedHeaders.call(this, 'left', vr, fw, fh, 0, ty);
-                renderContent.call(this, vr, fw, fh, 0, -y);
+                renderContent.call(this, vr, fw, fh, 0, -y, workbook);
             }
             // 4
             const freezeViewRange = data.freezeViewRange();
             renderContentGrid.call(this, freezeViewRange, fw, fh, 0, 0);
             renderFixedHeaders.call(this, 'all', freezeViewRange, fw, fh, 0, 0);
-            renderContent.call(this, freezeViewRange, fw, fh, 0, 0);
+            renderContent.call(this, freezeViewRange, fw, fh, 0, 0, workbook);
             // 5
             renderFreezeHighlightLine.call(this, fw, fh, tx, ty);
         }

@@ -8,7 +8,7 @@ class ApplicationSample {
 }
 
 export default class ApplicationFactory {
-    constructor(cb, name) {
+    constructor(cb, name, render) {
         this.factory = [];
         this.cb = cb;
         this._ = [];
@@ -17,6 +17,7 @@ export default class ApplicationFactory {
         this._calc2 = [];
         this.lock = false;
         this.data = [];
+        this.render = render;
     }
 
     createSample(text) {
@@ -79,6 +80,7 @@ export default class ApplicationFactory {
         }
         if (needPush.length > 0) {
             this.createSample(...needPush);
+            this.render(true, this.data);
             this.lock = true;
         }
     }
