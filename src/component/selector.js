@@ -105,7 +105,7 @@ class SelectorElement {
                 });
             }
 
-            const myWorker = new Worker("../worker/worker");
+            const myWorker = new Worker("./worker.js");
             myWorker.postMessage([arr, arr2, arr3, this]);
             console.log('Message posted to worker');
 
