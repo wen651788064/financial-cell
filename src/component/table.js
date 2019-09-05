@@ -300,7 +300,7 @@ async function renderContent(viewRange, fw, fh, tx, ty) {
     let args = await parseCell.call(this, viewRange);
     if (args.state) {
         this.render();
-        return;
+        return false;
     }
     let sheetbook = args.data;
     const {draw, data} = this;
