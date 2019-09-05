@@ -515,7 +515,7 @@ class Table {
         return style;
     }
 
-    async render(temp = false, data) {
+    async render(temp = false, tempData) {
         // resize canvas
         const {data} = this;
         const {rows, cols} = data;
@@ -533,7 +533,7 @@ class Table {
             }
             workbook = args.data;
         } else {
-            workbook = data;
+            workbook = tempData;
         }
 
         const tx = data.freezeTotalWidth();
