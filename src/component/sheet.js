@@ -128,7 +128,7 @@ function selectorMove(multiple, direction) {
         selector.moveIndexes = [ri, ci];
     }
     selectorSet.call(this, multiple, ri, ci);
-    editor.clear();
+    // editor.clear();
 
     editorSetOffset.call(this);
     scrollbarMove.call(this);
