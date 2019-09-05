@@ -491,8 +491,9 @@ function editorSet(type = 1) {
 }
 
 function verticalScrollbarMove(distance) {
-    const {data, table, selector} = this;
+    const {data, table, selector, editor} = this;
     data.scrolly(distance, () => {
+        editor.display = false;
         selector.resetBRLAreaOffset();
         pictureSetOffset.call(this);
         adviceSetOffset.call(this);
@@ -505,6 +506,7 @@ function verticalScrollbarMove(distance) {
 function horizontalScrollbarMove(distance) {
     const {data, table, selector} = this;
     data.scrollx(distance, () => {
+        editor.display = false;
         selector.resetBRTAreaOffset();
         pictureSetOffset.call(this);
         adviceSetOffset.call(this);
