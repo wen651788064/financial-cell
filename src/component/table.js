@@ -86,9 +86,15 @@ async function parseCell(viewRange, state = false, src = '') {
                         f: cell.text.replace(/ /g, '').replace(/\"/g, "\"").replace(/\"\"\"\"&/g, "\"'\"&")
                     };
                 } else {
-                    workbook.Sheets[data.name][expr] = {
-                        v: cell.text.replace(/ /g, '').toUpperCase().replace(/\"/g, "\""),
-                    };
+                    if(!isNaN(cell.text.replace(/ /g, '').toUpperCase().replace(/\"/g, "\""))) {
+                        workbook.Sheets[data.name][expr] = {
+                            v: cell.text.replace(/ /g, '').toUpperCase().replace(/\"/g, "\"") * 1,
+                        };
+                    } else {
+                        workbook.Sheets[data.name][expr] = {
+                            v: cell.text.replace(/ /g, '').toUpperCase().replace(/\"/g, "\""),
+                        };
+                    }
                 }
             }
         }
