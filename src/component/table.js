@@ -541,7 +541,7 @@ class Table {
 
         renderContentGrid.call(this, viewRange, fw, fh, tx, ty);
 
-        renderContent.call(this, viewRange, fw, fh, -x, -y, args.workbook);
+        renderContent.call(this, viewRange, fw, fh, -x, -y, args.data);
 
         renderFixedHeaders.call(this, 'all', viewRange, fw, fh, tx, ty);
 
