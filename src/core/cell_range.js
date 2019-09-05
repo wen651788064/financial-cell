@@ -71,7 +71,7 @@ class CellRange {
         for (let i = sri; i <= eri + extraRiValue; i += 1) {
             if (rowFilter(i)) {
                 for (let j = sci; j <= eci + extraCiValue; j += 1) {
-                    cb(i, j);
+                    cb(i, j, eri, eci);
                 }
             }
         }

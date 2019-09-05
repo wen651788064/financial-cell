@@ -67,7 +67,7 @@ async function parseCell(viewRange, state = false, src = '') {
     workbook.Sheets[data.name] = {};
     let enter = false;
 
-    viewRange.each2((ri, ci) => {
+    viewRange.each2((ri, ci, eri, eci) => {
         let cell = data.getCell(ri, ci);
         let expr = xy2expr(ci, ri);
         if (cell && cell.text) {
@@ -75,12 +75,12 @@ async function parseCell(viewRange, state = false, src = '') {
             if (cell.text.indexOf("MD.RTD") != -1) {
                 workbook.Sheets[data.name][expr] = {v: "", f: ""};
             } else {
-                if (cell.formulas && cell.formulas.lastIndexOf("=") == 0 && isSheetVale(cell.formulas)) {
+                if (cell.formulas && cell.formulas.lastIndexOf("=") == 0 && ri < eri && ci < eci && isSheetVale(cell.formulas)) {
                     let {factory} = this;
                     factory.push(cell.formulas);
                     enter = factory.lock;
                 }
-                if (cell.text && cell.text.lastIndexOf("=") === 0) {
+                if (cell.text && cell.text.lastIndexOf("=") === 0 && ri < eri && ci < eci ) {
                     workbook.Sheets[data.name][expr] = {
                         v: '',
                         f: cell.text.replace(/ /g, '').replace(/\"/g, "\"").replace(/\"\"\"\"&/g, "\"'\"&")
