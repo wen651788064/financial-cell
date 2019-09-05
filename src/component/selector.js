@@ -106,6 +106,7 @@ class SelectorElement {
             }
 
             setTimeout(() => {
+                sheet.selectorMoveReset();
                 rows.moveChange(arr, arr2, arr3);
                 sheet.selectorMoveReset();
             })
