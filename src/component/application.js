@@ -24,10 +24,10 @@ export default class ApplicationFactory {
         this.factory.push(sample);
     }
 
-    getSamples(sheet) {
+    async getSamples(sheet) {
         if( this.lock) {
             this.lock = false;
-            let res = this.setData();
+            let res = await this.setData();
             this._calc = res.data.calc;
         }
         let _calc2 = helper.cloneDeep(this._calc);
