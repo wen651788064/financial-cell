@@ -15,7 +15,6 @@ class SelectorElement {
         // this.box = h('div', `${cssPrefix}-selector-box`);
         this.data = data;
         this.sheet = sheet;
-        this.worker = new Worker();
         this._selector = selector;
         this.l = h('div', `${cssPrefix}-selector-box-l`)
             .on('mousedown.stop', evt => {
@@ -108,13 +107,14 @@ class SelectorElement {
                 });
             }
 
-            this.worker.postMessage({ arr: arr, arr2: arr2, arr3: arr3, rows: rows });
+            let worker = new Worker();
+            worker.postMessage({ arr: arr, arr2: arr2, arr3: arr3, rows: rows });
 
-            this.worker.onmessage = function (event) {
+            worker.onmessage = function (event) {
 
             };
 
-            this.worker.addEventListener("message", function (event) {
+            worker.addEventListener("message", function (event) {
                 rows._ = event.data.rrows;
                 sheet.editor.display = true;
                 rows.moveChange(arr, arr2, arr3);
