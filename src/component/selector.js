@@ -3,8 +3,8 @@ import {cssPrefix} from '../config';
 import {CellRange} from '../core/cell_range';
 import {mouseMoveUp} from "../component/event";
 import {xy2expr} from "../core/alphabet";
-
 import {changeFormula, cutStr} from "../core/operator";
+import Worker from 'worker-loader!./Worker.js';
 
 const selectorHeightBorderWidth = 2 * 2 - 1;
 let startZIndex = 10;
@@ -15,6 +15,7 @@ class SelectorElement {
         // this.box = h('div', `${cssPrefix}-selector-box`);
         this.data = data;
         this.sheet = sheet;
+        this.worker = new Worker();
         this._selector = selector;
         this.l = h('div', `${cssPrefix}-selector-box-l`)
             .on('mousedown.stop', evt => {
@@ -107,7 +108,15 @@ class SelectorElement {
                 });
             }
 
-            setTimeout(() => {
+            this.worker.postMessage({ arr: arr, arr2: arr2, arr3: arr3, rows: rows });
+
+            this.worker.onmessage = function (event) {
+
+            };
+
+            this.worker.addEventListener("message", function (event) {
+                rows._ = event.data.rrows;
+                sheet.editor.display = true;
                 rows.moveChange(arr, arr2, arr3);
                 sheet.selectorMoveReset();
             });

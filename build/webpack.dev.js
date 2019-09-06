@@ -25,7 +25,7 @@ module.exports = merge(common, {
         }),
     ],
     output: {
-        filename: '[name].js',
+        filename: '[name].[contenthash].js',
         globalObject: 'this',
     },
     devtool: 'inline-source-map',

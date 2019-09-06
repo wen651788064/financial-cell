@@ -19,7 +19,11 @@ class Spreadsheet {
             .on('contextmenu', evt => evt.preventDefault());
         // create canvas element
         targetEl.appendChild(rootEl.el);
-
+        // const worker = new Worker();
+        // worker.postMessage({ a: 1 });
+        // worker.onmessage = function (event) {};
+        //
+        // worker.addEventListener("message", function (event) {});
         this.sheet = new Sheet(rootEl, this.data);
     }
 
