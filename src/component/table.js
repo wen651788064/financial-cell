@@ -81,7 +81,7 @@ async function parseCell(viewRange, state = false, src = '') {
                     enter = factory.lock;
                 }
                 if (cell.text && cell.text[0] === "=" && ri < eri && ci < eci ) {
-                    if(!isNaN(cell.text)) {
+                    if(isNaN(cell.text)) {
                         cell.text = cell.text.toUpperCase();
                     }
                     workbook.Sheets[data.name][expr] = {
