@@ -13,6 +13,10 @@ module.exports = merge(common, {
             template: './index.html',
             title: 'x-spreadsheet',
         }),
+        new HtmlWebpackPlugin({
+            template: './index.html',
+            title: 'x-spreadsheet',
+        }),
         new MiniCssExtractPlugin({
             // Options similar to the same options in webpackOptions.output
             // both options are optional
@@ -21,7 +25,8 @@ module.exports = merge(common, {
         }),
     ],
     output: {
-        filename: '[name].[contenthash].js',
+        filename: '[name].js',
+        globalObject: 'this',
     },
     devtool: 'inline-source-map',
     devServer: {

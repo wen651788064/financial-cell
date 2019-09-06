@@ -3,6 +3,7 @@ import {cssPrefix} from '../config';
 import {CellRange} from '../core/cell_range';
 import {mouseMoveUp} from "../component/event";
 import {xy2expr} from "../core/alphabet";
+import {changeFormula, cutStr} from "../core/operator";
 
 const selectorHeightBorderWidth = 2 * 2 - 1;
 let startZIndex = 10;
@@ -30,7 +31,6 @@ class SelectorElement {
             .on('mousedown.stop', evt => {
                 this.moveEvent();
             });
-
 
         this.boxinner = h('div', `${cssPrefix}-selector-boxinner`)
             .children(this.b, this.t, this.r, this.l);
@@ -106,11 +106,15 @@ class SelectorElement {
                 });
             }
 
-            setTimeout(() => {
-                rows.moveChange(arr, arr2, arr3);
-                sheet.selectorMoveReset();
-            })
+            // setTimeout(() => {
+            Concurrent.Thread.create(this.thread, rows, arr, arr2, arr3, sheet);
+
         });
+    }
+
+    thread(rows, arr, arr2, arr3, sheet) {
+        rows.moveChange(arr, arr2, arr3);
+        sheet.selectorMoveReset();
     }
 
     setCss(b) {

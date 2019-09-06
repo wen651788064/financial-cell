@@ -5,33 +5,19 @@
     <title></title>
 </head>
 <body>
-<input type="button" id="box" value="点击我" />
-<input type="button" value="停止子线程的耗时操作" id="stop1" />
+
 <h1 id="num"></h1>
 
+<script src="Concurrent.Thread.js"></script>
 <script type="text/javascript">
-
-    //创建一个worker对象（创建一个子线程）
-    var webworker;
-    if (typeof Worker != "undefined") {
-        //参数是耗时操作
-        webworker = new Worker("./webworker.js");
-
-        //监听子线程中运行的耗时操作，如果运行完毕，
-        //回调到这里（主线程）更新UI代码
-        webworker.onmessage = function (e) {
-            num.innerHTML = e.data;
+    this.i = 0;
+    function f(i) {
+        while (1) {
+            document.body.innerHTML += i++ + "< br>";
         }
+    }
+    Concurrent.Thread.create(f, this.i);
 
-    } else {
-        throw new Error ("不支持Worker对象");
-    }
-    box.onclick = function () {
-        alert("哈哈哈哈哈哈");
-    }
-    stop1.onclick = function () {
-        webworker.terminate();
-    }
-</script>
+ </script>
 </body>
 </html>

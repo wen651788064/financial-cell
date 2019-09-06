@@ -5,10 +5,16 @@ const resolve = dir => path.join(__dirname, '..', dir);
 
 module.exports = {
     entry: {
-        xspreadsheet: './src/index.js',
+        xspreadsheet: ['./src/index.js', './src/worker/test.worker.js']
     },
     module: {
         rules: [
+            {
+                test: /\.worker\.js$/,
+                use: {
+                    loader: 'worker-loader',
+                },
+            },
             {
                 test: /\.js$/,
                 use: {

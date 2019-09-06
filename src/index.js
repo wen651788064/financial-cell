@@ -10,7 +10,7 @@ import zhCN from './locale/zh-cn';
 class Spreadsheet {
     constructor(selectors, options = {}, methods = {}, alias = 'sheet1') {
         let targetEl = selectors;
-        if (typeof selectors === 'string') {
+          if (typeof selectors === 'string') {
             targetEl = document.querySelector(selectors);
         }
         this.locale('zh-cn', zhCN);
@@ -19,6 +19,7 @@ class Spreadsheet {
             .on('contextmenu', evt => evt.preventDefault());
         // create canvas element
         targetEl.appendChild(rootEl.el);
+
         this.sheet = new Sheet(rootEl, this.data);
     }
 
