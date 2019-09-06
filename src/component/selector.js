@@ -3,7 +3,7 @@ import {cssPrefix} from '../config';
 import {CellRange} from '../core/cell_range';
 import {mouseMoveUp} from "../component/event";
 import {xy2expr} from "../core/alphabet";
-import Worker from 'worker-loader!./test.worker.js';
+import Worker from 'worker-loader!../worker/test.worker.js';
 
 import {changeFormula, cutStr} from "../core/operator";
 
