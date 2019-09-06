@@ -23,6 +23,7 @@ class Spreadsheet {
         this.sheet = new Sheet(rootEl, this.data);
     }
 
+
     loadData(data) {
         this.sheet.loadData(data);
         return this;

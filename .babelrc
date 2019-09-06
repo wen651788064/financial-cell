@@ -8,8 +8,7 @@
           "polyfill": false,
           "regenerator": true,
           "moduleName": "babel-runtime"
-        },
-        "@babel/plugin-proposal-class-properties"
+        }
       ]
     ]
 }
