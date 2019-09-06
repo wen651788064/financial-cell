@@ -326,7 +326,7 @@ function editingSelectors(text = '') {
 
         // 绝对值
         let arr = '';
-        let sc = cut[i].replace(/\$/, "");
+        let sc = cut[i].replace(/\$/g, "");
         if (isAbsoluteValue(cut[i])) {
             const notTrueValue = cut[i].replace(/\$/g, '');
             arr = expr2xy(notTrueValue);
@@ -344,8 +344,8 @@ function editingSelectors(text = '') {
             args.erpx = cut[i];
             selectors_valid.push(args);
         } else if (enterCode == 2) {
-            const prx = cut[i].split(':')[0];
-            const lax = cut[i].split(':')[1];
+            const prx = cut[i].replace(/\$/g, '').split(':')[0];
+            const lax = cut[i].replace(/\$/g, '').split(':')[1];
 
             const prx_index = expr2xy(prx);
             const lax_index = expr2xy(lax);
