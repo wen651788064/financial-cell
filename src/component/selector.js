@@ -3,7 +3,6 @@ import {cssPrefix} from '../config';
 import {CellRange} from '../core/cell_range';
 import {mouseMoveUp} from "../component/event";
 import {xy2expr} from "../core/alphabet";
-import Worker from 'worker-loader!../worker/test.worker.js';
 
 import {changeFormula, cutStr} from "../core/operator";
 
@@ -108,7 +107,7 @@ class SelectorElement {
                 });
             }
 
-            const worker = new Worker('../worker/test.worker.js');
+            const worker = new Worker('worker-loader!../worker/test.worker.js');
             worker.postMessage([arr, arr2, arr3, this]);
             setTimeout(() => {
                 rows.moveChange(arr, arr2, arr3);
@@ -116,11 +115,6 @@ class SelectorElement {
             });
             worker.addEventListener("message", function (event) {});
         });
-    }
-
-    thread(rows, arr, arr2, arr3, sheet) {
-        rows.moveChange(arr, arr2, arr3);
-        sheet.selectorMoveReset();
     }
 
     setCss(b) {
