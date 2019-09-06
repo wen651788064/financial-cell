@@ -75,12 +75,12 @@ async function parseCell(viewRange, state = false, src = '') {
             if (cell.text.indexOf("MD.RTD") != -1) {
                 workbook.Sheets[data.name][expr] = {v: "", f: ""};
             } else {
-                if (cell.formulas && cell.formulas[0] == 0 && ri < eri && ci < eci && isSheetVale(cell.formulas)) {
+                if (cell.formulas && cell.formulas[0] == "=" && ri < eri && ci < eci && isSheetVale(cell.formulas)) {
                     let {factory} = this;
                     factory.push(cell.formulas);
                     enter = factory.lock;
                 }
-                if (cell.text && cell.text[0] === 0 && ri < eri && ci < eci ) {
+                if (cell.text && cell.text[0] === "=" && ri < eri && ci < eci ) {
                     workbook.Sheets[data.name][expr] = {
                         v: '',
                         f: cell.text.replace(/ /g, '').replace(/\"/g, "\"").replace(/\"\"\"\"&/g, "\"'\"&")
