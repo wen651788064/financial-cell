@@ -1,0 +1,60 @@
+{
+  "_args": [
+    [
+      "jStat@1.0.6",
+      "/Users/wen/Desktop/work/ss/x-spreadsheet"
+    ]
+  ],
+  "_from": "jStat@1.0.6",
+  "_id": "jStat@1.0.6",
+  "_inBundle": false,
+  "_integrity": "sha1-s3gEubS27+f94A0wj9aZr8lx1Vg=",
+  "_location": "/jStat",
+  "_phantomChildren": {},
+  "_requested": {
+    "type": "version",
+    "registry": true,
+    "raw": "jStat@1.0.6",
+    "name": "jStat",
+    "escapedName": "jStat",
+    "rawSpec": "1.0.6",
+    "saveSpec": null,
+    "fetchSpec": "1.0.6"
+  },
+  "_requiredBy": [
+    "/formulajs"
+  ],
+  "_resolved": "https://registry.npmjs.org/jStat/-/jStat-1.0.6.tgz",
+  "_spec": "1.0.6",
+  "_where": "/Users/wen/Desktop/work/ss/x-spreadsheet",
+  "author": {
+    "name": "Trevor Norris",
+    "email": "trev.norris@gmail.com",
+    "url": "http://trevorjnorris.com"
+  },
+  "bugs": {
+    "url": "https://github.com/jstat/jstat/issues"
+  },
+  "dependencies": {
+    "uglify-js": "1.2.3",
+    "vows": "0.7.x"
+  },
+  "description": "Statistical Library for JavaScript",
+  "homepage": "http://github.com/jstat/jstat",
+  "licenses": [
+    {
+      "type": "MIT",
+      "url": "http://www.opensource.org/licenses/mit-license.php"
+    }
+  ],
+  "main": "./dist/jstat.js",
+  "name": "jStat",
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/jstat/jstat.git"
+  },
+  "scripts": {
+    "test": "./node_modules/vows/bin/vows --spec --isolate"
+  },
+  "version": "1.0.6"
+}

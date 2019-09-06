@@ -107,14 +107,11 @@ class SelectorElement {
                 });
             }
 
-            const worker = new Worker('worker-loader!../worker/test.worker.js');
-            worker.postMessage([arr, arr2, arr3, this]);
             setTimeout(() => {
                 rows.moveChange(arr, arr2, arr3);
                 sheet.selectorMoveReset();
             });
-            worker.addEventListener("message", function (event) {});
-        });
+         });
     }
 
     setCss(b) {
