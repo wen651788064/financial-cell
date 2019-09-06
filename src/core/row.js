@@ -400,7 +400,7 @@ class Rows {
 
                                                     let txt = expr2expr(word.replace("$", ""), xn, yn);
                                                     if (type == 1) {
-                                                        txt = "$" + txt;
+                                                        txt = "$" + word.replace("$", "");
                                                     } else if (type == 2) {
                                                         let str = "", enter = 1;
                                                         for (let i = 0; i < txt.length; i++) {
