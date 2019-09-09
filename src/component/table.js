@@ -147,12 +147,10 @@ async function parseCell(viewRange, state = false, src = '') {
             worker.postMessage({ workbook});
             // enter = 2;
             worker.addEventListener("message", (event) => {
-                if(event.data.type != 1) {
-                    return;
-                }
                 workbook = event.data.data;
                 let {factory} = this;
                 factory.data = workbook;
+                workbook = proxy.concat(workbook, data.name);
                 this.render(true, workbook);
             });
             let args = loadData.call(this, viewRange, true);

@@ -24,6 +24,14 @@ export default class CellProxy {
         return n;
     }
 
+    concat(name, workbook) {
+        Object.keys(workbook.Sheets[name]).forEach(i => {
+            this.oldData.Sheets[name][i] = workbook.Sheets[name][i];
+        });
+
+        return this.oldData;
+    }
+
     calc(newData, name) {
         if (typeof this.oldData == "string") {
             this.oldData = newData;
