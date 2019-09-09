@@ -139,13 +139,13 @@ function loadData(viewRange, load = false, read = false) {
 
 async function parseCell(viewRange, state = false, src = '') {
     let {data, proxy} = this;
-    let {workbook, enter, init } = loadData.call(this, viewRange);
+    let {workbook, enter, init } = loadData.call(this, viewRange, false, true);
 
     let initd = false;
     if (proxy.oldData === "" && init == 1) {
-        let da = loadData.call(this, viewRange, false, true);
-        proxy.oldData = da.workbook;
-        proxy.newData = da.workbook;
+        // let da = loadData.call(this, viewRange, false, true);
+        proxy.oldData = workbook;
+        proxy.newData = workbook;
         initd = true;
     }
 
@@ -165,13 +165,11 @@ async function parseCell(viewRange, state = false, src = '') {
 
     if (this.editor.display && ca.state) {
         try {
-            // this.editor.display = false;
             let {worker} = this;
             worker.terminate();
             worker = new Worker();
             workbook = proxy.pack(data.name, workbook);
             worker.postMessage({workbook});
-            // enter = 2;
             worker.addEventListener("message", (event) => {
                 workbook = event.data.data;
                 let {factory} = this;
@@ -180,8 +178,6 @@ async function parseCell(viewRange, state = false, src = '') {
 
                 this.render(true, workbook);
             });
-
-            // calc(workbook, worker);
         } catch (e) {
             console.error(e);
         }

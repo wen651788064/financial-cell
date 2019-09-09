@@ -3,7 +3,7 @@ import {getSheetVale, isSheetVale} from "../core/operator";
 export default class CellProxy {
     constructor() {
         this.oldData = "";
-        this.newData = ""
+        this.newData = "";
     }
 
     deepCalc(deep, newData, n) {
