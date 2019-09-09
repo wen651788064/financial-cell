@@ -36,7 +36,7 @@ export default class CellProxy {
 
     calc(newData, name) {
         if (typeof this.oldData == "string") {
-            this.oldData = newData;
+            this.oldData =  JSON.stringify(JSON.parse(newData));
             return {
                 "state": false,
                 "data": this.oldData.Sheets[name],
@@ -57,6 +57,7 @@ export default class CellProxy {
                     Object.keys(newData[i][j]).forEach(k => {
                         let newCell = newData[i][j][k];
                         let oldCell = oldData[i][j][k];
+
                         if (newCell && oldCell && oldCell.v != undefined && newCell.v != undefined && newCell.v + "" && oldCell.v + "" && newCell.v + "" !== oldCell.v + "") {
                             let expr = k;
                             newCell.v = newCell.v + "";
@@ -98,7 +99,7 @@ export default class CellProxy {
                 "data": this.oldData.Sheets[name],
             };
         }
-        this.oldData = newData;
+        this.oldData = JSON.stringify(JSON.parse(newData));
 
         return {
             "state": true,
