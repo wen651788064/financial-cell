@@ -142,7 +142,7 @@ async function parseCell(viewRange, state = false, src = '') {
     let {workbook, enter, init } = loadData.call(this, viewRange);
 
     if (proxy.oldData === "" && init == 1) {
-        let da = loadData.call(this, viewRange, true);
+        let da = loadData.call(this, viewRange, false, true);
         da.oldData = da.workbook;
         da.newData = da.workbook;
     }
