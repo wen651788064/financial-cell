@@ -72,7 +72,13 @@ export default class CellProxy {
         return data;
     }
 
-    calc(newData, name) {
+    calc(newData, name, initd = false) {
+        if(initd) {
+            return {
+                "state": false,
+            }
+        }
+
         if (typeof this.oldData == "string") {
             this.oldData = this.deepCopy(newData);
             return {
