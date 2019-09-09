@@ -110,7 +110,8 @@ export default class CellProxy {
                             }
                         } else if (
                             (newCell && oldCell && oldCell.f != undefined
-                                && newCell.f != undefined && newCell.f + "" && newCell.f + "" !== oldCell.f + "")
+                                && newCell.f != undefined && newCell.f + "" && newCell.f + "" !== oldCell.f + "") ||
+                            ( !oldCell && newCell ) || (!oldCell.f && newCell.f)
                         ) {
                             let expr = k;
 
