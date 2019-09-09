@@ -61,17 +61,16 @@ export default class CellProxy {
 
         this.oldData = newData;
 
-        // deep =
-        // Object.keys(deep).forEach(i => {
-        //     let target = newData[i];
-        //     let v = getSheetVale(target);
-        //     let name = target.split("!")[0].replace("=", '');
-        //     let value = target.split("!")[1].replace(/\$/g, '');
-        //
-        //     if(isAbsoluteValue(value, 2) && name) {
-        //
-        //     }
-        // });
+        Object.keys(deep).forEach(i => {
+            let target = newData[i];
+            let v = getSheetVale(target);
+            let name = target.split("!")[0].replace("=", '');
+            let value = target.split("!")[1].replace(/\$/g, '');
+
+            if(isAbsoluteValue(value, 2) && name) {
+
+            }
+        });
 
         return workbook;
     }
