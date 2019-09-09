@@ -8,6 +8,7 @@ import {Draw, DrawBox, npx, thinLineWidth,} from '../canvas/draw';
 import ApplicationFactory from "./application";
 import {isSheetVale} from "../core/operator";
 import Worker from 'worker-loader!../external/Worker.js';
+import CellProxy from "./cell_proxy";
 
 var formulajs = require('formulajs');
 // gobal var
@@ -123,16 +124,15 @@ function loadData(viewRange, load = false) {
 
 
 async function parseCell(viewRange, state = false, src = '') {
-    let {data} = this;
-    // let {calc, rows} = data;
+    let {data, proxy} = this;
     let {workbook, enter} = loadData.call(this, viewRange);
-
 
     let {factory} = this;
     let s = await factory.getSamples(workbook.Sheets);
     Object.keys(s).forEach(i => {
         workbook.Sheets[i] = s[i];
     });
+    workbook[data.name] = proxy.calc(workbook, data.name);
 
     if (state) {
         workbook.Sheets[data.name]['A1'] = {v: '', f: `=${src}`};
@@ -153,7 +153,6 @@ async function parseCell(viewRange, state = false, src = '') {
                 workbook = event.data.data;
                 let {factory} = this;
                 factory.data = workbook;
-                console.log("132");
                 this.render(true, workbook);
             });
             let args = loadData.call(this, viewRange, true);
@@ -513,6 +512,7 @@ class Table {
         this.editor = editor;
         this.data = data;
         this.worker = new Worker();
+        this.proxy = new CellProxy();
         this.autoAdaptList = [];
     }
 
