@@ -80,6 +80,6 @@ export default class CellProxy {
 
         this.deepCalc(deep, newData);
 
-        return workbook;
+        return workbook.Sheets[name];
     }
 }
