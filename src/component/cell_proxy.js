@@ -5,7 +5,7 @@ export default class CellProxy {
         this.oldData = "";
     }
 
-    deepCalc(deep, newData) {
+    deepCalc(deep, newData, n) {
         for (let i = 0; i < deep.length; i++) {
             let target = deep[i];
             let v = getSheetVale(target);
@@ -17,11 +17,11 @@ export default class CellProxy {
                 if (isSheetVale(value) && name && newData[name]) {
                     this.deepCalc(deep, newData);
                 } else {
-                    deep.push(target);
+                    n.push(target);
                 }
             }
         }
-        return deep;
+        return n;
     }
 
     calc(newData, name) {
@@ -79,7 +79,7 @@ export default class CellProxy {
 
         this.oldData = newData;
 
-        this.deepCalc(deep, newData);
+        this.deepCalc(deep, newData, []);
 
         return workbook.Sheets[name];
     }
