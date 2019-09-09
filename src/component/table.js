@@ -132,7 +132,7 @@ async function parseCell(viewRange, state = false, src = '') {
     Object.keys(s).forEach(i => {
         workbook.Sheets[i] = s[i];
     });
-    workbook[data.name] = proxy.calc(workbook, data.name);
+    workbook.Sheets[data.name] = proxy.calc(workbook, data.name);
 
     if (state) {
         workbook.Sheets[data.name]['A1'] = {v: '', f: `=${src}`};
