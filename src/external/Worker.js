@@ -1,5 +1,6 @@
 // Worker.js
 import XLSX_CALC from "xlsx-calc"
+var formulajs = require('formulajs');
 
 const _ = require('lodash')
 
@@ -14,6 +15,7 @@ _.has(obj, 'foo')
 self.addEventListener('message', (event) => {
     console.log("15...");
     let {workbook} = event.data;
+    XLSX_CALC.import_functions(formulajs);
 
     XLSX_CALC(workbook);
     postMessage({data: workbook, type: 1})

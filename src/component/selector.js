@@ -114,7 +114,6 @@ class SelectorElement {
             worker.postMessage({ arr: arr, arr2: arr2, arr3: arr3, rows: rows });
 
             worker.onmessage = function (event) {
-
             };
 
             worker.addEventListener("message", function (event) {
