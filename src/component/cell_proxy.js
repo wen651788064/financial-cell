@@ -51,7 +51,7 @@ export default class CellProxy {
     }
 
     pack(name, workbook) {
-        let data = this.deepCopy(this.oldData);
+        let data = this.deepCopy(this.newData);
         Object.keys(data).forEach(i => {
             Object.keys(data[i]).forEach(j => {
                 Object.keys(data[i][j]).forEach(k => {
