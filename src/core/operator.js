@@ -23203,7 +23203,6 @@ const isSheetVale = (str) => {
 const getSheetVale = (str) => {
     let v =  /[\u4E00-\u9FA50-9a-zA-Z]+![A-Za-z]+\d+/.exec(str.replace(/\$/g, ''));
 
-    console.log(v);
     return v;
 }
 
