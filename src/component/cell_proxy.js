@@ -19,7 +19,7 @@ export default class CellProxy {
                     this.deepCalc(deep, newData);
                 } else if (name && newData.Sheets[name]) {
                     n.push(target);
-                } else if(!newData.Sheets[name]) {
+                } else if (!newData.Sheets[name]) {
                     return [];
                 }
             }
@@ -40,7 +40,7 @@ export default class CellProxy {
         var result = Array.isArray(obj) ? [] : {};
         for (var key in obj) {
             if (obj.hasOwnProperty(key)) {
-                if (typeof obj[key] === 'object' && obj[key]!==null) {
+                if (typeof obj[key] === 'object' && obj[key] !== null) {
                     result[key] = this.deepCopy(obj[key]);
                 } else {
                     result[key] = obj[key];
@@ -51,7 +51,7 @@ export default class CellProxy {
     }
 
     pack(name, workbook) {
-        if(typeof this.newData === "string") {
+        if (typeof this.newData === "string") {
             return workbook;
         }
 
@@ -96,7 +96,7 @@ export default class CellProxy {
                         let newCell = newData[i][j][k];
                         let oldCell = oldData[i][j][k];
 
-                        if ((newCell && oldCell && oldCell.v != undefined && newCell.v != undefined && newCell.v + ""  && newCell.v + "" !== oldCell.v + "")) {
+                        if ((newCell && oldCell && oldCell.v != undefined && newCell.v != undefined && newCell.v + "" && newCell.v + "" !== oldCell.v + "")) {
                             let expr = k;
                             newCell.v = newCell.v + "";
                             if (!isNaN(newCell.v.replace(/ /g, '').toUpperCase().replace(/\"/g, "\""))) {
@@ -109,7 +109,9 @@ export default class CellProxy {
                                 };
                             }
                         } else if (
-                            (newCell && oldCell && oldCell.f != undefined && newCell.f != undefined && newCell.f + ""  && newCell.f + "" !== oldCell.f + "")
+                            (newCell && oldCell && oldCell.f != undefined
+                                && newCell.f != undefined && newCell.f + "" && newCell.f + "" !== oldCell.f + "") ||
+                            (oldCell.f == undefined || oldCell.f == undefined)
                         ) {
                             let expr = k;
                             newCell.f = newCell.f + "";
@@ -132,7 +134,7 @@ export default class CellProxy {
         });
 
 
-        if(Object.getOwnPropertyNames(workbook.Sheets[name]).length <= 0) {
+        if (Object.getOwnPropertyNames(workbook.Sheets[name]).length <= 0) {
             return {
                 "state": false,
                 "data": this.oldData.Sheets[name],
@@ -140,7 +142,7 @@ export default class CellProxy {
         }
 
         let n = this.deepCalc(deep, newData, []);
-        if(n.length <= 0 && deep.length > 0) {
+        if (n.length <= 0 && deep.length > 0) {
             return {
                 "state": false,
                 "data": this.oldData.Sheets[name],
