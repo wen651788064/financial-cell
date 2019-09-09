@@ -39,13 +39,30 @@ export default class CellProxy {
         for (var key in obj) {
             if (obj.hasOwnProperty(key)) {
                 if (typeof obj[key] === 'object' && obj[key]!==null) {
-                    result[key] = this.deepCopy(obj[key]);   //递归复制
+                    result[key] = this.deepCopy(obj[key]);
                 } else {
                     result[key] = obj[key];
                 }
             }
         }
         return result;
+    }
+
+    pack(name, workbook) {
+        let data = this.deepCopy(this.oldData);
+        Object.keys(data).forEach(i => {
+            Object.keys(data[i]).forEach(j => {
+                Object.keys(data[i][j]).forEach(k => {
+                    data[i][j][k].f = "";
+                })
+            })
+        });
+
+        Object.keys(workbook.Sheets[name]).forEach(i => {
+            data.Sheets[name][i] = workbook.Sheets[name][i];
+        });
+
+        return data;
     }
 
     calc(newData, name) {

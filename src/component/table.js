@@ -147,6 +147,7 @@ async function parseCell(viewRange, state = false, src = '') {
             let {worker} = this;
             worker.terminate();
             worker = new Worker();
+            workbook = proxy.pack(data.name, workbook);
             worker.postMessage({workbook});
             // enter = 2;
             worker.addEventListener("message", (event) => {
