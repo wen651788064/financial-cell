@@ -158,8 +158,7 @@ async function parseCell(viewRange, state = false, src = '') {
 
                 this.render(true, workbook);
             });
-            let args = loadData.call(this, viewRange, true);
-            workbook = args.workbook;
+
             // calc(workbook, worker);
         } catch (e) {
             console.error(e);
