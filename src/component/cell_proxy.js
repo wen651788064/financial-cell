@@ -26,7 +26,7 @@ export default class CellProxy {
 
     calc(newData, name) {
         if (typeof this.oldData == "string") {
-            return newData;
+            return newData.Sheets[name];
         }
 
         let workbook = [];
