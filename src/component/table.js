@@ -7,6 +7,7 @@ import {isMinus} from "../utils/number_util";
 import {Draw, DrawBox, npx, thinLineWidth,} from '../canvas/draw';
 import ApplicationFactory from "./application";
 import {isSheetVale} from "../core/operator";
+import Worker from 'worker-loader!../external/Worker.js';
 
 var formulajs = require('formulajs');
 // gobal var
@@ -65,12 +66,12 @@ async function parseCell(viewRange, state = false, src = '') {
     let workbook = [];
     workbook.Sheets = {};
     workbook.Sheets[data.name] = {};
-    let enter = false;
+    let enter = 0;
 
     viewRange.each2((ri, ci, eri, eci) => {
         let cell = data.getCell(ri, ci);
         let expr = xy2expr(ci, ri);
-        if (cell && cell.text) {
+        if (cell && cell.text && cell.formulas) {
             cell.text = cell.text + "";
             if (cell.text.indexOf("MD.RTD") != -1) {
                 workbook.Sheets[data.name][expr] = {v: "", f: ""};
@@ -79,9 +80,10 @@ async function parseCell(viewRange, state = false, src = '') {
                     let {factory} = this;
                     factory.push(cell.formulas);
                     enter = factory.lock;
+                    enter = enter ? 1 : 0;
                 }
-                if (cell.text && cell.text[0] === "=" && ri < eri && ci < eci ) {
-                    if(isNaN(cell.text)) {
+                if (cell.text && cell.text[0] === "=" && ri < eri && ci < eci) {
+                    if (isNaN(cell.text)) {
                         cell.text = cell.text.toUpperCase();
                     }
                     workbook.Sheets[data.name][expr] = {
@@ -89,7 +91,7 @@ async function parseCell(viewRange, state = false, src = '') {
                         f: cell.text.replace(/ /g, '').replace(/\"/g, "\"").replace(/\"\"\"\"&/g, "\"'\"&")
                     };
                 } else {
-                    if(!isNaN(cell.text.replace(/ /g, '').toUpperCase().replace(/\"/g, "\""))) {
+                    if (!isNaN(cell.text.replace(/ /g, '').toUpperCase().replace(/\"/g, "\""))) {
                         workbook.Sheets[data.name][expr] = {
                             v: cell.text.replace(/ /g, '').toUpperCase().replace(/\"/g, "\"") * 1,
                         };
@@ -117,16 +119,31 @@ async function parseCell(viewRange, state = false, src = '') {
     }
 
     if (this.editor.display) {
-        // factory.c();
         try {
             console.time('x');
-            calc(workbook);
+            this.editor.display = false;
+            let {worker} = this;
+            worker.terminate();
+            worker = new Worker();
+
+            worker.postMessage({  workbook});
+            // enter = 2;
+            worker.addEventListener("message", (event) => {
+                if(event.data.type != 1) {
+                    return;
+                }
+                workbook = event.data.data;
+                let {factory} = this;
+                factory.data = workbook;
+                console.log("132");
+                this.render(true, workbook);
+            });
+            // }
+            // calc(workbook, worker);
             console.timeEnd('x');
         } catch (e) {
             console.error(e);
         }
-        let {factory} = this;
-        factory.data = workbook;
     } else {
         workbook = factory.data;
     }
@@ -477,6 +494,7 @@ class Table {
         this.factory = new ApplicationFactory(data.methods, data.name, this);
         this.editor = editor;
         this.data = data;
+        this.worker = new Worker();
         this.autoAdaptList = [];
     }
 
@@ -522,14 +540,17 @@ class Table {
         // resize canvas
         const {data} = this;
         const {rows, cols} = data;
-        this.draw.resize(data.viewWidth(), data.viewHeight());
         let viewRange = data.viewRange();
 
         let workbook = "";
-        if(!temp) {
+        if (!temp) {
             let args = await parseCell.call(this, viewRange);
-            if (args.state) {
+
+            console.log(args.state);
+            if (args.state == 1) {
                 this.render();
+                return;
+            } else if(args.state == 2) {
                 return;
             } else {
                 this.clear();
@@ -538,6 +559,9 @@ class Table {
         } else {
             workbook = tempData;
         }
+
+        this.draw.resize(data.viewWidth(), data.viewHeight());
+
 
         const tx = data.freezeTotalWidth();
         const ty = data.freezeTotalHeight();
@@ -550,7 +574,7 @@ class Table {
 
         renderContentGrid.call(this, viewRange, fw, fh, tx, ty);
 
-        renderContent.call(this, viewRange, fw, fh, -x, -y,workbook);
+        renderContent.call(this, viewRange, fw, fh, -x, -y, workbook);
 
         renderFixedHeaders.call(this, 'all', viewRange, fw, fh, tx, ty);
 

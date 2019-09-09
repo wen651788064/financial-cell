@@ -33,6 +33,7 @@ class SelectorElement {
                 this.moveEvent();
             });
 
+        this.worker = new Worker();
         this.boxinner = h('div', `${cssPrefix}-selector-boxinner`)
             .children(this.b, this.t, this.r, this.l);
         this.areaEl = h('div', `${cssPrefix}-selector-area`)
@@ -106,8 +107,10 @@ class SelectorElement {
                     arr2.push(xy2expr(j, i));
                 });
             }
+            let {worker} = this;
+            worker.terminate();
+            worker = new Worker();
 
-            let worker = new Worker();
             worker.postMessage({ arr: arr, arr2: arr2, arr3: arr3, rows: rows });
 
             worker.onmessage = function (event) {
