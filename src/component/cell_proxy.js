@@ -114,6 +114,10 @@ export default class CellProxy {
                             ( !oldCell || !oldCell.f)
                         ) {
                             let expr = k;
+
+                            if(!newCell || !newCell.f) {
+                                newCell.f = "";
+                            }
                             newCell.f = newCell.f + "";
                             if (newCell.f && newCell.f[0] === "=" && isSheetVale(newCell.f)) {
                                 deep.push(newCell.f);
