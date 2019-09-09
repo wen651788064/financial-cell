@@ -111,7 +111,7 @@ export default class CellProxy {
                         } else if (
                             (newCell && oldCell && oldCell.f != undefined
                                 && newCell.f != undefined && newCell.f + "" && newCell.f + "" !== oldCell.f + "") ||
-                            ( !oldCell || !oldCell.f)
+                            ( typeof oldCell == "undefined" || typeof oldCell.f == "undefined")
                         ) {
                             let expr = k;
 
