@@ -9,7 +9,7 @@ export default class CellProxy {
         for (let i = 0; i < deep.length; i++) {
             let target = deep[i];
             let v = getSheetVale(target);
-            for (let j = 0; j < i; j++) {
+            for (let j = 0; j < v.length; j++) {
                 target = v[j];
                 let name = target.split("!")[0].replace("=", '');
                 let value = target.split("!")[1].replace(/\$/g, '');
