@@ -87,12 +87,12 @@ export default class CellProxy {
             });
         });
 
-        this.oldData = newData;
 
         let n = this.deepCalc(deep, newData, []);
         if(n.length <= 0 && deep.length > 0) {
             return this.oldData.Sheets[name];
         }
+        this.oldData = newData;
 
         return workbook.Sheets[name];
     }
