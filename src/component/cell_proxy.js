@@ -89,7 +89,7 @@ export default class CellProxy {
                         let newCell = newData[i][j][k];
                         let oldCell = oldData[i][j][k];
 
-                        if ((newCell && oldCell && oldCell.v != undefined && newCell.v != undefined && newCell.v + "" && oldCell.v + "" && newCell.v + "" !== oldCell.v + "") ||
+                        if ((newCell && oldCell && oldCell.v != undefined && newCell.v != undefined && newCell.v + ""  && newCell.v + "" !== oldCell.v + "") ||
                             oldCell.v == undefined) {
                             let expr = k;
                             newCell.v = newCell.v + "";
@@ -103,7 +103,7 @@ export default class CellProxy {
                                 };
                             }
                         } else if (
-                            (newCell && oldCell && oldCell.f != undefined && newCell.f != undefined && newCell.f + "" && oldCell.f + "" && newCell.f + "" !== oldCell.f + "") ||
+                            (newCell && oldCell && oldCell.f != undefined && newCell.f != undefined && newCell.f + ""  && newCell.f + "" !== oldCell.f + "") ||
                             oldCell.f == undefined
                         ) {
                             let expr = k;
