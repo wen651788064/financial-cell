@@ -23200,6 +23200,13 @@ const isSheetVale = (str) => {
     return false;
 }
 
+const getSheetVale = (str) => {
+    let v =  /[\u4E00-\u9FA50-9a-zA-Z]+![A-Za-z]+\d+/.exec(str);
+
+    console.log(v);
+    return v;
+}
+
 const isAbsoluteValue = (str, rule = 1) => {
     str = str.toUpperCase();
     if (rule == 1) {
@@ -23307,4 +23314,5 @@ export {
     value2absolute,
     splitStr,
     isSheetVale,
+    getSheetVale,
 }
