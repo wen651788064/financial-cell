@@ -18,10 +18,10 @@ export default class CellProxy {
                     this.deepCalc(deep, newData);
                 } else {
                     deep.push(target);
-                    return deep;
                 }
             }
         }
+        return deep;
     }
 
     calc(newData, name) {
