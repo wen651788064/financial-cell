@@ -86,7 +86,7 @@ function loadData(viewRange, load = false) {
                     if (isNaN(cell.text)) {
                         cell.text = cell.text;  // 为什么要.toUpperCase() 呢？
                     }
-                    if(load)  {
+                    if (load) {
                         workbook.Sheets[data.name][expr] = {
                             v: '-',
                             f: ''
@@ -144,13 +144,13 @@ async function parseCell(viewRange, state = false, src = '') {
             let {worker} = this;
             worker.terminate();
             worker = new Worker();
-            worker.postMessage({ workbook});
+            worker.postMessage({workbook});
             // enter = 2;
             worker.addEventListener("message", (event) => {
                 workbook = event.data.data;
                 let {factory} = this;
                 factory.data = workbook;
-                workbook = proxy.concat(workbook, data.name);
+                workbook = proxy.concat(data.name, workbook);
                 this.render(true, workbook);
             });
             let args = loadData.call(this, viewRange, true);
@@ -566,7 +566,7 @@ class Table {
             if (args.state == 1) {
                 this.render();
                 return;
-            } else if(args.state == 2) {
+            } else if (args.state == 2) {
                 return;
             } else {
                 this.clear();
