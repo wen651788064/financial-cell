@@ -89,7 +89,7 @@ export default class CellProxy {
                         let newCell = newData[i][j][k];
                         let oldCell = oldData[i][j][k];
 
-                        if(!oldCell || !oldCell.v || !oldCell.f) {
+                        if(!oldCell) {
                             oldCell = {
                                 f: "",
                                 v: ""
