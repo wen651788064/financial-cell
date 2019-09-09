@@ -84,7 +84,7 @@ function loadData(viewRange, load = false) {
                 }
                 if (cell.text && cell.text[0] === "=" && ri < eri && ci < eci) {
                     if (isNaN(cell.text)) {
-                        cell.text = cell.text.toUpperCase();
+                        cell.text = cell.text;  // 为什么要.toUpperCase() 呢？
                     }
                     if(load)  {
                         workbook.Sheets[data.name][expr] = {
