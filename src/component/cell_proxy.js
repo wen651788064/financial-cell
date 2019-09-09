@@ -63,7 +63,7 @@ export default class CellProxy {
                             }
 
                             if (isNaN(newCell.f)) {
-                                newCell.f = newCell.f.toUpperCase();
+                                newCell.f = newCell.f;
                             }
 
                             workbook.Sheets[name][expr] = {
