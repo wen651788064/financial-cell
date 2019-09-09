@@ -60,7 +60,7 @@ function getCellTextStyle(rindex, cindex) {
     return style;
 }
 
-function loadData(viewRange, load = false) {
+function loadData(viewRange, load = false, read = false) {
     let {data} = this;
     let workbook = [];
     workbook.Sheets = {};
@@ -82,7 +82,18 @@ function loadData(viewRange, load = false) {
                     enter = factory.lock;
                     enter = enter ? 1 : 0;
                 }
-                if (cell.text && cell.text[0] === "=" && ri < eri && ci < eci) {
+                if(read) {
+                    if(!cell.formulas) {
+                        cell.formulas = "";
+                    }
+                    if(!cell.text) {
+                        cell.text = "";
+                    }
+                    workbook.Sheets[data.name][expr] = {
+                        v: cell.text,
+                        f: cell.formulas,
+                    };
+                } else if (cell.text && cell.text[0] === "=" && ri < eri && ci < eci) {
                     if (isNaN(cell.text)) {
                         cell.text = cell.text;  // 为什么要.toUpperCase() 呢？
                     }
@@ -91,7 +102,7 @@ function loadData(viewRange, load = false) {
                             v: '-',
                             f: ''
                         };
-                    } else {
+                    }else {
                         workbook.Sheets[data.name][expr] = {
                             v: '',
                             f: cell.text.replace(/ /g, '').replace(/\"/g, "\"").replace(/\"\"\"\"&/g, "\"'\"&")
@@ -127,13 +138,18 @@ async function parseCell(viewRange, state = false, src = '') {
     let {data, proxy} = this;
     let {workbook, enter} = loadData.call(this, viewRange);
 
+    if (proxy.oldData === "") {
+        let da = loadData.call(this, viewRange);
+
+    }
+
     let {factory} = this;
     let s = await factory.getSamples(workbook.Sheets);
     Object.keys(s).forEach(i => {
         workbook.Sheets[i] = s[i];
     });
     let ca = proxy.calc(workbook, data.name);
-    if(ca.state) {
+    if (ca.state) {
         workbook.Sheets[data.name] = ca.data;
     }
 
