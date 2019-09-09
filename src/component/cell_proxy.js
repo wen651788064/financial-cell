@@ -16,8 +16,10 @@ export default class CellProxy {
 
                 if (isSheetVale(value) && name && newData[name]) {
                     this.deepCalc(deep, newData);
-                } else {
+                } else if (name && newData[name]) {
                     n.push(target);
+                } else if(!newData[name]) {
+                    return [];
                 }
             }
         }
@@ -35,7 +37,7 @@ export default class CellProxy {
     calc(newData, name) {
         if (typeof this.oldData == "string") {
             this.oldData = newData;
-            return newData.Sheets[name];
+            return this.oldData.Sheets[name];
         }
 
         let workbook = [];
@@ -88,6 +90,9 @@ export default class CellProxy {
         this.oldData = newData;
 
         let n = this.deepCalc(deep, newData, []);
+        if(n.length <= 0 && deep.length > 0) {
+            return this.oldData.Sheets[name];
+        }
 
         return workbook.Sheets[name];
     }
