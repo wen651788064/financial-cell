@@ -62,7 +62,7 @@ export default class CellProxy {
         this.oldData = newData;
 
         Object.keys(deep).forEach(i => {
-            let target = newData[i];
+            let target = deep[i];
             let v = getSheetVale(target);
             let name = target.split("!")[0].replace("=", '');
             let value = target.split("!")[1].replace(/\$/g, '');
