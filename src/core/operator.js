@@ -23201,9 +23201,20 @@ const isSheetVale = (str) => {
 }
 
 const getSheetVale = (str) => {
-    let v =  /[\u4E00-\u9FA50-9a-zA-Z]+![A-Za-z]+\d+/.exec(str.replace(/\$/g, ''));
+    let arr = [];
 
-    return v;
+    let v =  /[\u4E00-\u9FA50-9a-zA-Z]+![A-Za-z]+\d+/.exec(str.replace(/\$/g, ''));
+    let v2 =  /[\u4E00-\u9FA50-9a-zA-Z]+![A-Za-z]+\d+:[A-Za-z]+\d+/.exec(str.replace(/\$/g, ''));
+
+    for(let i = 0; i < v.length; i++) {
+        arr.push(v[i]);
+    }
+
+    for(let i = 0; i < v2.length; i++) {
+        arr.push(v2[i]);
+    }
+
+    return arr;
 }
 
 const isAbsoluteValue = (str, rule = 1) => {
