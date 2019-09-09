@@ -59,13 +59,12 @@ function getCellTextStyle(rindex, cindex) {
     return style;
 }
 
-
-async function parseCell(viewRange, state = false, src = '') {
+function loadData(viewRange, load = false) {
     let {data} = this;
-    let {calc, rows} = data;
     let workbook = [];
     workbook.Sheets = {};
     workbook.Sheets[data.name] = {};
+    let {calc, rows} = data;
     let enter = 0;
 
     viewRange.each2((ri, ci, eri, eci) => {
@@ -86,10 +85,18 @@ async function parseCell(viewRange, state = false, src = '') {
                     if (isNaN(cell.text)) {
                         cell.text = cell.text.toUpperCase();
                     }
-                    workbook.Sheets[data.name][expr] = {
-                        v: '',
-                        f: cell.text.replace(/ /g, '').replace(/\"/g, "\"").replace(/\"\"\"\"&/g, "\"'\"&")
-                    };
+                    if(load)  {
+                        workbook.Sheets[data.name][expr] = {
+                            v: '-',
+                            f: ''
+                        };
+                    } else {
+                        workbook.Sheets[data.name][expr] = {
+                            v: '',
+                            f: cell.text.replace(/ /g, '').replace(/\"/g, "\"").replace(/\"\"\"\"&/g, "\"'\"&")
+                        };
+                    }
+
                 } else {
                     if (!isNaN(cell.text.replace(/ /g, '').toUpperCase().replace(/\"/g, "\""))) {
                         workbook.Sheets[data.name][expr] = {
@@ -108,6 +115,19 @@ async function parseCell(viewRange, state = false, src = '') {
         }
     });
 
+    return {
+        workbook,
+        enter
+    };
+}
+
+
+async function parseCell(viewRange, state = false, src = '') {
+    let {data} = this;
+    // let {calc, rows} = data;
+    let {workbook, enter} = loadData.call(this, viewRange);
+
+
     let {factory} = this;
     let s = await factory.getSamples(workbook.Sheets);
     Object.keys(s).forEach(i => {
@@ -120,13 +140,11 @@ async function parseCell(viewRange, state = false, src = '') {
 
     if (this.editor.display) {
         try {
-            console.time('x');
             this.editor.display = false;
             let {worker} = this;
             worker.terminate();
             worker = new Worker();
-
-            worker.postMessage({  workbook});
+            worker.postMessage({ workbook});
             // enter = 2;
             worker.addEventListener("message", (event) => {
                 if(event.data.type != 1) {
@@ -138,9 +156,9 @@ async function parseCell(viewRange, state = false, src = '') {
                 console.log("132");
                 this.render(true, workbook);
             });
-            // }
+            let args = loadData.call(this, viewRange, true);
+            workbook = args.workbook;
             // calc(workbook, worker);
-            console.timeEnd('x');
         } catch (e) {
             console.error(e);
         }
