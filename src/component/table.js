@@ -132,13 +132,16 @@ async function parseCell(viewRange, state = false, src = '') {
     Object.keys(s).forEach(i => {
         workbook.Sheets[i] = s[i];
     });
-    workbook.Sheets[data.name] = proxy.calc(workbook, data.name);
+    let ca = proxy.calc(workbook, data.name);
+    if(ca.state) {
+        workbook.Sheets[data.name] = ca.data;
+    }
 
     if (state) {
         workbook.Sheets[data.name]['A1'] = {v: '', f: `=${src}`};
     }
 
-    if (this.editor.display) {
+    if (this.editor.display && ca.state) {
         try {
             // this.editor.display = false;
             let {worker} = this;

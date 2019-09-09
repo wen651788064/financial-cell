@@ -37,7 +37,10 @@ export default class CellProxy {
     calc(newData, name) {
         if (typeof this.oldData == "string") {
             this.oldData = newData;
-            return this.oldData.Sheets[name];
+            return {
+                "state": false,
+                "data": this.oldData.Sheets[name],
+            };
         }
 
         let workbook = [];
@@ -90,10 +93,16 @@ export default class CellProxy {
 
         let n = this.deepCalc(deep, newData, []);
         if(n.length <= 0 && deep.length > 0) {
-            return this.oldData.Sheets[name];
+            return {
+                "state": false,
+                "data": this.oldData.Sheets[name],
+            };
         }
         this.oldData = newData;
 
-        return workbook.Sheets[name];
+        return {
+            "state": true,
+            "data": workbook.Sheets[name]
+        };
     }
 }
