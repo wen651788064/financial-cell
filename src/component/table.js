@@ -67,13 +67,11 @@ function loadData(viewRange, load = false, read = false) {
     workbook.Sheets[data.name] = {};
     let {calc, rows} = data;
     let enter = 0;
-    let init = 0;
 
     viewRange.each2((ri, ci, eri, eci) => {
         let cell = data.getCell(ri, ci);
         let expr = xy2expr(ci, ri);
         if (cell && cell.text && cell.formulas) {
-            init = 1;
             cell.text = cell.text + "";
             if (cell.text.indexOf("MD.RTD") != -1) {
                 workbook.Sheets[data.name][expr] = {v: "", f: ""};
@@ -85,15 +83,9 @@ function loadData(viewRange, load = false, read = false) {
                     enter = enter ? 1 : 0;
                 }
                 if(read) {
-                    if(!cell.formulas) {
-                        cell.formulas = "";
-                    }
-                    if(!cell.text) {
-                        cell.text = "";
-                    }
                     workbook.Sheets[data.name][expr] = {
                         v: cell.text,
-                        f: cell.formulas,
+                        f: cell.text
                     };
                 } else if (cell.text && cell.text[0] === "=" && ri < eri && ci < eci) {
                     if (isNaN(cell.text)) {
@@ -131,30 +123,22 @@ function loadData(viewRange, load = false, read = false) {
 
     return {
         workbook,
-        enter,
-        init
+        enter
     };
 }
 
 
 async function parseCell(viewRange, state = false, src = '') {
     let {data, proxy} = this;
-    let {workbook, enter, init } = loadData.call(this, viewRange, false, true);
+    let {workbook, enter} = loadData.call(this, viewRange);
 
-    let initd = false;
-    if (proxy.oldData === "" && init == 1) {
-        // let da = loadData.call(this, viewRange, false, true);
-        proxy.oldData = workbook;
-        proxy.newData = workbook;
-        initd = true;
-    }
 
     let {factory} = this;
     let s = await factory.getSamples(workbook.Sheets);
     Object.keys(s).forEach(i => {
         workbook.Sheets[i] = s[i];
     });
-    let ca = proxy.calc(workbook, data.name, initd);
+    let ca = proxy.calc(workbook, data.name);
     if (ca.state) {
         workbook.Sheets[data.name] = ca.data;
     }
@@ -165,11 +149,13 @@ async function parseCell(viewRange, state = false, src = '') {
 
     if (this.editor.display && ca.state) {
         try {
+            // this.editor.display = false;
             let {worker} = this;
             worker.terminate();
             worker = new Worker();
             workbook = proxy.pack(data.name, workbook);
             worker.postMessage({workbook});
+            // enter = 2;
             worker.addEventListener("message", (event) => {
                 workbook = event.data.data;
                 let {factory} = this;
@@ -178,11 +164,11 @@ async function parseCell(viewRange, state = false, src = '') {
 
                 this.render(true, workbook);
             });
+
+            // calc(workbook, worker);
         } catch (e) {
             console.error(e);
         }
-    } else if(initd) {
-        workbook = proxy.newData;
     } else {
         workbook = factory.data;
     }
