@@ -16,9 +16,9 @@ export default class CellProxy {
 
                 if (isSheetVale(value) && name && newData[name]) {
                     this.deepCalc(deep, newData);
-                } else if (name && newData[name]) {
+                } else if (name && newData.Sheets[name]) {
                     n.push(target);
-                } else if(!newData[name]) {
+                } else if(!newData.Sheets[name]) {
                     return [];
                 }
             }
