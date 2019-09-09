@@ -34,9 +34,23 @@ export default class CellProxy {
         return this.oldData;
     }
 
+    deepCopy(obj) {
+        var result = Array.isArray(obj) ? [] : {};
+        for (var key in obj) {
+            if (obj.hasOwnProperty(key)) {
+                if (typeof obj[key] === 'object' && obj[key]!==null) {
+                    result[key] = deepCopy(obj[key]);   //递归复制
+                } else {
+                    result[key] = obj[key];
+                }
+            }
+        }
+        return result;
+    }
+
     calc(newData, name) {
         if (typeof this.oldData == "string") {
-            this.oldData =  JSON.parse(JSON.stringify(newData));
+            this.oldData = this.deepCopy(newData);
             return {
                 "state": false,
                 "data": this.oldData.Sheets[name],
@@ -99,7 +113,7 @@ export default class CellProxy {
                 "data": this.oldData.Sheets[name],
             };
         }
-        this.oldData = JSON.parse(JSON.stringify(newData));
+        this.oldData = this.deepCopy(newData);
 
         return {
             "state": true,
