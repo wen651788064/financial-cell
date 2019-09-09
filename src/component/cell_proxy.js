@@ -22,11 +22,10 @@ export default class CellProxy {
         Object.keys(newData).forEach(i => {
             Object.keys(newData[i]).forEach(j => {
                 if(j == name) {
-                    try {
-                        Object.keys(newData[i][j]).forEach(k => {
+                    Object.keys(newData[i][j]).forEach(k => {
                             let newCell = newData[i][j][k];
                             let oldCell = oldData[i][j][k];
-                            if (oldCell.v != undefined && newCell.v != undefined && newCell.v + "" && oldCell.v + "" && newCell.v + "" !== oldCell.v + "") {
+                            if (newCell && oldCell &&  oldCell.v != undefined && newCell.v != undefined && newCell.v + "" && oldCell.v + "" && newCell.v + "" !== oldCell.v + "") {
                                 let expr = k;
                                 newCell.v = newCell.v + "";
                                 if (!isNaN(newCell.v.replace(/ /g, '').toUpperCase().replace(/\"/g, "\""))) {
@@ -38,7 +37,7 @@ export default class CellProxy {
                                         v: newCell.v.replace(/ /g, '').toUpperCase().replace(/\"/g, "\""),
                                     };
                                 }
-                            } else if (oldCell.f != undefined && newCell.f != undefined && newCell.f + "" && oldCell.f + "" && newCell.f + "" !== oldCell.f + "") {
+                            } else if (newCell && oldCell && oldCell.f != undefined && newCell.f != undefined && newCell.f + "" && oldCell.f + "" && newCell.f + "" !== oldCell.f + "") {
                                 let expr = k;
                                 newCell.f = newCell.f + "";
                                 if(newCell.f && newCell.f[0] === "=" && isSheetVale(newCell.f)) {
@@ -55,9 +54,6 @@ export default class CellProxy {
                                 };
                             }
                         });
-                    } catch (e) {
-                        console.log(e);
-                    }
                 }
             });
         });
