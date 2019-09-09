@@ -95,6 +95,13 @@ export default class CellProxy {
                                 v: ""
                             }
                         }
+                        if(!oldCell.f) {
+                            oldCell.f = "";
+                        }
+
+                        if(!oldCell.v) {
+                            oldCell.v = "";
+                        }
 
                         if (newCell && oldCell && oldCell.v != undefined && newCell.v != undefined && newCell.v + "" && oldCell.v + "" && newCell.v + "" !== oldCell.v + "") {
                             let expr = k;
