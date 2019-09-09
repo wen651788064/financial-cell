@@ -36,7 +36,7 @@ export default class CellProxy {
 
     calc(newData, name) {
         if (typeof this.oldData == "string") {
-            this.oldData =  JSON.stringify(JSON.parse(newData));
+            this.oldData =  JSON.parse(JSON.stringify(newData));
             return {
                 "state": false,
                 "data": this.oldData.Sheets[name],
@@ -99,7 +99,7 @@ export default class CellProxy {
                 "data": this.oldData.Sheets[name],
             };
         }
-        this.oldData = JSON.stringify(JSON.parse(newData));
+        this.oldData = JSON.parse(JSON.stringify(newData));
 
         return {
             "state": true,
