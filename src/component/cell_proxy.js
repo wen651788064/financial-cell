@@ -1,15 +1,30 @@
-import {getSheetVale, isAbsoluteValue, isSheetVale} from "../core/operator";
+import {getSheetVale, isSheetVale} from "../core/operator";
 
 export default class CellProxy {
     constructor() {
         this.oldData = "";
     }
 
-    deepCalc() {
+    deepCalc(deep, newData) {
+        for (let i = 0; i < deep.length; i++) {
+            let target = deep[i];
+            let v = getSheetVale(target);
+            for (let j = 0; j < i; j++) {
+                target = v[j];
+                let name = target.split("!")[0].replace("=", '');
+                let value = target.split("!")[1].replace(/\$/g, '');
 
+                if (isSheetVale(value) && name && newData[name]) {
+                    this.deepCalc(deep, newData);
+                } else {
+                    deep.push(target);
+                    return deep;
+                }
+            }
+        }
     }
 
-    calc(newData, name, wb) {
+    calc(newData, name) {
         if (typeof this.oldData == "string") {
             this.oldData = newData;
             return;
@@ -62,24 +77,9 @@ export default class CellProxy {
             });
         });
 
-
         this.oldData = newData;
 
-        Object.keys(deep).forEach(i => {
-            let target = deep[i];
-            let v = getSheetVale(target);
-            for (let j = 0; j < i; j++) {
-                target = v[j];
-                let name = target.split("!")[0].replace("=", '');
-                let value = target.split("!")[1].replace(/\$/g, '');
-
-                if (isAbsoluteValue(value, 2) && name) {
-
-                } else {
-
-                }
-            }
-        });
+        this.deepCalc(deep, newData);
 
         return workbook;
     }
