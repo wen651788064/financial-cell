@@ -107,7 +107,7 @@ export default class CellProxy {
 
 
         let n = this.deepCalc(deep, newData, []);
-        if(n.length <= 0 && deep.length > 0 || (n.length === 0 && deep.length === 0)) {
+        if(n.length <= 0 && deep.length > 0 || (n.length !== 0 && deep.length !== 0)) {
             return {
                 "state": false,
                 "data": this.oldData.Sheets[name],
