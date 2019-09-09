@@ -163,7 +163,7 @@ async function parseCell(viewRange, state = false, src = '') {
         workbook.Sheets[data.name]['A1'] = {v: '', f: `=${src}`};
     }
 
-    if (this.editor.display && (ca.state || initd)) {
+    if (this.editor.display && ca.state) {
         try {
             // this.editor.display = false;
             let {worker} = this;
@@ -185,6 +185,8 @@ async function parseCell(viewRange, state = false, src = '') {
         } catch (e) {
             console.error(e);
         }
+    } else if(initd) {
+        workbook = proxy.newData;
     } else {
         workbook = factory.data;
     }
