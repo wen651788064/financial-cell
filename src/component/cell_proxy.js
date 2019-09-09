@@ -89,6 +89,13 @@ export default class CellProxy {
                         let newCell = newData[i][j][k];
                         let oldCell = oldData[i][j][k];
 
+                        if(!oldCell || !oldCell.v || !oldCell.f) {
+                            oldCell = {
+                                f: "",
+                                v: ""
+                            }
+                        }
+
                         if (newCell && oldCell && oldCell.v != undefined && newCell.v != undefined && newCell.v + "" && oldCell.v + "" && newCell.v + "" !== oldCell.v + "") {
                             let expr = k;
                             newCell.v = newCell.v + "";
