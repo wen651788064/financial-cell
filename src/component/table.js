@@ -67,11 +67,13 @@ function loadData(viewRange, load = false, read = false) {
     workbook.Sheets[data.name] = {};
     let {calc, rows} = data;
     let enter = 0;
+    let init = 0;
 
     viewRange.each2((ri, ci, eri, eci) => {
         let cell = data.getCell(ri, ci);
         let expr = xy2expr(ci, ri);
         if (cell && cell.text && cell.formulas) {
+            init = 1;
             cell.text = cell.text + "";
             if (cell.text.indexOf("MD.RTD") != -1) {
                 workbook.Sheets[data.name][expr] = {v: "", f: ""};
@@ -129,16 +131,17 @@ function loadData(viewRange, load = false, read = false) {
 
     return {
         workbook,
-        enter
+        enter,
+        init
     };
 }
 
 
 async function parseCell(viewRange, state = false, src = '') {
     let {data, proxy} = this;
-    let {workbook, enter} = loadData.call(this, viewRange);
+    let {workbook, enter, init } = loadData.call(this, viewRange);
 
-    if (proxy.oldData === "") {
+    if (proxy.oldData === "" && init == 1) {
         let da = loadData.call(this, viewRange, true);
         da.oldData = da.workbook;
         da.newData = da.workbook;
