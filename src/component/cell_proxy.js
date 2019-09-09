@@ -51,7 +51,7 @@ export default class CellProxy {
     }
 
     pack(name, workbook) {
-        if(this.newData == "") {
+        if(typeof this.newData === "string") {
             return workbook;
         }
 
