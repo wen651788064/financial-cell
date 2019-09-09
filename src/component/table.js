@@ -140,7 +140,7 @@ async function parseCell(viewRange, state = false, src = '') {
 
     if (this.editor.display) {
         try {
-            this.editor.display = false;
+            // this.editor.display = false;
             let {worker} = this;
             worker.terminate();
             worker = new Worker();
