@@ -87,7 +87,7 @@ export default class CellProxy {
 
         this.oldData = newData;
 
-        this.deepCalc(deep, newData, []);
+        let n = this.deepCalc(deep, newData, []);
 
         return workbook.Sheets[name];
     }
