@@ -5,6 +5,10 @@ export default class CellProxy {
         this.oldData = "";
     }
 
+    deepCalc() {
+
+    }
+
     calc(newData, name, wb) {
         if (typeof this.oldData == "string") {
             this.oldData = newData;
@@ -70,6 +74,8 @@ export default class CellProxy {
                 let value = target.split("!")[1].replace(/\$/g, '');
 
                 if (isAbsoluteValue(value, 2) && name) {
+
+                } else {
 
                 }
             }

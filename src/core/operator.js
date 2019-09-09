@@ -141,6 +141,25 @@ const cuttingByPos = (str, pos, space = true) => {
     return value.toUpperCase();
 };
 
+const cuttingByPos2 = (str, pos, space = true) => {
+    let value = "";
+    let end = false;
+    for (let i = pos - 1; i > 0 && end == false; i--) {
+        if (space == false) {
+            end = operation3(str[i]) ? true : false;
+        } else {
+            end = operation(str[i]) ? true : false;
+        }
+        if (end == false) {
+            value += str[i];
+        }
+    }
+    if (space)
+        value = value.replace(/\s/g, "");
+    value = value.split('').reverse().join('');
+    return value;
+};
+
 
 const cuttingByPosEnd = (str, pos) => {
     let value = "";
@@ -23325,4 +23344,5 @@ export {
     splitStr,
     isSheetVale,
     getSheetVale,
+    cuttingByPos2,
 }

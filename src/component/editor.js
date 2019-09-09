@@ -3,7 +3,7 @@ import {h} from './element';
 import Suggest from './suggest';
 import Datepicker from './datepicker';
 import {cssPrefix} from '../config';
-import {cutting, cuttingByPos, cuttingByPosEnd, isAbsoluteValue, operation,} from '../core/operator';
+import {cutting, cuttingByPos, cuttingByPosEnd, isAbsoluteValue, operation, cuttingByPos2} from '../core/operator';
 import SuggestContent from './suggest_content';
 import {findBracket, suggestContent} from './formula_editor';
 import {createEvent} from './event';
@@ -188,7 +188,7 @@ function inputEventHandler(evt, txt = '', formulas = '', state = "input") {
                 parse2.call(this, v, this.pos);
             } else parse.call(this, v);
             let show = false;
-            let cutValue = cuttingByPos(v, this.pos, true);
+            let cutValue = cuttingByPos2(v, this.pos, true);
             if (v.length >= this.pos) {
                 const isNumber = `${v[this.pos]}`;
                 if (isNumber.search(/^[0-9]+.?[0-9]*$/) != -1) {
