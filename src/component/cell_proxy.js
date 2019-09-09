@@ -3,6 +3,7 @@ import {getSheetVale, isSheetVale} from "../core/operator";
 export default class CellProxy {
     constructor() {
         this.oldData = "";
+        this.newData = ""
     }
 
     deepCalc(deep, newData, n) {
@@ -27,11 +28,12 @@ export default class CellProxy {
     }
 
     concat(name, workbook) {
+        this.newData = this.deepCopy(this.oldData);
         Object.keys(workbook.Sheets[name]).forEach(i => {
-            this.oldData.Sheets[name][i] = workbook.Sheets[name][i];
+            this.newData.Sheets[name][i] = workbook.Sheets[name][i];
         });
 
-        return this.oldData;
+        return this.newData;
     }
 
     deepCopy(obj) {

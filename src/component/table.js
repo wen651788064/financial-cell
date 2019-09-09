@@ -155,6 +155,7 @@ async function parseCell(viewRange, state = false, src = '') {
                 let {factory} = this;
                 factory.data = workbook;
                 workbook = proxy.concat(data.name, workbook);
+
                 this.render(true, workbook);
             });
             let args = loadData.call(this, viewRange, true);
