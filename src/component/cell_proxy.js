@@ -197,7 +197,7 @@ export default class CellProxy {
         if (n.length <= 0 && deep.length > 0) {
             return {
                 "state": false,
-                "data": this.oldData.Sheets[name],
+                "data": "",
             };
         }
         this.oldData = this.deepCopy(newData);
