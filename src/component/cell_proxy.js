@@ -119,14 +119,6 @@ export default class CellProxy {
             }
         }
 
-        if (typeof this.oldData == "string") {
-            this.oldData = this.deepCopy(newData);
-            return {
-                "state": true,
-                "data": this.oldData.Sheets[name],
-            };
-        }
-
         let workbook = [];
         workbook.Sheets = {};
         workbook.Sheets[name] = {};
