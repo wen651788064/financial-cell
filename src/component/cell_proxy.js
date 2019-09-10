@@ -185,6 +185,9 @@ export default class CellProxy {
             });
         });
 
+        if (typeof this.oldData == "string") {
+            this.oldData = this.deepCopy(newData);
+        }
 
         if (Object.getOwnPropertyNames(workbook.Sheets[name]).length <= 0) {
             return {
