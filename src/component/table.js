@@ -67,7 +67,6 @@ function loadData(viewRange, load = false, read = false) {
     workbook.Sheets[data.name] = {};
     let enter = 0;
 
-    console.log(this.data.rows.getMax());
     let {mri, mci} = this.data.rows.getMax();
     viewRange.each3((ri, ci, eri, eci) => {
         let cell = data.getCell(ri, ci);
@@ -161,21 +160,29 @@ async function parseCell(viewRange, state = false, src = '') {
 
     if (this.editor.display && ca.state) {
         try {
-            // this.editor.display = false;
-            let {worker} = this;
-            worker.terminate();
-            worker = new Worker();
             workbook = proxy.pack(data.name, workbook);
-            worker.postMessage({workbook});
-            worker.addEventListener("message", (event) => {
-                workbook = event.data.data;
-                let {factory} = this;
-                factory.data = workbook;
-                workbook = proxy.concat(data.name, workbook);
-                let cells = proxy.unpack(workbook.Sheets[data.name],  data.rows._);
-                data.rows.setData(cells);
-                this.render(true, workbook);
-            });
+            data.calc(workbook);
+            let {factory} = this;
+            factory.data = workbook;
+            workbook = proxy.concat(data.name, workbook);
+            let cells = proxy.unpack(workbook.Sheets[data.name], data.rows._);
+            data.rows.setData(cells);
+            this.render(true, workbook);
+            // this.editor.display = false;
+            // let {worker} = this;
+            // worker.terminate();
+            // worker = new Worker();
+            // workbook = proxy.pack(data.name, workbook);
+            // worker.postMessage({workbook});
+            // worker.addEventListener("message", (event) => {
+            //     workbook = event.data.data;
+            //     let {factory} = this;
+            //     factory.data = workbook;
+            //     workbook = proxy.concat(data.name, workbook);
+            //     let cells = proxy.unpack(workbook.Sheets[data.name],  data.rows._);
+            //     data.rows.setData(cells);
+            //     this.render(true, workbook);
+            // });
         } catch (e) {
             console.error(e);
         }
