@@ -53,6 +53,7 @@ export default class CellProxy {
         return result;
     }
 
+    // =a1 要变成=A1  不破坏数据源
     pack(name, workbook) {
         if (typeof this.oldData === "string") {
             return workbook;
@@ -71,6 +72,7 @@ export default class CellProxy {
             data.Sheets[name][i] = workbook.Sheets[name][i];
             if (workbook.Sheets[name][i].f && workbook.Sheets[name][i].f[0] === '=') {
                 data.Sheets[name][i].v = "-";
+                data.Sheets[name][i].f = workbook.Sheets[name][i].f.toUpperCase();
             }
         });
         // this.oldData = data;
