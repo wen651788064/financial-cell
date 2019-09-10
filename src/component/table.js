@@ -168,7 +168,6 @@ async function parseCell(viewRange, state = false, src = '') {
                 data.rows.setData(cells);
                 this.render(true, workbook);
             });
-
         } catch (e) {
             console.error(e);
         }

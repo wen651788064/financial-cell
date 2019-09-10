@@ -558,7 +558,7 @@ export default class Editor {
 
     clear(c = false) {
         this.display = isDisplay.call(this);
-        if(this.inputText != '' && this.inputText.replace(/\s/g, "").lastIndexOf('¥') === 0) {
+        if(this.inputText != '' && isNaN(this.inputText) && this.inputText.replace(/\s/g, "").lastIndexOf('¥') === 0) {
             this.change('format', this.inputText);
         }
         this.cell = null;
