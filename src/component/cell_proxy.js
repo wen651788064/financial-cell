@@ -29,12 +29,10 @@ export default class CellProxy {
     }
 
     concat(name, workbook) {
-        this.newData = this.deepCopy(this.oldData);
         Object.keys(workbook.Sheets[name]).forEach(i => {
-            this.newData.Sheets[name][i] = workbook.Sheets[name][i];
+            this.oldData.Sheets[name][i] = workbook.Sheets[name][i];
         });
-
-        return this.newData;
+        return this.oldData;
     }
 
     deepCopy(obj) {
@@ -52,11 +50,11 @@ export default class CellProxy {
     }
 
     pack(name, workbook) {
-        if (typeof this.newData === "string") {
+        if (typeof this.oldData === "string") {
             return workbook;
         }
 
-        let data = this.deepCopy(this.newData);
+        let data = this.deepCopy(this.oldData);
         Object.keys(data).forEach(i => {
             Object.keys(data[i]).forEach(j => {
                 Object.keys(data[i][j]).forEach(k => {
@@ -71,6 +69,7 @@ export default class CellProxy {
                 data.Sheets[name][i].v = "-";
             }
         });
+        this.oldData = data;
 
         return data;
     }
@@ -79,19 +78,24 @@ export default class CellProxy {
         let data = _;
         Object.keys(cells).forEach(i => {
             let [ci, ri] = expr2xy(i);
-            if(!data[ri]) {
+            if (!data[ri]) {
                 data[ri] = {}
             }
-            if(!data[ri]['cells']) {
+            if (!data[ri]['cells']) {
                 data[ri]['cells'] = {}
             }
 
-            if(!data[ri]['cells'][ci]) {
+            if (!data[ri]['cells'][ci]) {
                 data[ri]['cells'][ci] = {}
             }
 
-            data[ri]['cells'][ci].text = cells[i].v;
-            data[ri]['cells'][ci].formulas = cells[i].f;
+            if (cells[i].v + "" === '0' && cells[i].f && cells[i].f[0] && cells[i].f[0] === '=') {
+                data[ri]['cells'][ci].text = cells[i].v + "";
+                data[ri]['cells'][ci].formulas = cells[i].f + "";
+            } else {
+                data[ri]['cells'][ci].text = cells[i].v;
+                data[ri]['cells'][ci].formulas = cells[i].f;
+            }
         });
 
         return data;
@@ -131,41 +135,29 @@ export default class CellProxy {
                         let newCell = newData[i][j][k];
                         let oldCell = oldData[i][j][k];
 
-                        if (newCell && oldCell && oldCell.v != undefined && newCell.v != undefined && newCell.v + "" && newCell.v + "" !== oldCell.v + "") {
-                            let expr = k;
-                            newCell.v = newCell.v + "";
-                            // 为什么要 newCell.v.replace(/ /g, '').toUpperCase().replace(/\"/g, "\"") * 1
-                            if (!isNaN(newCell.v.replace(/ /g, '').toUpperCase().replace(/\"/g, "\""))) {
-                                workbook.Sheets[name][expr] = {
-                                    v: newCell.v.replace(/ /g, '').replace(/\"/g, "\"") * 1,
-                                };
-                            } else {
-                                workbook.Sheets[name][expr] = {
-                                    v: newCell.v.replace(/ /g, '').replace(/\"/g, "\""),
-                                };
-                            }
-                        } else if (
+                        if (
                             (newCell && oldCell && oldCell.f != undefined
                                 && newCell.f != undefined && newCell.f + "" && newCell.f + "" !== oldCell.f + "") ||
                             (!oldCell && newCell) || (!oldCell.f && newCell.f)
                         ) {
                             let expr = k;
+                            let d = newCell.f;
 
-                            if (!newCell || !newCell.f) {
-                                newCell.f = "";
+                            if (!newCell || (!d && d + "" != '0') ) {
+                                d = "";
                             }
-                            newCell.f = newCell.f + "";
-                            if (newCell.f && newCell.f[0] === "=" && isSheetVale(newCell.f)) {
+                            d = d + "";
+                            if (d && d[0] === "=" && isSheetVale(d)) {
                                 deep.push(newCell.f);
                             }
 
-                            if (isNaN(newCell.f)) {
-                                newCell.f = newCell.f;
+                            if (isNaN(d)) {
+                                d = d + "";
                             }
 
                             workbook.Sheets[name][expr] = {
                                 v: '',
-                                f: newCell.f.replace(/ /g, '').replace(/\"/g, "\"").replace(/\"\"\"\"&/g, "\"'\"&")
+                                f: d.replace(/ /g, '').replace(/\"/g, "\"").replace(/\"\"\"\"&/g, "\"'\"&")
                             };
                         }
                     });
