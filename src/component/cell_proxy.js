@@ -122,7 +122,7 @@ export default class CellProxy {
         if (typeof this.oldData == "string") {
             this.oldData = this.deepCopy(newData);
             return {
-                "state": true,
+                "state": false,
                 "data": this.oldData.Sheets[name],
             };
         }
