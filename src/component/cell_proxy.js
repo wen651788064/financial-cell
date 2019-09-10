@@ -28,9 +28,13 @@ export default class CellProxy {
         return n;
     }
 
+    // concat的主要作用是把计算出来的公式填入到olddata中，然后返回出去
+    // 因为在前面有一步， 把不是此次change的公式都主动设置为""了，所以不能以此为基准。
     concat(name, workbook) {
         Object.keys(workbook.Sheets[name]).forEach(i => {
-            this.oldData.Sheets[name][i] = workbook.Sheets[name][i];
+            if(workbook.Sheets[name][i].f != "") {
+                this.oldData.Sheets[name][i] = workbook.Sheets[name][i];
+            }
         });
         return this.oldData;
     }
@@ -69,7 +73,7 @@ export default class CellProxy {
                 data.Sheets[name][i].v = "-";
             }
         });
-        this.oldData = data;
+        // this.oldData = data;
 
         return data;
     }
