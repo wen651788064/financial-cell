@@ -205,17 +205,17 @@ class Rows {
                             sarr.push(ncell);
                         }
 
-                        ncell.text = ncell.text + "";
-                        let ns = ncell.text.replace("=", "") * 1;
+                        let value = ncell.formulas !== "" ? ncell.formulas + "" : ncell.text + "";
+                        let ns = value.replace("=", "") * 1;
                         if ((ns || ns == 0) && typeof ns === 'number' && number == true) {
                             number = true;
                             nA = false;
                             nD = false;
-                        } else if (ncell.text && nA == true && ncell.text.search(/^[0-9a-zA-Z]+$/, 'g') != -1) {
+                        } else if (value && nA == true && value[0] === '=') {
                             nA = true;
                             number = false;
                             nD = false;
-                        } else if (ncell.text && nD == true && dayjs(ncell.text).isValid()) {
+                        } else if (value && nD == true && dayjs(value).isValid()) {
                             nA = false;
                             number = false;
                             nD = true;
@@ -386,7 +386,10 @@ class Rows {
                                         const ncell = helper.cloneDeep(this._[i].cells[j]);
                                         // ncell.text
                                         if (autofill && ncell && ncell.text && ncell.text.length > 0 && isCopy) {
-                                            const {text} = ncell;
+                                            let {text, formulas} = ncell;
+                                            if(formulas != "") {
+                                                text = formulas;
+                                            }
                                             let n = (jj - dsci) + (ii - dsri) + 2;
                                             if (!isAdd) {
                                                 n -= dn + 1;
@@ -461,6 +464,25 @@ class Rows {
                     }
                 }
             }
+        }
+    }
+
+    getMax() {
+        let mri = 0, mci = 0;
+        this.each((ri) => {
+            this.eachCells(ri, (ci) => {
+                if(mri < ri) {
+                    mri = ri;
+                }
+
+                if(mci < ci) {
+                    mci = ci;
+                }
+            });
+        });
+        return {
+            mri,
+            mci
         }
     }
 

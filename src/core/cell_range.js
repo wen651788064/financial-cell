@@ -77,6 +77,19 @@ class CellRange {
         }
     }
 
+    each3(cb,  mri, mci) {
+        let sri = 0;
+        let sci = 0;
+        let eri = mri;
+        let eci = mci;
+
+        for (let i = sri; i <= eri; i += 1) {
+            for (let j = sci; j <= eci; j += 1) {
+                cb(i, j, eri, eci);
+            }
+        }
+    }
+
     move(ri, ci) {
         let d = this.eri - this.sri;        // 格子的长 单位 格
         let d2 = this.eci - this.sci;            // 格子的 宽 单位格

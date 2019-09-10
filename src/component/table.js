@@ -65,10 +65,11 @@ function loadData(viewRange, load = false, read = false) {
     let workbook = [];
     workbook.Sheets = {};
     workbook.Sheets[data.name] = {};
-    let {calc, rows} = data;
     let enter = 0;
 
-    viewRange.each2((ri, ci, eri, eci) => {
+    console.log(this.data.rows.getMax());
+    let {mri, mci} = this.data.rows.getMax();
+    viewRange.each3((ri, ci, eri, eci) => {
         let cell = data.getCell(ri, ci);
         let expr = xy2expr(ci, ri);
         if (cell && cell.text && cell.formulas) {
@@ -126,7 +127,7 @@ function loadData(viewRange, load = false, read = false) {
         else {
             workbook.Sheets[data.name][expr] = {v: 0, f: 0, z: false};
         }
-    });
+    }, mri, mci);
 
     return {
         workbook,
