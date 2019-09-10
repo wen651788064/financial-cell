@@ -471,7 +471,6 @@ class Rows {
         let mri = 0, mci = 0;
         this.each((ri) => {
             this.eachCells(ri, (ci) => {
-                console.log(ri, ci);
                 if(mri < ri) {
                     mri = ri;
                 }
@@ -481,6 +480,7 @@ class Rows {
                 }
             });
         });
+        console.log(this.getCell(mri, mci));
         return {
             mri,
             mci
