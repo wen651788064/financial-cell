@@ -482,7 +482,6 @@ class Rows {
                 }
             });
         });
-        console.log(this.getCell(mri, mci));
         return {
             mri,
             mci
