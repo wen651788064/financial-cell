@@ -130,7 +130,7 @@ function loadData(viewRange, load = false, read = false) {
 
 async function parseCell(viewRange, state = false, src = '') {
     let {data, proxy} = this;
-    let {workbook, enter} = loadData.call(this, viewRange, false, true);
+    let {workbook, enter} = loadData.call(this, viewRange);
 
     let {factory} = this;
     let s = await factory.getSamples(workbook.Sheets);
