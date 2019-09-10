@@ -161,13 +161,15 @@ async function parseCell(viewRange, state = false, src = '') {
     if (this.editor.display && ca.state) {
         try {
             workbook = proxy.pack(data.name, workbook);
-            data.calc(workbook);
-            let {factory} = this;
-            factory.data = workbook;
-            workbook = proxy.concat(data.name, workbook);
-            let cells = proxy.unpack(workbook.Sheets[data.name], data.rows._);
-            data.rows.setData(cells);
-            // this.render(true, workbook);
+            setTimeout(() => {
+                data.calc(workbook);
+                let {factory} = this;
+                factory.data = workbook;
+                workbook = proxy.concat(data.name, workbook);
+                let cells = proxy.unpack(workbook.Sheets[data.name], data.rows._);
+                data.rows.setData(cells);
+                this.render(true, workbook);
+            });
             // this.editor.display = false;
             // let {worker} = this;
             // worker.terminate();
