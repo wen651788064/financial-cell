@@ -102,7 +102,7 @@ export default class CellProxy {
                         let newCell = newData[i][j][k];
                         let oldCell = oldData[i][j][k];
 
-                        if ((newCell && oldCell && oldCell.v != undefined && newCell.v != undefined && newCell.v + "" && newCell.v + "" !== oldCell.v + "")) {
+                        if (newCell && oldCell && oldCell.v != undefined && newCell.v != undefined && newCell.v + "" && newCell.v + "" !== oldCell.v + "") {
                             let expr = k;
                             newCell.v = newCell.v + "";
                             if (!isNaN(newCell.v.replace(/ /g, '').toUpperCase().replace(/\"/g, "\""))) {

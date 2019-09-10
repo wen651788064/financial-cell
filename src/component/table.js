@@ -85,7 +85,7 @@ function loadData(viewRange, load = false, read = false) {
                 if(read) {
                     workbook.Sheets[data.name][expr] = {
                         v: cell.text,
-                        f: cell.text
+                        f: cell.formulas
                     };
                 } else if (cell.text && cell.text[0] === "=" && ri < eri && ci < eci) {
                     if (isNaN(cell.text)) {
@@ -132,13 +132,12 @@ async function parseCell(viewRange, state = false, src = '') {
     let {data, proxy} = this;
     let {workbook, enter} = loadData.call(this, viewRange);
 
-
     let {factory} = this;
     let s = await factory.getSamples(workbook.Sheets);
     Object.keys(s).forEach(i => {
         workbook.Sheets[i] = s[i];
     });
-    let ca = proxy.calc(workbook, data.name);
+    let ca = proxy.calc(loadData.call(this, viewRange, false, true).workbook, data.name);
     if (ca.state) {
         workbook.Sheets[data.name] = ca.data;
     }
@@ -155,7 +154,6 @@ async function parseCell(viewRange, state = false, src = '') {
             worker = new Worker();
             workbook = proxy.pack(data.name, workbook);
             worker.postMessage({workbook});
-            // enter = 2;
             worker.addEventListener("message", (event) => {
                 workbook = event.data.data;
                 let {factory} = this;
@@ -165,7 +163,6 @@ async function parseCell(viewRange, state = false, src = '') {
                 this.render(true, workbook);
             });
 
-            // calc(workbook, worker);
         } catch (e) {
             console.error(e);
         }
