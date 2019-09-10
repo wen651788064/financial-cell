@@ -158,6 +158,7 @@ class Rows {
         const deri = dstCellRange.eri;
         const deci = dstCellRange.eci;
 
+
         const [rn, cn] = srcCellRange.size();
         const [drn, dcn] = dstCellRange.size();
 

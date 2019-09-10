@@ -1,5 +1,5 @@
 import {getSheetVale, isSheetVale} from "../core/operator";
-import {expr2xy} from "../core/alphabet";
+import {expr2xy, xy2expr} from "../core/alphabet";
 
 export default class CellProxy {
     constructor() {
@@ -116,6 +116,23 @@ export default class CellProxy {
             f: "",
             v: ""
         }
+    }
+
+    setCells(name, dstCellRange) {
+        const sri = dstCellRange.sri;
+        const sci = dstCellRange.sci;
+        const eri = dstCellRange.eri;
+        const eci = dstCellRange.eci;
+        for(let i = sci; i <= eci; i++) {
+            for(let j = sri; j <= eri; j++ ) {
+                let erpx = xy2expr(i, j);
+                this.oldData.Sheets[name][erpx] = {
+                    f: "",
+                    v: ""
+                };
+            }
+        }
+
     }
 
     calc(newData, name, initd = false) {
