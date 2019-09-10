@@ -158,7 +158,7 @@ class Rows {
         const [drn, dcn] = dstCellRange.size();
 
         let level = false;
-        if(sri == dsri && deri == eri) {
+        if (sri == dsri && deri == eri) {
             level = true;
         }
 
@@ -175,12 +175,12 @@ class Rows {
 
             let fackSRange = "";
             let fackDRange = "";
-            if(!level) {
+            if (!level) {
                 fackSRange = new CellRange(sri, sci + i, eri, sci + i);
                 fackDRange = new CellRange(dsri, dsci + i, deri, dsci + i);
-            } else if(level) {
-                fackSRange = new CellRange(sri + i , sci, sri + i , eci);
-                fackDRange = new CellRange(dsri + i , dsci, dsri + i, deci);
+            } else if (level) {
+                fackSRange = new CellRange(sri + i, sci, sri + i, eci);
+                fackDRange = new CellRange(dsri + i, dsci, dsri + i, deci);
             }
 
             let sarr = [];
@@ -211,11 +211,11 @@ class Rows {
                             nA = true;
                             number = false;
                             nD = false;
-                        } else if(ncell.text && nD == true && dayjs(ncell.text).isValid()) {
+                        } else if (ncell.text && nD == true && dayjs(ncell.text).isValid()) {
                             nA = false;
                             number = false;
                             nD = true;
-                        } else{
+                        } else {
                             nA = false;
                             number = false;
                             nD = false;
@@ -263,7 +263,7 @@ class Rows {
                     for (let i = 0; i < darr.length; i++) {
                         let d = darr[i];
                         let ncell = "";
-                        if(!level) {
+                        if (!level) {
                             if (!this._ || !this._[d.ri - 1] || !this._[d.ri - 1].cells[d.ci]) {
                                 ncell = {
                                     text: 0,
@@ -282,14 +282,14 @@ class Rows {
                                 ncell = helper.cloneDeep(this._[d.ri].cells[d.ci - 1]);
                             }
                         }
-                        if(ncell.text[0] == "=") {
+                        if (ncell.text[0] == "=") {
                             let last1 = ncell.text.replace("=", "") * 1;
 
                             let value = last1 + diffValue;
-                            ncell.text = "=" +  value + "";
+                            ncell.text = "=" + value + "";
                             ncell.formulas = "=" + value + "";
                             this.copyRender(darr, d.ri, d.ci, ncell, what, cb);
-                        } else if(ncell.text != '') {
+                        } else if (ncell.text != '') {
                             let last1 = ncell.text * 1;
 
                             let value = last1 + diffValue;
@@ -310,33 +310,33 @@ class Rows {
                     for (let i = darr.length - 1; i >= 0; i--) {
                         let d = darr[i];
                         let ncell = "";
-                       if(!level) {
-                           if (!this._ || !this._[d.ri + 1] || !this._[d.ri + 1].cells[d.ci]) {
-                               ncell = {
-                                   text: 0,
-                                   formulas: 0,
-                               }
-                           } else {
-                               ncell = helper.cloneDeep(this._[d.ri + 1].cells[d.ci]);
-                           }
-                       } else {
-                           if (!this._ || !this._[d.ri] || !this._[d.ri].cells[d.ci + 1]) {
-                               ncell = {
-                                   text: 0,
-                                   formulas: 0,
-                               }
-                           } else {
-                               ncell = helper.cloneDeep(this._[d.ri].cells[d.ci + 1]);
-                           }
-                       }
-                        if(ncell.text[0] == "=") {
+                        if (!level) {
+                            if (!this._ || !this._[d.ri + 1] || !this._[d.ri + 1].cells[d.ci]) {
+                                ncell = {
+                                    text: 0,
+                                    formulas: 0,
+                                }
+                            } else {
+                                ncell = helper.cloneDeep(this._[d.ri + 1].cells[d.ci]);
+                            }
+                        } else {
+                            if (!this._ || !this._[d.ri] || !this._[d.ri].cells[d.ci + 1]) {
+                                ncell = {
+                                    text: 0,
+                                    formulas: 0,
+                                }
+                            } else {
+                                ncell = helper.cloneDeep(this._[d.ri].cells[d.ci + 1]);
+                            }
+                        }
+                        if (ncell.text[0] == "=") {
                             let last1 = ncell.text.replace("=", "") * 1;
 
                             let value = last1 + diffValue;
-                            ncell.text = "=" +  value + "";
+                            ncell.text = "=" + value + "";
                             ncell.formulas = "=" + value + "";
                             this.copyRender(darr, d.ri, d.ci, ncell, what, cb);
-                        } else  if(ncell.text != '') {
+                        } else if (ncell.text != '') {
                             let last1 = ncell.text * 1;
 
                             let value = last1 + diffValue;
@@ -346,7 +346,7 @@ class Rows {
                         }
                     }
                 }
-            } else if(nD && isCopy) {
+            } else if (nD && isCopy) {
                 if (isAdd) {
                     for (let i = 0; i < darr.length; i++) {
                         let d = darr[i];
@@ -359,7 +359,7 @@ class Rows {
                         } else {
                             ncell = helper.cloneDeep(this._[d.ri - 1].cells[d.ci]);
                         }
-                        if(ncell.text != '') {
+                        if (ncell.text != '') {
                             let last1 = ncell.text;
 
                             let value = dayjs(last1).add(1, 'day').format('YYYY-MM-DD');
@@ -485,7 +485,7 @@ class Rows {
                 }
 
                 ncellmm[nri] = ncellmm[nri] || {cells: {}};
-                if(this._[ri].cells[ci].text != '' && this._[ri].cells[ci].formulas != '') {
+                if (this._[ri].cells[ci].text != '' && this._[ri].cells[ci].formulas != '') {
                     ncellmm[nri].cells[nci] = this._[ri].cells[ci];
                 }
             });
