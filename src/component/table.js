@@ -85,7 +85,8 @@ function loadData(viewRange, load = false, read = false) {
                 if(read) {
                     workbook.Sheets[data.name][expr] = {
                         v: cell.text,
-                        f: cell.formulas
+                        f: cell.formulas,
+                        z: true
                     };
                 } else if (cell.text && cell.text[0] === "=" && ri < eri && ci < eci) {
                     if (isNaN(cell.text)) {
@@ -94,12 +95,14 @@ function loadData(viewRange, load = false, read = false) {
                     if (load) {
                         workbook.Sheets[data.name][expr] = {
                             v: '-',
-                            f: ''
+                            f: '',
+                            z: true
                         };
                     }else {
                         workbook.Sheets[data.name][expr] = {
                             v: '',
-                            f: cell.text.replace(/ /g, '').replace(/\"/g, "\"").replace(/\"\"\"\"&/g, "\"'\"&")
+                            f: cell.text.replace(/ /g, '').replace(/\"/g, "\"").replace(/\"\"\"\"&/g, "\"'\"&"),
+                            z: true,
                         };
                     }
 
@@ -109,10 +112,12 @@ function loadData(viewRange, load = false, read = false) {
                     if (!isNaN(cell.text.replace(/ /g, '').toUpperCase().replace(/\"/g, "\""))) {
                         workbook.Sheets[data.name][expr] = {
                             v: cell.text.replace(/\"/g, "\"") * 1,
+                            z: true
                         };
                     } else {
                         workbook.Sheets[data.name][expr] = {
                             v: cell.text.replace(/\"/g, "\""),
+                            z: true
                         };
                     }
                 }

@@ -132,7 +132,7 @@ export default class CellProxy {
                     Object.keys(newData[i][j]).forEach(k => {
                         let newCell = newData[i][j][k];
 
-                        if (typeof this.oldData == "string" && !newCell.z ) {
+                        if (typeof this.oldData == "string" && newCell.z == true  ) {
                             let expr = k;
                             let d = newCell.f;
 
@@ -152,7 +152,7 @@ export default class CellProxy {
                                 v: '',
                                 f: d.replace(/ /g, '').replace(/\"/g, "\"").replace(/\"\"\"\"&/g, "\"'\"&")
                             };
-                        } else if (!newCell.z) {
+                        } else if (newCell.z == true ) {
                             let oldCell = oldData[i][j][k];
 
                             if (
