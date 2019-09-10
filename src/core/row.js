@@ -90,8 +90,8 @@ class Rows {
         const cell = this.getCellOrNew(ri, ci);
         cell.formulas = text;
         cell.text = text;  // todo 自定义公式： text 为公式计算结果, formulas 为公式
-        console.log( xy2expr(ci, ri))
-        if(typeof proxy != "string") {
+        console.log(xy2expr(ci, ri))
+        if (typeof proxy != "string") {
             proxy.setCell(name, xy2expr(ci, ri));
         }
     }
@@ -387,7 +387,7 @@ class Rows {
                                         // ncell.text
                                         if (autofill && ncell && ncell.text && ncell.text.length > 0 && isCopy) {
                                             let {text, formulas} = ncell;
-                                            if(formulas != "") {
+                                            if (formulas != "") {
                                                 text = formulas;
                                             }
                                             let n = (jj - dsci) + (ii - dsri) + 2;
@@ -469,17 +469,20 @@ class Rows {
 
     getMax() {
         let mri = 0, mci = 0;
-        this.each((ri) => {
-            this.eachCells(ri, (ci) => {
-                if(mri < ri) {
+
+        Object.entries(this._).forEach(([ri, row]) => {
+            if (this._[ri] && this._[ri].cells) {
+                if (mri < ri) {
                     mri = ri;
                 }
-
-                if(mci < ci) {
-                    mci = ci;
-                }
-            });
+                Object.entries(this._[ri].cells).forEach(([ci, cell]) => {
+                    if(mci < ci) {
+                        mci = ci;
+                    }
+                });
+            }
         });
+
         console.log(this.getCell(mri, mci));
         return {
             mri,
