@@ -119,14 +119,6 @@ export default class CellProxy {
             }
         }
 
-        if (typeof this.oldData == "string") {
-            this.oldData = this.deepCopy(newData);
-            return {
-                "state": false,
-                "data": this.oldData.Sheets[name],
-            };
-        }
-
         let workbook = [];
         workbook.Sheets = {};
         workbook.Sheets[name] = {};
@@ -139,13 +131,7 @@ export default class CellProxy {
                 if (j == name) {
                     Object.keys(newData[i][j]).forEach(k => {
                         let newCell = newData[i][j][k];
-                        let oldCell = oldData[i][j][k];
-
-                        if (
-                            (newCell && oldCell && oldCell.f != undefined
-                                && newCell.f != undefined && newCell.f + "" && newCell.f + "" !== oldCell.f + "") ||
-                            (!oldCell && newCell) || (!oldCell.f && newCell.f)
-                        ) {
+                        if (typeof this.oldData == "string") {
                             let expr = k;
                             let d = newCell.f;
 
@@ -165,17 +151,48 @@ export default class CellProxy {
                                 v: '',
                                 f: d.replace(/ /g, '').replace(/\"/g, "\"").replace(/\"\"\"\"&/g, "\"'\"&")
                             };
+                        } else {
+                            let oldCell = oldData[i][j][k];
+
+                            if (
+                                (newCell && oldCell && oldCell.f != undefined
+                                    && newCell.f != undefined && newCell.f + "" && newCell.f + "" !== oldCell.f + "") ||
+                                (!oldCell && newCell) || (!oldCell.f && newCell.f)
+                            ) {
+                                let expr = k;
+                                let d = newCell.f;
+
+                                if (!newCell || (!d && d + "" != '0') ) {
+                                    d = "";
+                                }
+                                d = d + "";
+                                if (d && d[0] === "=" && isSheetVale(d)) {
+                                    deep.push(newCell.f);
+                                }
+
+                                if (isNaN(d)) {
+                                    d = d + "";
+                                }
+
+                                workbook.Sheets[name][expr] = {
+                                    v: '',
+                                    f: d.replace(/ /g, '').replace(/\"/g, "\"").replace(/\"\"\"\"&/g, "\"'\"&")
+                                };
+                            }
                         }
                     });
                 }
             });
         });
 
+        // if (typeof this.oldData == "string") {
+        //     this.oldData = this.deepCopy(newData);
+        // }
 
         if (Object.getOwnPropertyNames(workbook.Sheets[name]).length <= 0) {
             return {
                 "state": false,
-                "data": this.oldData.Sheets[name],
+                "data": "",
             };
         }
 
@@ -183,7 +200,7 @@ export default class CellProxy {
         if (n.length <= 0 && deep.length > 0) {
             return {
                 "state": false,
-                "data": this.oldData.Sheets[name],
+                "data": "",
             };
         }
         this.oldData = this.deepCopy(newData);

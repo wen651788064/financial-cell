@@ -137,14 +137,12 @@ async function parseCell(viewRange, state = false, src = '') {
     let {factory} = this;
     let s = await factory.getSamples(workbook.Sheets);
 
-    // console.log(loadData.call(this, viewRange, false, true));
-
     let sall = loadData.call(this, viewRange, false, true).workbook;
     Object.keys(s).forEach(i => {
-        // if(i !== data.name) {
+        if(i !== data.name) {
             workbook.Sheets[i] = s[i];
             sall.Sheets[i] = s[i];
-        // }
+        }
     });
     let ca = proxy.calc(sall, data.name);
     if (ca.state) {
