@@ -66,7 +66,9 @@ export default class CellProxy {
 
         Object.keys(workbook.Sheets[name]).forEach(i => {
             data.Sheets[name][i] = workbook.Sheets[name][i];
-            data.Sheets[name][i].v = "-";
+            if(workbook.Sheets[name][i].f && workbook.Sheets[name][i].f[0] === '=') {
+                data.Sheets[name][i].v = "-";
+            }
         });
 
         return data;
