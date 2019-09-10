@@ -90,12 +90,16 @@ export default class CellProxy {
                 data[ri]['cells'][ci] = {}
             }
 
-            data[ri]['cells'][ci].text = (cells[i] && cells[i].v) ? cells[i].v : "";
-            data[ri]['cells'][ci].formulas = (cells[i] && cells[i].f) ? cells[i].f : "";
-
+            data[ri]['cells'][ci].text = cells[i].v;
+            data[ri]['cells'][ci].formulas = cells[i].f;
         });
 
         return data;
+    }
+
+    setOldData(newData) {
+        this.oldData = this.deepCopy(newData);
+        this.newData = this.deepCopy(newData);
     }
 
     calc(newData, name, initd = false) {
@@ -118,7 +122,6 @@ export default class CellProxy {
         workbook.Sheets[name] = {};
 
         let {oldData} = this;
-        let result = {};
         let deep = [];
 
         Object.keys(newData).forEach(i => {
