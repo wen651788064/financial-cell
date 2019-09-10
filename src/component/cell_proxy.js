@@ -189,7 +189,7 @@ export default class CellProxy {
         if (Object.getOwnPropertyNames(workbook.Sheets[name]).length <= 0) {
             return {
                 "state": false,
-                "data": this.oldData.Sheets[name],
+                "data": "",
             };
         }
 
