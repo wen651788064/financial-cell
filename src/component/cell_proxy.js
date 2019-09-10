@@ -131,7 +131,8 @@ export default class CellProxy {
                 if (j == name) {
                     Object.keys(newData[i][j]).forEach(k => {
                         let newCell = newData[i][j][k];
-                        if (typeof this.oldData == "string") {
+
+                        if (typeof this.oldData == "string" && !newCell.z ) {
                             let expr = k;
                             let d = newCell.f;
 
@@ -151,7 +152,7 @@ export default class CellProxy {
                                 v: '',
                                 f: d.replace(/ /g, '').replace(/\"/g, "\"").replace(/\"\"\"\"&/g, "\"'\"&")
                             };
-                        } else {
+                        } else if (!newCell.z) {
                             let oldCell = oldData[i][j][k];
 
                             if (
@@ -185,9 +186,9 @@ export default class CellProxy {
             });
         });
 
-        if (typeof this.oldData == "string") {
-            this.oldData = this.deepCopy(newData);
-        }
+        // if (typeof this.oldData == "string") {
+        //     this.oldData = this.deepCopy(newData);
+        // }
 
         if (Object.getOwnPropertyNames(workbook.Sheets[name]).length <= 0) {
             return {

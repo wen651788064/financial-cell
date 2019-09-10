@@ -119,7 +119,7 @@ function loadData(viewRange, load = false, read = false) {
             }
         }
         else {
-            workbook.Sheets[data.name][expr] = {v: 0, f: 0};
+            workbook.Sheets[data.name][expr] = {v: 0, f: 0, z: false};
         }
     });
 
