@@ -201,7 +201,8 @@ class Rows {
                             sarr.push(ncell);
                         }
 
-                        let ns = ncell.text * 1;
+                        ncell.text = ncell.text + "";
+                        let ns = ncell.text.replace("=", "") * 1;
                         if ((ns || ns == 0) && typeof ns === 'number' && number == true) {
                             number = true;
                             nA = false;
