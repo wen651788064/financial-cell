@@ -1,4 +1,5 @@
 import {getSheetVale, isSheetVale} from "../core/operator";
+import {expr2xy} from "../core/alphabet";
 
 export default class CellProxy {
     constructor() {
@@ -66,7 +67,7 @@ export default class CellProxy {
 
         Object.keys(workbook.Sheets[name]).forEach(i => {
             data.Sheets[name][i] = workbook.Sheets[name][i];
-            if(workbook.Sheets[name][i].f && workbook.Sheets[name][i].f[0] === '=') {
+            if (workbook.Sheets[name][i].f && workbook.Sheets[name][i].f[0] === '=') {
                 data.Sheets[name][i].v = "-";
             }
         });
@@ -74,8 +75,31 @@ export default class CellProxy {
         return data;
     }
 
+    unpack(cells, _) {
+        let data = _;
+        Object.keys(cells).forEach(i => {
+            let [ci, ri] = expr2xy(i);
+            if(!data[ri]) {
+                data[ri] = {}
+            }
+            if(!data[ri]['cells']) {
+                data[ri]['cells'] = {}
+            }
+
+            if(!data[ri]['cells'][ci]) {
+                data[ri]['cells'][ci] = {}
+            }
+
+            data[ri]['cells'][ci].text = (cells[i] && cells[i].v) ? cells[i].v : "";
+            data[ri]['cells'][ci].formulas = (cells[i] && cells[i].f) ? cells[i].f : "";
+
+        });
+
+        return data;
+    }
+
     calc(newData, name, initd = false) {
-        if(initd) {
+        if (initd) {
             return {
                 "state": false,
             }
@@ -107,23 +131,24 @@ export default class CellProxy {
                         if (newCell && oldCell && oldCell.v != undefined && newCell.v != undefined && newCell.v + "" && newCell.v + "" !== oldCell.v + "") {
                             let expr = k;
                             newCell.v = newCell.v + "";
+                            // 为什么要 newCell.v.replace(/ /g, '').toUpperCase().replace(/\"/g, "\"") * 1
                             if (!isNaN(newCell.v.replace(/ /g, '').toUpperCase().replace(/\"/g, "\""))) {
                                 workbook.Sheets[name][expr] = {
-                                    v: newCell.v.replace(/ /g, '').toUpperCase().replace(/\"/g, "\"") * 1,
+                                    v: newCell.v.replace(/ /g, '').replace(/\"/g, "\"") * 1,
                                 };
                             } else {
                                 workbook.Sheets[name][expr] = {
-                                    v: newCell.v.replace(/ /g, '').toUpperCase().replace(/\"/g, "\""),
+                                    v: newCell.v.replace(/ /g, '').replace(/\"/g, "\""),
                                 };
                             }
                         } else if (
                             (newCell && oldCell && oldCell.f != undefined
                                 && newCell.f != undefined && newCell.f + "" && newCell.f + "" !== oldCell.f + "") ||
-                            ( !oldCell && newCell ) || (!oldCell.f && newCell.f)
+                            (!oldCell && newCell) || (!oldCell.f && newCell.f)
                         ) {
                             let expr = k;
 
-                            if(!newCell || !newCell.f) {
+                            if (!newCell || !newCell.f) {
                                 newCell.f = "";
                             }
                             newCell.f = newCell.f + "";

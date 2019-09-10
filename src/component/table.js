@@ -89,7 +89,7 @@ function loadData(viewRange, load = false, read = false) {
                     };
                 } else if (cell.text && cell.text[0] === "=" && ri < eri && ci < eci) {
                     if (isNaN(cell.text)) {
-                        cell.text = cell.text;  // 为什么要.toUpperCase() 呢？
+                        cell.text = cell.text.toUpperCase();  // 为什么要.toUpperCase() 呢？ => =a1 需要变成=A1
                     }
                     if (load) {
                         workbook.Sheets[data.name][expr] = {
@@ -104,13 +104,15 @@ function loadData(viewRange, load = false, read = false) {
                     }
 
                 } else {
+
+                    // cell.text.replace(/ /g, '').toUpperCase().replace(/\"/g, "\"") * 1
                     if (!isNaN(cell.text.replace(/ /g, '').toUpperCase().replace(/\"/g, "\""))) {
                         workbook.Sheets[data.name][expr] = {
-                            v: cell.text.replace(/ /g, '').toUpperCase().replace(/\"/g, "\"") * 1,
+                            v: cell.text.replace(/\"/g, "\"") * 1,
                         };
                     } else {
                         workbook.Sheets[data.name][expr] = {
-                            v: cell.text.replace(/ /g, '').toUpperCase().replace(/\"/g, "\""),
+                            v: cell.text.replace(/\"/g, "\""),
                         };
                     }
                 }
@@ -162,7 +164,8 @@ async function parseCell(viewRange, state = false, src = '') {
                 let {factory} = this;
                 factory.data = workbook;
                 workbook = proxy.concat(data.name, workbook);
-
+                let cells = proxy.unpack(workbook.Sheets[data.name],  data.rows._);
+                data.rows.setData(cells);
                 this.render(true, workbook);
             });
 
