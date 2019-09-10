@@ -4,7 +4,6 @@ import {expr2xy} from "../core/alphabet";
 export default class CellProxy {
     constructor() {
         this.oldData = "";
-        this.newData = "";
     }
 
     deepCalc(deep, newData, n) {
@@ -109,7 +108,6 @@ export default class CellProxy {
 
     setOldData(newData) {
         this.oldData = this.deepCopy(newData);
-        this.newData = this.deepCopy(newData);
     }
 
     calc(newData, name, initd = false) {

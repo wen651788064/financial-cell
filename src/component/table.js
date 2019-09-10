@@ -179,6 +179,8 @@ async function parseCell(viewRange, state = false, src = '') {
             console.error(e);
         }
     } else {
+        factory.data = sall;
+        proxy.oldData = sall;
         workbook = factory.data;
     }
 
