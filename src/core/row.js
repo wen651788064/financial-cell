@@ -1,5 +1,5 @@
 import helper from './helper';
-import {expr2expr} from './alphabet';
+import {expr2expr, xy2expr} from './alphabet';
 import {absoluteType, changeFormula, cutStr, isAbsoluteValue, value2absolute} from "../core/operator";
 import {expr2xy} from "../core/alphabet";
 import CellRange from "./cell_range";
@@ -86,10 +86,14 @@ class Rows {
         }
     }
 
-    setCellText(ri, ci, text) {
+    setCellText(ri, ci, text, proxy = "", name = "") {
         const cell = this.getCellOrNew(ri, ci);
         cell.formulas = text;
         cell.text = text;  // todo 自定义公式： text 为公式计算结果, formulas 为公式
+        console.log( xy2expr(ci, ri))
+        if(typeof proxy != "string") {
+            proxy.setCell(name, xy2expr(ci, ri));
+        }
     }
 
     setCellAll(ri, ci, text, formulas = "") {

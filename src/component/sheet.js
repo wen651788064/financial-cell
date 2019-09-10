@@ -27,7 +27,7 @@ import {getChooseImg} from "../event/copy";
 import CellRange from "../core/cell_range";
 import {process} from "../event/paste";
 import {createEvent} from "./event";
-import {expr2xy} from "../core/alphabet";
+import {expr2xy, xy2expr} from "../core/alphabet";
 
 function scrollbarMove() {
     const {
@@ -651,12 +651,12 @@ function colResizerFinished(cRect, distance) {
     editorSetOffset.call(this);
 }
 
-function selectorCellText(ri, ci, text, state) {
+function selectorCellText(ri, ci, text, state, proxy = "") {
     if (ri == -1 || ci == -1) {
         return;
     }
     const {data, table, editor} = this;
-    data.setCellText(ri, ci, text, state);
+    data.setCellText(ri, ci, text, state, proxy);
     editor.setRiCi(-1, -1);
 }
 
@@ -744,7 +744,7 @@ function afterSelector(editor) {
         let {inputText, ri, ci} = editor;
         let {selector} = this;
         selector.indexes = [ri, ci];
-        selectorCellText.call(this, ri, ci, inputText, 'input');
+        selectorCellText.call(this, ri, ci, inputText, 'input', this.table.proxy);
     }
 }
 
@@ -890,7 +890,7 @@ function sheetInitEvents() {
                 if (!editor.getLock() && !editor.isCors) {
                     let {inputText, ri, ci} = editor;
                     if (ri !== -1 && ci !== -1 && inputText[0] === "=") {
-                        selectorCellText.call(this, ri, ci, inputText, 'input');
+                        selectorCellText.call(this, ri, ci, inputText, 'input', this.table.proxy);
                     }
 
                     let state = editor.clear();

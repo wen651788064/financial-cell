@@ -998,7 +998,7 @@ export default class DataProxy {
     }
 
     // state: input | finished
-    setCellText(ri, ci, text, state) {
+    setCellText(ri, ci, text, state, proxy = "") {
         // text = text.replace(/\"/g)
         const {rows, history, validations} = this;
         console.log(ri, ci);
@@ -1010,7 +1010,7 @@ export default class DataProxy {
             if(state == 'end') {
                 rows.setCellAll(ri, ci, text);
             } else {
-                rows.setCellText(ri, ci, text);
+                rows.setCellText(ri, ci, text, proxy, this.name);
             }
             // 不应该没打开一个单元格就 change一次
             this.change(this.getData());

@@ -110,6 +110,14 @@ export default class CellProxy {
         this.oldData = this.deepCopy(newData);
     }
 
+
+    setCell(name, erpx) {
+        this.oldData.Sheets[name][erpx] = {
+            f: "",
+            v: ""
+        }
+    }
+
     calc(newData, name, initd = false) {
         if (initd) {
             return {
