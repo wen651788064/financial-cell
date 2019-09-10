@@ -282,7 +282,14 @@ class Rows {
                                 ncell = helper.cloneDeep(this._[d.ri].cells[d.ci - 1]);
                             }
                         }
-                        if(ncell.text != '') {
+                        if(ncell.text[0] == "=") {
+                            let last1 = ncell.text.replace("=", "") * 1;
+
+                            let value = last1 + diffValue;
+                            ncell.text = "=" +  value + "";
+                            ncell.formulas = "=" + value + "";
+                            this.copyRender(darr, d.ri, d.ci, ncell, what, cb);
+                        } else if(ncell.text != '') {
                             let last1 = ncell.text * 1;
 
                             let value = last1 + diffValue;
