@@ -1,4 +1,4 @@
-import {getSheetVale, isSheetVale} from "../core/operator";
+import {getSheetVale, isSheetVale, contain, cutStr} from "../core/operator";
 import {expr2xy, xy2expr} from "../core/alphabet";
 
 export default class CellProxy {
@@ -83,8 +83,9 @@ export default class CellProxy {
             Object.keys(data).forEach(i => {
                 Object.keys(data[i]).forEach(j => {
                     Object.keys(data[i][j]).forEach(k => {
-                        data[i][j][k].f = data[i][j][k].f + "";
-                        if (data[i][j][k].f.indexOf(n) != -1) {
+                        let value = data[i][j][k].f + "";
+                        value = value.replace(/\$/g, "");
+                        if (contain(cutStr(value), n)) {
                             workbook.Sheets[name][k] = data[i][j][k];
                             enter = true;
 

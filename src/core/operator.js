@@ -23280,6 +23280,15 @@ const absoluteType = (str) => {
     return -1;
 };
 
+const contain = (c, d) => {
+    for(let i = 0; i < c.length; i++) {
+        if(d === c[i]) {
+            return true;
+        }
+    }
+    return false;
+};
+
 const splitStr = (str) => {
     let arr = str.split(/([(-\/,+，*\s=^&])/);
     return arr;
@@ -23351,4 +23360,5 @@ export {
     isSheetVale,
     getSheetVale,
     cuttingByPos2,
+    contain,
 }
