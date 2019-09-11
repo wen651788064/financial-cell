@@ -72,31 +72,40 @@ export default class CellProxy {
         let enter = false;
         let data = this.deepCopy(this.oldData);
         let deepArr = [];
+        let arr = [];
+        let tileArr = [];
 
         Object.keys(workbook.Sheets[name]).forEach(n => {
-            deepArr.push(n);
+            arr.push(n);
+            tileArr.push(n);
         });
+        deepArr.push(arr);
 
         for(let i = 0;  i < deepArr.length; i++) {
-            let n = deepArr[i];
+            let targetArr = deepArr[i];
+            arr = [];
 
             Object.keys(data).forEach(i => {
                 Object.keys(data[i]).forEach(j => {
                     Object.keys(data[i][j]).forEach(k => {
                         let value = data[i][j][k].f + "";
                         value = value.replace(/\$/g, "");
-                        if (contain(cutStr(value), n)) {
-                            workbook.Sheets[name][k] = data[i][j][k];
-                            enter = true;
+                        for(let j = 0; j < targetArr.length; j++) {
+                            let n = targetArr[j];
+                            if (contain(cutStr(value), n)) {
+                                workbook.Sheets[name][k] = data[i][j][k];
+                                enter = true;
 
-                            if(deepArr.indexOf(k) == -1) {
-                                deepArr.push(k);
+                                if(tileArr.indexOf(k) == -1) {
+                                    arr.push(k);
+                                }
                             }
                         }
                     })
                 })
             });
 
+            deepArr.push(arr);
         }
 
         return {
