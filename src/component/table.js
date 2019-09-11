@@ -173,6 +173,7 @@ async function parseCell(viewRange, state = false, src = '') {
             workbook = proxy.concat(data.name, workbook);
             let cells = proxy.unpack(workbook.Sheets[data.name], data.rows._);
             data.rows.setData(cells);
+            data.change(cells);
             // this.editor.display = false;
             // let {worker} = this;
             // worker.terminate();
