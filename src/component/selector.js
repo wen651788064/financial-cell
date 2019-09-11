@@ -18,19 +18,19 @@ class SelectorElement {
         this._selector = selector;
         this.l = h('div', `${cssPrefix}-selector-box-l`)
             .on('mousedown.stop', evt => {
-                this.moveEvent();
+                this.moveEvent(1);
             });
         this.r = h('div', `${cssPrefix}-selector-box-r`)
             .on('mousedown.stop', evt => {
-                this.moveEvent();
+                this.moveEvent(2);
             });
         this.t = h('div', `${cssPrefix}-selector-box-t`)
             .on('mousedown.stop', evt => {
-                this.moveEvent();
+                this.moveEvent(3);
             });
         this.b = h('div', `${cssPrefix}-selector-box-b`)
             .on('mousedown.stop', evt => {
-                this.moveEvent();
+                this.moveEvent(4);
             });
 
         this.worker = new Worker();
@@ -47,7 +47,7 @@ class SelectorElement {
         startZIndex += 1;
     }
 
-    moveEvent() {
+    moveEvent(direction) {
         let {data, _selector, sheet} = this;
         let {selector} = data;
         let {sri, sci, eri, eci, w, h} = _selector.range;
@@ -65,6 +65,14 @@ class SelectorElement {
             if (ri !== -1 && ci !== -1) {
                 cellRange = new CellRange(sri, sci, eri, eci, w, h);
                 cellRange.move(ri, ci);
+            //     if(direction == 4) {
+            //         cellRange = new CellRange(eri, eci, eri, eci, w, h);
+            //     } else if(direction == 2) {
+            //         cellRange = new CellRange(sri, eci, eri, eci, w, h);
+            //     } else if(direction == 1) {
+            //         cellRange = new CellRange(sri, sci, eri, eci, w, h);
+            // }
+
                 const rect = data.getMoveRect(cellRange);
                 selectorMoveEl.range = cellRange;
                 selectorMoveEl.setMove(rect);

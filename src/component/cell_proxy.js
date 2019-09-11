@@ -327,7 +327,7 @@ export default class CellProxy {
                                         v: '',
                                         f: d.replace(/ /g, '').replace(/\"/g, "\"").replace(/\"\"\"\"&/g, "\"'\"&")
                                     };
-                                } else if (oldCell.v + "" !== newCell.v + "") {
+                                } else if (oldCell && newCell && oldCell.v + "" !== newCell.v + "") {
                                     let p = newCell.v;
                                     let expr = k;
                                     workbook.Sheets[name][expr] = {
