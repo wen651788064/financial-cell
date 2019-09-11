@@ -82,7 +82,7 @@ function loadData(viewRange, load = false, read = false) {
                     enter = factory.lock;
                     enter = enter ? 1 : 0;
                 }
-                if(read) {
+                if (read) {
                     workbook.Sheets[data.name][expr] = {
                         v: cell.text,
                         f: cell.formulas,
@@ -98,7 +98,7 @@ function loadData(viewRange, load = false, read = false) {
                             f: '',
                             z: true
                         };
-                    }else {
+                    } else {
                         workbook.Sheets[data.name][expr] = {
                             v: '',
                             f: cell.text.replace(/ /g, '').replace(/\"/g, "\"").replace(/\"\"\"\"&/g, "\"'\"&"),
@@ -144,7 +144,7 @@ async function parseCell(viewRange, state = false, src = '') {
 
     let sall = loadData.call(this, viewRange, false, true).workbook;
     Object.keys(s).forEach(i => {
-        if(i !== data.name) {
+        if (i !== data.name) {
             workbook.Sheets[i] = s[i];
             sall.Sheets[i] = s[i];
         }
@@ -161,15 +161,12 @@ async function parseCell(viewRange, state = false, src = '') {
     if (this.editor.display && ca.state) {
         try {
             workbook = proxy.pack(data.name, workbook);
-            setTimeout(() => {
-                data.calc(workbook);
-                let {factory} = this;
-                factory.data = workbook;
-                workbook = proxy.concat(data.name, workbook);
-                let cells = proxy.unpack(workbook.Sheets[data.name], data.rows._);
-                data.rows.setData(cells);
-                this.render(true, workbook);
-            });
+            data.calc(workbook);
+            let {factory} = this;
+            factory.data = workbook;
+            workbook = proxy.concat(data.name, workbook);
+            let cells = proxy.unpack(workbook.Sheets[data.name], data.rows._);
+            data.rows.setData(cells);
             // this.editor.display = false;
             // let {worker} = this;
             // worker.terminate();
