@@ -94,6 +94,10 @@ export default class CellProxy {
                 data[ri]['cells'][ci] = {}
             }
 
+            if(this.isNaN(cells[i].v)) {
+                cells[i].v = "#ERROR!"
+            }
+
             if (cells[i].v + "" === '0' && cells[i].f && cells[i].f[0] && cells[i].f[0] === '=') {
                 data[ri]['cells'][ci].text = cells[i].v + "";
                 data[ri]['cells'][ci].formulas = cells[i].f + "";
@@ -104,6 +108,10 @@ export default class CellProxy {
         });
 
         return data;
+    }
+
+    isNaN(value) {
+        return typeof value === 'number' && isNaN(value);
     }
 
     setOldData(newData) {

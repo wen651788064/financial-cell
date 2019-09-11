@@ -71,7 +71,7 @@ function loadData(viewRange, load = false, read = false) {
     viewRange.each3((ri, ci, eri, eci) => {
         let cell = data.getCell(ri, ci);
         let expr = xy2expr(ci, ri);
-        if (cell && cell.text && cell.formulas) {
+        if (cell && (cell.text || cell.formulas)) {
             cell.text = cell.text + "";
             if (cell.text.indexOf("MD.RTD") != -1) {
                 workbook.Sheets[data.name][expr] = {v: "", f: ""};
