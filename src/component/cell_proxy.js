@@ -98,6 +98,7 @@ export default class CellProxy {
 
                                 if(tileArr.indexOf(k) == -1) {
                                     arr.push(k);
+                                    tileArr.push(n);
                                 }
                             }
                         }
