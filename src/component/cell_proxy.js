@@ -31,7 +31,7 @@ export default class CellProxy {
     // 因为在前面有一步， 把不是此次change的公式都主动设置为""了，所以不能以此为基准。
     concat(name, workbook) {
         Object.keys(workbook.Sheets[name]).forEach(i => {
-            if(workbook.Sheets[name][i].f != "") {
+            if (workbook.Sheets[name][i].f != "") {
                 this.oldData.Sheets[name][i] = workbook.Sheets[name][i];
             }
         });
@@ -94,7 +94,7 @@ export default class CellProxy {
                 data[ri]['cells'][ci] = {}
             }
 
-            if(this.isNaN(cells[i].v)) {
+            if (this.isNaN(cells[i].v)) {
                 cells[i].v = "#ERROR!"
             }
 
@@ -108,6 +108,14 @@ export default class CellProxy {
         });
 
         return data;
+    }
+
+    isNull(tmp) {
+        if (!tmp && typeof(tmp) != "undefined" && tmp != 0) {
+            return true;
+        }
+        return false;
+
     }
 
     isNaN(value) {
@@ -131,8 +139,8 @@ export default class CellProxy {
         const sci = dstCellRange.sci;
         const eri = dstCellRange.eri;
         const eci = dstCellRange.eci;
-        for(let i = sci; i <= eci; i++) {
-            for(let j = sri; j <= eri; j++ ) {
+        for (let i = sci; i <= eci; i++) {
+            for (let j = sri; j <= eri; j++) {
                 let erpx = xy2expr(i, j);
                 this.oldData.Sheets[name][erpx] = {
                     f: "",
@@ -166,8 +174,9 @@ export default class CellProxy {
                         if (typeof this.oldData == "string" && newCell.z == true) {
                             let expr = k;
                             let d = newCell.f;
+                            let p = newCell.v;
 
-                            if (!newCell || (!d && d + "" != '0') ) {
+                            if (!newCell || (!d && d + "" != '0')) {
                                 d = "";
                             }
                             d = d + "";
@@ -175,7 +184,7 @@ export default class CellProxy {
                                 deep.push(newCell.f);
                             }
 
-                            if(d[0] === '=') {
+                            if (d[0] === '=' && (p === "" || this.isNull(p))) {
                                 workbook.Sheets[name][expr] = {
                                     v: '',
                                     f: d.replace(/ /g, '').replace(/\"/g, "\"").replace(/\"\"\"\"&/g, "\"'\"&")
@@ -191,8 +200,9 @@ export default class CellProxy {
                             ) {
                                 let expr = k;
                                 let d = newCell.f;
+                                let p = newCell.v;
 
-                                if (!newCell || (!d && d + "" != '0') ) {
+                                if (!newCell || (!d && d + "" != '0')) {
                                     d = "";
                                 }
                                 d = d + "";
@@ -200,7 +210,7 @@ export default class CellProxy {
                                     deep.push(newCell.f);
                                 }
 
-                                if(d[0] === '=') {
+                                if (d[0] === '=' && (p === "" || this.isNull(p))) {
                                     workbook.Sheets[name][expr] = {
                                         v: '',
                                         f: d.replace(/ /g, '').replace(/\"/g, "\"").replace(/\"\"\"\"&/g, "\"'\"&")
