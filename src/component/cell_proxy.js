@@ -4,6 +4,7 @@ import {expr2xy, xy2expr} from "../core/alphabet";
 export default class CellProxy {
     constructor() {
         this.oldData = "";
+        this.diff = 0;          // diff 为 101 => 则为跨sheet但是没找到跨sheet的数据
     }
 
     deepCalc(deep, newData, n) {
@@ -255,6 +256,7 @@ export default class CellProxy {
 
         let n = this.deepCalc(deep, newData, []);
         if (n.length <= 0 && deep.length > 0) {
+            this.diff = 101;
             return {
                 "state": false,
                 "data": "",

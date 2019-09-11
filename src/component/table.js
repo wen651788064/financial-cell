@@ -187,7 +187,7 @@ async function parseCell(viewRange, state = false, src = '') {
         }
     } else {
         factory.data = sall;
-        if(typeof proxy.oldData !== 'string') {
+        if(proxy.diff !== 101) {
             proxy.oldData = sall;
         }
         workbook = factory.data;
