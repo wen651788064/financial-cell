@@ -76,7 +76,7 @@ function loadData(viewRange, load = false, read = false) {
             if (cell.text.indexOf("MD.RTD") != -1) {
                 workbook.Sheets[data.name][expr] = {v: "", f: ""};
             } else {
-                if (cell.formulas && cell.formulas[0] == "=" && ri < eri && ci < eci && isSheetVale(cell.formulas)) {
+                if (cell.formulas && cell.formulas[0] == "=" && isSheetVale(cell.formulas)) {
                     let {factory} = this;
                     factory.push(cell.formulas);
                     enter = factory.lock;
@@ -88,7 +88,7 @@ function loadData(viewRange, load = false, read = false) {
                         f: cell.formulas,
                         z: true
                     };
-                } else if (cell.text && cell.text[0] === "=" && ri < eri && ci < eci) {
+                } else if (cell.text && cell.text[0] === "=") {
                     if (isNaN(cell.text)) {
                         cell.text = cell.text.toUpperCase();  // 为什么要.toUpperCase() 呢？ => =a1 需要变成=A1
                     }
