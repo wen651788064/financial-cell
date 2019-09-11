@@ -68,9 +68,33 @@ export default class CellProxy {
         return v;
     }
 
+    filter(data) {
+        let fd = {};
+
+        Object.keys(data).forEach(i => {
+            Object.keys(data[i]).forEach(j => {
+                Object.keys(data[i][j]).forEach(k => {
+                    if(!fd[i]) {
+                        fd[i] = {};
+                    }
+                    if(!fd[i][j]) {
+                        fd[i][j] = {};
+                    }
+                    let value = data[i][j][k].f + "";
+                    if(value[0] === '=') {
+                        fd[i][j][k] = data[i][j][k];
+                    }
+                })
+            })
+        });
+
+        return fd;
+    }
+
     associated(name, workbook) {
         let enter = false;
         let data = this.deepCopy(this.oldData);
+        data = this.filter(data);
         let deepArr = [];
         let arr = [];
         let tileArr = [];
@@ -91,7 +115,6 @@ export default class CellProxy {
                     Object.keys(data[i][j]).forEach(k => {
                         let value = data[i][j][k].f + "";
                         value = value.replace(/\$/g, "");
-                        console.time("x2");
 
                         for(let f = 0; f < targetArr.length; f++) {
                             let n = targetArr[f];
@@ -107,8 +130,6 @@ export default class CellProxy {
                                 }
                             }
                         }
-                        console.timeEnd("x2");
-
                     })
                 })
             });
