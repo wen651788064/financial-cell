@@ -158,6 +158,12 @@ async function parseCell(viewRange, state = false, src = '') {
         workbook.Sheets[data.name]['A1'] = {v: '', f: `=${src}`};
     }
 
+    if(ca.state) {
+        let assoc = proxy.associated(data.name, workbook);
+        ca.state = ca.state === false ? assoc.enter : ca.state;
+        workbook = assoc.enter === true ? assoc.nd : workbook;
+    }
+
     if (this.editor.display && ca.state) {
         try {
             workbook = proxy.pack(data.name, workbook);

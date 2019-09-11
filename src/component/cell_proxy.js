@@ -54,18 +54,41 @@ export default class CellProxy {
     }
 
     preProcess(v, f) {
-        if(typeof v === 'string' && v.indexOf("%") !== -1) {
+        if (typeof v === 'string' && v.indexOf("%") !== -1) {
             return f;
         }
 
-        if(typeof v === 'string' && v.indexOf(",") !== -1) {
+        if (typeof v === 'string' && v.indexOf(",") !== -1) {
             let t = v.replace(/,/g, '');
-            if(!isNaN(t)) {
+            if (!isNaN(t)) {
                 return t;
             }
         }
 
         return v;
+    }
+
+    associated(name, workbook) {
+        let nd = this.deepCopy(workbook);
+        let enter = false;
+        let data = this.deepCopy(this.oldData);
+        Object.keys(workbook.Sheets[name]).forEach(n => {
+            Object.keys(data).forEach(i => {
+                Object.keys(data[i]).forEach(j => {
+                    Object.keys(data[i][j]).forEach(k => {
+                        data[i][j][k].f = data[i][j][k].f + "";
+                        if (data[i][j][k].f.indexOf(n) != -1) {
+                            nd.Sheets[name][k] = data[i][j][k];
+                            enter = true;
+                        }
+                    })
+                })
+            });
+        });
+        return {
+            enter: enter,
+            nd: nd
+        };
     }
 
     // =a1 要变成=A1  不破坏数据源
@@ -91,7 +114,6 @@ export default class CellProxy {
                 data.Sheets[name][i].f = workbook.Sheets[name][i].f.toUpperCase();
             }
         });
-        // this.oldData = data;
 
         return data;
     }
@@ -179,7 +201,7 @@ export default class CellProxy {
 
     checkDiff() {
         let {diff} = this;
-        if(diff === 101) {
+        if (diff === 101) {
             this.oldData = "";
         }
     }
@@ -249,6 +271,13 @@ export default class CellProxy {
                                     workbook.Sheets[name][expr] = {
                                         v: '',
                                         f: d.replace(/ /g, '').replace(/\"/g, "\"").replace(/\"\"\"\"&/g, "\"'\"&")
+                                    };
+                                } else if (oldCell.v + "" !== newCell.v + "") {
+                                    let p = newCell.v;
+                                    let expr = k;
+                                    workbook.Sheets[name][expr] = {
+                                        v: p,
+                                        f: ''
                                     };
                                 }
                             }
