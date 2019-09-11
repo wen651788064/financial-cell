@@ -191,7 +191,7 @@ export default class CellProxy {
                                 deep.push(newCell.f);
                             }
 
-                            if (d[0] === '=' && (p === "" || this.isNull(p) || this.isEqual(d, v))) {
+                            if (d[0] === '=' && (p === "" || this.isNull(p) || this.isEqual(d, p))) {
                                 workbook.Sheets[name][expr] = {
                                     v: '',
                                     f: d.replace(/ /g, '').replace(/\"/g, "\"").replace(/\"\"\"\"&/g, "\"'\"&")
@@ -217,7 +217,7 @@ export default class CellProxy {
                                     deep.push(newCell.f);
                                 }
 
-                                if (d[0] === '=' && (p === "" || this.isNull(p) || this.isEqual(d, v))) {
+                                if (d[0] === '=' && (p === "" || this.isNull(p) || this.isEqual(d, p))) {
                                     workbook.Sheets[name][expr] = {
                                         v: '',
                                         f: d.replace(/ /g, '').replace(/\"/g, "\"").replace(/\"\"\"\"&/g, "\"'\"&")
