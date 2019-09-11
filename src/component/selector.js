@@ -4,7 +4,6 @@ import {CellRange} from '../core/cell_range';
 import {mouseMoveUp} from "../component/event";
 import {xy2expr} from "../core/alphabet";
 import {changeFormula, cutStr} from "../core/operator";
-import Worker from 'worker-loader!./Worker.js';
 
 const selectorHeightBorderWidth = 2 * 2 - 1;
 let startZIndex = 10;
@@ -33,7 +32,6 @@ class SelectorElement {
                 this.moveEvent(4);
             });
 
-        this.worker = new Worker();
         this.boxinner = h('div', `${cssPrefix}-selector-boxinner`)
             .children(this.b, this.t, this.r, this.l);
         this.areaEl = h('div', `${cssPrefix}-selector-area`)
@@ -115,21 +113,25 @@ class SelectorElement {
                     arr2.push(xy2expr(j, i));
                 });
             }
-            let {worker} = this;
-            worker.terminate();
-            worker = new Worker();
+            // let {worker} = this;
+            // worker.terminate();
+            // worker = new Worker();
 
-            worker.postMessage({ arr: arr, arr2: arr2, arr3: arr3, rows: rows });
 
-            worker.onmessage = function (event) {
-            };
+            // worker.postMessage({ arr: arr, arr2: arr2, arr3: arr3, rows: rows });
+            //
+            // worker.onmessage = function (event) {
+            // };
+            //
+            // worker.addEventListener("message", function (event) {
+            //     rows._ = event.data.rrows;
+            //     sheet.editor.display = true;
+            //     rows.moveChange(arr, arr2, arr3);
+            //     sheet.selectorMoveReset();
+            // });
+            rows.moveChange(arr, arr2, arr3);
 
-            worker.addEventListener("message", function (event) {
-                rows._ = event.data.rrows;
-                sheet.editor.display = true;
-                rows.moveChange(arr, arr2, arr3);
-                sheet.selectorMoveReset();
-            });
+            sheet.selectorMoveReset();
          });
     }
 
