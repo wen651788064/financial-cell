@@ -106,7 +106,9 @@ export default class CellProxy {
                 })
             });
 
-            deepArr.push(arr);
+            if(arr.length > 0) {
+                deepArr.push(arr);
+            }
         }
 
         return {
