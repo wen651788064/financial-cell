@@ -91,6 +91,8 @@ export default class CellProxy {
                     Object.keys(data[i][j]).forEach(k => {
                         let value = data[i][j][k].f + "";
                         value = value.replace(/\$/g, "");
+                        console.time("x2");
+
                         for(let f = 0; f < targetArr.length; f++) {
                             let n = targetArr[f];
                             if(value.indexOf(n) !== -1) {
@@ -105,6 +107,8 @@ export default class CellProxy {
                                 }
                             }
                         }
+                        console.timeEnd("x2");
+
                     })
                 })
             });
