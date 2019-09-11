@@ -81,6 +81,7 @@ export default class CellProxy {
         });
         deepArr.push(arr);
 
+        console.time("x");
         for(let i = 0;  i < deepArr.length; i++) {
             let targetArr = deepArr[i];
             arr = [];
@@ -113,6 +114,7 @@ export default class CellProxy {
             }
         }
 
+        console.timeEnd("x");
         return {
             enter: enter,
             nd: workbook
