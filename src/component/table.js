@@ -187,7 +187,9 @@ async function parseCell(viewRange, state = false, src = '') {
         }
     } else {
         factory.data = sall;
-        proxy.oldData = sall;
+        if(typeof proxy.oldData !== 'string') {
+            proxy.oldData = sall;
+        }
         workbook = factory.data;
     }
 
