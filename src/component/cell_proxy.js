@@ -52,6 +52,21 @@ export default class CellProxy {
         return result;
     }
 
+    preProcess(v, f) {
+        if(typeof v === 'string' && v.indexOf("%") !== -1) {
+            return f;
+        }
+
+        if(typeof v === 'string' && v.indexOf(",") !== -1) {
+            let t = v.replace(/,/g, '');
+            if(!isNaN(t)) {
+                return t;
+            }
+        }
+
+        return v;
+    }
+
     // =a1 要变成=A1  不破坏数据源
     pack(name, workbook) {
         if (typeof this.oldData === "string") {
@@ -62,6 +77,7 @@ export default class CellProxy {
         Object.keys(data).forEach(i => {
             Object.keys(data[i]).forEach(j => {
                 Object.keys(data[i][j]).forEach(k => {
+                    data[i][j][k].v = this.preProcess(data[i][j][k].v, data[i][j][k].f);
                     data[i][j][k].f = "";
                 })
             })
