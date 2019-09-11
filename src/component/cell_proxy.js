@@ -90,8 +90,8 @@ export default class CellProxy {
                     Object.keys(data[i][j]).forEach(k => {
                         let value = data[i][j][k].f + "";
                         value = value.replace(/\$/g, "");
-                        for(let j = 0; j < targetArr.length; j++) {
-                            let n = targetArr[j];
+                        for(let f = 0; f < targetArr.length; f++) {
+                            let n = targetArr[f];
                             if (contain(cutStr(value), n)) {
                                 workbook.Sheets[name][k] = data[i][j][k];
                                 enter = true;
