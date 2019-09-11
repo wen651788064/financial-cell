@@ -92,13 +92,15 @@ export default class CellProxy {
                         value = value.replace(/\$/g, "");
                         for(let f = 0; f < targetArr.length; f++) {
                             let n = targetArr[f];
-                            if (contain(cutStr(value), n)) {
-                                workbook.Sheets[name][k] = data[i][j][k];
-                                enter = true;
+                            if(value.indexOf(n) !== -1) {
+                                if (contain(cutStr(value), n)) {
+                                    workbook.Sheets[name][k] = data[i][j][k];
+                                    enter = true;
 
-                                if(tileArr.indexOf(k) == -1) {
-                                    arr.push(k);
-                                    tileArr.push(k);
+                                    if(tileArr.indexOf(k) == -1) {
+                                        arr.push(k);
+                                        tileArr.push(k);
+                                    }
                                 }
                             }
                         }
