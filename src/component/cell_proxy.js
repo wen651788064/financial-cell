@@ -163,7 +163,7 @@ export default class CellProxy {
                     Object.keys(newData[i][j]).forEach(k => {
                         let newCell = newData[i][j][k];
 
-                        if (typeof this.oldData == "string" && newCell.z == true  ) {
+                        if (typeof this.oldData == "string" && newCell.z == true) {
                             let expr = k;
                             let d = newCell.f;
 
@@ -175,15 +175,13 @@ export default class CellProxy {
                                 deep.push(newCell.f);
                             }
 
-                            if (isNaN(d)) {
-                                d = d + "";
+                            if(d[0] === '=') {
+                                workbook.Sheets[name][expr] = {
+                                    v: '',
+                                    f: d.replace(/ /g, '').replace(/\"/g, "\"").replace(/\"\"\"\"&/g, "\"'\"&")
+                                };
                             }
-
-                            workbook.Sheets[name][expr] = {
-                                v: '',
-                                f: d.replace(/ /g, '').replace(/\"/g, "\"").replace(/\"\"\"\"&/g, "\"'\"&")
-                            };
-                        } else if (newCell.z == true ) {
+                        } else if (newCell.z == true) {
                             let oldCell = oldData[i][j][k];
 
                             if (
@@ -202,24 +200,18 @@ export default class CellProxy {
                                     deep.push(newCell.f);
                                 }
 
-                                if (isNaN(d)) {
-                                    d = d + "";
+                                if(d[0] === '=') {
+                                    workbook.Sheets[name][expr] = {
+                                        v: '',
+                                        f: d.replace(/ /g, '').replace(/\"/g, "\"").replace(/\"\"\"\"&/g, "\"'\"&")
+                                    };
                                 }
-
-                                workbook.Sheets[name][expr] = {
-                                    v: '',
-                                    f: d.replace(/ /g, '').replace(/\"/g, "\"").replace(/\"\"\"\"&/g, "\"'\"&")
-                                };
                             }
                         }
                     });
                 }
             });
         });
-
-        // if (typeof this.oldData == "string") {
-        //     this.oldData = this.deepCopy(newData);
-        // }
 
         if (Object.getOwnPropertyNames(workbook.Sheets[name]).length <= 0) {
             return {
