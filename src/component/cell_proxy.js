@@ -110,6 +110,13 @@ export default class CellProxy {
         return data;
     }
 
+    isEqual(v1, v2) {
+        if (v1 === v2) {
+            return true;
+        }
+        return false;
+    }
+
     isNull(tmp) {
         if (!tmp && typeof(tmp) != "undefined" && tmp != 0) {
             return true;
@@ -184,7 +191,7 @@ export default class CellProxy {
                                 deep.push(newCell.f);
                             }
 
-                            if (d[0] === '=' && (p === "" || this.isNull(p))) {
+                            if (d[0] === '=' && (p === "" || this.isNull(p) || this.isEqual(d, v))) {
                                 workbook.Sheets[name][expr] = {
                                     v: '',
                                     f: d.replace(/ /g, '').replace(/\"/g, "\"").replace(/\"\"\"\"&/g, "\"'\"&")
@@ -210,7 +217,7 @@ export default class CellProxy {
                                     deep.push(newCell.f);
                                 }
 
-                                if (d[0] === '=' && (p === "" || this.isNull(p))) {
+                                if (d[0] === '=' && (p === "" || this.isNull(p) || this.isEqual(d, v))) {
                                     workbook.Sheets[name][expr] = {
                                         v: '',
                                         f: d.replace(/ /g, '').replace(/\"/g, "\"").replace(/\"\"\"\"&/g, "\"'\"&")
