@@ -32,7 +32,7 @@ let formulas = deepCopy(baseFormulas);
 const formulaCalc = () => {
     XLSX_CALC.import_functions(formulajs);
     let xlsx_Fx = XLSX_CALC.xlsx_Fx;
-    formulas = baseFormulas;
+    formulas = deepCopy(baseFormulas);
     Object.keys(xlsx_Fx).forEach(i => {
         let args = {
             key: i,
