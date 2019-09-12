@@ -164,7 +164,8 @@ async function parseCell(viewRange, state = false, src = '') {
         workbook = assoc.enter === true ? assoc.nd : workbook;
     }
 
-    if (this.editor.display && ca.state) {
+    // this.editor.display &&
+    if (ca.state) {
         try {
             workbook = proxy.pack(data.name, workbook);
             data.calc(workbook);
