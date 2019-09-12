@@ -447,13 +447,15 @@ class Rows {
                                                 }
                                                 ncell.formulas = ncell.text;
                                             } else {
-                                                const result = /[\\.\d]+$/.exec(text);
-                                                // console.log('result:', result);
-                                                if (result !== null) {
-                                                    const index = Number(result[0]) + added;
-                                                    added += 1;
-                                                    ncell.text = text.substring(0, result.index) + index;
-                                                    ncell.formulas = ncell.text;
+                                                if(text.indexOf(",") == -1) {
+                                                    const result = /[\\.\d]+$/.exec(text);
+                                                    // console.log('result:', result);
+                                                    if (result !== null) {
+                                                        const index = Number(result[0]) + added;
+                                                        added += 1;
+                                                        ncell.text = text.substring(0, result.index) + index;
+                                                        ncell.formulas = ncell.text;
+                                                    }
                                                 }
                                             }
                                         }
