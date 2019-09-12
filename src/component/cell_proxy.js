@@ -195,8 +195,24 @@ export default class CellProxy {
                 data[ri]['cells'][ci] = {}
             }
 
+            if(typeof cells[i].v === 'undefined') {
+                cells[i].v = "#ERROR!"
+            }
+
             if (this.isNaN(cells[i].v)) {
                 cells[i].v = "#ERROR!"
+            }
+
+            if(cells[i].v === '-') {
+                cells[i].v = "#ERROR!"
+            }
+
+            if(isNaN(cells[i].f) && cells[i].f.search(/\((\+|\-|\*|\/)/) != -1) {
+                cells[i].v = '#ERROR!';
+            }
+
+            if(cells[i].w) {
+                cells[i].v = cells[i].w;
             }
 
             if (cells[i].v + "" === '0' && cells[i].f && cells[i].f[0] && cells[i].f[0] === '=') {
