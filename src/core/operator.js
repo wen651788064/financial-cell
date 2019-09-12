@@ -173,6 +173,24 @@ const cuttingByPosEnd = (str, pos) => {
     return value.toUpperCase();
 };
 
+const division = (str) => {
+    str = str + "";
+    str = str.toUpperCase();
+    if (str[0] !== "=") {
+        return [];
+    }
+
+    // 把空格去除的原因是因为 => A   1 这种情况不应该被包含在内
+    // str = str.replace(/\s/g, "");
+    let arr = str.split(/([(-\/,+*，=^&])/);
+    // 去除字符串两端的空格
+    for (let i = 0; i < arr.length; i++) {
+        arr[i] = arr[i].replace(/(^\s*)|(\s*$)/g, "");
+    }
+
+    return arr;
+}
+
 const cutting = (str) => {
     let express = [];
     for (let i = 0; i < str.length; i++) {
@@ -23359,4 +23377,5 @@ export {
     getSheetVale,
     cuttingByPos2,
     contain,
+    division,
 }
