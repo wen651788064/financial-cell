@@ -11,16 +11,14 @@ export default class Scrollbar {
             .on('mousemove.stop', () => {
             })
             .on('scroll.stop', (evt) => {
-               setTimeout(() => {
-                   console.log("28...")
-                   const {scrollTop, scrollLeft} = evt.target;
-                   console.log('scrollTop:', scrollTop);
+                console.log("28...")
+                const {scrollTop, scrollLeft} = evt.target;
+                console.log('scrollTop:', scrollTop);
 
-                   // moveArr.call(this.sheet, scrollTop, scrollLeft);
-                   if (this.moveFn) {
-                       this.moveFn(this.vertical ? scrollTop : scrollLeft, evt);
-                   }
-               })
+                // moveArr.call(this.sheet, scrollTop, scrollLeft);
+                if (this.moveFn) {
+                    this.moveFn(this.vertical ? scrollTop : scrollLeft, evt);
+                }
 
                 // console.log('evt:::', evt);
             });

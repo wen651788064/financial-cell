@@ -500,7 +500,9 @@ function verticalScrollbarMove(distance) {
         adviceSetOffset.call(this);
         selectorsSetOffset.call(this);
         editorSetOffset.call(this, false);
-        table.render();
+        setTimeout(() => {
+            table.render();
+        }, 0)
     });
 }
 
