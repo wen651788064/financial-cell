@@ -23297,10 +23297,8 @@ const absoluteType = (str) => {
 };
 
 const contain = (c, d) => {
-    for(let i = 0; i < c.length; i++) {
-        if(c[i].indexOf(d) != -1) {
-            return true;
-        }
+    if(c.filter(i => i.indexOf(d) != -1).length > 0) {
+        return true;
     }
 
     return false;
