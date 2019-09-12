@@ -27,6 +27,7 @@ import {getChooseImg} from "../event/copy";
 import CellRange from "../core/cell_range";
 import {process} from "../event/paste";
 import {createEvent} from "./event";
+import {orientation} from "../core/helper";
 import {expr2xy, xy2expr} from "../core/alphabet";
 
 function scrollbarMove() {
@@ -358,6 +359,9 @@ function overlayerMousedown(evt) {
         }
 
         let dateBegin;
+        // let {pageX, pageY} = evt;
+        let {verticalScrollbar} = this;
+        const {rows} = data;
         // mouse move up
         mouseMoveUp(window, (e) => {
             this.selector.setBoxinner("none");
@@ -367,17 +371,28 @@ function overlayerMousedown(evt) {
             this.container.css('pointer-events', 'none');
             ({ri, ci} = data.getCellRectByXY(e.layerX, e.layerY));
             if (isAutofillEl) {
-                selector.showAutofill(ri, ci);
+                let orien = selector.showAutofill(ri, ci);
+                let o = orientation(this.data.settings.view.height(), this.data.settings.view.width(), e.layerY, e.layerX, orien);
+
+                if(o && orien == 44) {
+                    const {top} = verticalScrollbar.scroll();
+                    verticalScrollbar.move({top: top + rows.getHeight(ri) - 1});
+                } else if(o && orien == 22) {
+                    const {top} = verticalScrollbar.scroll();
+                    if (ri >= 0) {
+                        verticalScrollbar.move({top: ri === 0 ? 0 : top - rows.getHeight(ri)});
+                    }
+                }
+                console.log(orientation(this.data.settings.view.height(), this.data.settings.view.width(), e.layerY, e.layerX, orien));
             } else if (e.buttons === 1 && !e.shiftKey) {
                 // console.log("2", e.offsetX, e.offsetY, ri, ci, e);
                 selectorSet.call(this, true, ri, ci, true, true);
             }
-        }, () => {
+        }, (e) => {
             let dateEnd = new Date();
 
             if (dateBegin && isAutofillEl) {
                 let dateDiff = dateEnd.getTime() - dateBegin.getTime();
-                console.log(dateDiff);
                 if (dateDiff > 50) {
                     if (data.autofill(selector.arange, 'all', msg => xtoast('Tip', msg), this.table.proxy)) {
                         editor.display = true;

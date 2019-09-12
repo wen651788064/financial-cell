@@ -495,7 +495,7 @@ export default class Selector {
             sri, sci, eri, eci,
         } = this.range;
 
-
+        let drisc = 0;
         const [nri, nci] = [ri, ci];
         // const rn = eri - sri;
         // const cn = eci - sci;
@@ -504,6 +504,8 @@ export default class Selector {
         const ern = eri - ri;
         const ecn = eci - ci;
         if (scn > 0) {
+            console.log("11")
+            drisc = 11;
             // left
             // console.log('left');
             this.arange = new CellRange(sri, nci, eri, sci - 1);
@@ -511,6 +513,9 @@ export default class Selector {
             // this.eaIndexes = [eri, sci - 1];
             // data.calRangeIndexes2(
         } else if (srn > 0) {
+            console.log("22")
+            drisc = 22;
+
             // top
             // console.log('top');
             // nri = sri;
@@ -518,6 +523,8 @@ export default class Selector {
             // this.saIndexes = [nri, sci];
             // this.eaIndexes = [sri - 1, eci];
         } else if (ecn < 0) {
+            console.log("33")
+            drisc = 33;
             // right
             // console.log('right');
             // nci = eci;
@@ -525,6 +532,8 @@ export default class Selector {
             // this.saIndexes = [sri, eci + 1];
             // this.eaIndexes = [eri, nci];
         } else if (ern < 0) {
+            console.log("44")
+            drisc = 44;
             // bottom
             // console.log('bottom');
             // nri = eri;
@@ -536,7 +545,7 @@ export default class Selector {
             this.arange = null;
             // this.saIndexes = null;
             // this.eaIndexes = null;
-            return;
+            return drisc;
         }
         if (this.arange !== null) {
             // console.log(this.saIndexes, ':', this.eaIndexes);
@@ -551,6 +560,7 @@ export default class Selector {
             t.showAutofill(calTAreaOffset.call(this, offset));
             tl.showAutofill(offset);
         }
+        return drisc;
     }
 
     hideAutofill() {
