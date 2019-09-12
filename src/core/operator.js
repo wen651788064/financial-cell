@@ -180,8 +180,6 @@ const division = (str) => {
         return [];
     }
 
-    // 把空格去除的原因是因为 => A   1 这种情况不应该被包含在内
-    // str = str.replace(/\s/g, "");
     let arr = str.split(/([(-\/,+*，=^&])/);
     // 去除字符串两端的空格
     for (let i = 0; i < arr.length; i++) {
@@ -23299,9 +23297,12 @@ const absoluteType = (str) => {
 };
 
 const contain = (c, d) => {
-    if(c.indexOf(d) !== -1) {
-        return true;
+    for(let i = 0; i < c.length; i++) {
+        if(c[i].indexOf(d) != -1) {
+            return true;
+        }
     }
+
     return false;
 };
 
