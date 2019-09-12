@@ -712,6 +712,10 @@ function toolbarChange(type, value) {
     } else if (type === 'autofilter') {
         // filter
         autofilter.call(this);
+    } else if (type === 'close') {
+        this.table.proxy.diff = 305;
+        this.table.proxy.oldData = "";
+        sheetReset.call(this);
     } else if (type === 'freeze') {
         let {showFreeze} = data.settings;
         console.log(showFreeze, 449)

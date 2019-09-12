@@ -1,10 +1,12 @@
-import {getSheetVale, isSheetVale, contain, cutStr} from "../core/operator";
+import {contain, cutStr, getSheetVale, isSheetVale} from "../core/operator";
 import {expr2xy, xy2expr} from "../core/alphabet";
 
 export default class CellProxy {
     constructor() {
         this.oldData = "";
-        this.diff = 0;          // diff 为 101 => 则为跨sheet但是没找到跨sheet的数据  402 => 则为跨sheet而且找到跨sheet的数据
+        // diff 为 101 => 则为跨sheet但是没找到跨sheet的数据  402 => 则为跨sheet而且找到跨sheet的数据
+        // 305 => 为重新计算
+        this.diff = 0;
     }
 
     deepCalc(deep, newData, n) {
@@ -74,14 +76,14 @@ export default class CellProxy {
         Object.keys(data).forEach(i => {
             Object.keys(data[i]).forEach(j => {
                 Object.keys(data[i][j]).forEach(k => {
-                    if(!fd[i]) {
+                    if (!fd[i]) {
                         fd[i] = {};
                     }
-                    if(!fd[i][j]) {
+                    if (!fd[i][j]) {
                         fd[i][j] = {};
                     }
                     let value = data[i][j][k].f + "";
-                    if(value[0] === '=') {
+                    if (value[0] === '=') {
                         fd[i][j][k] = data[i][j][k];
                     }
                 })
@@ -106,7 +108,7 @@ export default class CellProxy {
         deepArr.push(arr);
 
         console.time("x");
-        for(let i = 0;  i < deepArr.length; i++) {
+        for (let i = 0; i < deepArr.length; i++) {
             let targetArr = deepArr[i];
             arr = [];
 
@@ -116,14 +118,14 @@ export default class CellProxy {
                         let value = data[i][j][k].f + "";
                         value = value.replace(/\$/g, "");
 
-                        for(let f = 0; f < targetArr.length; f++) {
+                        for (let f = 0; f < targetArr.length; f++) {
                             let n = targetArr[f];
-                            if(value.indexOf(n) !== -1) {
+                            if (value.indexOf(n) !== -1) {
                                 if (contain(cutStr(value), n)) {
                                     workbook.Sheets[name][k] = data[i][j][k];
                                     enter = true;
 
-                                    if(tileArr.indexOf(k) == -1) {
+                                    if (tileArr.indexOf(k) == -1) {
                                         arr.push(k);
                                         tileArr.push(k);
                                     }
@@ -134,7 +136,7 @@ export default class CellProxy {
                 })
             });
 
-            if(arr.length > 0) {
+            if (arr.length > 0) {
                 deepArr.push(arr);
             }
         }
@@ -296,7 +298,7 @@ export default class CellProxy {
                                 deep.push(newCell.f);
                             }
 
-                            if (d[0] === '=' && (p === "" || this.isNull(p) || this.isEqual(d, p))) {
+                            if (d[0] === '=' && (p === "" || this.isNull(p) || this.isEqual(d, p) || this.diff === 305)) {
                                 workbook.Sheets[name][expr] = {
                                     v: '',
                                     f: d.replace(/ /g, '').replace(/\"/g, "\"").replace(/\"\"\"\"&/g, "\"'\"&")
