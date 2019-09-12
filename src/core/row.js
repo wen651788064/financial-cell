@@ -90,8 +90,8 @@ class Rows {
         const cell = this.getCellOrNew(ri, ci);
         cell.formulas = text;
         cell.text = text;  // todo 自定义公式： text 为公式计算结果, formulas 为公式
-        console.log( xy2expr(ci, ri))
-        if(typeof proxy != "string") {
+        console.log(xy2expr(ci, ri))
+        if (typeof proxy != "string") {
             proxy.setCell(name, xy2expr(ci, ri));
         }
     }
@@ -144,6 +144,27 @@ class Rows {
                 }
             });
         });
+    }
+
+    formatMoney(s, type) {
+        if (/[^0-9\.]/.test(s))
+            return "0";
+        if (s == null || s == "")
+            return "0";
+        s = s.toString().replace(/^(\d*)$/, "$1.");
+        s = (s + "00").replace(/(\d*\.\d\d)\d*/, "$1");
+        s = s.replace(".", ",");
+        var re = /(\d)(\d{3},)/;
+        while (re.test(s))
+            s = s.replace(re, "$1,$2");
+        s = s.replace(/,(\d\d)$/, ".$1");
+        if (type == 0) {
+            var a = s.split(".");
+            if (a[1] == "00") {
+                s = a[0];
+            }
+        }
+        return s;
     }
 
     // what: all | format | text
@@ -207,6 +228,7 @@ class Rows {
                         }
 
                         let value = ncell.formulas !== "" ? ncell.formulas + "" : ncell.text + "";
+                        value = value.replace(/,/g, "");
                         let ns = value.replace("=", "") * 1;
                         if ((ns || ns == 0) && typeof ns === 'number' && number == true) {
                             number = true;
@@ -295,12 +317,23 @@ class Rows {
                             ncell.formulas = "=" + value + "";
                             this.copyRender(darr, d.ri, d.ci, ncell, what, cb);
                         } else if (ncell.text != '') {
-                            let last1 = ncell.text * 1;
+                            if(ncell.text.indexOf(",") != -1) {
+                                let last1 = ncell.text;
+                                last1 = last1.replace(/,/g,'');
+                                let value = parseFloat(last1) + diffValue;
+                                last1 = this.formatMoney(value, 0);
 
-                            let value = last1 + diffValue;
-                            ncell.text = value + "";
-                            ncell.formulas = value + "";
-                            this.copyRender(darr, d.ri, d.ci, ncell, what, cb);
+                                ncell.text = last1 + "";
+                                ncell.formulas = last1 + "";
+                                this.copyRender(darr, d.ri, d.ci, ncell, what, cb);
+                            } else {
+                                let last1 = ncell.text * 1;
+
+                                let value = last1 + diffValue;
+                                ncell.text = value + "";
+                                ncell.formulas = value + "";
+                                this.copyRender(darr, d.ri, d.ci, ncell, what, cb);
+                            }
                         }
                     }
                 } else {
@@ -342,12 +375,23 @@ class Rows {
                             ncell.formulas = "=" + value + "";
                             this.copyRender(darr, d.ri, d.ci, ncell, what, cb);
                         } else if (ncell.text != '') {
-                            let last1 = ncell.text * 1;
+                            if(ncell.text.indexOf(",") != -1) {
+                                let last1 = ncell.text;
+                                last1 = last1.replace(/,/g,'');
+                                let value = parseFloat(last1) + diffValue;
+                                last1 = this.formatMoney(value, 0);
 
-                            let value = last1 + diffValue;
-                            ncell.text = value + "";
-                            ncell.formulas = value + "";
-                            this.copyRender(darr, d.ri, d.ci, ncell, what, cb);
+                                ncell.text = last1 + "";
+                                ncell.formulas = last1 + "";
+                                this.copyRender(darr, d.ri, d.ci, ncell, what, cb);
+                            } else {
+                                let last1 = ncell.text * 1;
+
+                                let value = last1 + diffValue;
+                                ncell.text = value + "";
+                                ncell.formulas = value + "";
+                                this.copyRender(darr, d.ri, d.ci, ncell, what, cb);
+                            }
                         }
                     }
                 }
@@ -373,6 +417,27 @@ class Rows {
                             this.copyRender(darr, d.ri, d.ci, ncell, what, cb);
                         }
                     }
+                } else {
+                    for (let i = darr.length - 1; i >= 0; i--) {
+                        let d = darr[i];
+                        let ncell = "";
+                        if (!this._ || !this._[d.ri + 1] || !this._[d.ri + 1].cells[d.ci]) {
+                            ncell = {
+                                text: 0,
+                                formulas: 0,
+                            }
+                        } else {
+                            ncell = helper.cloneDeep(this._[d.ri + 1].cells[d.ci]);
+                        }
+                        if (ncell.text != '') {
+                            let last1 = ncell.text;
+
+                            let value = dayjs(last1).add(-1, 'day').format('YYYY-MM-DD');
+                            ncell.text = value + "";
+                            ncell.formulas = value + "";
+                            this.copyRender(darr, d.ri, d.ci, ncell, what, cb);
+                        }
+                    }
                 }
             } else {
                 for (let i = sri; i <= eri; i += 1) {
@@ -388,7 +453,7 @@ class Rows {
                                         // ncell.text
                                         if (autofill && ncell && ncell.text && ncell.text.length > 0 && isCopy) {
                                             let {text, formulas} = ncell;
-                                            if(formulas != "") {
+                                            if (formulas != "") {
                                                 text = formulas;
                                             }
                                             let n = (jj - dsci) + (ii - dsri) + 2;
@@ -447,15 +512,13 @@ class Rows {
                                                 }
                                                 ncell.formulas = ncell.text;
                                             } else {
-                                                if(text.indexOf(",") == -1) {
-                                                    const result = /[\\.\d]+$/.exec(text);
-                                                    // console.log('result:', result);
-                                                    if (result !== null) {
-                                                        const index = Number(result[0]) + added;
-                                                        added += 1;
-                                                        ncell.text = text.substring(0, result.index) + index;
-                                                        ncell.formulas = ncell.text;
-                                                    }
+                                                const result = /[\\.\d]+$/.exec(text);
+                                                // console.log('result:', result);
+                                                if (result !== null) {
+                                                    const index = Number(result[0]) + added;
+                                                    added += 1;
+                                                    ncell.text = text.substring(0, result.index) + index;
+                                                    ncell.formulas = ncell.text;
                                                 }
                                             }
                                         }
@@ -474,13 +537,13 @@ class Rows {
         let mri = 0, mci = 0;
         this.each((ri) => {
             ri = ri * 1;
-            if(mri < ri) {
+            if (mri < ri) {
                 mri = ri;
             }
 
             this.eachCells(ri, (ci) => {
                 ci = ci * 1;
-                if(mci < ci) {
+                if (mci < ci) {
                     mci = ci;
                 }
             });
