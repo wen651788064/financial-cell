@@ -160,6 +160,7 @@ function inputEventHandler(evt, txt = '', formulas = '', state = "input") {
         } else {
             v = txt;
         }
+
         if (this.copy) {
             this.copy = false;
             v = (evt && evt.data) ? evt.data : '';
@@ -207,6 +208,7 @@ function inputEventHandler(evt, txt = '', formulas = '', state = "input") {
         }
         textlineEl.html(formulas || v);
         this.inputText = formulas || v;
+        this.suggest.itemIndex = -1;
         resetTextareaSize.call(this);
 
         if (v && v[0] !== '=') {

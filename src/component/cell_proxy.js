@@ -197,6 +197,9 @@ export default class CellProxy {
             if (cells[i].v + "" === '0' && cells[i].f && cells[i].f[0] && cells[i].f[0] === '=') {
                 data[ri]['cells'][ci].text = cells[i].v + "";
                 data[ri]['cells'][ci].formulas = cells[i].f + "";
+            } else if (typeof cells[i].v === 'boolean') {
+                data[ri]['cells'][ci].text = cells[i].v + "";
+                data[ri]['cells'][ci].formulas = cells[i].f + "";
             } else {
                 data[ri]['cells'][ci].text = cells[i].v;
                 data[ri]['cells'][ci].formulas = cells[i].f;

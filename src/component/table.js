@@ -544,7 +544,7 @@ class Table {
         this.factory = new ApplicationFactory(data.methods, data.name, this);
         this.editor = editor;
         this.data = data;
-        this.worker = new Worker();
+        // this.worker = new Worker();
         this.proxy = new CellProxy();
         this.autoAdaptList = [];
     }

@@ -1,5 +1,5 @@
 import {h} from './element';
-import {bindClickoutside, unbindClickoutside} from './event';
+import {bindClickoutside, createEvent, unbindClickoutside} from './event';
 import {cssPrefix} from '../config';
 
 function inputMovePrev(evt) {
@@ -32,7 +32,13 @@ function inputEnter(evt) {
     const {filterItems} = this;
     if (filterItems.length <= 0) return;
     evt.stopPropagation();
-    if (this.itemIndex < 0) this.itemIndex = 0;
+    if (this.itemIndex < 0) {
+        this.itemIndex = 0;
+        this.hide();
+             createEvent.call(this, 13, false);
+
+        return
+    };
     filterItems[this.itemIndex].el.click();
     this.hide();
 }
