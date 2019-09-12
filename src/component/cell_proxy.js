@@ -1,4 +1,4 @@
-import {contain, cutStr, getSheetVale, isSheetVale} from "../core/operator";
+import {getSheetVale, isSheetVale} from "../core/operator";
 import {expr2xy, xy2expr} from "../core/alphabet";
 
 export default class CellProxy {
@@ -121,14 +121,12 @@ export default class CellProxy {
                         for (let f = 0; f < targetArr.length; f++) {
                             let n = targetArr[f];
                             if (value.indexOf(n) !== -1) {
-                                if (contain(cutStr(value), n)) {
-                                    workbook.Sheets[name][k] = data[i][j][k];
-                                    enter = true;
+                                workbook.Sheets[name][k] = data[i][j][k];
+                                enter = true;
 
-                                    if (tileArr.indexOf(k) == -1) {
-                                        arr.push(k);
-                                        tileArr.push(k);
-                                    }
+                                if (tileArr.indexOf(k) == -1) {
+                                    arr.push(k);
+                                    tileArr.push(k);
                                 }
                             }
                         }
