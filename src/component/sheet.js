@@ -769,11 +769,11 @@ function afterSelector(editor) {
 
 function pasteEvent(evt) {
     clearClipboard.call(this);
-    let {data} = this;
     mountPaste.call(this, evt, () => {
-        data.change(data.getData());
         sheetReset.call(this);
     });
+    let {data} = this;
+    data.change(data.getData());
 }
 
 function sheetInitEvents() {
