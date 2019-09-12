@@ -21,6 +21,7 @@ export default {
         freeze: '冻结',
         autofilter: '自动筛选',
         add: '显示公式',
+        calc: '开始计算',
         formula: '函数',
         more: '更多',
     },
