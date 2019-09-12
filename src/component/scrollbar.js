@@ -12,7 +12,7 @@ export default class Scrollbar {
             })
             .on('scroll.stop', (evt) => {
                 // console.log("28...")
-                // const {scrollTop, scrollLeft} = evt.target;
+                const {scrollTop, scrollLeft} = evt.target;
                 console.log('scrollTop:', scrollTop);
                 //
                 // // moveArr.call(this.sheet, scrollTop, scrollLeft);
