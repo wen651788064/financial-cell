@@ -1,6 +1,6 @@
 import {contain, division, getSheetVale, isSheetVale} from "../core/operator";
 import {expr2xy, xy2expr} from "../core/alphabet";
-import Worker from 'worker-loader!../external/Worker.js';
+// import Worker from 'worker-loader!../external/Worker.js';
 
 export default class CellProxy {
     constructor(refRow) {
@@ -9,7 +9,7 @@ export default class CellProxy {
         // 305 => 为重新计算
         this.diff = 0;
         this.refRow = refRow;
-        this.worker = new Worker();
+        // this.worker = new Worker();
     }
 
     deepCalc(deep, newData, n) {
