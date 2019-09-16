@@ -171,7 +171,6 @@ export default class CellProxy {
                             let value = data[i][j][k].f + "";
                             value = value.replace(/\$/g, "");
 
-                            console.log(division(value));
                             if (contain(division(value), tileArr[s])) {
                                 recordArr.push(k);
                             }
