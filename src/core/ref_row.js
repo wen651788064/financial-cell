@@ -133,4 +133,25 @@ export class RefRow {
 
         // return data;
     }
+
+    isEqual(v1, v2) {
+        v1 = v1.toUpperCase();
+        v2 = v2.toUpperCase();
+        if (v1 === v2) {
+            return true;
+        }
+        return false;
+    }
+
+    isNull(tmp) {
+        if (!tmp && typeof(tmp) != "undefined" && tmp != 0) {
+            return true;
+        }
+        return false;
+
+    }
+
+    isNaN(value) {
+        return typeof value === 'number' && isNaN(value);
+    }
 }
