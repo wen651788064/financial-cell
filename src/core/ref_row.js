@@ -17,10 +17,13 @@ export class RefRow {
 
             let rows = new Rows(sr);
             rows.setData(d.data[i]);
-            this._.push({
-                rows: rows,
-                workbook: d.calc[i]
-            });
+            for(let name in d.calc[i]) {
+                this._.push({
+                    rows: rows,
+                    workbook: d.calc[i],
+                    name: name
+                });
+            }
         }
     }
 
@@ -62,8 +65,7 @@ export class RefRow {
     concat(nameArr, workbook) {
         for(let i = 0; i < nameArr.length; i++) {
             let name = nameArr[i];
-            let oldData = this._.workbook[i];
-
+            let oldData = this._.indexOf(name).workbook;
             Object.keys(workbook.Sheets[name]).forEach(i => {
                 if (workbook.Sheets[name][i].f != "") {
                     oldData.Sheets[name][i] = workbook.Sheets[name][i];
