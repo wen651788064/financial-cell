@@ -183,11 +183,8 @@ export default class CellProxy {
                 recordArr: recordArr,
                 rr: rr[j]
             });
-
-            console.log(arr);
         }
-
-
+        console.log(arr);
     }
 
     // =a1 要变成=A1  不破坏数据源
