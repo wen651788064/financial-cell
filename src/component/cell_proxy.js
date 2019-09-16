@@ -155,8 +155,8 @@ export default class CellProxy {
 
     refCell(tileArr) {
         let rr = this.refRow._;
+        let arr = [];
 
-        // let {worker} = this;
         for (let j = 0; j < rr.length; j++) {
             let recordArr = [];
             let data = this.deepCopy(rr[j].workbook);
@@ -179,9 +179,15 @@ export default class CellProxy {
                     })
                 });
             }
+            arr.push({
+                recordArr: recordArr,
+                rr: rr[j]
+            });
 
-            console.log(recordArr);
+            console.log(arr);
         }
+
+
     }
 
     // =a1 要变成=A1  不破坏数据源
