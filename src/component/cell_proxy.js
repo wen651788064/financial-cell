@@ -159,7 +159,7 @@ export default class CellProxy {
         // let {worker} = this;
         for (let j = 0; j < rr.length; j++) {
             let recordArr = [];
-            let data = this.deepCopy(rr.workbook);
+            let data = this.deepCopy(rr[i].workbook);
             data = this.filter(data);
 
             for (let i = 0; i < tileArr.length; i++) {
@@ -170,7 +170,7 @@ export default class CellProxy {
                             value = value.replace(/\$/g, "");
 
                             if (contain(division(value), tileArr[i])) {
-                                recordArr = k;
+                                recordArr.push(k);
                             }
                         })
                     })
