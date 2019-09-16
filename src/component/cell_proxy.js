@@ -197,10 +197,16 @@ export default class CellProxy {
                 }, ra, {
                     Sheets: data
                 });
+                for(let f in fd) {
+                    workbook.Sheets[f] = fd[f];
+                }
                 workbook.Sheets  = fd;
             }
         }
-        workbook.Sheets = this.refRow.refCalc(this.oldData, [], this.oldData);
+        let fd = this.refRow.refCalc(this.oldData, [], this.oldData);
+        for(let f in fd) {
+            workbook.Sheets[f] = fd[f];
+        }
         console.log(workbook);
     }
 
