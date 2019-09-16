@@ -210,7 +210,7 @@ export default class CellProxy {
         }
 
         workbook = this.refRow.calc(workbook);
-        // workbook = this.refRow.concat(nameArr, workbook);
+        workbook = this.refRow.concat(nameArr, workbook);
     }
 
     // =a1 要变成=A1  不破坏数据源
