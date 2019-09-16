@@ -45,6 +45,14 @@ class SelectorElement {
         startZIndex += 1;
     }
 
+    longTimeBefore(time = 500) {
+        this.boxinner.hide();
+
+        setTimeout(() => {
+            this.boxinner.show();
+        }, time);
+    }
+
     moveEvent(direction) {
         let {data, _selector, sheet} = this;
         let {selector} = data;
@@ -363,6 +371,14 @@ export default class Selector {
         this.lastci = -1;
 
         startZIndex += 1;
+    }
+
+
+    longTimeBefore() {
+        this.tl.longTimeBefore();
+        this.br.longTimeBefore();
+        this.t.longTimeBefore();
+        this.l.longTimeBefore();
     }
 
     setCss(b) {

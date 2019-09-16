@@ -924,6 +924,7 @@ function sheetInitEvents() {
                             formula.wland(formula, data, table);
                         }
                     }
+                    this.selector.longTimeBefore();
                     overlayerMousedown.call(this, evt);
                     clearSelectors.call(this);
                     editorSetOffset.call(this);
