@@ -65,7 +65,7 @@ export class RefRow {
     concat(nameArr, workbook) {
         for(let i = 0; i < nameArr.length; i++) {
             let name = nameArr[i];
-            let oldData = this._.indexOf(name).workbook;
+            let oldData = this._.find(x => x.name === name).workbook;
             Object.keys(workbook.Sheets[name]).forEach(i => {
                 if (workbook.Sheets[name][i].f != "") {
                     oldData.Sheets[name][i] = workbook.Sheets[name][i];
