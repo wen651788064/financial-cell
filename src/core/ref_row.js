@@ -83,8 +83,8 @@ export class RefRow {
         for(let i = 0; i < nameArr.length; i++) {
             let name = nameArr[i];
             let args = this._.find(x => x.name === name);
-            let cells = args.workbook[nameArr[i]];
-            let data = args.data[nameArr[i]];
+            let cells = args.workbook;
+            let data = args.rows._;
             Object.keys(cells).forEach(i => {
                 let [ci, ri] = expr2xy(i);
                 if (!data[ri]) {
