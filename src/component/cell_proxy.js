@@ -191,7 +191,7 @@ export default class CellProxy {
             let ra = arr[i].recordArr;
 
             if (ra.length > 0) {
-                let data = this.deepCopy(rr[j].workbook);
+                let data = this.deepCopy(rr[i].workbook);
                 let args = this.refRow.refCalc({
                     Sheets: data
                 }, ra, {
