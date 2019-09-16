@@ -181,9 +181,12 @@ const division = (str) => {
     }
 
     let arr = str.split(/([(-\/,+*，><=^&])/);
-    // 去除字符串两端的空格
+    // // 去除字符串两端的空格
     for (let i = 0; i < arr.length; i++) {
-        let value = arr[i].replace(/(^\s*)|(\s*$)/g, "");
+        if(isSheetVale(arr[i])) {
+            arr[i] = arr[i].split("!")[1];
+        }
+        // let value = arr[i].replace(/(^\s*)|(\s*$)/g, "");
     }
 
     return arr;
