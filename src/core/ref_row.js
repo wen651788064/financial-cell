@@ -69,6 +69,7 @@ export class RefRow {
             Object.keys(workbook.Sheets[name]).forEach(i => {
                 if(!oldData.Sheets) {
                     oldData.Sheets = oldData;
+                    delete oldData;
                 }
 
                 if (workbook.Sheets[name][i].f != "") {
