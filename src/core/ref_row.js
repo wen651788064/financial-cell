@@ -22,7 +22,8 @@ export class RefRow {
                 this._.push({
                     rows: rows,
                     workbook: d.calc[i],
-                    name: name
+                    name: name,
+                    sheet_id: d.sheet_id[i]
                 });
             }
         }
