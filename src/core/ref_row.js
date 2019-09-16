@@ -69,10 +69,10 @@ export class RefRow {
             Object.keys(workbook.Sheets[name]).forEach(i => {
 
                 if (workbook.Sheets[name][i].f != "") {
-                    oldData.Sheets[name][i] = workbook.Sheets[name][i];
+                    oldData[name][i] = workbook.Sheets[name][i];
                 }
             });
-            workbook.Sheets[name] = oldData.Sheets[name];
+            workbook.Sheets[name] = oldData[name];
         }
 
         return workbook;
