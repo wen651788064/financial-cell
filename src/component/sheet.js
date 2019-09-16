@@ -801,6 +801,7 @@ function sheetInitEvents() {
     //   pasteOverlay.hide();
     // });
 
+    let timer = null;
     // overlayer
     overlayerEl
         .on('mousemove', (evt) => {
@@ -819,118 +820,119 @@ function sheetInitEvents() {
                     contextMenu.hide();
                 }
             } else if (evt.detail === 2) {
-                console.time("x");
                 editor.setMouseDownIndex([]);
 
                 if (editor.getLock()) {
                     return;
                 }
-                console.timeEnd("x");
+                clearTimeout(timer);
                 editorSet.call(this, 2);
             } else {
-                if (editor.getLock() || editor.isCors) {
-                    let _selector = null;
-                    let change = 0;
-                    mouseMoveUp(window, (e) => {
-                        this.container.css('pointer-events', 'none');
-                        if (_selector && _selector.selector) {
-                            _selector.selector.setBoxinner("none");
-                        }
-
-                        let enter = true;
-                        let {merges} = data;
-                        let {inputText} = editor;
-                        let it = inputText;
-
-                        Object.keys(merges._).forEach(i => {
-                            let m = merges._[i];
-                            const cut = cutStr(it, true);
-                            for(let i = 0; i < cut.length; i++) {
-                                if(cut[i].indexOf(":") != -1) {
-                                    let a1 = cut[i].split(":")[0];
-                                    let a2 = cut[i].split(":")[1];
-                                    let e1 = expr2xy(a1);
-                                    let e2 = expr2xy(a2);
-
-                                    if(m.sci >= e1[0] && m.sri >= e1[1] && m.eci <= e2[0] && m.eri <= e2[1]) {
-                                        enter = false;
-                                    }
-                                }
+                timer = setTimeout(() => {
+                    if (editor.getLock() || editor.isCors) {
+                        let _selector = null;
+                        let change = 0;
+                        mouseMoveUp(window, (e) => {
+                            this.container.css('pointer-events', 'none');
+                            if (_selector && _selector.selector) {
+                                _selector.selector.setBoxinner("none");
                             }
-                        });
 
-                        if(enter) {
-                            if (e.buttons === 1 && !e.shiftKey) {
-                                let {ri, ci} = data.getCellRectByXY(e.offsetX, e.offsetY);
-                                if (_selector && _selector.selector) {
-                                    _selector = makeSelector.call(this, ri, ci, this.selectors, true, _selector.selector, true);
-                                    lockCells.call(this, evt, _selector);
-                                    this.mergeSelector = true;
-                                } else {
-                                    let {inputText, pos} = editor;
-                                    for (let i = 0; i < this.selectors.length; i++) {
-                                        let selector = this.selectors[i];
-                                        let {erpx} = selector;
+                            let enter = true;
+                            let {merges} = data;
+                            let {inputText} = editor;
+                            let it = inputText;
 
-                                        if (erpx === cuttingByPos(inputText, pos)) {
-                                            _selector = selector;
-                                            change = 1;
-                                            _selector.selector.set(ri, ci, true);
-                                            break;
+                            Object.keys(merges._).forEach(i => {
+                                let m = merges._[i];
+                                const cut = cutStr(it, true);
+                                for(let i = 0; i < cut.length; i++) {
+                                    if(cut[i].indexOf(":") != -1) {
+                                        let a1 = cut[i].split(":")[0];
+                                        let a2 = cut[i].split(":")[1];
+                                        let e1 = expr2xy(a1);
+                                        let e2 = expr2xy(a2);
+
+                                        if(m.sci >= e1[0] && m.sri >= e1[1] && m.eci <= e2[0] && m.eri <= e2[1]) {
+                                            enter = false;
                                         }
                                     }
+                                }
+                            });
 
-                                    _selector = _selector ? _selector : makeSelector.call(this, ri, ci, this.selectors, true, null, false);
+                            if(enter) {
+                                if (e.buttons === 1 && !e.shiftKey) {
+                                    let {ri, ci} = data.getCellRectByXY(e.offsetX, e.offsetY);
+                                    if (_selector && _selector.selector) {
+                                        _selector = makeSelector.call(this, ri, ci, this.selectors, true, _selector.selector, true);
+                                        lockCells.call(this, evt, _selector);
+                                        this.mergeSelector = true;
+                                    } else {
+                                        let {inputText, pos} = editor;
+                                        for (let i = 0; i < this.selectors.length; i++) {
+                                            let selector = this.selectors[i];
+                                            let {erpx} = selector;
+
+                                            if (erpx === cuttingByPos(inputText, pos)) {
+                                                _selector = selector;
+                                                change = 1;
+                                                _selector.selector.set(ri, ci, true);
+                                                break;
+                                            }
+                                        }
+
+                                        _selector = _selector ? _selector : makeSelector.call(this, ri, ci, this.selectors, true, null, false);
+                                    }
                                 }
                             }
-                        }
-                    }, () => {
-                        this.container.css('pointer-events', 'auto');
-                        if (_selector && _selector.selector) {
-                            _selector.selector.setBoxinner("auto");
-                        }
+                        }, () => {
+                            this.container.css('pointer-events', 'auto');
+                            if (_selector && _selector.selector) {
+                                _selector.selector.setBoxinner("auto");
+                            }
 
-                        if (this.mergeSelector === false) {
-                            if (_selector && !change) {
+                            if (this.mergeSelector === false) {
+                                if (_selector && !change) {
+                                    this.selectors.push(_selector);
+                                }
+                                lockCells.call(this, evt, _selector);
+                            } else if (_selector && !change && _selector.selector) {
                                 this.selectors.push(_selector);
                             }
-                            lockCells.call(this, evt, _selector);
-                        } else if (_selector && !change && _selector.selector) {
-                            this.selectors.push(_selector);
-                        }
-                        if (_selector) {
-                            for (let i = 0; i < this.selectors.length; i++) {
-                                let selector = this.selectors[i];
+                            if (_selector) {
+                                for (let i = 0; i < this.selectors.length; i++) {
+                                    let selector = this.selectors[i];
 
-                                if (selector.className === _selector.className) {
-                                    selector.erpx = _selector.erpx;
-                                    break;
+                                    if (selector.className === _selector.className) {
+                                        selector.erpx = _selector.erpx;
+                                        break;
+                                    }
                                 }
                             }
-                        }
-                        _selector = null;
-                        change = 0;
-                        this.mergeSelector = false;
-                    });
-                }
-                if (!editor.getLock() && !editor.isCors) {
-                    let {inputText, ri, ci} = editor;
-                    if (ri !== -1 && ci !== -1 && inputText[0] === "=") {
-                        selectorCellText.call(this, ri, ci, inputText, 'input', this.table.proxy);
+                            _selector = null;
+                            change = 0;
+                            this.mergeSelector = false;
+                        });
                     }
+                    if (!editor.getLock() && !editor.isCors) {
+                        let {inputText, ri, ci} = editor;
+                        if (ri !== -1 && ci !== -1 && inputText[0] === "=") {
+                            selectorCellText.call(this, ri, ci, inputText, 'input', this.table.proxy);
+                        }
 
-                    let state = editor.clear();
-                    if(state) {
-                        let {formula} = data.settings;
-                        if (formula && typeof formula.wland == "function") {
-                            formula.wland(formula, data, table);
+                        let state = editor.clear();
+                        if(state) {
+                            let {formula} = data.settings;
+                            if (formula && typeof formula.wland == "function") {
+                                formula.wland(formula, data, table);
+                            }
                         }
+                        this.selector.longTimeBefore();
+                        overlayerMousedown.call(this, evt);
+                        clearSelectors.call(this);
+                        editorSetOffset.call(this);
                     }
-                    this.selector.longTimeBefore();
-                    overlayerMousedown.call(this, evt);
-                    clearSelectors.call(this);
-                    editorSetOffset.call(this);
-                }
+                }, 200);
             }
         }).on('mousewheel.stop', (evt) => {
         overlayerMousescroll.call(this, evt);
