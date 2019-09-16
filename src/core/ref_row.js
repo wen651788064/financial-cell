@@ -68,7 +68,7 @@ export class RefRow {
             let oldData = this._.find(x => x.name === name).workbook;
             Object.keys(workbook.Sheets[name]).forEach(i => {
                 if(!oldData.Sheets) {
-                    oldData.Sheets = oldData[i];
+                    oldData.Sheets = oldData;
                 }
 
                 if (workbook.Sheets[name][i].f != "") {
