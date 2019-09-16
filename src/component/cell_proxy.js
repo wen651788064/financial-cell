@@ -2,11 +2,12 @@ import {contain, division, getSheetVale, isSheetVale} from "../core/operator";
 import {expr2xy, xy2expr} from "../core/alphabet";
 
 export default class CellProxy {
-    constructor() {
+    constructor(refRow) {
         this.oldData = "";
         // diff 为 101 => 则为跨sheet但是没找到跨sheet的数据  402 => 则为跨sheet而且找到跨sheet的数据
         // 305 => 为重新计算
         this.diff = 0;
+        this.refRow = refRow;
     }
 
     deepCalc(deep, newData, n) {
@@ -93,9 +94,9 @@ export default class CellProxy {
         return fd;
     }
 
-    associated(name, workbook) {
+    associated(name, workbook, oldData = this.oldData, d = true) {
         let enter = false;
-        let data = this.deepCopy(this.oldData);
+        let data = this.deepCopy(oldData);
         data = this.filter(data);
         let deepArr = [];
         let arr = [];
@@ -140,10 +141,21 @@ export default class CellProxy {
             }
         }
 
+        if (d) {
+            this.refCell(tileArr);
+        }
+
         return {
             enter: enter,
             nd: workbook
         };
+    }
+
+    refCell(tileArr) {
+        console.log(this.refRow);
+        for(let i = 0; i < tileArr.length; i++) {
+
+        }
     }
 
     // =a1 要变成=A1  不破坏数据源
@@ -167,7 +179,7 @@ export default class CellProxy {
 
             if (workbook.Sheets[name][i].f && workbook.Sheets[name][i].f[0] === '=') {
                 data.Sheets[name][i].v = "-";
-                if(isSheetVale(workbook.Sheets[name][i].f)) {
+                if (isSheetVale(workbook.Sheets[name][i].f)) {
                     data.Sheets[name][i].f = workbook.Sheets[name][i].f;
                 } else {
                     data.Sheets[name][i].f = workbook.Sheets[name][i].f.toUpperCase();
@@ -193,7 +205,7 @@ export default class CellProxy {
                 data[ri]['cells'][ci] = {}
             }
 
-            if(typeof cells[i].v === 'undefined') {
+            if (typeof cells[i].v === 'undefined') {
                 cells[i].v = "#ERROR!"
             }
 
@@ -201,15 +213,15 @@ export default class CellProxy {
                 cells[i].v = "#ERROR!"
             }
 
-            if(cells[i].v === '-') {
+            if (cells[i].v === '-') {
                 cells[i].v = "#ERROR!"
             }
 
-            if(isNaN(cells[i].f) && cells[i].f.search(/\((\+|\-|\*|\/)/) != -1) {
+            if (isNaN(cells[i].f) && cells[i].f.search(/\((\+|\-|\*|\/)/) != -1) {
                 cells[i].v = '#ERROR!';
             }
 
-            if(cells[i].w) {
+            if (cells[i].w) {
                 cells[i].v = cells[i].w;
             }
 
@@ -320,7 +332,7 @@ export default class CellProxy {
                                 deep.push(newCell.f);
                             }
 
-                            if (d[0] === '=' && (p === "" || this.isNull(p) || this.isEqual(d, p) || this.diff === 305  )) {
+                            if (d[0] === '=' && (p === "" || this.isNull(p) || this.isEqual(d, p) || this.diff === 305)) {
                                 workbook.Sheets[name][expr] = {
                                     v: '',
                                     f: d.replace(/ /g, '').replace(/\"/g, "\"").replace(/\"\"\"\"&/g, "\"'\"&")
@@ -346,7 +358,7 @@ export default class CellProxy {
                                     deep.push(newCell.f);
                                 }
 
-                                if (d[0] === '=' && (p === "" || this.isNull(p) || this.isEqual(d, p  ))) {
+                                if (d[0] === '=' && (p === "" || this.isNull(p) || this.isEqual(d, p))) {
                                     workbook.Sheets[name][expr] = {
                                         v: '',
                                         f: d.replace(/ /g, '').replace(/\"/g, "\"").replace(/\"\"\"\"&/g, "\"'\"&")

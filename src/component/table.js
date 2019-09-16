@@ -546,7 +546,7 @@ class Table {
         this.editor = editor;
         this.data = data;
         // this.worker = new Worker();
-        this.proxy = new CellProxy();
+        this.proxy = new CellProxy(data.refRow);
         this.autoAdaptList = [];
     }
 
