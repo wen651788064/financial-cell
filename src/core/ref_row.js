@@ -50,7 +50,10 @@ export class RefRow {
     calc(workbook) {
         let {data} = this;
         data.calc(workbook);
-
-        console.log(workbook);
+        data.change({
+            ref: true,
+            data: data.getData()
+        });
+        // console.log(workbook);
     }
 }
