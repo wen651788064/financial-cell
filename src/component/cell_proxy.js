@@ -270,9 +270,9 @@ export default class CellProxy {
                 cells[i].v = "#ERROR!"
             }
 
-            if (cells[i].v === '-') {
-                cells[i].v = "#ERROR!"
-            }
+            // if (cells[i].v === '-') {
+            //     cells[i].v = "#ERROR!"
+            // }
 
             if (isNaN(cells[i].f) && cells[i].f.search(/\((\+|\-|\*|\/)/) != -1) {
                 cells[i].v = '#ERROR!';
