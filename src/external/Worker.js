@@ -13,7 +13,6 @@ _.has(obj, 'foo')
 
 // 响应父线程的消息
 self.addEventListener('message', (event) => {
-    console.log("15...");
     let {workbook} = event.data;
     XLSX_CALC.import_functions(formulajs);
 

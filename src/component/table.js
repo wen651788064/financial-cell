@@ -7,7 +7,6 @@ import {isMinus} from "../utils/number_util";
 import {Draw, DrawBox, npx, thinLineWidth,} from '../canvas/draw';
 import ApplicationFactory from "./application";
 import {isSheetVale} from "../core/operator";
-import Worker from 'worker-loader!../external/Worker.js';
 import CellProxy from "./cell_proxy";
 
 var formulajs = require('formulajs');
