@@ -819,11 +819,13 @@ function sheetInitEvents() {
                     contextMenu.hide();
                 }
             } else if (evt.detail === 2) {
+                console.time("x");
                 editor.setMouseDownIndex([]);
 
                 if (editor.getLock()) {
                     return;
                 }
+                console.timeEnd("x");
                 editorSet.call(this, 2);
             } else {
                 if (editor.getLock() || editor.isCors) {
