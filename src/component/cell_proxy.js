@@ -187,6 +187,7 @@ export default class CellProxy {
 
         let workbook = [];
         workbook.Sheets = {};
+        let nameArr = [];
         for (let i = 0; i < arr.length; i++) {
             let ra = arr[i].recordArr;
 
@@ -199,6 +200,7 @@ export default class CellProxy {
                 });
                 for(let f in fd.Sheets) {
                     workbook.Sheets[f] = fd.Sheets[f];
+                    nameArr.push(f);
                 }
             }
         }
@@ -207,7 +209,8 @@ export default class CellProxy {
             workbook.Sheets[f] = fd.Sheets[f];
         }
 
-        this.refRow.calc(workbook);
+        workbook = this.refRow.calc(workbook);
+        workbook = this.refRow.concat(nameArr, workbook);
     }
 
     // =a1 要变成=A1  不破坏数据源

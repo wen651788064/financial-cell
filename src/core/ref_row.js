@@ -50,10 +50,28 @@ export class RefRow {
     calc(workbook) {
         let {data} = this;
         data.calc(workbook);
-        data.change({
-            ref: true,
-            data: data.getData()
-        });
+
+        return workbook;
+        // data.change({
+        //     ref: true,
+        //     data: this._
+        // });
         // console.log(workbook);
+    }
+
+    concat(nameArr, workbook) {
+        for(let i = 0; i < nameArr.length; i++) {
+            let name = nameArr[i];
+            let oldData = this._.workbook[i];
+
+            Object.keys(workbook.Sheets[name]).forEach(i => {
+                if (workbook.Sheets[name][i].f != "") {
+                    oldData.Sheets[name][i] = workbook.Sheets[name][i];
+                }
+            });
+            workbook.Sheets[name] = oldData.Sheets[name];
+        }
+
+        return workbook;
     }
 }
