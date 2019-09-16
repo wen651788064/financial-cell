@@ -1016,7 +1016,7 @@ export default class DataProxy {
                 rows.setCellText(ri, ci, text, proxy, this.name);
             }
             // 不应该没打开一个单元格就 change一次
-            this.change(this.getData());
+            // this.change(this.getData());
         }
         // validator
         validations.validate(ri, ci, text);
@@ -1031,7 +1031,7 @@ export default class DataProxy {
             rows.setCellAll(ri, ci, text, formulas);
         } else {
             rows.setCellAll(ri, ci, text, formulas);
-            this.change(this.getData());
+            // this.change(this.getData());
         }
         // validator
         validations.validate(ri, ci, text, formulas);
