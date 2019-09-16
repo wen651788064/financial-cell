@@ -532,7 +532,7 @@ class Draw {
         // }
         ctx.save();
         ctx.beginPath();
-        ctx.fillStyle = bgcolor || '#fff';
+        ctx.fillStyle = bgcolor === "rgba(0, 0, 0, 0)" ? '#fff' : bgcolor || '#fff';
         ctx.rect(npxLine(x + 1), npxLine(y + 1), npx(width - 2), npx(height - 2));
         ctx.clip();
         ctx.fill();
