@@ -212,9 +212,9 @@ export default class CellProxy {
 
         workbook = this.refRow.calc(workbook);
         workbook = this.refRow.concat(nameArr, workbook);
-        let cells = this.refRow.unpack(nameArr);
-
-    }
+        this.refRow.unpack(nameArr);
+        this.refRow.change(nameArr);
+     }
 
     // =a1 要变成=A1  不破坏数据源
     pack(name, workbook) {

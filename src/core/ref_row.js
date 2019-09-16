@@ -57,11 +57,6 @@ export class RefRow {
         data.calc(workbook);
 
         return workbook;
-        // data.change({
-        //     ref: true,
-        //     data: this._
-        // });
-        // console.log(workbook);
     }
 
     concat(nameArr, workbook) {
@@ -78,6 +73,26 @@ export class RefRow {
         }
 
         return workbook;
+    }
+
+    change(nameArr) {
+        let changeData = [];
+        for(let i = 0; i < nameArr.length; i++) {
+            let name = nameArr[i];
+            let args = this._.find(x => x.name === name);
+            let data = args.rows._;
+
+            changeData.push({
+                "sheet_id": args.sheet_id,
+                "sheet_detail": data,
+            })
+        }
+
+        let {data} = this;
+        data.change({
+            ref: true,
+            data: changeData
+        });
     }
 
     unpack(nameArr) {
