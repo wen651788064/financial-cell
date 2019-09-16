@@ -172,7 +172,7 @@ export default class CellProxy {
                             value = value.replace(/\$/g, "");
 
                             console.log(division(value));
-                            if (contain(division(value),  tileArr[s])) {
+                            if (contain(division(value), tileArr[s])) {
                                 recordArr.push(k);
                             }
                         })
@@ -184,7 +184,23 @@ export default class CellProxy {
                 rr: rr[j]
             });
         }
-        console.log(arr);
+
+        let workbook = [];
+        workbook.Sheets = {};
+        for (let i = 0; i < arr.length; i++) {
+            let ra = arr[i].recordArr;
+
+            if (ra.length > 0) {
+                let data = this.deepCopy(rr[j].workbook);
+                let args = this.refRow.refCalc({
+                    Sheets: data
+                }, ra, {
+                    Sheets: data
+                });
+                workbook.Sheets[args.name] = args.fd;
+            }
+        }
+        console.log(workbook);
     }
 
     // =a1 要变成=A1  不破坏数据源
