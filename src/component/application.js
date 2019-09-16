@@ -92,7 +92,7 @@ export default class ApplicationFactory {
         }
 
         const {cb} = this;
-        let ress = cb.getData(cb.axios, arr, cb.user_id, this.name);
-        return ress;
+        let res = cb.getData(cb.axios, arr, cb.user_id, this.name, cb.sheet_id);
+        return res;
     }
 }

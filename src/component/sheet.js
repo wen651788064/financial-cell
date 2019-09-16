@@ -374,11 +374,14 @@ function overlayerMousedown(evt) {
                 let orien = selector.showAutofill(ri, ci);
                 let o = orientation(this.data.settings.view.height(), this.data.settings.view.width(), e.layerY, e.layerX, orien);
 
+                console.log("377", )
                 if(o && orien == 44) {
                     const {top} = verticalScrollbar.scroll();
+                    ri = data.scroll.ri + 1;
                     verticalScrollbar.move({top: top + rows.getHeight(ri) - 1});
                 } else if(o && orien == 22) {
                     const {top} = verticalScrollbar.scroll();
+                    ri = data.scroll.ri - 1;
                     if (ri >= 0) {
                         verticalScrollbar.move({top: ri === 0 ? 0 : top - rows.getHeight(ri)});
                     }
