@@ -9,16 +9,16 @@ export class RefRow {
     setData(d) {
         let {sr} = this;
 
-        for(let i = 0; i < d.length; i++) {
-            if (d[i].len) {
-                delete d[i].len;
+        for(let i = 0; i < d.calc.length; i++) {
+            if (d.data[i].len) {
+                delete d.data[i].len;
             }
 
             let rows = new Rows(sr);
-            rows.setData(d[i].data);
+            rows.setData(d.data[i]);
             this._.push({
                 rows: rows,
-                workbook: d[i].calc
+                workbook: d.calc[i]
             });
         }
     }
