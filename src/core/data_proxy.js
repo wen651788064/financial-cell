@@ -18,6 +18,7 @@ import Moved from '../event/move';
 import {h} from "../component/element";
 import {mountImg} from "../event/paste";
 import {parseCell2} from "../component/table";
+import {RefRow} from "./ref_row";
 // private methods
 /*
  * {
@@ -385,6 +386,7 @@ export default class DataProxy {
         this.comments = {};
         this.showEquation = false;
         this.calc = formulaCalc();
+        this.refRow = new RefRow(this.settings.row);
 
         this.pasteDirectionsArr = [];
         // save data end
@@ -1210,7 +1212,8 @@ export default class DataProxy {
         Object.keys(d).forEach((property) => {
             // this.judgeAutoWidth(d.rows);
             if (property === 'merges' || property === 'rows'
-                || property === 'cols' || property === 'validations') {
+                || property === 'cols' || property === 'validations'
+                || property === 'refRow') {
                 this[property].setData(d[property]);
             } else if (property === 'flex') {
                 autoFilter.addFiexRows(d[property]);
