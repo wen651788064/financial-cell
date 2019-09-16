@@ -206,7 +206,8 @@ export default class CellProxy {
         for(let f in fd.Sheets) {
             workbook.Sheets[f] = fd.Sheets[f];
         }
-        console.log(workbook);
+
+        this.refRow.calc(workbook);
     }
 
     // =a1 要变成=A1  不破坏数据源

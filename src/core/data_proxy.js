@@ -386,7 +386,7 @@ export default class DataProxy {
         this.comments = {};
         this.showEquation = false;
         this.calc = formulaCalc();
-        this.refRow = new RefRow(this.settings.row);
+        this.refRow = new RefRow(this.settings.row, this);
 
         this.pasteDirectionsArr = [];
         // save data end

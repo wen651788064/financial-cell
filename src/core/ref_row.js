@@ -1,9 +1,10 @@
 import {Rows} from "./row";
 
 export class RefRow {
-    constructor(sr) {
+    constructor(sr, data) {
         this._ = [];
         this.sr = sr;
+        this.data = data;
     }
 
     setData(d) {
@@ -44,5 +45,12 @@ export class RefRow {
         });
 
         return fd;
+    }
+
+    calc(workbook) {
+        let {data} = this;
+        data.calc(workbook);
+
+        console.log(workbook);
     }
 }
