@@ -198,19 +198,22 @@ export default class CellProxy {
                 }, ra, {
                     Sheets: data
                 });
-                for(let f in fd.Sheets) {
+                for (let f in fd.Sheets) {
                     workbook.Sheets[f] = fd.Sheets[f];
                     nameArr.push(f);
                 }
             }
         }
-        let fd = this.refRow.refCalc(this.oldData, [], this.oldData);
-        for(let f in fd.Sheets) {
+        let oldData = this.deepCopy(this.oldData);
+        let fd = this.refRow.refCalc(oldData, [], oldData);
+        for (let f in fd.Sheets) {
             workbook.Sheets[f] = fd.Sheets[f];
         }
 
         workbook = this.refRow.calc(workbook);
         workbook = this.refRow.concat(nameArr, workbook);
+        let cells = this.refRow.unpack(nameArr, workbook);
+
     }
 
     // =a1 要变成=A1  不破坏数据源
