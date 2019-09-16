@@ -144,7 +144,9 @@ export default class CellProxy {
         }
 
         if (d) {
-            this.refCell(tileArr);
+            setTimeout(() => {
+                this.refCell(tileArr);
+            });
         }
 
         return {
