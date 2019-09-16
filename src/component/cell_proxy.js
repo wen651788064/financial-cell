@@ -164,7 +164,7 @@ export default class CellProxy {
                 data: data
             });
 
-            for (let i = 0; i < tileArr.length; i++) {
+            for (let s = 0; s < tileArr.length; s++) {
                 Object.keys(data).forEach(i => {
                     Object.keys(data[i]).forEach(j => {
                         Object.keys(data[i][j]).forEach(k => {
@@ -172,7 +172,7 @@ export default class CellProxy {
                             value = value.replace(/\$/g, "");
 
                             console.log(division(value));
-                            if (contain(division(value), `${tileArr[i]}`)) {
+                            if (contain(division(value),  tileArr[s])) {
                                 recordArr.push(k);
                             }
                         })
