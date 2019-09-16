@@ -43,9 +43,6 @@ export class RefRow {
             })
         });
 
-        return {
-            name,
-            fd,
-        };
+        return fd;
     }
 }
