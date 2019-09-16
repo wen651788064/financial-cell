@@ -200,6 +200,7 @@ export default class CellProxy {
                 workbook.Sheets  = fd;
             }
         }
+        workbook.Sheets = this.refRow.refCalc(this.oldData, [], this.oldData);
         console.log(workbook);
     }
 
