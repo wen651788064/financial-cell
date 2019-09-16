@@ -160,7 +160,9 @@ export default class CellProxy {
         for (let j = 0; j < rr.length; j++) {
             let recordArr = [];
             let data = this.deepCopy(rr[j].workbook);
-            data = this.filter(data);
+            data = this.filter({
+                data: data
+            });
 
             for (let i = 0; i < tileArr.length; i++) {
                 Object.keys(data).forEach(i => {
