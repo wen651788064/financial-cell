@@ -212,7 +212,7 @@ export default class CellProxy {
 
         workbook = this.refRow.calc(workbook);
         workbook = this.refRow.concat(nameArr, workbook);
-        let cells = this.refRow.unpack(nameArr, workbook);
+        let cells = this.refRow.unpack(nameArr);
 
     }
 
