@@ -258,7 +258,7 @@ function sheetReset(redo = true) {
     verticalScrollbarSet.call(this);
     horizontalScrollbarSet.call(this);
     sheetFreeze.call(this);
-    table.render(redo);
+    table.render();
     toolbar.reset();
     selector.reset();
 }

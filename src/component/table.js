@@ -600,11 +600,10 @@ class Table {
         if (!temp) {
             let args = await parseCell.call(this, viewRange);
 
-            if(args.redo === false && redo == false) {
-                return;
-            }
+            // if(args.redo === false && redo == false) {
+            //     return;
+            // }
 
-            console.log(args.state);
             if (args.state == 1) {
                 this.render();
                 return;

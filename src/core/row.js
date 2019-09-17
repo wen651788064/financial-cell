@@ -211,7 +211,7 @@ class Rows {
             }
 
             let sarr = [];
-            // console.log(dayjs("20asd1-01").isValid() , "173");
+
             let number = true, diffValue = 0, nA = true, nD = true;
             fackSRange.each((i, j) => {
                 let und = false;
@@ -235,18 +235,22 @@ class Rows {
                             number = true;
                             nA = false;
                             nD = false;
-                        } else if (value && nA == true && value[0] === '=') {
+                            // nF = false;
+                        }  else if (value && nA == true && value[0] === '=') {
                             nA = true;
                             number = false;
                             nD = false;
+                            // nF = false;
                         } else if (value && nD == true && dayjs(value).isValid()) {
                             nA = false;
                             number = false;
                             nD = true;
+                            // nF = false;
                         } else {
                             nA = false;
                             number = false;
                             nD = false;
+                            // nF = false;
                         }
                     } else {
                         und = true;
@@ -318,9 +322,9 @@ class Rows {
                             ncell.formulas = "=" + value + "";
                             this.copyRender(darr, d.ri, d.ci, ncell, what, cb);
                         } else if (ncell.text != '') {
-                            if(ncell.text.indexOf(",") != -1) {
+                            if (ncell.text.indexOf(",") != -1) {
                                 let last1 = ncell.text;
-                                last1 = last1.replace(/,/g,'');
+                                last1 = last1.replace(/,/g, '');
                                 let value = parseFloat(last1) + diffValue;
                                 last1 = this.formatMoney(value, 0);
 
@@ -376,9 +380,9 @@ class Rows {
                             ncell.formulas = "=" + value + "";
                             this.copyRender(darr, d.ri, d.ci, ncell, what, cb);
                         } else if (ncell.text != '') {
-                            if(ncell.text.indexOf(",") != -1) {
+                            if (ncell.text.indexOf(",") != -1) {
                                 let last1 = ncell.text;
-                                last1 = last1.replace(/,/g,'');
+                                last1 = last1.replace(/,/g, '');
                                 let value = parseFloat(last1) + diffValue;
                                 last1 = this.formatMoney(value, 0);
 
@@ -440,7 +444,7 @@ class Rows {
                         }
                     }
                 }
-            } else {
+            }   else {
                 for (let i = sri; i <= eri; i += 1) {
                     if (this._[i]) {
                         for (let j = sci; j <= eci; j += 1) {
@@ -487,6 +491,10 @@ class Rows {
                                                         return "#REF!";
                                                     }
 
+
+                                                    if(text.toUpperCase().indexOf(word + "!") != -1) {
+                                                        return word;
+                                                    }
                                                     let txt = expr2expr(word.replace("$", ""), xn, yn);
                                                     if (type == 1) {
                                                         txt = "$" + word.replace("$", "");

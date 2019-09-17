@@ -162,6 +162,9 @@ function evalFormula(text, rule) {
 }
 
 const cellRender = (data, sheetbook, y, x, src, formulaMap, getCellText, cellList = []) => {
+    if(typeof src === 'undefined') {
+        return "";
+    }
     if (src[0] === '=' && src[1] !== '=') {
         // console.log("156", sheetbook.Sheets.Sheet1[xy2expr(x, y)], xy2expr(x, y))
         if (evalFormula(src.substring(1), "wland") || evalFormula(src.substring(1), "wfr") || evalFormula(src.substring(1), "rtd")
