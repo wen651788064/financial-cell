@@ -29,23 +29,25 @@ export class RefRow {
         }
     }
 
-    refCalc(data, arr, fd) {
+    refCalc(data, arr, fd, nd = "") {
         let name = "";
         Object.keys(fd).forEach(i => {
             Object.keys(fd[i]).forEach(j => {
                 name = i;
-                Object.keys(fd[i][j]).forEach(k => {
-                    if (!fd[i]) {
-                        fd[i] = {};
-                    }
-                    if (!fd[i][j]) {
-                        fd[i][j] = {};
-                    }
+                if(nd !== "" && j === nd) {
+                    Object.keys(fd[i][j]).forEach(k => {
+                        if (!fd[i]) {
+                            fd[i] = {};
+                        }
+                        if (!fd[i][j]) {
+                            fd[i][j] = {};
+                        }
 
-                    if (arr.indexOf(k) == -1) {
-                        fd[i][j][k].f = "";
-                    }
-                })
+                        if (arr.indexOf(k) == -1) {
+                            fd[i][j][k].f = "";
+                        }
+                    })
+                }
             })
         });
 
