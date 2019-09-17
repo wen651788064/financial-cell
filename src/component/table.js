@@ -157,13 +157,11 @@ async function parseCell(viewRange, state = false, src = '') {
     if (state) {
         workbook.Sheets[data.name]['A1'] = {v: '', f: `=${src}`};
     }
-    console.time("x3");
     if(ca.state) {
         let assoc = proxy.associated(data.name, workbook);
         ca.state = ca.state === false ? assoc.enter : ca.state;
         workbook = assoc.enter === true ? assoc.nd : workbook;
     }
-    console.timeEnd("x3");
     // this.editor.display &&
     if (ca.state) {
         try {
@@ -589,6 +587,8 @@ class Table {
     }
 
     async render(temp = false, tempData) {
+        console.time("x3");
+
         // resize canvas
         const {data} = this;
         const {rows, cols} = data;
@@ -661,6 +661,7 @@ class Table {
             renderContent.call(this, freezeViewRange, fw, fh, 0, 0, workbook);
             // 5
             renderFreezeHighlightLine.call(this, fw, fh, tx, ty);
+            console.timeEnd("x3");
         }
     }
 
