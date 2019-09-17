@@ -208,7 +208,7 @@ export default class CellProxy {
         let oldData = this.deepCopy(this.oldData);
         for (let f in oldData.Sheets) {
             if(f !== name) {
-                delete f;
+                delete fd.Sheets[f];
             }
         }
         let fd = this.refRow.refCalc(oldData, [], oldData);
