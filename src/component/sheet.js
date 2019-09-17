@@ -515,7 +515,7 @@ function verticalScrollbarMove(distance) {
         adviceSetOffset.call(this);
         selectorsSetOffset.call(this);
         editorSetOffset.call(this, false);
-        table.render();
+        table.render(true);
     });
 }
 
@@ -528,7 +528,7 @@ function horizontalScrollbarMove(distance) {
         adviceSetOffset.call(this);
         selectorsSetOffset.call(this);
         editorSetOffset.call(this, false);
-        table.render();
+        table.render(true);
     });
 }
 

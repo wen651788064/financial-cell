@@ -590,7 +590,7 @@ class Table {
         return style;
     }
 
-    async render(temp = false, tempData) {
+    async render(temp = false, tempData, redo = false) {
         // resize canvas
         const {data} = this;
         const {rows, cols} = data;
@@ -600,7 +600,7 @@ class Table {
         if (!temp) {
             let args = await parseCell.call(this, viewRange);
 
-            if(args.redo === false) {
+            if(args.redo === false && redo == false) {
                 return;
             }
 
