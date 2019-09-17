@@ -145,7 +145,7 @@ export default class CellProxy {
 
         if (d) {
             // setTimeout(() => {
-                this.refCell(tileArr, name);
+            this.refCell(tileArr, name);
             // });
         }
 
@@ -219,7 +219,7 @@ export default class CellProxy {
 
         workbook = this.refRow.calc(workbook);
         workbook = this.refRow.concat(nameArr, workbook);
-        for(let f in workbook.Sheets) {
+        for (let f in workbook.Sheets) {
             if (f !== name) {
                 this.oldData.Sheets[f] = workbook.Sheets[f];
             }
@@ -288,12 +288,11 @@ export default class CellProxy {
             //     cells[i].v = "#ERROR!"
             // }
 
-            try {
-                if (isNaN(cells[i].f) && cells[i].f.search(/\((\+|\-|\*|\/)/) != -1) {
-                    cells[i].v = '#ERROR!';
-                }
-            } catch (e) {
-                console.log(e);
+            if (typeof cells[i].f === 'undefined') {
+                cells[i].f = "";
+            }
+            if (isNaN(cells[i].f) && cells[i].f.search(/\((\+|\-|\*|\/)/) != -1) {
+                cells[i].v = '#ERROR!';
             }
 
             if (cells[i].w) {
