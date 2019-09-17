@@ -145,7 +145,7 @@ export default class CellProxy {
 
         if (d) {
             setTimeout(() => {
-                this.refCell(tileArr);
+                this.refCell(tileArr, name);
             });
         }
 
@@ -155,7 +155,7 @@ export default class CellProxy {
         };
     }
 
-    refCell(tileArr) {
+    refCell(tileArr, name) {
         let rr = this.refRow._;
         let arr = [];
 
@@ -206,7 +206,11 @@ export default class CellProxy {
             }
         }
         let oldData = this.deepCopy(this.oldData);
-        let fd = this.refRow.refCalc(oldData, [], oldData);
+        let fd = this.refRow.refCalc({
+            Sheets: oldData.Sheets[name]
+        }, [], {
+            Sheets: oldData.Sheets[name]
+        });
         for (let f in fd.Sheets) {
             workbook.Sheets[f] = fd.Sheets[f];
         }
