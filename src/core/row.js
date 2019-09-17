@@ -4,6 +4,7 @@ import {absoluteType, changeFormula, cutStr, isAbsoluteValue, value2absolute} fr
 import {expr2xy} from "../core/alphabet";
 import CellRange from "./cell_range";
 import dayjs from 'dayjs'
+import {isSheetVale} from "./operator";
 
 class Rows {
     constructor({len, height}) {
@@ -461,7 +462,7 @@ class Rows {
                                                 n -= dn + 1;
                                             }
                                             if (text[0] === '=') {
-                                                ncell.text = text.replace(/\w{1,3}\d|\w{1,3}\$\d|\$\w{1,3}\d/g, (word) => {
+                                                ncell.text = text.replace(/\w{1,5}\d|\w{1,5}\$\d|\$\w{1,5}\d/g, (word) => {
                                                     word = word.toUpperCase();
                                                     if (isAbsoluteValue(word, 3) == false) {
                                                         return word;
@@ -507,6 +508,7 @@ class Rows {
                                                     }
                                                     return txt;
                                                 });
+
                                                 if (ncell.text.indexOf("#REF!") != -1) {
                                                     ncell.text = "#REF!";
                                                 }
