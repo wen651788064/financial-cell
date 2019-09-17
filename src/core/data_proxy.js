@@ -1026,7 +1026,7 @@ export default class DataProxy {
         clearTimeout(this.dataTimer);
         this.dataTimer = setTimeout(() => {
             this.change(this.getData());
-        }, 200);
+        }, 600);
     }
 
     // state: input | finished
