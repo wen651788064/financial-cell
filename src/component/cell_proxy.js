@@ -206,10 +206,11 @@ export default class CellProxy {
             }
         }
         let oldData = this.deepCopy(this.oldData);
-
-        let fd = this.refRow.refCalc(oldData, [], oldData, name);
+        let fd = this.refRow.refCalc(oldData, [], oldData);
         for (let f in fd.Sheets) {
-            workbook.Sheets[f] = fd.Sheets[f];
+            if(f === name) {
+                workbook.Sheets[f] = fd.Sheets[f];
+            }
         }
 
         workbook = this.refRow.calc(workbook);

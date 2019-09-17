@@ -18,7 +18,7 @@ export class RefRow {
 
             let rows = new Rows(sr);
             rows.setData(d.data[i]);
-            for(let name in d.calc[i]) {
+            for (let name in d.calc[i]) {
                 this._.push({
                     rows: rows,
                     workbook: d.calc[i],
@@ -29,25 +29,23 @@ export class RefRow {
         }
     }
 
-    refCalc(data, arr, fd, nd = "") {
+    refCalc(data, arr, fd) {
         let name = "";
         Object.keys(fd).forEach(i => {
             Object.keys(fd[i]).forEach(j => {
                 name = i;
-                if(nd !== "" && j === nd) {
-                    Object.keys(fd[i][j]).forEach(k => {
-                        if (!fd[i]) {
-                            fd[i] = {};
-                        }
-                        if (!fd[i][j]) {
-                            fd[i][j] = {};
-                        }
+                Object.keys(fd[i][j]).forEach(k => {
+                    if (!fd[i]) {
+                        fd[i] = {};
+                    }
+                    if (!fd[i][j]) {
+                        fd[i][j] = {};
+                    }
 
-                        if (arr.indexOf(k) == -1) {
-                            fd[i][j][k].f = "";
-                        }
-                    })
-                }
+                    if (arr.indexOf(k) == -1) {
+                        fd[i][j][k].f = "";
+                    }
+                })
             })
         });
 
@@ -62,7 +60,7 @@ export class RefRow {
     }
 
     concat(nameArr, workbook) {
-        for(let i = 0; i < nameArr.length; i++) {
+        for (let i = 0; i < nameArr.length; i++) {
             let name = nameArr[i];
             let oldData = this._.find(x => x.name === name).workbook;
             Object.keys(workbook.Sheets[name]).forEach(i => {
@@ -79,7 +77,7 @@ export class RefRow {
 
     change(nameArr) {
         let changeData = [];
-        for(let i = 0; i < nameArr.length; i++) {
+        for (let i = 0; i < nameArr.length; i++) {
             let name = nameArr[i];
             let args = this._.find(x => x.name === name);
             let data = args.rows._;
@@ -98,7 +96,7 @@ export class RefRow {
     }
 
     unpack(nameArr) {
-        for(let i = 0; i < nameArr.length; i++) {
+        for (let i = 0; i < nameArr.length; i++) {
             let name = nameArr[i];
             let args = this._.find(x => x.name === name);
             let cells = args.workbook[name];
