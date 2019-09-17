@@ -520,7 +520,11 @@ class Rows {
                                                 if (ncell.text.indexOf("#REF!") != -1) {
                                                     ncell.text = "#REF!";
                                                 }
-                                                ncell.formulas = ncell.text;
+
+                                                if(text.indexOf("CITY(") == -1) {
+                                                    ncell.formulas = ncell.text;
+                                                }
+
                                             } else {
                                                 const result = /[\\.\d]+$/.exec(text);
                                                 // console.log('result:', result);
