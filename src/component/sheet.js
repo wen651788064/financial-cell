@@ -421,6 +421,7 @@ function overlayerMousedown(evt) {
 
 function loadFormula() {
     clearTimeout(this.formulaTime);
+    let {data} = this;
     this.formulaTime = setTimeout(() => {
         let {formula} = data.settings;
         if (formula && typeof formula.wland == "function") {
@@ -928,10 +929,7 @@ function sheetInitEvents() {
 
                     let state = editor.clear();
                     if (state) {
-                        let {formula} = data.settings;
-                        if (formula && typeof formula.wland == "function") {
-                            formula.wland(formula, data, table);
-                        }
+                        loadFormula.call(this);
                     }
                     this.selector.longTimeBefore();
                     overlayerMousedown.call(this, evt);
