@@ -4,7 +4,6 @@ import {absoluteType, changeFormula, cutStr, isAbsoluteValue, value2absolute} fr
 import {expr2xy} from "../core/alphabet";
 import CellRange from "./cell_range";
 import dayjs from 'dayjs'
-import {isSheetVale} from "./operator";
 
 class Rows {
     constructor({len, height}) {
@@ -236,7 +235,7 @@ class Rows {
                             nA = false;
                             nD = false;
                             // nF = false;
-                        }  else if (value && nA == true && value[0] === '=') {
+                        } else if (value && nA == true && value[0] === '=') {
                             nA = true;
                             number = false;
                             nD = false;
@@ -444,7 +443,7 @@ class Rows {
                         }
                     }
                 }
-            }   else {
+            } else {
                 for (let i = sri; i <= eri; i += 1) {
                     if (this._[i]) {
                         for (let j = sci; j <= eci; j += 1) {
@@ -492,7 +491,7 @@ class Rows {
                                                     }
 
 
-                                                    if(text.toUpperCase().indexOf(word + "!") != -1) {
+                                                    if (text.toUpperCase().indexOf(word + "!") != -1) {
                                                         return word;
                                                     }
                                                     let txt = expr2expr(word.replace("$", ""), xn, yn);
@@ -521,9 +520,9 @@ class Rows {
                                                     ncell.text = "#REF!";
                                                 }
 
-                                                if(text.indexOf("CITY(") == -1) {
-                                                    ncell.formulas = ncell.text;
-                                                }
+                                                // if(text.indexOf("CITY(") == -1) {
+                                                ncell.formulas = ncell.text;
+                                                // }
 
                                             } else {
                                                 const result = /[\\.\d]+$/.exec(text);
