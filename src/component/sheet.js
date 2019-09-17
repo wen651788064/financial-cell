@@ -76,7 +76,7 @@ function selectorSet(multiple, ri, ci, indexesUpdated = true, moving = false) {
 
     this.render_timer = setTimeout(() => {
         table.render();
-    }, 100);
+    }, 200);
 }
 
 // multiple: boolean
