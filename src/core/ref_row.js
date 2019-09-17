@@ -31,10 +31,10 @@ export class RefRow {
 
     refCalc(data, arr, fd) {
         let name = "";
-        Object.keys(data).forEach(i => {
-            Object.keys(data[i]).forEach(j => {
+        Object.keys(fd).forEach(i => {
+            Object.keys(fd[i]).forEach(j => {
                 name = i;
-                Object.keys(data[i][j]).forEach(k => {
+                Object.keys(fd[i][j]).forEach(k => {
                     if (!fd[i]) {
                         fd[i] = {};
                     }
