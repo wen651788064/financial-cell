@@ -421,7 +421,7 @@ function overlayerMousedown(evt) {
 
 function loadFormula() {
     clearTimeout(this.formulaTime);
-    let {data} = this;
+    let {data, table} = this;
     this.formulaTime = setTimeout(() => {
         let {formula} = data.settings;
         if (formula && typeof formula.wland == "function") {
