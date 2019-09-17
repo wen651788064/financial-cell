@@ -288,8 +288,12 @@ export default class CellProxy {
             //     cells[i].v = "#ERROR!"
             // }
 
-            if (isNaN(cells[i].f) && cells[i].f.search(/\((\+|\-|\*|\/)/) != -1) {
-                cells[i].v = '#ERROR!';
+            try {
+                if (isNaN(cells[i].f) && cells[i].f.search(/\((\+|\-|\*|\/)/) != -1) {
+                    cells[i].v = '#ERROR!';
+                }
+            } catch (e) {
+                console.log(e);
             }
 
             if (cells[i].w) {
