@@ -235,7 +235,7 @@ function sheetFreeze() {
     selector.resetAreaOffset();
 }
 
-function sheetReset(redo = false) {
+function sheetReset(redo = true) {
     // debugger
     const {
         tableEl,
