@@ -1214,7 +1214,7 @@ function sheetInitEvents() {
                         if (formula && typeof formula.wland == "function") {
                             formula.wland(formula, data, table);
                         }
-                    }, 200);
+                    }, 1200);
 
                     evt.preventDefault();
                     editorSetOffset.call(this, true);
