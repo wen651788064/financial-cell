@@ -71,7 +71,7 @@ function selectorSet(multiple, ri, ci, indexesUpdated = true, moving = false) {
 
     // add
     if (this.render_timer) {
-        clearTimeout(this.render_timer)
+        clearTimeout(this.render_timer);
     }
 
     this.render_timer = setTimeout(() => {
@@ -816,6 +816,7 @@ function sheetInitEvents() {
                     contextMenu.hide();
                 }
             } else if (evt.detail === 2) {
+                clearTimeout(this.render_timer);
                 editor.setMouseDownIndex([]);
 
                 if (editor.getLock()) {
