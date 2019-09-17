@@ -427,7 +427,7 @@ function loadFormula() {
         if (formula && typeof formula.wland == "function") {
             formula.wland(formula, data, table);
         }
-    }, 500);
+    }, 1000);
 }
 
 function firstRowToWidth(width) {
