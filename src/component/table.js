@@ -587,7 +587,7 @@ class Table {
     }
 
     async render(temp = false, tempData) {
-        console.time("x3");
+        console.time("x1");
 
         // resize canvas
         const {data} = this;
@@ -661,7 +661,7 @@ class Table {
             renderContent.call(this, freezeViewRange, fw, fh, 0, 0, workbook);
             // 5
             renderFreezeHighlightLine.call(this, fw, fh, tx, ty);
-            console.timeEnd("x3");
+            console.timeEnd("x1");
         }
     }
 
