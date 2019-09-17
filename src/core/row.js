@@ -465,9 +465,7 @@ class Rows {
                                             if (!isAdd) {
                                                 n -= dn + 1;
                                             }
-                                            if(text.indexOf("CITY(") != -1) {
-                                                this.copyRender(darr, nri, nci, ncell, what, cb);
-                                            } else if (text[0] === '=') {
+                                            if (text[0] === '=') {
                                                 ncell.text = text.replace(/\w{1,5}\d|\w{1,5}\$\d|\$\w{1,5}\d/g, (word) => {
                                                     word = word.toUpperCase();
                                                     if (isAbsoluteValue(word, 3) == false) {
