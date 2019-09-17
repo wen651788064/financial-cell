@@ -235,7 +235,7 @@ function sheetFreeze() {
     selector.resetAreaOffset();
 }
 
-function sheetReset() {
+function sheetReset(redo = false) {
     // debugger
     const {
         tableEl,
@@ -258,7 +258,7 @@ function sheetReset() {
     verticalScrollbarSet.call(this);
     horizontalScrollbarSet.call(this);
     sheetFreeze.call(this);
-    table.render();
+    table.render(redo);
     toolbar.reset();
     selector.reset();
 }
@@ -742,7 +742,7 @@ function toolbarChange(type, value) {
         }
     } else if (type === 'add') {
         data.showEquation = !data.showEquation;
-        sheetReset.call(this);
+        sheetReset.call(this, true);
     } else {
         //format percent 473
         data.setSelectedCellAttr(type, value);
