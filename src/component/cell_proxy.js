@@ -144,9 +144,9 @@ export default class CellProxy {
         }
 
         if (d) {
-            setTimeout(() => {
+            // setTimeout(() => {
                 this.refCell(tileArr, name);
-            });
+            // });
         }
 
         return {
@@ -207,22 +207,27 @@ export default class CellProxy {
         }
         let oldData = this.deepCopy(this.oldData);
         for (let f in oldData.Sheets) {
-            if(f !== name) {
+            if (f !== name) {
                 delete oldData.Sheets[f];
             }
         }
         let fd = this.refRow.refCalc(oldData, [], oldData);
         for (let f in fd.Sheets) {
-            if(f === name) {
-                workbook.Sheets[f] = fd.Sheets[f];
-            }
+            workbook.Sheets[f] = fd.Sheets[f];
+
         }
 
         workbook = this.refRow.calc(workbook);
         workbook = this.refRow.concat(nameArr, workbook);
+        for(let f in workbook.Sheets) {
+            if (f !== name) {
+                this.oldData.Sheets[f] = workbook.Sheets[f];
+            }
+        }
+
         this.refRow.unpack(nameArr);
         this.refRow.change(nameArr);
-     }
+    }
 
     // =a1 要变成=A1  不破坏数据源
     pack(name, workbook) {
@@ -398,7 +403,7 @@ export default class CellProxy {
                                 deep.push(newCell.f);
                             }
 
-                            if (d[0] === '=' && ( this.isNull(p) || this.isEqual(d, p) || this.diff === 305)) {
+                            if (d[0] === '=' && (this.isNull(p) || this.isEqual(d, p) || this.diff === 305)) {
                                 workbook.Sheets[name][expr] = {
                                     v: '',
                                     f: d.replace(/ /g, '').replace(/\"/g, "\"").replace(/\"\"\"\"&/g, "\"'\"&")
