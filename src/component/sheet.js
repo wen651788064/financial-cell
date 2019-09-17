@@ -397,12 +397,7 @@ function overlayerMousedown(evt) {
                     if (data.autofill(selector.arange, 'all', msg => xtoast('Tip', msg), this.table.proxy)) {
                         editor.display = true;
                         this.selector.arange = null;
-                        setTimeout(() => {
-                            let {formula} = data.settings;
-                            if (formula && typeof formula.wland == "function") {
-                                formula.wland(formula, data, table);
-                            }
-                        }, 200);
+                        loadFormula.call(this);
                         table.render();
                     }
                 }
@@ -422,6 +417,16 @@ function overlayerMousedown(evt) {
             selectorSet.call(this, true, ri, ci);
         }
     }
+}
+
+function loadFormula() {
+    clearTimeout(this.formulaTime);
+    this.formulaTime = setTimeout(() => {
+        let {formula} = data.settings;
+        if (formula && typeof formula.wland == "function") {
+            formula.wland(formula, data, table);
+        }
+    }, 500);
 }
 
 function firstRowToWidth(width) {
@@ -1215,12 +1220,7 @@ function sheetInitEvents() {
                     renderAutoAdapt.call(this);
                     autoRowResizer.call(this);
                     selectorMove.call(this, false, shiftKey ? 'up' : 'down');
-                    setTimeout(() => {
-                        let {formula} = data.settings;
-                        if (formula && typeof formula.wland == "function") {
-                            formula.wland(formula, data, table);
-                        }
-                    }, 200);
+                    loadFormula.call(this);
 
                     evt.preventDefault();
                     editorSetOffset.call(this, true);
