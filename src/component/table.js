@@ -162,9 +162,11 @@ async function parseCell(viewRange, state = false, src = '') {
         ca.state = ca.state === false ? assoc.enter : ca.state;
         workbook = assoc.enter === true ? assoc.nd : workbook;
     }
+    let redo = false;
     // this.editor.display &&
     if (ca.state) {
         try {
+            redo = true;
             workbook = proxy.pack(data.name, workbook);
             data.calc(workbook);
             let {factory} = this;
@@ -195,10 +197,12 @@ async function parseCell(viewRange, state = false, src = '') {
         factory.data = sall;
         proxy.oldData = sall;
         workbook = factory.data;
+        redo = false;
     }
 
     return {
         "state": enter,
+        "redo": redo,
         "data": workbook
     };
 }
@@ -587,8 +591,6 @@ class Table {
     }
 
     async render(temp = false, tempData) {
-        console.time("x1");
-
         // resize canvas
         const {data} = this;
         const {rows, cols} = data;
@@ -597,6 +599,10 @@ class Table {
         let workbook = "";
         if (!temp) {
             let args = await parseCell.call(this, viewRange);
+
+            if(args.redo === false) {
+                return;
+            }
 
             console.log(args.state);
             if (args.state == 1) {
@@ -661,7 +667,6 @@ class Table {
             renderContent.call(this, freezeViewRange, fw, fh, 0, 0, workbook);
             // 5
             renderFreezeHighlightLine.call(this, fw, fh, tx, ty);
-            console.timeEnd("x1");
         }
     }
 
