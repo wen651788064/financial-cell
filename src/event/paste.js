@@ -449,6 +449,12 @@ function GetInfoFromTable(tableObj) {
             cells2 = JSON.parse(JSON.stringify(rows[i + ri].cells));
         }
         for (let j = 0; j < tableObj.rows[i].cells.length; j++) {
+            let len = tableObj.rows[i].cells[j].getAttribute("colspan");
+            if(len && len > 1) {
+                for(let c = 0; c < len - 1; c++) {
+                    tableObj.rows[i].insertBefore(document.createElement("td"), tableObj.rows[i].cells[j + 1]);
+                }
+            }
             let bold = false;
             if (document.defaultView.getComputedStyle(tableObj.rows[i].cells[j], false).fontWeight > 400) {
                 bold = true;
