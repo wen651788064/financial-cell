@@ -138,9 +138,13 @@ export default class CellProxy {
                 })
             });
 
+            console.time("x");
+
             if (arr.length > 0) {
                 deepArr.push(arr);
             }
+            console.timeEnd("x");
+
         }
 
         if (d) {
