@@ -168,9 +168,9 @@ const cellRender = (data, sheetbook, y, x, src, formulaMap, getCellText, cellLis
     }
 
     if(src.indexOf(look) != -1) {
-        let a = JSON.parse(src.split("!")[1]);
+        let a = JSON.parse(src.substring(src.indexOf("!") + 1, src.length));
         if(a &&  a[0]) {
-            let {number, name, city, area, value} = a[0];
+            let {  name,  value} = a[0];
             if(value === 0) {
                 return name;
             }

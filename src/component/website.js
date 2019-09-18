@@ -36,7 +36,7 @@ export default class Website {
             let rect = data.getRect(new CellRange(ri, ci, ri, ci));
             let left = rect.left + 55;
             let top = rect.top + 50;
-            let arr = JSON.parse(text.split("!")[1]);
+            let arr = JSON.parse(text.substring(text.indexOf("!") + 1, text.length));
 
             this.tableEl.css('left', `${left}px`);
             this.tableEl.css('top', `${top}px`);
