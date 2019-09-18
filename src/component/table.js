@@ -64,6 +64,9 @@ function loadData(viewRange, load = false, read = false) {
     let workbook = [];
     workbook.Sheets = {};
     workbook.Sheets[data.name] = {};
+    let workbook2 = [];
+    workbook2.Sheets = {};
+    workbook2.Sheets[data.name] = {};
     let enter = 0;
 
     let {mri, mci} = this.data.rows.getMax();
@@ -82,12 +85,14 @@ function loadData(viewRange, load = false, read = false) {
                     enter = enter ? 1 : 0;
                 }
                 if (read) {
-                    workbook.Sheets[data.name][expr] = {
+                    workbook2.Sheets[data.name][expr] = {
                         v: cell.text,
                         f: cell.formulas,
                         z: true
                     };
-                } else if (cell.text && cell.text[0] === "=") {
+                }
+
+                if (cell.text && cell.text[0] === "=") {
                     if (isNaN(cell.text)) {
                         cell.text = cell.text.toUpperCase();  // 为什么要.toUpperCase() 呢？ => =a1 需要变成=A1
                     }
@@ -106,7 +111,6 @@ function loadData(viewRange, load = false, read = false) {
                     }
 
                 } else {
-
                     // cell.text.replace(/ /g, '').toUpperCase().replace(/\"/g, "\"") * 1
                     if (!isNaN(cell.text.replace(/ /g, '').toUpperCase().replace(/\"/g, "\""))) {
                         workbook.Sheets[data.name][expr] = {
@@ -129,7 +133,8 @@ function loadData(viewRange, load = false, read = false) {
 
     return {
         workbook,
-        enter
+        enter,
+        workbook2
     };
 }
 
@@ -139,7 +144,7 @@ async function parseCell(viewRange, state = false, src = '') {
     console.time("xx1");
 
     let {data, proxy} = this;
-    let {workbook, enter} = loadData.call(this, viewRange);
+    let {workbook, workbook2, enter} = loadData.call(this, viewRange, false, true);
     console.timeEnd("xx1");
     console.time("xx2");
 
@@ -148,7 +153,7 @@ async function parseCell(viewRange, state = false, src = '') {
     console.timeEnd("xx2");
     console.time("xx3");
 
-    let sall = loadData.call(this, viewRange, false, true).workbook;
+    let sall = workbook2;
     Object.keys(s).forEach(i => {
         if (i !== data.name) {
             workbook.Sheets[i] = s[i];
