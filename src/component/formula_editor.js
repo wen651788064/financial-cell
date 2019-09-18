@@ -183,7 +183,11 @@ function lockCells(evt, _selector, isAb = false, p = -1) {
                 }
             }
         });
-        div2span.call(this, cutting(it), cutting2(it));
+
+
+        // clearSelectors.call(this);
+        console.log(it);
+        div2span.call(this, cutting(it), cutting2(it, this.selectors));
         if (enter) {
             setTimeout(() => {
                 editor.setCursorPos(it.length);
@@ -223,7 +227,7 @@ function makeSelector(ri, ci, selectors = this.selectors, multiple = false, _sel
     const {data} = this;
     let selector = null;
     const {inputText} = this.editor;
-    const color = selectorColor(selectors.length);
+    const {color, index} = selectorColor(selectors.length);
     if (_selector) {
         selector = _selector;
     } else {
@@ -270,6 +274,7 @@ function makeSelector(ri, ci, selectors = this.selectors, multiple = false, _sel
         ci,
         index: len,
         color,
+        index,
         className: selector.el.el.className,
         erpx: it,
         selector,
@@ -358,7 +363,7 @@ function editingSelectors(text = '') {
     this.selectors = selectors_valid;
 
     if (this.selectors.length > 0 || text[0] == '=') {
-        div2span.call(this, cutting(text), cutting2(text));
+        div2span.call(this, cutting(text), cutting2(text, this.selectors));
     }
 }
 
@@ -463,11 +468,12 @@ function div2span(cut, cutcolor) {
     const spanArr = [];
     let begin = -1;
     let end = -1;
+
     Object.keys(cut).forEach((i) => {
         const spanEl = h('span', `formula_span${i}`);
         Object.keys(cutcolor).forEach((i2) => {
-            if (cutcolor[i].code !== -1 && cutcolor[i].data == cut[i]) {
-                const color = selectorColor(cutcolor[i].code);
+            if (cutcolor[i] && cutcolor[i].code !== -1 && cutcolor[i].data == cut[i]) {
+                const {color} = selectorColor(cutcolor[i].code);
                 spanEl.css('color', color);
             }
         });

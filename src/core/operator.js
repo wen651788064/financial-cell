@@ -184,7 +184,7 @@ const division = (str) => {
     // // 去除字符串两端的空格
     for (let i = 0; i < arr.length; i++) {
         arr[i] = arr[i].replace(/(^\s*)|(\s*$)/g, "");
-        if(isSheetVale(arr[i])) {
+        if (isSheetVale(arr[i])) {
             arr[i] = arr[i].split("!")[1];
         }
         // let value = arr[i].replace(/(^\s*)|(\s*$)/g, "");
@@ -23242,18 +23242,18 @@ const isSheetVale = (str) => {
 const getSheetVale = (str) => {
     let arr = [];
 
-    let v =  /[\u4E00-\u9FA50-9a-zA-Z]+![A-Za-z]+\d+/.exec(str.replace(/\$/g, ''));
-    let v2 =  /[\u4E00-\u9FA50-9a-zA-Z]+![A-Za-z]+\d+:[A-Za-z]+\d+/.exec(str.replace(/\$/g, ''));
+    let v = /[\u4E00-\u9FA50-9a-zA-Z]+![A-Za-z]+\d+/.exec(str.replace(/\$/g, ''));
+    let v2 = /[\u4E00-\u9FA50-9a-zA-Z]+![A-Za-z]+\d+:[A-Za-z]+\d+/.exec(str.replace(/\$/g, ''));
 
 
-    if(v) {
-        for(let i = 0; i < v.length; i++) {
+    if (v) {
+        for (let i = 0; i < v.length; i++) {
             arr.push(v[i]);
         }
     }
 
-    if(v2) {
-        for(let i = 0; i < v2.length; i++) {
+    if (v2) {
+        for (let i = 0; i < v2.length; i++) {
             arr.push(v2[i]);
         }
     }
@@ -23301,7 +23301,7 @@ const absoluteType = (str) => {
 };
 
 const contain = (c, d) => {
-    if(c.indexOf(d) !== -1) {
+    if (c.indexOf(d) !== -1) {
         return true;
     }
     return false;
@@ -23312,7 +23312,7 @@ const splitStr = (str) => {
     return arr;
 };
 
-const cutting2 = (str) => {
+const cutting2 = (str, s) => {
     let arr = str.split(/([(-\/,+，*\s=^&])/);
 
     let color = 0;
@@ -23357,6 +23357,7 @@ const cutting2 = (str) => {
 
     return colors;
 };
+
 
 
 export {

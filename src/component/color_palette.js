@@ -15,7 +15,10 @@ const selectColors = ["#EE0000", "#8A2BE2", "#FF3E96", "#8B4500", "#3A5FCD", "#F
 
 export function selectorColor(index) {
     index = index % selectColors.length;
-    return selectColors[index];
+    return {
+        color: selectColors[index],
+        index: index,
+    };
 }
 
 const standardColors = ['#c00000', '#fe0000', '#fdc101', '#ffff01', '#93d051', '#00b04e', '#01b0f1', '#0170c1', '#012060', '#7030a0'];
