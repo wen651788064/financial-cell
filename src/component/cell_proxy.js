@@ -96,6 +96,33 @@ export default class CellProxy {
         return fd;
     }
 
+    filter2(data, arr) {
+        let fd = {};
+
+        Object.keys(data).forEach(i => {
+            Object.keys(data[i]).forEach(j => {
+                Object.keys(data[i][j]).forEach(k => {
+                    if (!fd[i]) {
+                        fd[i] = {};
+                    }
+                    if (!fd[i][j]) {
+                        fd[i][j] = {};
+                    }
+                    let value = data[i][j][k].f + "";
+                    if (value[0] === '=') {
+                        for(let c = 0; c < arr.length; i++) {
+                            if(value.indexOf(arr[c]) != -1) {
+                                fd[i][j][k] = data[i][j][k];
+                            }
+                        }
+                    }
+                })
+            })
+        });
+
+        return fd;
+    }
+
     associated(name, workbook, oldData = this.oldData, d = true) {
         let enter = false;
         let data = this.deepCopy(oldData);
@@ -157,15 +184,16 @@ export default class CellProxy {
     }
 
     refCell(tileArr, name) {
+        console.time("xx");
         let rr = this.refRow._;
         let arr = [];
 
         for (let j = 0; j < rr.length; j++) {
             let recordArr = [];
             let data = this.deepCopy(rr[j].workbook);
-            data = this.filter({
+            data = this.filter2({
                 data: data
-            });
+            }, tileArr);
 
             for (let s = 0; s < tileArr.length; s++) {
                 Object.keys(data).forEach(i => {
@@ -228,6 +256,9 @@ export default class CellProxy {
 
         this.refRow.unpack(nameArr);
         this.refRow.change(nameArr);
+
+        console.timeEnd("xx");
+
     }
 
     // =a1 要变成=A1  不破坏数据源
