@@ -157,14 +157,17 @@ async function parseCell(viewRange, state = false, src = '') {
     if (state) {
         workbook.Sheets[data.name]['A1'] = {v: '', f: `=${src}`};
     }
+    console.time("x");
     if(ca.state) {
         let assoc = proxy.associated(data.name, workbook);
         ca.state = ca.state === false ? assoc.enter : ca.state;
         workbook = assoc.enter === true ? assoc.nd : workbook;
     }
+    console.timeEnd("x");
     let redo = false;
     // this.editor.display &&
     if (ca.state) {
+        console.time("x2");
         try {
             redo = true;
             workbook = proxy.pack(data.name, workbook);
@@ -193,6 +196,7 @@ async function parseCell(viewRange, state = false, src = '') {
         } catch (e) {
             console.error(e);
         }
+        console.timeEnd("x2");
     } else {
         factory.data = sall;
         proxy.oldData = sall;
