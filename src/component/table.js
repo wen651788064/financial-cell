@@ -150,7 +150,9 @@ async function parseCell(viewRange, state = false, src = '') {
             sall.Sheets[i] = s[i];
         }
     });
+    console.timeEnd("x");
 
+    console.time("x2");
 
     let ca = proxy.calc(sall, data.name);
     if (ca.state) {
@@ -159,17 +161,23 @@ async function parseCell(viewRange, state = false, src = '') {
     if (state) {
         workbook.Sheets[data.name]['A1'] = {v: '', f: `=${src}`};
     }
+    console.timeEnd("x2");
+    console.time("x3");
+
     if(ca.state) {
         let assoc = proxy.associated(data.name, workbook);
         ca.state = ca.state === false ? assoc.enter : ca.state;
         workbook = assoc.enter === true ? assoc.nd : workbook;
     }
+    console.timeEnd("x3");
 
     let redo = false;
     // this.editor.display &&
     if (ca.state) {
          try {
-            redo = true;
+             console.time("x4");
+
+             redo = true;
             workbook = proxy.pack(data.name, workbook);
             data.calc(workbook);
             let {factory} = this;
@@ -178,7 +186,9 @@ async function parseCell(viewRange, state = false, src = '') {
             let cells = proxy.unpack(workbook.Sheets[data.name], data.rows._);
             data.rows.setData(cells);
             data.change(data.getData());
-            // this.editor.display = false;
+             console.timeEnd("x4");
+
+             // this.editor.display = false;
             // let {worker} = this;
             // worker.terminate();
             // worker = new Worker();
@@ -203,7 +213,6 @@ async function parseCell(viewRange, state = false, src = '') {
         redo = false;
     }
 
-    console.timeEnd("x");
 
     return {
         "state": enter,
