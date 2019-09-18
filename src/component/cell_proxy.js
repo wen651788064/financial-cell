@@ -110,7 +110,7 @@ export default class CellProxy {
                     }
                     let value = data[i][j][k].f + "";
                     if (value[0] === '=') {
-                        for(let c = 0; c < arr.length; i++) {
+                        for(let c = 0; c < arr.length; c++) {
                             if(value.indexOf(arr[c]) != -1) {
                                 fd[i][j][k] = data[i][j][k];
                             }
