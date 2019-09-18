@@ -135,6 +135,8 @@ function loadData(viewRange, load = false, read = false) {
 
 
 async function parseCell(viewRange, state = false, src = '') {
+    console.time("x");
+
     let {data, proxy} = this;
     let {workbook, enter} = loadData.call(this, viewRange);
 
@@ -157,13 +159,12 @@ async function parseCell(viewRange, state = false, src = '') {
     if (state) {
         workbook.Sheets[data.name]['A1'] = {v: '', f: `=${src}`};
     }
-    console.time("x");
     if(ca.state) {
         let assoc = proxy.associated(data.name, workbook);
         ca.state = ca.state === false ? assoc.enter : ca.state;
         workbook = assoc.enter === true ? assoc.nd : workbook;
     }
-    console.timeEnd("x");
+
     let redo = false;
     // this.editor.display &&
     if (ca.state) {
@@ -201,6 +202,8 @@ async function parseCell(viewRange, state = false, src = '') {
         workbook = factory.data;
         redo = false;
     }
+
+    console.timeEnd("x");
 
     return {
         "state": enter,
