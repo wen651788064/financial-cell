@@ -258,7 +258,6 @@ export default class CellProxy {
         this.refRow.change(nameArr);
 
         console.timeEnd("xx");
-
     }
 
     // =a1 要变成=A1  不破坏数据源

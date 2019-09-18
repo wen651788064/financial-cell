@@ -71,58 +71,62 @@ function loadData(viewRange, load = false, read = false) {
 
     console.time("x");
     let {mri, mci} = this.data.rows.getMax();
-    viewRange.each3((ri, ci, eri, eci) => {
+    viewRange.each3((ri, ci, eri, eci, ssri, ssci, seri, seci) => {
         let cell = data.getCell(ri, ci);
         let expr = xy2expr(ci, ri);
         if (cell && (cell.text || cell.formulas)) {
-            cell.text = cell.text + "";
-            if (cell.text.indexOf("MD.RTD") != -1) {
-                workbook.Sheets[data.name][expr] = {v: "", f: ""};
-            } else {
-                if (cell.formulas && cell.formulas[0] == "=" && isSheetVale(cell.formulas)) {
-                    let {factory} = this;
-                    factory.push(cell.formulas);
-                    enter = factory.lock;
-                    enter = enter ? 1 : 0;
-                }
-                workbook2.Sheets[data.name][expr] = {
-                    v: cell.text,
-                    f: cell.formulas,
-                    z: true
-                };
-
-                if (cell.text && cell.text[0] === "=") {
-                    if (isNaN(cell.text)) {
-                        cell.text = cell.text.toUpperCase();  // 为什么要.toUpperCase() 呢？ => =a1 需要变成=A1
-                    }
-                    if (load) {
-                        workbook.Sheets[data.name][expr] = {
-                            v: '-',
-                            f: '',
-                            z: true
-                        };
-                    } else {
-                        workbook.Sheets[data.name][expr] = {
-                            v: '',
-                            f: cell.text.replace(/ /g, '').replace(/\"/g, "\"").replace(/\"\"\"\"&/g, "\"'\"&"),
-                            z: true,
-                        };
-                    }
-
+            if(ssri <= ri && ri <= seri && ssci <= ci && seci <= ci) {
+                cell.text = cell.text + "";
+                if (cell.text.indexOf("MD.RTD") != -1) {
+                    workbook.Sheets[data.name][expr] = {v: "", f: ""};
                 } else {
-                    // cell.text.replace(/ /g, '').toUpperCase().replace(/\"/g, "\"") * 1
-                    if (!isNaN(cell.text.replace(/ /g, '').toUpperCase().replace(/\"/g, "\""))) {
-                        workbook.Sheets[data.name][expr] = {
-                            v: cell.text.replace(/\"/g, "\"") * 1,
-                            z: true
-                        };
+                    if (cell.formulas && cell.formulas[0] == "=" && isSheetVale(cell.formulas)) {
+                        let {factory} = this;
+                        factory.push(cell.formulas);
+                        enter = factory.lock;
+                        enter = enter ? 1 : 0;
+                    }
+                    workbook2.Sheets[data.name][expr] = {
+                        v: cell.text,
+                        f: cell.formulas,
+                        z: true
+                    };
+
+                    if (cell.text && cell.text[0] === "=") {
+                        if (isNaN(cell.text)) {
+                            cell.text = cell.text.toUpperCase();  // 为什么要.toUpperCase() 呢？ => =a1 需要变成=A1
+                        }
+                        if (load) {
+                            workbook.Sheets[data.name][expr] = {
+                                v: '-',
+                                f: '',
+                                z: true
+                            };
+                        } else {
+                            workbook.Sheets[data.name][expr] = {
+                                v: '',
+                                f: cell.text.replace(/ /g, '').replace(/\"/g, "\"").replace(/\"\"\"\"&/g, "\"'\"&"),
+                                z: true,
+                            };
+                        }
+
                     } else {
-                        workbook.Sheets[data.name][expr] = {
-                            v: cell.text.replace(/\"/g, "\""),
-                            z: true
-                        };
+                        // cell.text.replace(/ /g, '').toUpperCase().replace(/\"/g, "\"") * 1
+                        if (!isNaN(cell.text.replace(/ /g, '').toUpperCase().replace(/\"/g, "\""))) {
+                            workbook.Sheets[data.name][expr] = {
+                                v: cell.text.replace(/\"/g, "\"") * 1,
+                                z: true
+                            };
+                        } else {
+                            workbook.Sheets[data.name][expr] = {
+                                v: cell.text.replace(/\"/g, "\""),
+                                z: true
+                            };
+                        }
                     }
                 }
+            } else {
+                workbook.Sheets[data.name][expr] = {v: "", f: "", z: false};
             }
         }
         else {
@@ -158,7 +162,6 @@ async function parseCell(viewRange, state = false, src = '') {
         }
     });
 
-    console.time("x2");
 
     let ca = proxy.calc(sall, data.name);
     if (ca.state) {
@@ -167,8 +170,7 @@ async function parseCell(viewRange, state = false, src = '') {
     if (state) {
         workbook.Sheets[data.name]['A1'] = {v: '', f: `=${src}`};
     }
-    console.timeEnd("x2");
-    console.time("x3");
+     console.time("x3");
 
     if(ca.state) {
         let assoc = proxy.associated(data.name, workbook);

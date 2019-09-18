@@ -85,7 +85,7 @@ class CellRange {
 
         for (let i = sri; i <= eri; i += 1) {
             for (let j = sci; j <= eci; j += 1) {
-                cb(i, j, eri, eci);
+                cb(i, j, eri, eci, this.sri, this.sci, this.eri, this.eci);
             }
         }
     }
