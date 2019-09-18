@@ -171,7 +171,8 @@ const cellRender = (data, sheetbook, y, x, src, formulaMap, getCellText, cellLis
         let a = JSON.parse(src.substring(src.indexOf("!") + 1, src.length));
         if(a &&  a[0]) {
             let {  name,  value} = a[0];
-            if(value === 0) {
+
+            if(value === 0 && a[1].value !== 0) {
                 return name;
             }
         }
