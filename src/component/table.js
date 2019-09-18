@@ -74,59 +74,56 @@ function loadData(viewRange, load = false, read = false) {
     viewRange.each3((ri, ci, eri, eci, ssri, ssci, seri, seci) => {
         let cell = data.getCell(ri, ci);
         let expr = xy2expr(ci, ri);
-        if (cell && (cell.text || cell.formulas)) {
-            if(ssri <= ri && ri < seri && ssci <= ci && ci < seci) {
-                cell.text = cell.text + "";
-                if (cell.text.indexOf("MD.RTD") != -1) {
-                    workbook.Sheets[data.name][expr] = {v: "", f: ""};
-                } else {
-                    if (cell.formulas && cell.formulas[0] == "=" && isSheetVale(cell.formulas)) {
-                        let {factory} = this;
-                        factory.push(cell.formulas);
-                        enter = factory.lock;
-                        enter = enter ? 1 : 0;
+        if (ssri <= ri && ri < seri && ssci <= ci && ci < seci && cell && (cell.text || cell.formulas)) {
+
+            cell.text = cell.text + "";
+            if (cell.text.indexOf("MD.RTD") != -1) {
+                workbook.Sheets[data.name][expr] = {v: "", f: ""};
+            } else {
+                if (cell.formulas && cell.formulas[0] == "=" && isSheetVale(cell.formulas)) {
+                    let {factory} = this;
+                    factory.push(cell.formulas);
+                    enter = factory.lock;
+                    enter = enter ? 1 : 0;
+                }
+                workbook2.Sheets[data.name][expr] = {
+                    v: cell.text,
+                    f: cell.formulas,
+                    z: true
+                };
+
+                if (cell.text && cell.text[0] === "=") {
+                    if (isNaN(cell.text)) {
+                        cell.text = cell.text.toUpperCase();  // 为什么要.toUpperCase() 呢？ => =a1 需要变成=A1
                     }
-                    workbook2.Sheets[data.name][expr] = {
-                        v: cell.text,
-                        f: cell.formulas,
-                        z: true
-                    };
-
-                    if (cell.text && cell.text[0] === "=") {
-                        if (isNaN(cell.text)) {
-                            cell.text = cell.text.toUpperCase();  // 为什么要.toUpperCase() 呢？ => =a1 需要变成=A1
-                        }
-                        if (load) {
-                            workbook.Sheets[data.name][expr] = {
-                                v: '-',
-                                f: '',
-                                z: true
-                            };
-                        } else {
-                            workbook.Sheets[data.name][expr] = {
-                                v: '',
-                                f: cell.text.replace(/ /g, '').replace(/\"/g, "\"").replace(/\"\"\"\"&/g, "\"'\"&"),
-                                z: true,
-                            };
-                        }
-
+                    if (load) {
+                        workbook.Sheets[data.name][expr] = {
+                            v: '-',
+                            f: '',
+                            z: true
+                        };
                     } else {
-                        // cell.text.replace(/ /g, '').toUpperCase().replace(/\"/g, "\"") * 1
-                        if (!isNaN(cell.text.replace(/ /g, '').toUpperCase().replace(/\"/g, "\""))) {
-                            workbook.Sheets[data.name][expr] = {
-                                v: cell.text.replace(/\"/g, "\"") * 1,
-                                z: true
-                            };
-                        } else {
-                            workbook.Sheets[data.name][expr] = {
-                                v: cell.text.replace(/\"/g, "\""),
-                                z: true
-                            };
-                        }
+                        workbook.Sheets[data.name][expr] = {
+                            v: '',
+                            f: cell.text.replace(/ /g, '').replace(/\"/g, "\"").replace(/\"\"\"\"&/g, "\"'\"&"),
+                            z: true,
+                        };
+                    }
+
+                } else {
+                    // cell.text.replace(/ /g, '').toUpperCase().replace(/\"/g, "\"") * 1
+                    if (!isNaN(cell.text.replace(/ /g, '').toUpperCase().replace(/\"/g, "\""))) {
+                        workbook.Sheets[data.name][expr] = {
+                            v: cell.text.replace(/\"/g, "\"") * 1,
+                            z: true
+                        };
+                    } else {
+                        workbook.Sheets[data.name][expr] = {
+                            v: cell.text.replace(/\"/g, "\""),
+                            z: true
+                        };
                     }
                 }
-            } else {
-                workbook.Sheets[data.name][expr] = {v: "", f: "", z: false};
             }
         }
         else {
@@ -170,9 +167,9 @@ async function parseCell(viewRange, state = false, src = '') {
     if (state) {
         workbook.Sheets[data.name]['A1'] = {v: '', f: `=${src}`};
     }
-     console.time("x3");
+    console.time("x3");
 
-    if(ca.state) {
+    if (ca.state) {
         let assoc = proxy.associated(data.name, workbook);
         ca.state = ca.state === false ? assoc.enter : ca.state;
         workbook = assoc.enter === true ? assoc.nd : workbook;
@@ -182,10 +179,10 @@ async function parseCell(viewRange, state = false, src = '') {
     let redo = false;
     // this.editor.display &&
     if (ca.state) {
-         try {
-             console.time("x4");
+        try {
+            console.time("x4");
 
-             redo = true;
+            redo = true;
             workbook = proxy.pack(data.name, workbook);
             data.calc(workbook);
             let {factory} = this;
@@ -194,9 +191,9 @@ async function parseCell(viewRange, state = false, src = '') {
             let cells = proxy.unpack(workbook.Sheets[data.name], data.rows._);
             data.rows.setData(cells);
             data.change(data.getData());
-             console.timeEnd("x4");
+            console.timeEnd("x4");
 
-             // this.editor.display = false;
+            // this.editor.display = false;
             // let {worker} = this;
             // worker.terminate();
             // worker = new Worker();
@@ -214,7 +211,7 @@ async function parseCell(viewRange, state = false, src = '') {
         } catch (e) {
             console.error(e);
         }
-     } else {
+    } else {
         factory.data = sall;
         proxy.oldData = sall;
         workbook = factory.data;
