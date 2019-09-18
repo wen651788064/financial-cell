@@ -1239,7 +1239,7 @@ export default class DataProxy {
 
     getData() {
         const {
-            name, freeze, styles, merges, rows, cols, validations, autoFilter, pasteDirectionsArr
+            name, freeze, styles, merges, rows, cols, validations, autoFilter, pasteDirectionsArr,
         } = this;
         return {
             name,

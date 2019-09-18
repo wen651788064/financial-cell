@@ -69,6 +69,7 @@ function loadData(viewRange, load = false, read = false) {
     workbook2.Sheets[data.name] = {};
     let enter = 0;
 
+    console.time("x");
     let {mri, mci} = this.data.rows.getMax();
     viewRange.each3((ri, ci, eri, eci) => {
         let cell = data.getCell(ri, ci);
@@ -128,6 +129,7 @@ function loadData(viewRange, load = false, read = false) {
             workbook.Sheets[data.name][expr] = {v: 0, f: 0, z: false};
         }
     }, mri, mci);
+    console.timeEnd("x");
 
     return {
         workbook,
@@ -138,18 +140,15 @@ function loadData(viewRange, load = false, read = false) {
 
 
 async function parseCell(viewRange, state = false, src = '') {
-    console.time("x");
-    console.time("xx1");
+
 
     let {data, proxy} = this;
     let {workbook, workbook2, enter} = loadData.call(this, viewRange, false, true);
-    console.timeEnd("xx1");
-    console.time("xx2");
+
 
     let {factory} = this;
     let s = await factory.getSamples(workbook.Sheets);
-    console.timeEnd("xx2");
-    console.time("xx3");
+
 
     let sall = workbook2;
     Object.keys(s).forEach(i => {
@@ -158,9 +157,6 @@ async function parseCell(viewRange, state = false, src = '') {
             sall.Sheets[i] = s[i];
         }
     });
-    console.timeEnd("xx3");
-
-    console.timeEnd("x");
 
     console.time("x2");
 
