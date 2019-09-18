@@ -143,14 +143,12 @@ export default class CellProxy {
                 deepArr.push(arr);
             }
         }
-        console.time("x");
 
         if (d) {
             // setTimeout(() => {
             this.refCell(tileArr, name);
             // });
         }
-        console.timeEnd("x");
 
         return {
             enter: enter,

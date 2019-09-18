@@ -94,7 +94,7 @@ const defaultSettings = {
     col: {
         len: 26,
         width: 100,
-        indexWidth: 10,
+        indexWidth: 60,
         minWidth: 10,
     },
     style: {
