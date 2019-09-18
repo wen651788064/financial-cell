@@ -75,7 +75,7 @@ function loadData(viewRange, load = false, read = false) {
         let cell = data.getCell(ri, ci);
         let expr = xy2expr(ci, ri);
         if (cell && (cell.text || cell.formulas)) {
-            if(ssri <= ri && ri <= seri && ssci <= ci && seci <= ci) {
+            if(ssri <= ri && ri < seri && ssci <= ci && ci < seci) {
                 cell.text = cell.text + "";
                 if (cell.text.indexOf("MD.RTD") != -1) {
                     workbook.Sheets[data.name][expr] = {v: "", f: ""};
