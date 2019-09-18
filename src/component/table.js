@@ -84,13 +84,11 @@ function loadData(viewRange, load = false, read = false) {
                     enter = factory.lock;
                     enter = enter ? 1 : 0;
                 }
-                if (read) {
-                    workbook2.Sheets[data.name][expr] = {
-                        v: cell.text,
-                        f: cell.formulas,
-                        z: true
-                    };
-                }
+                workbook2.Sheets[data.name][expr] = {
+                    v: cell.text,
+                    f: cell.formulas,
+                    z: true
+                };
 
                 if (cell.text && cell.text[0] === "=") {
                     if (isNaN(cell.text)) {

@@ -77,7 +77,7 @@ class CellRange {
         }
     }
 
-    each3(cb,  mri, mci) {
+    each3(cb ) {
         let sri = 0;
         let sci = 0;
         let eri = mri;
