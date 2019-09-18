@@ -486,7 +486,7 @@ export default class Editor {
             .on('mousedown.stop', () => {
             });
         this.el = h('div', `${cssPrefix}-editor`)
-            .child(this.areaEl);
+            .children(this.areaEl);
         this.suggest.bindInputEvents(this.textEl);
 
         this.tmp = h('span', 'span_tmp').hide();

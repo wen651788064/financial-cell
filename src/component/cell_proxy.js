@@ -291,7 +291,7 @@ export default class CellProxy {
             if (typeof cells[i].f === 'undefined') {
                 cells[i].f = "";
             }
-            if (isNaN(cells[i].f) && cells[i].f.search(/\((\+|\-|\*|\/)/) != -1) {
+            if (isNaN(cells[i].f) && cells[i].f.search(/\((\*|\/)/) != -1) {
                 cells[i].v = '#ERROR!';
             }
 

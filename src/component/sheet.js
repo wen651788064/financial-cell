@@ -1276,6 +1276,7 @@ export default class Sheet {
         // scrollbar
         this.verticalScrollbar = new Scrollbar(true);
         this.horizontalScrollbar = new Scrollbar(false);
+        this.website = new Website(data);
         // editor
         this.editor = new Editor(
             formulas,
@@ -1283,7 +1284,7 @@ export default class Sheet {
             data.rows.height,
             data.cols.width,
             data,
-            this
+            this,
         );
         // data validation
         this.modalValidation = new ModalValidation();
@@ -1294,7 +1295,6 @@ export default class Sheet {
         this.selectorMoveEl = new Selector(data, this);
 
         this.advice = new Advice(data, this);
-        this.website = new Website(data);
 
         // this.pasteDirectionsArr = [];
         // this.pasteOverlay = h('div', `${cssPrefix}-paste-overlay-container`).hide();
@@ -1328,7 +1328,8 @@ export default class Sheet {
             this.modalValidation.el,
             this.sortFilter.el,
             this.advice.el,
-            this.website.el
+            this.website.el,
+            this.website.tableEl,
             // this.pasteOverlay.el,
         );
 

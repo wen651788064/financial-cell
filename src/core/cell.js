@@ -1,4 +1,5 @@
 import {expr2xy, xy2expr} from './alphabet';
+import {look, look2} from "../config";
 // import XLSX_CALC from "xlsx-calc"
 // var formulajs = require('formulajs');
 // Converting infix expression to a suffix expression
@@ -165,6 +166,18 @@ const cellRender = (data, sheetbook, y, x, src, formulaMap, getCellText, cellLis
     if(typeof src === 'undefined') {
         return "";
     }
+
+    if(src.indexOf(look) != -1) {
+        let a = JSON.parse(src.split("!")[1]);
+        if(a &&  a[0]) {
+            let {number, name, city, area, value} = a[0];
+            if(value === 0) {
+                return name;
+            }
+        }
+        return look2;
+    }
+
     if (src[0] === '=' && src[1] !== '=') {
         // console.log("156", sheetbook.Sheets.Sheet1[xy2expr(x, y)], xy2expr(x, y))
         if (evalFormula(src.substring(1), "wland") || evalFormula(src.substring(1), "wfr") || evalFormula(src.substring(1), "rtd")
