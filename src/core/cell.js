@@ -172,7 +172,9 @@ const cellRender = (data, sheetbook, y, x, src, formulaMap, getCellText, cellLis
         if(a &&  a[0]) {
             let {  name,  value} = a[0];
 
-            if(value === 0 && a[1].value !== 0) {
+            if(value === 0 && a[1] && a[1].value !== 0) {
+                return name;
+            } else if(value === 0 && !a[1]) {
                 return name;
             }
         }
