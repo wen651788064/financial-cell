@@ -71,62 +71,59 @@ function loadData(viewRange, load = false, read = false) {
 
     console.time("x");
     let {mri, mci} = this.data.rows.getMax();
-    viewRange.each3((ri, ci, eri, eci, ssri, ssci, seri, seci) => {
+    viewRange.each3((ri, ci, eri, eci,  ) => {
         let cell = data.getCell(ri, ci);
         let expr = xy2expr(ci, ri);
         if (cell && (cell.text || cell.formulas)) {
-            if(ssri <= ri && ri < seri && ssci <= ci && ci < seci) {
-                cell.text = cell.text + "";
-                if (cell.text.indexOf("MD.RTD") != -1) {
-                    workbook.Sheets[data.name][expr] = {v: "", f: ""};
-                } else {
-                    if (cell.formulas && cell.formulas[0] == "=" && isSheetVale(cell.formulas)) {
-                        let {factory} = this;
-                        factory.push(cell.formulas);
-                        enter = factory.lock;
-                        enter = enter ? 1 : 0;
+
+            cell.text = cell.text + "";
+            if (cell.text.indexOf("MD.RTD") != -1) {
+                workbook.Sheets[data.name][expr] = {v: "", f: ""};
+            } else {
+                if (cell.formulas && cell.formulas[0] == "=" && isSheetVale(cell.formulas)) {
+                    let {factory} = this;
+                    factory.push(cell.formulas);
+                    enter = factory.lock;
+                    enter = enter ? 1 : 0;
+                }
+                workbook2.Sheets[data.name][expr] = {
+                    v: cell.text,
+                    f: cell.formulas,
+                    z: true
+                };
+
+                if (cell.text && cell.text[0] === "=") {
+                    if (isNaN(cell.text)) {
+                        cell.text = cell.text.toUpperCase();  // 为什么要.toUpperCase() 呢？ => =a1 需要变成=A1
                     }
-                    workbook2.Sheets[data.name][expr] = {
-                        v: cell.text,
-                        f: cell.formulas,
-                        z: true
-                    };
-
-                    if (cell.text && cell.text[0] === "=") {
-                        if (isNaN(cell.text)) {
-                            cell.text = cell.text.toUpperCase();  // 为什么要.toUpperCase() 呢？ => =a1 需要变成=A1
-                        }
-                        if (load) {
-                            workbook.Sheets[data.name][expr] = {
-                                v: '-',
-                                f: '',
-                                z: true
-                            };
-                        } else {
-                            workbook.Sheets[data.name][expr] = {
-                                v: '',
-                                f: cell.text.replace(/ /g, '').replace(/\"/g, "\"").replace(/\"\"\"\"&/g, "\"'\"&"),
-                                z: true,
-                            };
-                        }
-
+                    if (load) {
+                        workbook.Sheets[data.name][expr] = {
+                            v: '-',
+                            f: '',
+                            z: true
+                        };
                     } else {
-                        // cell.text.replace(/ /g, '').toUpperCase().replace(/\"/g, "\"") * 1
-                        if (!isNaN(cell.text.replace(/ /g, '').toUpperCase().replace(/\"/g, "\""))) {
-                            workbook.Sheets[data.name][expr] = {
-                                v: cell.text.replace(/\"/g, "\"") * 1,
-                                z: true
-                            };
-                        } else {
-                            workbook.Sheets[data.name][expr] = {
-                                v: cell.text.replace(/\"/g, "\""),
-                                z: true
-                            };
-                        }
+                        workbook.Sheets[data.name][expr] = {
+                            v: '',
+                            f: cell.text.replace(/ /g, '').replace(/\"/g, "\"").replace(/\"\"\"\"&/g, "\"'\"&"),
+                            z: true,
+                        };
+                    }
+
+                } else {
+                    // cell.text.replace(/ /g, '').toUpperCase().replace(/\"/g, "\"") * 1
+                    if (!isNaN(cell.text.replace(/ /g, '').toUpperCase().replace(/\"/g, "\""))) {
+                        workbook.Sheets[data.name][expr] = {
+                            v: cell.text.replace(/\"/g, "\"") * 1,
+                            z: true
+                        };
+                    } else {
+                        workbook.Sheets[data.name][expr] = {
+                            v: cell.text.replace(/\"/g, "\""),
+                            z: true
+                        };
                     }
                 }
-            } else {
-                workbook.Sheets[data.name][expr] = {v: cell.text, f: "", z: true};
             }
         }
         else {
