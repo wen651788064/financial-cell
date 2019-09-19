@@ -33,7 +33,8 @@ export default class Website {
     show(ri, ci) {
         let {data} = this;
         let text = data.getCellTextOrDefault(ri, ci) + "";
-
+        clearTimeout(this.timer);
+        clearTimeout(this.timer2);
         if (text.indexOf(look) != -1) {
             let rect = data.getRect(new CellRange(ri, ci, ri, ci));
             let left = rect.left + 55;
@@ -105,8 +106,6 @@ export default class Website {
             text = text.substr(0, 3).toLowerCase() == "www" ? "http://" + text : text;
             // console.log(regex.test(text))
             if (!regex.test(text)) {
-                clearTimeout(this.timer);
-                clearTimeout(this.timer2);
                 this.el.hide();
                 this.tableEl.hide();
                 return;
