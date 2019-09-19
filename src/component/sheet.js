@@ -419,13 +419,13 @@ function overlayerMousedown(evt) {
     }
 }
 
-function loadFormula(cb = () => {}) {
+function loadFormula(load = false) {
     clearTimeout(this.formulaTime);
     let {data, table} = this;
     this.formulaTime = setTimeout(() => {
         let {formula} = data.settings;
         if (formula && typeof formula.wland == "function") {
-            formula.wland(formula, data, table, true);
+            formula.wland(formula, data, table, load);
         }
         cb();
     }, 1000);
@@ -741,7 +741,7 @@ function toolbarChange(type, value) {
         // filter
         autofilter.call(this);
     } else if (type === 'close') {
-        loadFormula.call(this);
+        loadFormula.call(this, true);
     } else if (type === 'freeze') {
         let {showFreeze} = data.settings;
         console.log(showFreeze, 449)
