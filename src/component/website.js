@@ -35,6 +35,7 @@ export default class Website {
         let text = data.getCellTextOrDefault(ri, ci) + "";
         clearTimeout(this.timer);
         clearTimeout(this.timer2);
+
         if (text.indexOf(look) != -1) {
             let rect = data.getRect(new CellRange(ri, ci, ri, ci));
             let left = rect.left + 55;
@@ -100,7 +101,8 @@ export default class Website {
 
             this.timer = setTimeout(() => {
                 this.tableEl.show();
-            }, 300);
+                this.el.hide();
+            }, 150);
         } else {
             let regex = /^http(s)?:\/\/([\w-]+\.)+[\w-]+(\/[\w- ./?%&=]*)?$/;
             text = text.substr(0, 3).toLowerCase() == "www" ? "http://" + text : text;
@@ -134,7 +136,8 @@ export default class Website {
 
             this.timer2 = setTimeout(() => {
                 this.el.show();
-            }, 300);
+                this.tableEl.hide();
+            }, 150);
         }
     }
 }
