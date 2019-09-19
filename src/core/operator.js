@@ -1,3 +1,5 @@
+import {filterFormula} from "../config";
+
 const operator = [
     "+", "-", "*", "/", "&", "^", "(", ",", "=", " ", " ", "，"
 ];
@@ -176,7 +178,7 @@ const cuttingByPosEnd = (str, pos) => {
 const division = (str) => {
     str = str + "";
     str = str.toUpperCase();
-    if (str[0] !== "=") {
+    if (str[0] !== "=" || str.indexOf(filterFormula) !== -1) {
         return [];
     }
 
@@ -187,6 +189,7 @@ const division = (str) => {
         if (isSheetVale(arr[i])) {
             arr[i] = arr[i].split("!")[1];
         }
+
         // let value = arr[i].replace(/(^\s*)|(\s*$)/g, "");
     }
 

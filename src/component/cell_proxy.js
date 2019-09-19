@@ -1,6 +1,7 @@
 import {contain, division, getSheetVale, isSheetVale} from "../core/operator";
 import {expr2xy, xy2expr} from "../core/alphabet";
 // import Worker from 'worker-loader!../external/Worker.js';
+import {filterFormula} from "../config";
 
 export default class CellProxy {
     constructor(refRow) {
@@ -514,7 +515,7 @@ export default class CellProxy {
                 Object.keys(data[i][j]).forEach(k => {
                     let formula = data[i][j][k].f + "";
 
-                    if(formula.indexOf("CITY") == -1) {
+                    if(formula.indexOf(filterFormula) == -1) {
                         data[i][j][k] = {
                             f: "",
                             v: ""
