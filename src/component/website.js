@@ -13,7 +13,7 @@ export default class Website {
             .hide();
         this.tableEl.attr('tabindex', 0);
         this.tableEl.css('overflow-y', 'auto');
-        this.tableEl.css('height', '400px');
+        this.tableEl.css('max-height', '400px');
         bind(this.tableEl.el, 'paste', evt => {
             evt.stopPropagation();
         });
