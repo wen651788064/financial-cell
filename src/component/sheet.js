@@ -661,6 +661,7 @@ function rowResizerFinished(cRect, distance) {
     const {ri} = cRect;
     const {table, selector, data} = this;
     data.rows.setHeight(ri, distance);
+    data.change(data.getData());
     table.render();
     selector.resetAreaOffset();
     verticalScrollbarSet.call(this);
@@ -671,6 +672,7 @@ function colResizerFinished(cRect, distance) {
     const {ci} = cRect;
     const {table, selector, data} = this;
     data.cols.setWidth(ci, distance);
+    data.change(data.getData());
     // console.log('data:', data);
     table.render();
     selector.resetAreaOffset();
