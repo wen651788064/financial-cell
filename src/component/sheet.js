@@ -427,7 +427,6 @@ function loadFormula(load = false) {
         if (formula && typeof formula.wland == "function") {
             formula.wland(formula, data, table, load);
         }
-        cb();
     }, 1000);
 }
 
