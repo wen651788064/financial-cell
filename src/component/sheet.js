@@ -26,6 +26,8 @@ import {moveCell} from "../event/move";
 import CellRange from "../core/cell_range";
 import {orientation} from "../core/helper";
 import {expr2xy} from "../core/alphabet";
+import {haveManyFunc} from "../core/operator";
+import ErrorPopUp from "./error_pop_up";
 
 function scrollbarMove() {
     const {
@@ -684,9 +686,20 @@ function selectorCellText(ri, ci, text, state, proxy = "") {
     if (ri == -1 || ci == -1) {
         return;
     }
-    const {data, table, editor} = this;
+    const {data, table, editor, errorPopUp} = this;
+    text = haveManyFunc(text);
+    let rb = text.match(/\(/g) || [];
+    let lb = text.match(/\)/g) || [];
+    if(rb.length < lb.length && editor.isDisplay() && !errorPopUp.open) {
+        errorPopUp.show();
+        return true;
+    } else if(errorPopUp.open) {
+        errorPopUp.hide();
+        return true;
+    }
     data.setCellText(ri, ci, text, state, proxy);
     editor.setRiCi(-1, -1);
+    return false;
 }
 
 function dataSetCellText(text, state = 'finished') {
@@ -696,6 +709,7 @@ function dataSetCellText(text, state = 'finished') {
     if ((editor.ri != ri && editor.ri != -1) || (editor.ci != ci && editor.ci != -1)) {
         return;
     }
+
     data.setSelectedCellText(text, state);
     if (state === 'finished') table.render();
 }
@@ -775,8 +789,10 @@ function afterSelector(editor) {
         let {inputText, ri, ci} = editor;
         let {selector} = this;
         selector.indexes = [ri, ci];
-        selectorCellText.call(this, ri, ci, inputText, 'input', this.table.proxy);
+        let error = selectorCellText.call(this, ri, ci, inputText, 'input', this.table.proxy);
+        return error;
     }
+    return false;
 }
 
 function pasteEvent(evt) {
@@ -924,7 +940,11 @@ function sheetInitEvents() {
                 if (!editor.getLock() && !editor.isCors) {
                     let {inputText, ri, ci} = editor;
                     if (ri !== -1 && ci !== -1 && inputText[0] === "=") {
-                        selectorCellText.call(this, ri, ci, inputText, 'input', this.table.proxy);
+                        let error = selectorCellText.call(this, ri, ci, inputText, 'input', this.table.proxy);
+
+                        if(error) {
+                            return;
+                        }
                     }
 
                     let state = editor.clear();
@@ -1200,8 +1220,10 @@ function sheetInitEvents() {
                     break;
                 case 9: // tab
                     // lockCells
-                    afterSelector.call(this, editor);
-
+                    let error = afterSelector.call(this, editor);
+                    if(error) {
+                        return;
+                    }
                     editor.clear();
                     // shift + tab => move left
                     // tab => move right
@@ -1212,7 +1234,11 @@ function sheetInitEvents() {
                     break;
                 case 13: // enter
                     // lockCells
-                    afterSelector.call(this, editor);
+
+                    error = afterSelector.call(this, editor);
+                    if(error) {
+                        return;
+                    }
 
                     editor.clear();
                     renderAutoAdapt.call(this);
@@ -1288,6 +1314,7 @@ export default class Sheet {
         );
         // data validation
         this.modalValidation = new ModalValidation();
+        this.errorPopUp = new ErrorPopUp();
         // contextMenu
         this.contextMenu = new ContextMenu(() => this.getTableOffset(), !showContextmenu);
         // selector
@@ -1326,6 +1353,7 @@ export default class Sheet {
             this.horizontalScrollbar.el,
             this.contextMenu.el,
             this.modalValidation.el,
+            this.errorPopUp.el,
             this.sortFilter.el,
             this.advice.el,
             this.website.el,

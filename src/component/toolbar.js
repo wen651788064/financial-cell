@@ -163,7 +163,7 @@ export default class Toolbar {
             this.addEl = buildButtonWithIcon(`${t('toolbar.add')}`, 'add', () => toggleChange.call(this, 'add')),
             this.closeEl = buildButtonWithIcon(`${t('toolbar.calc')}`, 'close', () => toggleChange.call(this, 'close')),
             this.autofilterEl = buildButtonWithIcon(`${t('toolbar.autofilter')}`, 'autofilter', () => toggleChange.call(this, 'autofilter')),
-            buildButton(`${t('toolbar.formula')}`).child(this.ddFormula.el),
+            // buildButton(`${t('toolbar.formula')}`).child(this.ddFormula.el),
             // buildDivider(),
             this.moreEl = buildButton(`${t('toolbar.more')}`).child(this.ddMore.el).hide(),
         ];

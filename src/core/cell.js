@@ -102,6 +102,9 @@ const infixExprToSuffixExpr = (src) => {
 };
 
 const evalSubExpr = (subExpr, cellRender) => {
+    if(!subExpr) {
+        subExpr = "";
+    }
     if (subExpr[0] >= '0' && subExpr[0] <= '9') {
         return Number(subExpr);
     }

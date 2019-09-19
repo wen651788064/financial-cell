@@ -108,6 +108,34 @@ function changeFormula(cut) {
     return cut;
 }
 
+const haveManyFunc = (str) => {
+    let corss = 0;
+    for(let i = 0; i < str.length; i++) {
+        let b = str[i];
+        if(b === "(") {
+            let em = false;
+            for(let j = i + 1; j < str.length && em == false; j++) {
+                let b2 = str[j];
+                if(b2 === "(") {
+                    corss = corss + 1;
+                }
+
+                if(b2 === ")" && corss === 0) {
+                    em = true;
+                } else if(b2 === ")" && corss > 0) {
+                    corss = corss - 1;
+                }
+            }
+
+            if(em === false) {
+                str += ")";
+            }
+        }
+    }
+
+    return str;
+};
+
 const cutFirst = (str) => {
     let s = "";
     for (let i = 0; i < str.length; i++) {
@@ -23339,9 +23367,9 @@ const cutting2 = (str, s) => {
                     "data": express[i][i2],
                 });
             color = color + 1;
-        }  else {
+        } else {
             let sc = s.replace(/\$/g, "");
-            if(sc.search(/^[A-Za-z]+\d+:[A-Za-z]+\d+$/) != -1) {
+            if (sc.search(/^[A-Za-z]+\d+:[A-Za-z]+\d+$/) != -1) {
                 for (let i2 = 0; i2 < express[i].length; i2++)
                     colors.push({
                         "code": color,
@@ -23360,7 +23388,6 @@ const cutting2 = (str, s) => {
 
     return colors;
 };
-
 
 
 export {
@@ -23384,4 +23411,5 @@ export {
     cuttingByPos2,
     contain,
     division,
+    haveManyFunc,
 }

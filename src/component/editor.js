@@ -206,6 +206,8 @@ function inputEventHandler(evt, txt = '', formulas = '', state = "input") {
                 suggest.hide();
             }
         }
+
+
         textlineEl.html(formulas || v);
         this.inputText = formulas || v;
         this.suggest.itemIndex = -1;

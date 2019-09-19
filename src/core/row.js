@@ -240,7 +240,7 @@ class Rows {
                             number = false;
                             nD = false;
                             // nF = false;
-                        } else if (value && nD == true && dayjs(value).isValid()) {
+                        } else if (value && nD == true && value.search(/((^((1[8-9]\d{2})|([2-9]\d{3}))([-\/\._])(10|12|0?[13578])([-\/\._])(3[01]|[12][0-9]|0?[1-9])$)|(^((1[8-9]\d{2})|([2-9]\d{3}))([-\/\._])(11|0?[469])([-\/\._])(30|[12][0-9]|0?[1-9])$)|(^((1[8-9]\d{2})|([2-9]\d{3}))([-\/\._])(0?2)([-\/\._])(2[0-8]|1[0-9]|0?[1-9])$)|(^([2468][048]00)([-\/\._])(0?2)([-\/\._])(29)$)|(^([3579][26]00)([-\/\._])(0?2)([-\/\._])(29)$)|(^([1][89][0][48])([-\/\._])(0?2)([-\/\._])(29)$)|(^([2-9][0-9][0][48])([-\/\._])(0?2)([-\/\._])(29)$)|(^([1][89][2468][048])([-\/\._])(0?2)([-\/\._])(29)$)|(^([2-9][0-9][2468][048])([-\/\._])(0?2)([-\/\._])(29)$)|(^([1][89][13579][26])([-\/\._])(0?2)([-\/\._])(29)$)|(^([2-9][0-9][13579][26])([-\/\._])(0?2)([-\/\._])(29)$))/ig, '') != -1) {
                             nA = false;
                             number = false;
                             nD = true;
@@ -280,6 +280,13 @@ class Rows {
                     ci: j
                 });
             });
+
+            let line = 1;       // 往左往右
+            if (fackDRange.sri === fackDRange.eri && fackSRange.eci > fackDRange.eci) {
+                line = 2;       // 往右
+            } else if (fackDRange.sri === fackDRange.eri && fackSRange.eci < fackDRange.eci) {
+                line = 3;       // 往左
+            }
 
 
             if (number && isCopy) {
@@ -404,13 +411,26 @@ class Rows {
                     for (let i = 0; i < darr.length; i++) {
                         let d = darr[i];
                         let ncell = "";
-                        if (!this._ || !this._[d.ri - 1] || !this._[d.ri - 1].cells[d.ci]) {
-                            ncell = {
-                                text: 0,
-                                formulas: 0,
+                        if (line === 1) {
+                            if (!this._ || !this._[d.ri - 1] || !this._[d.ri - 1].cells[d.ci]) {
+                                ncell = {
+                                    text: 0,
+                                    formulas: 0,
+                                }
+                            } else {
+                                ncell = helper.cloneDeep(this._[d.ri - 1].cells[d.ci]);
                             }
                         } else {
-                            ncell = helper.cloneDeep(this._[d.ri - 1].cells[d.ci]);
+                            if (line == 3) {
+                                if (!this._ || !this._[d.ri] || !this._[d.ri].cells[d.ci - 1]) {
+                                    ncell = {
+                                        text: 0,
+                                        formulas: 0,
+                                    }
+                                } else {
+                                    ncell = helper.cloneDeep(this._[d.ri].cells[d.ci - 1]);
+                                }
+                            }
                         }
                         if (ncell.text != '') {
                             let last1 = ncell.text;
@@ -425,14 +445,27 @@ class Rows {
                     for (let i = darr.length - 1; i >= 0; i--) {
                         let d = darr[i];
                         let ncell = "";
-                        if (!this._ || !this._[d.ri + 1] || !this._[d.ri + 1].cells[d.ci]) {
-                            ncell = {
-                                text: 0,
-                                formulas: 0,
+                        if (line === 1) {
+                            if (!this._ || !this._[d.ri + 1] || !this._[d.ri + 1].cells[d.ci]) {
+                                ncell = {
+                                    text: 0,
+                                    formulas: 0,
+                                }
+                            } else {
+                                ncell = helper.cloneDeep(this._[d.ri + 1].cells[d.ci]);
                             }
-                        } else {
-                            ncell = helper.cloneDeep(this._[d.ri + 1].cells[d.ci]);
                         }
+                        else if (line == 2) {
+                            if (!this._ || !this._[d.ri] || !this._[d.ri].cells[d.ci + 1]) {
+                                ncell = {
+                                    text: 0,
+                                    formulas: 0,
+                                }
+                            } else {
+                                ncell = helper.cloneDeep(this._[d.ri].cells[d.ci + 1]);
+                            }
+                        }
+
                         if (ncell.text != '') {
                             let last1 = ncell.text;
 

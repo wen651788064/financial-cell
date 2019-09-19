@@ -15,6 +15,7 @@ export default class Modal {
       ),
       h('div', `${cssPrefix}-modal-content`).children(...content),
     ).hide();
+      this.open = false;
   }
 
   show() {
@@ -32,12 +33,14 @@ export default class Modal {
         this.hide();
       }
     };
-    bind(window, 'keydown', window.xkeydownEsc);
+      this.open = true;
+      bind(window, 'keydown', window.xkeydownEsc);
   }
 
   hide() {
     this.el.hide();
-    document.body.removeChild(this.dimmer.el);
+      this.open = false;
+      document.body.removeChild(this.dimmer.el);
     unbind(window, 'keydown', window.xkeydownEsc);
     delete window.xkeydownEsc;
   }

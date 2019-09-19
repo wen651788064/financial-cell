@@ -38,6 +38,7 @@ export default {
         deleteCell: '删除',
         deleteCellText: '删除数据',
         validation: '数据验证',
+        errorPop: '出现问题',
     },
     format: {
         normal: '正常',
