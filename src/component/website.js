@@ -100,7 +100,7 @@ export default class Website {
 
             this.timer = setTimeout(() => {
                 this.tableEl.show();
-            }, 1000);
+            }, 300);
         } else {
             let regex = /^http(s)?:\/\/([\w-]+\.)+[\w-]+(\/[\w- ./?%&=]*)?$/;
             text = text.substr(0, 3).toLowerCase() == "www" ? "http://" + text : text;
@@ -134,7 +134,7 @@ export default class Website {
 
             this.timer2 = setTimeout(() => {
                 this.el.show();
-            }, 1000);
+            }, 300);
         }
     }
 }
