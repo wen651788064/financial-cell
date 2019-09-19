@@ -743,9 +743,9 @@ function toolbarChange(type, value) {
         loadFormula.call(this);
         setTimeout(() => {
             this.table.proxy.diff = 305;
-            this.table.proxy.oldData = "";
+            this.table.proxy.processBackEnd();
             sheetReset.call(this);
-        }, 5000);
+        }, 3000);
     } else if (type === 'freeze') {
         let {showFreeze} = data.settings;
         console.log(showFreeze, 449)

@@ -506,4 +506,22 @@ export default class CellProxy {
             "data": workbook.Sheets[name]
         };
     }
+
+    processBackEnd() {
+        let data = this.oldData;
+        Object.keys(data).forEach(i => {
+            Object.keys(data[i]).forEach(j => {
+                Object.keys(data[i][j]).forEach(k => {
+                    let formula = data[i][j][k].f + "";
+
+                    if(formula.indexOf("CITY") == -1) {
+                        data[i][j][k] = {
+                            f: "",
+                            v: ""
+                        }
+                    }
+                })
+            })
+        });
+    }
 }
