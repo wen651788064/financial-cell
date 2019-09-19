@@ -425,11 +425,9 @@ function loadFormula(cb = () => {}) {
     this.formulaTime = setTimeout(() => {
         let {formula} = data.settings;
         if (formula && typeof formula.wland == "function") {
-            formula.wland(formula, data, table).then(res => {
-                console.log(res);
-            });
+            formula.wland(formula, data, table);
         }
-        // cb();
+        cb();
     }, 1000);
 }
 
@@ -743,11 +741,7 @@ function toolbarChange(type, value) {
         // filter
         autofilter.call(this);
     } else if (type === 'close') {
-        loadFormula.call(this, () => {
-            this.table.proxy.diff = 305;
-            this.table.proxy.processBackEnd();
-            sheetReset.call(this);
-        });
+        loadFormula.call(this);
     } else if (type === 'freeze') {
         let {showFreeze} = data.settings;
         console.log(showFreeze, 449)
