@@ -745,7 +745,7 @@ function toolbarChange(type, value) {
             this.table.proxy.diff = 305;
             this.table.proxy.oldData = "";
             sheetReset.call(this);
-        }, 2000);
+        }, 5000);
     } else if (type === 'freeze') {
         let {showFreeze} = data.settings;
         console.log(showFreeze, 449)
