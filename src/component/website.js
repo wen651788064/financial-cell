@@ -26,6 +26,8 @@ export default class Website {
         bind(this.tableEl.el, 'keyup', evt => {
             evt.stopPropagation();
         });
+        this.timer = null;
+        this.timer2 = null;
     }
 
     show(ri, ci) {
@@ -33,8 +35,6 @@ export default class Website {
         let text = data.getCellTextOrDefault(ri, ci) + "";
 
         if (text.indexOf(look) != -1) {
-            this.tableEl.show();
-
             let rect = data.getRect(new CellRange(ri, ci, ri, ci));
             let left = rect.left + 55;
             let top = rect.top + 50;
@@ -96,11 +96,17 @@ export default class Website {
             this.tableEl.children(
                 table
             );
+
+            this.timer = setTimeout(() => {
+                this.tableEl.show();
+            }, 1000);
         } else {
             let regex = /^http(s)?:\/\/([\w-]+\.)+[\w-]+(\/[\w- ./?%&=]*)?$/;
             text = text.substr(0, 3).toLowerCase() == "www" ? "http://" + text : text;
             // console.log(regex.test(text))
             if (!regex.test(text)) {
+                clearTimeout(this.timer);
+                clearTimeout(this.timer2);
                 this.el.hide();
                 this.tableEl.hide();
                 return;
@@ -127,7 +133,9 @@ export default class Website {
             this.el.css('left', `${left}px`);
             this.el.css('top', `${top}px`);
 
-            this.el.show();
+            this.timer2 = setTimeout(() => {
+                this.el.show();
+            }, 1000);
         }
     }
 }
