@@ -12,6 +12,8 @@ export default class Website {
         this.tableEl = h('div', `${cssPrefix}-hyperlink-tooltip`)
             .hide();
         this.tableEl.attr('tabindex', 0);
+        this.tableEl.css('overflow-y', 'auto');
+        this.tableEl.css('height', '400px');
         bind(this.tableEl.el, 'paste', evt => {
             evt.stopPropagation();
         });
