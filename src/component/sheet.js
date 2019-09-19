@@ -425,7 +425,7 @@ function loadFormula(cb = () => {}) {
     this.formulaTime = setTimeout(() => {
         let {formula} = data.settings;
         if (formula && typeof formula.wland == "function") {
-            formula.wland(formula, data, table);
+            formula.wland(formula, data, table, true);
         }
         cb();
     }, 1000);
