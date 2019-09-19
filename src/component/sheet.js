@@ -419,14 +419,16 @@ function overlayerMousedown(evt) {
     }
 }
 
-function loadFormula() {
+function loadFormula(cb = () => {}) {
     clearTimeout(this.formulaTime);
     let {data, table} = this;
     this.formulaTime = setTimeout(() => {
         let {formula} = data.settings;
         if (formula && typeof formula.wland == "function") {
-            formula.wland(formula, data, table);
+            let res = formula.wland(formula, data, table);
+            console.log(res);
         }
+        // cb();
     }, 1000);
 }
 
@@ -740,12 +742,11 @@ function toolbarChange(type, value) {
         // filter
         autofilter.call(this);
     } else if (type === 'close') {
-        loadFormula.call(this);
-        setTimeout(() => {
+        loadFormula.call(this, () => {
             this.table.proxy.diff = 305;
             this.table.proxy.processBackEnd();
             sheetReset.call(this);
-        }, 3000);
+        });
     } else if (type === 'freeze') {
         let {showFreeze} = data.settings;
         console.log(showFreeze, 449)
