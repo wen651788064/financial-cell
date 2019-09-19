@@ -740,9 +740,12 @@ function toolbarChange(type, value) {
         // filter
         autofilter.call(this);
     } else if (type === 'close') {
-        this.table.proxy.diff = 305;
-        this.table.proxy.oldData = "";
-        sheetReset.call(this);
+        loadFormula.call(this);
+        setTimeout(() => {
+            this.table.proxy.diff = 305;
+            this.table.proxy.oldData = "";
+            sheetReset.call(this);
+        }, 2000);
     } else if (type === 'freeze') {
         let {showFreeze} = data.settings;
         console.log(showFreeze, 449)

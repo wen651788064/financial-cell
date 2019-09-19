@@ -50,7 +50,7 @@ export default class Website {
                 h('td', '').css('border', '1px solid black').html('序号'),
                 h('td', '').css('border', '1px solid black').html('项目名称'),
                 h('td', '').css('border', '1px solid black').html('城市'),
-                h('td', '').css('border', '1px solid black').html('占地面积（平方米）'),
+                h('td', '').css('border', '1px solid black').html('占地面积'),
                 h('td', '').css('border', '1px solid black').html('差额')
             );
             table.children(
