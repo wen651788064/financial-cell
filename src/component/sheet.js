@@ -1232,11 +1232,12 @@ function sheetInitEvents() {
                     break;
                 case 9: // tab
                     // lockCells
+                    this.editorProxy.change(editor.ri, editor.ci, editor.inputText, data.rows, data);
                     let error = afterSelector.call(this, editor);
                     if (error) {
                         return;
                     }
-                    this.editorProxy.change(editor.ri, editor.ci, editor.inputText, data.rows, data);
+
                     editor.clear();
                     // shift + tab => move left
                     // tab => move right
@@ -1247,12 +1248,11 @@ function sheetInitEvents() {
                     break;
                 case 13: // enter
                     // lockCells
-
+                    this.editorProxy.change(editor.ri, editor.ci, editor.inputText, data.rows, data);
                     let error2 = afterSelector.call(this, editor);
                     if (error2) {
                         return;
                     }
-                    this.editorProxy.change(editor.ri, editor.ci, editor.inputText, data.rows, data);
                     editor.clear();
                     renderAutoAdapt.call(this);
                     autoRowResizer.call(this);
