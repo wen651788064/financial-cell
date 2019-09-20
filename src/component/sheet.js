@@ -398,8 +398,11 @@ function overlayerMousedown(evt) {
                 if (dateDiff > 50) {
                     if (data.autofill(selector.arange, 'all', msg => xtoast('Tip', msg), this.table.proxy)) {
                         editor.display = true;
+                        this.selector.arange.each((ri, ci) => {
+                            let cell = data.rows.getCell( ri, ci);
+                            this.editorProxy.change( ri,  ci, cell.formulas, data.rows, data);
+                        });
                         this.selector.arange = null;
-                        this.editorProxy.change(editor.ri, editor.ci, editor.inputText, data.rows, data);
                         loadFormula.call(this);
                         table.render();
                     }
