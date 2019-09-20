@@ -143,7 +143,6 @@ function inputEventHandler(evt, txt = '', formulas = '', state = "input") {
     }
 
     setTimeout(() => {
-        this.show();
         if (this.chinese == false) return;
         let v = '';
         this.sheet.selector.hide();
@@ -212,7 +211,7 @@ function inputEventHandler(evt, txt = '', formulas = '', state = "input") {
         this.inputText = formulas || v;
         this.suggest.itemIndex = -1;
         resetTextareaSize.call(this);
-
+        this.show();
         if (v && v[0] !== '=') {
             // textEl.html(v);
             set_focus.call(this, textEl.el, -1);
@@ -679,7 +678,6 @@ export default class Editor {
         let text = (cell && cell.formulas) || '';
         text = text == '' ? (cell && cell.text) || '' : text;
 
-        this.show();
         this.textEl.child(text + "");
         this.pos = text.length;
         set_focus.call(this, this.textEl.el, -1);
