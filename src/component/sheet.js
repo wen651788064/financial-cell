@@ -1018,8 +1018,9 @@ function sheetInitEvents() {
         editor.setMouseDownIndex(data.rows, []);
         editingSelectors.call(this, itext);
 
-
-        this.editorProxy.change(editor.ri, editor.ci, itext, data.rows, this.table.proxy, data.name);
+        if(state === 'input') {
+            this.editorProxy.change(editor.ri, editor.ci, itext, data.rows, this.table.proxy, data.name);
+        }
 
         if (lock && itext != '=') {
             return;
