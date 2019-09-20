@@ -946,7 +946,7 @@ function sheetInitEvents() {
                     });
                 }
                 let {inputText, ri, ci} = editor;
-                if (ri !== -1 && ci !== -1 && inputText[0] === "=") {
+                if (ri !== -1 && ci !== -1 ) {
                     let error = selectorCellText.call(this, ri, ci, inputText, 'input', this.table.proxy);
 
                     if (error) {
