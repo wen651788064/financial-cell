@@ -691,7 +691,7 @@ function selectorCellText(ri, ci, text, state, proxy = "") {
     let rb = text.match(/\(/g) || [];
     let lb = text.match(/\)/g) || [];
 
-    this.editorProxy.change(editor.ri, editor.ci, text, data.rows, table.proxy, data.name);
+    this.editorProxy.change(editor.ri, editor.ci, text, data.rows, data);
 
     if (rb.length < lb.length && editor.isDisplay() && !errorPopUp.open) {
         errorPopUp.show();

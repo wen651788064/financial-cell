@@ -1011,8 +1011,10 @@ export default class DataProxy {
             history.add(this.getData());
             rows.setCellText(ri, ci, text);
         } else {
-            if (state == 'end') {
+            if (state === 'end') {
                 rows.setCellAll(ri, ci, text);
+            } else if(state === 'formulas') {
+                rows.setCellAll(ri, ci, text, "-");
             } else {
                 rows.setCellText(ri, ci, text, proxy, this.name);
             }
@@ -1022,6 +1024,12 @@ export default class DataProxy {
         // validator
         validations.validate(ri, ci, text);
     }
+
+    setCellWithFormulas(ri, ci, text, formulas) {
+        const {rows } = this;
+        rows.setCellAll(ri, ci, text, formulas);
+    }
+
 
     // state: input | finished
     setCellAll(ri, ci, text, formulas, state) {

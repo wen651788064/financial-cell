@@ -1,6 +1,6 @@
 import {filterFormula} from "../config";
 // import {loadData} from "./table";
-import {xy2expr} from "../core/alphabet";
+import {expr2xy, xy2expr} from "../core/alphabet";
 import {contain, division} from "../core/operator";
 
 export default class EditorProxy {
@@ -41,7 +41,7 @@ export default class EditorProxy {
         return false;
     }
 
-    change(ri, ci, text, rows, proxy, name) {
+    change(ri, ci, text, rows,  data) {
         let erpx = xy2expr(ci, ri);
         let has = -1;
         for (let i = 0; i < this.items.length && has === -1; i++) {
@@ -58,13 +58,19 @@ export default class EditorProxy {
             this.items.splice(has - 1, has);
         }
 
+        let e = false;
         for (let i = 0; i < this.items.length; i++) {
             let args = this.items[i];
+            let [ri, ci] = expr2xy(args);
             let {f} = args;
 
             if (contain(division(f, []), erpx)) {
-                proxy.setCell(name, args.erpx);
+                data.setCellWithFormulas(ri, ci, text, '-');
+                e = true;
             }
+        }
+        if(e) {
+            data.change(data.getData());
         }
     }
 }
