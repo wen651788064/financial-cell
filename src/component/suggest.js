@@ -1,6 +1,7 @@
 import {h} from './element';
-import {bindClickoutside, createEvent, unbindClickoutside} from './event';
+import {bind, bindClickoutside, createEvent, unbindClickoutside} from './event';
 import {cssPrefix} from '../config';
+import CellRange from "../core/cell_range";
 
 function inputMovePrev(evt) {
     evt.preventDefault();
@@ -76,10 +77,21 @@ function inputKeydownHandler(evt) {
 }
 
 export default class Suggest {
-    constructor(items, itemClick, width = '200px') {
+    constructor(items, itemClick, data, editor, width = '200px') {
         this.filterItems = [];
         this.items = items;
-        this.el = h('div', `${cssPrefix}-suggest`).css('width', width).hide();
+        this.data = data;
+        this.editor = editor;
+        this.el = h('div', `${cssPrefix}-suggest`)
+            .css('width', width)
+            .css('overflow-y', 'auto')
+            .css('max-height', '306px').hide()
+            .on('scroll', evt => {
+                console.log("89");
+            });
+        this.el.attr('tabindex', 0);
+
+
         this.itemClick = itemClick;
         this.itemIndex = -1;
         this.show = false;
@@ -105,7 +117,7 @@ export default class Suggest {
     }
 
     search(word) {
-        let {items} = this;
+        let {items, data, editor} = this;
         if (!/^\s*$/.test(word)) {
             items = items.filter(it => (it.key.toUpperCase() || it.toUpperCase()).startsWith(word.toUpperCase()));
         }
@@ -136,6 +148,15 @@ export default class Suggest {
         }
         const {el} = this;
         // items[0].toggle();
+        let rect = data.getRect(new CellRange(editor.ri, editor.ci, editor.ri, editor.ci));
+        let left = rect.left + 55;
+        let top = rect.top + 50;
+        if(rect.top - 306 >= 100) {
+            top -= 306;
+            top -= rect.height;
+        }
+        el.css('left', `${left}px`);
+        el.css('top', `${top}px`);
 
         el.html('').children(...items).show();
         this.show = true;

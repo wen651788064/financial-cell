@@ -3,7 +3,7 @@ import {h} from './element';
 import Suggest from './suggest';
 import Datepicker from './datepicker';
 import {cssPrefix} from '../config';
-import {cutting, cuttingByPos, cuttingByPosEnd, isAbsoluteValue, operation, cuttingByPos2} from '../core/operator';
+import {cutting, cuttingByPos, cuttingByPos2, cuttingByPosEnd, isAbsoluteValue, operation} from '../core/operator';
 import SuggestContent from './suggest_content';
 import {findBracket, suggestContent} from './formula_editor';
 import {createEvent} from './event';
@@ -181,7 +181,7 @@ function inputEventHandler(evt, txt = '', formulas = '', state = "input") {
             } else {
                 suggest.hide();
             }
-        }else {
+        } else {
             v = v + "";
             const start = v.lastIndexOf('=');
             if (this.pos != -1) {
@@ -227,7 +227,7 @@ function inputEventHandler(evt, txt = '', formulas = '', state = "input") {
         //     this.setText("");
         // }
 
-        if(formulas && formulas[0] === '=') {
+        if (formulas && formulas[0] === '=') {
             v = formulas;
         }
         this.change(state, v);
@@ -388,7 +388,7 @@ export default class Editor {
         this.display = true;
         this.suggest = new Suggest(formulas, (it) => {
             suggestItemClick.call(this, it);
-        });
+        }, data, this);
         this.suggestContent = new SuggestContent();
         this.lock = false;
         this.state = 1;
@@ -475,13 +475,12 @@ export default class Editor {
                                 createEvent.call(this, 88, true);
                             } else if (key_num === 90) {
                                 createEvent.call(this, 90, true);
-                            }else if (key_num === 66) {
+                            } else if (key_num === 66) {
                                 createEvent.call(this, 66, true);
                             }
                         }
                     }),
                 this.textlineEl = h('div', 'textline'),
-                this.suggest.el,
                 this.suggestContent.el,
                 this.datepicker.el,
             )
@@ -489,6 +488,8 @@ export default class Editor {
             })
             .on('mousedown.stop', () => {
             });
+
+        sheet.el.child(this.suggest.el);
         this.el = h('div', `${cssPrefix}-editor`)
             .children(this.areaEl);
         this.suggest.bindInputEvents(this.textEl);
@@ -564,7 +565,7 @@ export default class Editor {
 
     clear(c = false) {
         this.display = isDisplay.call(this);
-        if(this.inputText != '' && isNaN(this.inputText) && this.inputText.replace(/\s/g, "").lastIndexOf('¥') === 0) {
+        if (this.inputText != '' && isNaN(this.inputText) && this.inputText.replace(/\s/g, "").lastIndexOf('¥') === 0) {
             this.change('format', this.inputText);
         }
         this.cell = null;
@@ -668,7 +669,7 @@ export default class Editor {
             textEl.offset({width: width - 2 + 0.8, height: height - 3 + 0.8});
             const sOffset = {left: 0};
             sOffset[suggestPosition] = height;
-            suggest.setOffset(sOffset);
+            // suggest.setOffset(sOffset);
             suggest.hide();
             resetTextareaSize.call(this);
             if (show) {
@@ -689,7 +690,7 @@ export default class Editor {
             formulas: (cell && cell.formulas) || '',
         };
 
-        inputEventHandler.call(this, null,  (cell && cell.text) || text,  (cell && cell.formulas) || '',  "end");
+        inputEventHandler.call(this, null, (cell && cell.text) || text, (cell && cell.formulas) || '', "end");
         setTimeout(() => {
             set_focus.call(this, this.textEl.el, -1);
         })
@@ -743,7 +744,7 @@ export default class Editor {
     }
 
     inputEventHandler(text = '', hide = false) {
-        if(hide) {
+        if (hide) {
             this.areaEl.hide();
             this.sheet.selector.hide();
             this.isCors = true;
@@ -752,7 +753,7 @@ export default class Editor {
     }
 
     isDisplay() {
-        if(isDisplay.call(this) && this.inputText.lastIndexOf("=") == 0)
+        if (isDisplay.call(this) && this.inputText.lastIndexOf("=") == 0)
             return true;
         else
             return false
