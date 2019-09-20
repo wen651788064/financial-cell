@@ -61,11 +61,12 @@ export default class EditorProxy {
         let e = false;
         for (let i = 0; i < this.items.length; i++) {
             let args = this.items[i];
-            let [ri, ci] = expr2xy(args);
+            let a = expr2xy(args);
             let {f} = args;
 
             if (contain(division(f, []), erpx)) {
-                data.setCellWithFormulas(ri, ci, text, '-');
+                console.log(a, f);
+                data.setCellWithFormulas(a[1], a[0], f, '-');
                 e = true;
             }
         }
