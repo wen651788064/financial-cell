@@ -944,7 +944,6 @@ function sheetInitEvents() {
                     });
                 }
 
-                this.editorProxy.change(editor.ri, editor.ci, editor.inputText, data.rows, data);
                 if (!editor.getLock() && !editor.isCors) {
                     let {inputText, ri, ci} = editor;
                     if (ri !== -1 && ci !== -1 && inputText[0] === "=") {
@@ -957,6 +956,7 @@ function sheetInitEvents() {
 
                     let state = editor.clear();
                     if (state) {
+                        this.editorProxy.change(editor.ri, editor.ci, editor.inputText, data.rows, data);
                         loadFormula.call(this);
                     }
                     this.selector.longTimeBefore();
