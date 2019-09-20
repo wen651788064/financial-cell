@@ -211,7 +211,6 @@ function inputEventHandler(evt, txt = '', formulas = '', state = "input") {
         this.inputText = formulas || v;
         this.suggest.itemIndex = -1;
         resetTextareaSize.call(this);
-        this.show();
         if (v && v[0] !== '=') {
             // textEl.html(v);
             set_focus.call(this, textEl.el, -1);
@@ -232,6 +231,10 @@ function inputEventHandler(evt, txt = '', formulas = '', state = "input") {
             v = formulas;
         }
         this.change(state, v);
+
+        setTimeout(() => {
+            this.show();
+        });
     });
 }
 
