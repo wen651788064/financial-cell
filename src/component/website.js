@@ -32,9 +32,11 @@ export default class Website {
     }
 
     show(ri, ci) {
-        if(this.editor.isDisplay()) {
+        if(this.editor.isDisplay2()) {
             this.el.hide();
             this.tableEl.hide();
+
+            return;
         }
 
         let {data} = this;

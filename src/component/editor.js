@@ -759,6 +759,13 @@ export default class Editor {
             return false
     }
 
+    isDisplay2() {
+        if (isDisplay.call(this))
+            return true;
+        else
+            return false
+    }
+
     setCursorPos(pos) {
         this.pos = pos;
         set_focus.call(this, this.textEl.el, pos);
