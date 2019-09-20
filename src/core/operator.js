@@ -208,8 +208,13 @@ const division = (str, filterFormula = filterFormula) => {
     str = str.toUpperCase();
 
     // 加filterFormula的原因: 因为加了也没用，也不可能再去请求后端了
-    if (str[0] !== "=" || str.indexOf(filterFormula) !== -1) {
+    if (str[0] !== "=") {
         return [];
+    }
+    for(let i = 0; i < filterFormula.length; i++) {
+        if(str.indexOf(filterFormula[i]) !== -1) {
+            return [];
+        }
     }
 
     let arr = str.split(/([(-\/,+*，><=^&])/);
