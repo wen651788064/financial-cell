@@ -15,13 +15,13 @@ export default class EditorProxy {
             rows.eachCells(ri, (ci) => {
                 let cell = rows.getCell(ri, ci);
                 if(cell) {
-                    if(!cell.f) {
-                        cell.f = "";
+                    if(!cell.formulas) {
+                        cell.formulas = "";
                     }
 
-                    cell.f = cell.f + "";
+                    cell.formulas = cell.formulas + "";
 
-                    if(this.indexOf(cell.f)) {
+                    if(this.indexOf(cell.formulas)) {
                         this.items.push(xy2expr(ri, ci));
                     }
                 }
