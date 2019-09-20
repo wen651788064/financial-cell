@@ -1401,7 +1401,7 @@ export default class Sheet {
     loadData(data) {
         this.data.setData(data, this);
         // 把所有后端计算的公式过滤出来
-        this.editorProxy.associatedArr(data.rows);
+        this.editorProxy.associatedArr(this.data.rows);
         sheetReset.call(this);
         return this;
     }
