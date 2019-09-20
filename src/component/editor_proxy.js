@@ -53,7 +53,10 @@ export default class EditorProxy {
 
         let th = this.indexOf(text);
         if (th && has === -1) {
-            this.items.push(erpx);
+            this.items.push({
+                erpx: erpx,
+                f: text
+            });
         } else if (!th && has !== -1) {
             this.items.splice(has - 1, has);
         }

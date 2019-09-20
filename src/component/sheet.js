@@ -402,7 +402,10 @@ function overlayerMousedown(evt) {
                         this.selector.arange.each((ri, ci) => {
                             let cell = data.rows.getCell( ri, ci);
                             if(cell && cell.formulas) {
-                                enter = this.editorProxy.change( ri,  ci, cell.formulas, data.rows, data, true);
+                                let enter2 = this.editorProxy.change( ri,  ci, cell.formulas, data.rows, data, true);
+                                if(enter2 === true) {
+                                    enter = true;
+                                }
                             }
                         });
                         if(enter) {
@@ -966,9 +969,9 @@ function sheetInitEvents() {
 
                     let state = editor.clear();
                     if (state) {
-                        let cell = data.rows.getCell(editor.ri, editor.ci);
+                        let cell = data.rows.getCell( ri, ci);
                         if(cell && cell.formulas) {
-                            this.editorProxy.change(editor.ri, editor.ci, cell.formulas, data.rows, data);
+                            this.editorProxy.change( ri, ci, cell.formulas, data.rows, data);
                         }
                         loadFormula.call(this);
                     }
