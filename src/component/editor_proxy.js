@@ -22,6 +22,7 @@ export default class EditorProxy {
                     cell.formulas = cell.formulas + "";
 
                     if(this.indexOf(cell.formulas)) {
+                        console.log(cell.formulas)
                         this.items.push(xy2expr(ci, ri));
                     }
                 }
