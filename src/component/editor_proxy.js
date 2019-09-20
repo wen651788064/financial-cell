@@ -22,7 +22,7 @@ export default class EditorProxy {
                     cell.formulas = cell.formulas + "";
 
                     if(this.indexOf(cell.formulas)) {
-                        this.items.push(xy2expr(ri, ci));
+                        this.items.push(xy2expr(ci, ri));
                     }
                 }
             })
@@ -39,7 +39,7 @@ export default class EditorProxy {
     }
 
     change(ri, ci, text, rows, proxy, name) {
-        let erpx = xy2expr(ri, ci);
+        let erpx = xy2expr(ci, ri);
         let has = this.items.indexOf(erpx);
         let th = this.indexOf(text);
         if(th && has === -1) {
