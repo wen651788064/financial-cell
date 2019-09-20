@@ -398,10 +398,16 @@ function overlayerMousedown(evt) {
                 if (dateDiff > 50) {
                     if (data.autofill(selector.arange, 'all', msg => xtoast('Tip', msg), this.table.proxy)) {
                         editor.display = true;
+                        let enter = false;
                         this.selector.arange.each((ri, ci) => {
                             let cell = data.rows.getCell( ri, ci);
-                            this.editorProxy.change( ri,  ci, cell.formulas, data.rows, data);
+                            if(cell && cell.formulas) {
+                                enter = this.editorProxy.change( ri,  ci, cell.formulas, data.rows, data, true);
+                            }
                         });
+                        if(enter) {
+                            data.change(data.getData());
+                        }
                         this.selector.arange = null;
                         loadFormula.call(this);
                         table.render();
@@ -961,7 +967,9 @@ function sheetInitEvents() {
                     let state = editor.clear();
                     if (state) {
                         let cell = data.rows.getCell(editor.ri, editor.ci);
-                        this.editorProxy.change(editor.ri, editor.ci, cell.formulas, data.rows, data);
+                        if(cell && cell.formulas) {
+                            this.editorProxy.change(editor.ri, editor.ci, cell.formulas, data.rows, data);
+                        }
                         loadFormula.call(this);
                     }
                     this.selector.longTimeBefore();

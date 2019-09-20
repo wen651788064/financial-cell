@@ -41,7 +41,7 @@ export default class EditorProxy {
         return false;
     }
 
-    change(ri, ci, text, rows,  data) {
+    change(ri, ci, text, rows,  data, needcallback = false) {
         let erpx = xy2expr(ci, ri);
         let has = -1;
         for (let i = 0; i < this.items.length && has === -1; i++) {
@@ -70,6 +70,9 @@ export default class EditorProxy {
                 data.setCellWithFormulas(a[1], a[0], '-',  f);
                 e = true;
             }
+        }
+        if(needcallback) {
+            return e;
         }
         if(e) {
             data.change(data.getData());

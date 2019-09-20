@@ -203,7 +203,7 @@ const cuttingByPosEnd = (str, pos) => {
     return value.toUpperCase();
 };
 
-const division = (str, filterFormula = filterFormula) => {
+const division = (str, ff = filterFormula) => {
     str = str + "";
     str = str.toUpperCase();
 
@@ -211,8 +211,9 @@ const division = (str, filterFormula = filterFormula) => {
     if (str[0] !== "=") {
         return [];
     }
-    for(let i = 0; i < filterFormula.length; i++) {
-        if(str.indexOf(filterFormula[i]) !== -1) {
+    console.log(ff, filterFormula)
+    for(let i = 0; i < ff.length; i++) {
+        if(str.indexOf(ff[i]) !== -1) {
             return [];
         }
     }
