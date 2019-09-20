@@ -67,7 +67,7 @@ export default class EditorProxy {
                 let a = expr2xy(args.erpx);
 
                 console.log(a, f);
-                data.setCellWithFormulas(a[1], a[0], f, '-');
+                data.setCellWithFormulas(a[1], a[0], '-',  f);
                 e = true;
             }
         }
