@@ -4,13 +4,14 @@ import CellRange from "../core/cell_range";
 import {bind} from "./event";
 
 export default class Website {
-    constructor(data) {
+    constructor(data, editor) {
         this.data = data;
         this.el = h('div', `${cssPrefix}-hyperlink-tooltip`)
             .hide();
 
         this.tableEl = h('div', `${cssPrefix}-hyperlink-tooltip`)
             .hide();
+        this.editor = editor;
         this.tableEl.attr('tabindex', 0);
         this.tableEl.css('overflow-y', 'auto');
         this.tableEl.css('max-height', '400px');
@@ -31,6 +32,11 @@ export default class Website {
     }
 
     show(ri, ci) {
+        if(this.editor.isDisplay()) {
+            this.el.hide();
+            this.tableEl.hide();
+        }
+
         let {data} = this;
         let text = data.getCellTextOrDefault(ri, ci) + "";
         clearTimeout(this.timer);
