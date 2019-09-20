@@ -203,9 +203,11 @@ const cuttingByPosEnd = (str, pos) => {
     return value.toUpperCase();
 };
 
-const division = (str) => {
+const division = (str, filterFormula = filterFormula) => {
     str = str + "";
     str = str.toUpperCase();
+
+    // 加filterFormula的原因: 因为加了也没用，也不可能再去请求后端了
     if (str[0] !== "=" || str.indexOf(filterFormula) !== -1) {
         return [];
     }
@@ -222,7 +224,7 @@ const division = (str) => {
     }
 
     return arr;
-}
+};
 
 const cutting = (str) => {
     let express = [];

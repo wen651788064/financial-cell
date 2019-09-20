@@ -21,13 +21,13 @@ import {clearSelectors, editingSelectors, lockCells, makeSelector} from "../comp
 import {deleteImg, hideDirectionArr, mountPaste} from "../event/paste";
 import {getChooseImg, mountCopy} from "../event/copy";
 import Website from "../component/website";
-import {cutStr, cuttingByPos} from "../core/operator";
+import {cutStr, cuttingByPos, haveManyFunc} from "../core/operator";
 import {moveCell} from "../event/move";
 import CellRange from "../core/cell_range";
 import {orientation} from "../core/helper";
 import {expr2xy} from "../core/alphabet";
-import {haveManyFunc} from "../core/operator";
 import ErrorPopUp from "./error_pop_up";
+import EditorProxy from "./editor_proxy";
 
 function scrollbarMove() {
     const {
@@ -690,10 +690,10 @@ function selectorCellText(ri, ci, text, state, proxy = "") {
     text = haveManyFunc(text);
     let rb = text.match(/\(/g) || [];
     let lb = text.match(/\)/g) || [];
-    if(rb.length < lb.length && editor.isDisplay() && !errorPopUp.open) {
+    if (rb.length < lb.length && editor.isDisplay() && !errorPopUp.open) {
         errorPopUp.show();
         return true;
-    } else if(errorPopUp.open) {
+    } else if (errorPopUp.open) {
         errorPopUp.hide();
         return true;
     }
@@ -947,7 +947,7 @@ function sheetInitEvents() {
                     if (ri !== -1 && ci !== -1 && inputText[0] === "=") {
                         let error = selectorCellText.call(this, ri, ci, inputText, 'input', this.table.proxy);
 
-                        if(error) {
+                        if (error) {
                             return;
                         }
                     }
@@ -1015,11 +1015,16 @@ function sheetInitEvents() {
         // selector.el.hide();
         //实时更新this.selectors
         let {lock} = editor;
-        editor.setMouseDownIndex([]);
+        editor.setMouseDownIndex(data.rows, []);
         editingSelectors.call(this, itext);
+
+
+        this.editorProxy.change(editor.ri, editor.ci, itext, data.rows, this.table.proxy, data.name);
+
         if (lock && itext != '=') {
             return;
         }
+
         if (this.selectors.length > 0) {
             return;
         }
@@ -1226,7 +1231,7 @@ function sheetInitEvents() {
                 case 9: // tab
                     // lockCells
                     let error = afterSelector.call(this, editor);
-                    if(error) {
+                    if (error) {
                         return;
                     }
                     editor.clear();
@@ -1241,7 +1246,7 @@ function sheetInitEvents() {
                     // lockCells
 
                     let error2 = afterSelector.call(this, editor);
-                    if(error2) {
+                    if (error2) {
                         return;
                     }
 
@@ -1325,6 +1330,7 @@ export default class Sheet {
         // selector
         this.selector = new Selector(data, this);
         this.selectorMoveEl = new Selector(data, this);
+        this.editorProxy = new EditorProxy();
 
         this.advice = new Advice(data, this);
 
@@ -1394,6 +1400,8 @@ export default class Sheet {
 
     loadData(data) {
         this.data.setData(data, this);
+        // 把所有后端计算的公式过滤出来
+        this.editorProxy.associatedArr(data.rows);
         sheetReset.call(this);
         return this;
     }

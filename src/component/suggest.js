@@ -12,7 +12,10 @@ function inputMovePrev(evt) {
     this.itemIndex -= 1;
     if (this.itemIndex < 0) {
         this.itemIndex = filterItems.length - 1;
+        this.el.el.scrollTop = this.el.el.scrollHeight;
     }
+    this.el.el.scrollTop = (this.itemIndex - 9) * 33;
+
     filterItems[this.itemIndex].toggle();
 }
 
@@ -24,7 +27,10 @@ function inputMoveNext(evt) {
     this.itemIndex += 1;
     if (this.itemIndex > filterItems.length - 1) {
         this.itemIndex = 0;
+        this.el.el.scrollTop = 0;
     }
+    this.el.el.scrollTop = (this.itemIndex - 9) * 33;
+    console.log(filterItems.length);
     filterItems[this.itemIndex].toggle();
 }
 
@@ -40,6 +46,7 @@ function inputEnter(evt) {
 
         return
     };
+
     filterItems[this.itemIndex].el.click();
     this.hide();
 }
@@ -85,10 +92,7 @@ export default class Suggest {
         this.el = h('div', `${cssPrefix}-suggest`)
             .css('width', width)
             .css('overflow-y', 'auto')
-            .css('max-height', '306px').hide()
-            .on('scroll', evt => {
-                console.log("89");
-            });
+            .css('max-height', '306px').hide();
         this.el.attr('tabindex', 0);
 
 
@@ -151,7 +155,8 @@ export default class Suggest {
         let rect = data.getRect(new CellRange(editor.ri, editor.ci, editor.ri, editor.ci));
         let left = rect.left + 55;
         let top = rect.top + 50;
-        if(rect.top - 306 >= 100) {
+
+        if( items.length >= 9 && rect.top - 306 >= 50) {
             top -= 306;
             top -= rect.height;
         }

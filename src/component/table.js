@@ -59,7 +59,7 @@ function getCellTextStyle(rindex, cindex) {
     return style;
 }
 
-function loadData(viewRange, load = false, read = false) {
+export function loadData(viewRange, load = false, read = false) {
     let {data} = this;
     let workbook = [];
     workbook.Sheets = {};
