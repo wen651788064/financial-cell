@@ -945,16 +945,16 @@ function sheetInitEvents() {
                         this.mergeSelector = false;
                     });
                 }
-                if (!editor.getLock() && !editor.isCors) {
-                    let {inputText, ri, ci} = editor;
-                    if (ri !== -1 && ci !== -1 && inputText[0] === "=") {
-                        let error = selectorCellText.call(this, ri, ci, inputText, 'input', this.table.proxy);
+                let {inputText, ri, ci} = editor;
+                if (ri !== -1 && ci !== -1 && inputText[0] === "=") {
+                    let error = selectorCellText.call(this, ri, ci, inputText, 'input', this.table.proxy);
 
-                        if (error) {
-                            return;
-                        }
+                    if (error) {
+                        return;
                     }
+                }
 
+                if (!editor.getLock() && !editor.isCors) {
                     let state = editor.clear();
                     if (state) {
                         loadFormula.call(this);
