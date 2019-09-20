@@ -1330,7 +1330,6 @@ export default class Sheet {
         // scrollbar
         this.verticalScrollbar = new Scrollbar(true);
         this.horizontalScrollbar = new Scrollbar(false);
-        this.website = new Website(data, this.editor);
         // editor
         this.editor = new Editor(
             formulas,
@@ -1340,6 +1339,8 @@ export default class Sheet {
             data,
             this,
         );
+        this.website = new Website(data, this.editor);
+
         // data validation
         this.modalValidation = new ModalValidation();
         this.errorPopUp = new ErrorPopUp();
