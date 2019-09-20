@@ -457,6 +457,8 @@ export default class DataProxy {
     }
 
     copy() {
+
+        document.execCommand('copy', true);
         this.clipboard.copy(this.selector.range);
     }
 

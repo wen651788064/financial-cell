@@ -842,6 +842,11 @@ function sheetInitEvents() {
                     evt.stopPropagation();
                 } else {
                     contextMenu.hide();
+                    overlayerMousedown.call(this, evt);
+                    setTimeout(() => {
+                        contextMenu.setPosition(evt.offsetX, evt.offsetY);
+                        evt.stopPropagation();
+                    }, 100)
                 }
             } else if (evt.detail === 2) {
                 clearTimeout(this.render_timer);
