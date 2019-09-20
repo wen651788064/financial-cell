@@ -1240,8 +1240,8 @@ function sheetInitEvents() {
                 case 13: // enter
                     // lockCells
 
-                    error = afterSelector.call(this, editor);
-                    if(error) {
+                    let error2 = afterSelector.call(this, editor);
+                    if(error2) {
                         return;
                     }
 
