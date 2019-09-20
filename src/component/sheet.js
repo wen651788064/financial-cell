@@ -691,8 +691,6 @@ function selectorCellText(ri, ci, text, state, proxy = "") {
     let rb = text.match(/\(/g) || [];
     let lb = text.match(/\)/g) || [];
 
-    this.editorProxy.change(editor.ri, editor.ci, text, data.rows, data);
-
     if (rb.length < lb.length && editor.isDisplay() && !errorPopUp.open) {
         errorPopUp.show();
         return true;
@@ -945,16 +943,18 @@ function sheetInitEvents() {
                         this.mergeSelector = false;
                     });
                 }
-                let {inputText, ri, ci} = editor;
-                if (ri !== -1 && ci !== -1 ) {
-                    let error = selectorCellText.call(this, ri, ci, inputText, 'input', this.table.proxy);
 
-                    if (error) {
-                        return;
-                    }
-                }
-
+                this.editorProxy.change(editor.ri, editor.ci, editor.inputText, data.rows, data);
                 if (!editor.getLock() && !editor.isCors) {
+                    let {inputText, ri, ci} = editor;
+                    if (ri !== -1 && ci !== -1 && inputText[0] === "=") {
+                        let error = selectorCellText.call(this, ri, ci, inputText, 'input', this.table.proxy);
+
+                        if (error) {
+                            return;
+                        }
+                    }
+
                     let state = editor.clear();
                     if (state) {
                         loadFormula.call(this);
@@ -1235,6 +1235,7 @@ function sheetInitEvents() {
                     if (error) {
                         return;
                     }
+                    this.editorProxy.change(editor.ri, editor.ci, editor.inputText, data.rows, data);
                     editor.clear();
                     // shift + tab => move left
                     // tab => move right
@@ -1250,7 +1251,7 @@ function sheetInitEvents() {
                     if (error2) {
                         return;
                     }
-
+                    this.editorProxy.change(editor.ri, editor.ci, editor.inputText, data.rows, data);
                     editor.clear();
                     renderAutoAdapt.call(this);
                     autoRowResizer.call(this);
