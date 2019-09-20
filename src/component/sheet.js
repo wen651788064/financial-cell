@@ -399,6 +399,7 @@ function overlayerMousedown(evt) {
                     if (data.autofill(selector.arange, 'all', msg => xtoast('Tip', msg), this.table.proxy)) {
                         editor.display = true;
                         this.selector.arange = null;
+                        this.editorProxy.change(editor.ri, editor.ci, editor.inputText, data.rows, data);
                         loadFormula.call(this);
                         table.render();
                     }
