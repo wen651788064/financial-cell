@@ -428,10 +428,6 @@ function loadFormula(load = false) {
         let {formula} = data.settings;
         if (formula && typeof formula.wland == "function") {
             formula.wland(formula, data, table, load);
-        } else {
-            table.proxy.diff = 305;
-            table.proxy.processBackEnd();
-            table.render();
         }
     }, 1000);
 }
