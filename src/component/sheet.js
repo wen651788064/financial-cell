@@ -690,6 +690,9 @@ function selectorCellText(ri, ci, text, state, proxy = "") {
     text = haveManyFunc(text);
     let rb = text.match(/\(/g) || [];
     let lb = text.match(/\)/g) || [];
+
+    this.editorProxy.change(editor.ri, editor.ci, text, data.rows, table.proxy, data.name);
+
     if (rb.length < lb.length && editor.isDisplay() && !errorPopUp.open) {
         errorPopUp.show();
         return true;
@@ -1018,9 +1021,6 @@ function sheetInitEvents() {
         editor.setMouseDownIndex(data.rows, []);
         editingSelectors.call(this, itext);
 
-        if(state === 'input') {
-            this.editorProxy.change(editor.ri, editor.ci, itext, data.rows, this.table.proxy, data.name);
-        }
 
         if (lock && itext != '=') {
             return;
