@@ -956,7 +956,8 @@ function sheetInitEvents() {
 
                     let state = editor.clear();
                     if (state) {
-                        this.editorProxy.change(editor.ri, editor.ci, editor.inputText, data.rows, data);
+                        let cell = data.rows.getCell(ri, ci);
+                        this.editorProxy.change(editor.ri, editor.ci, cell.formulas, data.rows, data);
                         loadFormula.call(this);
                     }
                     this.selector.longTimeBefore();
