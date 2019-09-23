@@ -21,7 +21,7 @@ import {clearSelectors, editingSelectors, lockCells, makeSelector} from "../comp
 import {deleteImg, hideDirectionArr, mountPaste} from "../event/paste";
 import {getChooseImg, mountCopy} from "../event/copy";
 import Website from "../component/website";
-import {cutStr, cuttingByPos, haveManyFunc} from "../core/operator";
+import {cutStr, cuttingByPos, haveManyFunc, positionAngle} from "../core/operator";
 import {moveCell} from "../event/move";
 import CellRange from "../core/cell_range";
 import {orientation} from "../core/helper";
@@ -370,10 +370,10 @@ function overlayerMousedown(evt) {
             this.container.css('pointer-events', 'none');
             ({ri, ci} = data.getCellRectByXY(e.layerX, e.layerY));
             if (isAutofillEl) {
-                let orien = selector.showAutofill(ri, ci);
+                let pos = positionAngle(evt.clientX, e.clientX, evt.clientY, e.clientY);
+                let orien = selector.showAutofill(ri, ci, pos);
                 let o = orientation(this.data.settings.view.height(), this.data.settings.view.width(), e.layerY, e.layerX, orien);
 
-                console.log("377",)
                 if (o && orien == 44) {
                     const {top} = verticalScrollbar.scroll();
                     ri = data.scroll.ri + 1;

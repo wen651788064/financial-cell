@@ -502,7 +502,7 @@ export default class Selector {
         setAllAreaOffset.call(this, rect);
     }
 
-    showAutofill(ri, ci) {
+    showAutofill(ri, ci, pos) {
         if (ri === -1 && ci === -1) return;
         // console.log('ri:', ri, ', ci:', ci);
         // const [sri, sci] = this.sIndexes;
@@ -511,6 +511,8 @@ export default class Selector {
             sri, sci, eri, eci,
         } = this.range;
 
+        // pos == 1 往下，pos == 3 往右， pos == 2 往左， pos == 4 往上
+        console.log(pos, 23324);
         let drisc = 0;
         const [nri, nci] = [ri, ci];
         // const rn = eri - sri;
@@ -519,7 +521,8 @@ export default class Selector {
         const scn = sci - ci;
         const ern = eri - ri;
         const ecn = eci - ci;
-        if (scn > 0) {
+        console.log(srn, scn, ern, ecn)
+        if (pos == 2) {
             console.log("11")
             drisc = 11;
             // left
@@ -528,7 +531,7 @@ export default class Selector {
             // this.saIndexes = [sri, nci];
             // this.eaIndexes = [eri, sci - 1];
             // data.calRangeIndexes2(
-        } else if (srn > 0) {
+        } else if (pos == 4) {
             console.log("22")
             drisc = 22;
 
@@ -538,7 +541,7 @@ export default class Selector {
             this.arange = new CellRange(nri, sci, sri - 1, eci);
             // this.saIndexes = [nri, sci];
             // this.eaIndexes = [sri - 1, eci];
-        } else if (ecn < 0) {
+        } else if (pos == 3) {
             console.log("33")
             drisc = 33;
             // right
@@ -547,7 +550,7 @@ export default class Selector {
             this.arange = new CellRange(sri, eci + 1, eri, nci);
             // this.saIndexes = [sri, eci + 1];
             // this.eaIndexes = [eri, nci];
-        } else if (ern < 0) {
+        } else if (pos == 1) {
             console.log("44")
             drisc = 44;
             // bottom

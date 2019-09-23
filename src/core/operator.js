@@ -110,24 +110,24 @@ function changeFormula(cut) {
 
 const haveManyFunc = (str) => {
     let corss = 0;
-    for(let i = 0; i < str.length; i++) {
+    for (let i = 0; i < str.length; i++) {
         let b = str[i];
-        if(b === "(") {
+        if (b === "(") {
             let em = false;
-            for(let j = i + 1; j < str.length && em == false; j++) {
+            for (let j = i + 1; j < str.length && em == false; j++) {
                 let b2 = str[j];
-                if(b2 === "(") {
+                if (b2 === "(") {
                     corss = corss + 1;
                 }
 
-                if(b2 === ")" && corss === 0) {
+                if (b2 === ")" && corss === 0) {
                     em = true;
-                } else if(b2 === ")" && corss > 0) {
+                } else if (b2 === ")" && corss > 0) {
                     corss = corss - 1;
                 }
             }
 
-            if(em === false) {
+            if (em === false) {
                 str += ")";
             }
         }
@@ -212,8 +212,8 @@ const division = (str, ff = filterFormula) => {
         return [];
     }
     console.log(ff, filterFormula)
-    for(let i = 0; i < ff.length; i++) {
-        if(str.indexOf(ff[i]) !== -1) {
+    for (let i = 0; i < ff.length; i++) {
+        if (str.indexOf(ff[i]) !== -1) {
             return [];
         }
     }
@@ -23299,7 +23299,45 @@ const getSheetVale = (str) => {
 
 
     return arr;
+};
+
+function angleFunc(start, end) {
+    let diff_x = end.x - start.x,
+        diff_y = end.y - start.y;
+    return 360 * Math.atan(diff_y / diff_x) / (2 * Math.PI);
 }
+
+const positionAngle = (x1, x2, y1, y2) => {
+    let angle = 0;
+    let af = Math.abs(angleFunc({x: x1, y: y1}, {x: x2, y: y2}));
+
+    if (x1 < x2 && y1 < y2  ) {
+        angle = 1;
+    } else if (x1 > x2 && y1 < y2  ) {
+        angle = 2;
+    } else if (x1 < x2 && y1 > y2 ) {
+        angle = 3;
+    } else if (x1 > x2 && y1 > y2 ) {
+        angle = 4;
+    }
+
+    console.log(af, angle);
+    if(angle == 1 && af < 45) {
+        angle = 3;
+        return angle;
+    } else if(angle == 2 && af > 30) {
+        angle = 1;
+        return angle;
+    } else if(angle == 3 && af > 30) {
+        angle = 4;
+        return angle;
+    } else if(angle == 4 && af < 45) {
+        angle = 2;
+        return angle;
+    }
+
+    return angle;
+};
 
 const isAbsoluteValue = (str, rule = 1) => {
     str = str.toUpperCase();
@@ -23420,4 +23458,5 @@ export {
     contain,
     division,
     haveManyFunc,
+    positionAngle,
 }
