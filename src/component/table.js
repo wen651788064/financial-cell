@@ -9,7 +9,7 @@ import ApplicationFactory from "./application";
 import {isSheetVale} from "../core/operator";
 import CellProxy from "./cell_proxy";
 import {look} from "../config";
-import Worker from 'worker-loader!../external/Worker.js';
+// import Worker from 'worker-loader!../external/Worker.js';
 
 var formulajs = require('formulajs');
 // gobal var
@@ -212,33 +212,33 @@ async function parseCell(viewRange, state = false, src = '') {
             console.time("x4");
             redo = true;
             // if(proxy.countProperties(workbook)) {
-                let {worker} = this;
-                worker.terminate();
-                worker = new Worker();
-
-                workbook = proxy.pack(data.name, workbook);
-                worker.postMessage({workbook});
-
-                worker.addEventListener("message", (event) => {
-                    workbook = event.data.data;
-                    let {factory} = this;
-                    factory.data = workbook;
-                    workbook = proxy.concat(data.name, workbook);
-                    let cells = proxy.unpack(workbook.Sheets[data.name],  data.rows._);
-                    data.rows.setData(cells);
-                    data.change(data.getData());
-                    this.render(true, workbook);
-                });
-            // } else {
-            //     workbook = proxy.pack(data.name, workbook);
+            //     let {worker} = this;
+            //     worker.terminate();
+            //     worker = new Worker();
             //
-            //     data.calc(workbook);
-            //     let {factory} = this;
-            //     factory.data = workbook;
-            //     workbook = proxy.concat(data.name, workbook);
-            //     let cells = proxy.unpack(workbook.Sheets[data.name], data.rows._);
-            //     data.rows.setData(cells);
-            //     data.change(data.getData());
+            //     workbook = proxy.pack(data.name, workbook);
+            //     worker.postMessage({workbook});
+            //
+            //     worker.addEventListener("message", (event) => {
+            //         workbook = event.data.data;
+            //         let {factory} = this;
+            //         factory.data = workbook;
+            //         workbook = proxy.concat(data.name, workbook);
+            //         let cells = proxy.unpack(workbook.Sheets[data.name],  data.rows._);
+            //         data.rows.setData(cells);
+            //         data.change(data.getData());
+            //         this.render(true, workbook);
+            //     });
+            // // } else {
+                workbook = proxy.pack(data.name, workbook);
+
+                data.calc(workbook);
+                let {factory} = this;
+                factory.data = workbook;
+                workbook = proxy.concat(data.name, workbook);
+                let cells = proxy.unpack(workbook.Sheets[data.name], data.rows._);
+                data.rows.setData(cells);
+                data.change(data.getData());
             // }
             console.timeEnd("x4");
         } catch (e) {
@@ -609,7 +609,7 @@ class Table {
         this.factory = new ApplicationFactory(data.methods, data.name, this);
         this.editor = editor;
         this.data = data;
-        this.worker = new Worker();
+        // this.worker = new Worker();
         this.proxy = new CellProxy(data.refRow);
         this.autoAdaptList = [];
     }
