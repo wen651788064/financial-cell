@@ -429,6 +429,9 @@ export default class CellProxy {
     calc(newData, name, initd = false) {
         if(this.diff === 306 && this.lastResult !== "") {
             this.diff = 402;
+            Object.keys(this.lastResult).forEach(i => {
+                this.lastResult[i] = newData.Sheets[name][i];
+            });
             return {
                 "state": true,
                 "data": this.lastResult
