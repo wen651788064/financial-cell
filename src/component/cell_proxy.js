@@ -445,7 +445,7 @@ export default class CellProxy {
             if(enter) {
                 this.lastResult = "";
             }
-        }, 500);
+        }, 5000);
     }
 
     calc(newData, name, initd = false) {
