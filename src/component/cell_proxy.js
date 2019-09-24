@@ -303,7 +303,7 @@ export default class CellProxy {
         Object.keys(workbook.Sheets[name]).forEach(i => {
             data.Sheets[name][i] = workbook.Sheets[name][i];
 
-            if (workbook.Sheets[name][i].f && workbook.Sheets[name][i].f[0] === '=') {
+            if (formula.indexOf(filterFormula) == -1 && workbook.Sheets[name][i].f && workbook.Sheets[name][i].f[0] === '=') {
                 data.Sheets[name][i].v = "-";
                 if (isSheetVale(workbook.Sheets[name][i].f)) {
                     data.Sheets[name][i].f = workbook.Sheets[name][i].f;
