@@ -1057,9 +1057,9 @@ function sheetInitEvents() {
             return;
         }
 
-        if (this.selectors.length > 0) {
-            return;
-        }
+        // if (this.selectors.length > 0) {
+        //     return;
+        // }
 
         if (state == "format") {
             return;
