@@ -272,15 +272,11 @@ export default class CellProxy {
                     if (cell && cell.f && cell.f[0] === "=") {
                         count++;
                     }
-
-                    if (count >= 1) {
-                        return true;
-                    }
                 })
             });
         });
 
-        if (count >= 1) {
+        if (count >= 50) {
             return true;
         }
         return false;
