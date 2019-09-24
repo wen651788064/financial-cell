@@ -8,9 +8,10 @@ export default class CellProxy {
     constructor(refRow) {
         this.oldData = "";
         // diff 为 101 => 则为跨sheet但是没找到跨sheet的数据  402 => 则为跨sheet而且找到跨sheet的数据
-        // 305 => 为重新计算
+        // 305 => 为重新计算  306 => 后端计算结果
         this.diff = 0;
         this.refRow = refRow;
+        this.lastResult = "";
         // this.worker = new Worker();
     }
 
@@ -426,6 +427,13 @@ export default class CellProxy {
     }
 
     calc(newData, name, initd = false) {
+        if(this.diff === 306 && this.lastResult !== "") {
+            this.diff = 402;
+            return {
+                "state": true,
+                "data": this.lastResult
+            };
+        }
         if (initd) {
             return {
                 "state": false,
@@ -523,6 +531,7 @@ export default class CellProxy {
         }
         this.diff = 402;
         this.oldData = this.deepCopy(newData);
+        this.lastResult = workbook.Sheets[name];
 
         return {
             "state": true,
