@@ -1,4 +1,6 @@
 import {filterFormula} from "../config";
+import {expr2xy, xy2expr} from "./alphabet";
+import CellRange from "./cell_range";
 
 const operator = [
     "+", "-", "*", "/", "&", "^", "(", ",", "=", " ", " ", "，"
@@ -203,6 +205,10 @@ const cuttingByPosEnd = (str, pos) => {
     return value.toUpperCase();
 };
 
+function distinct(a, b) {
+    return Array.from(new Set([...a, ...b]))
+}
+
 const division = (str, ff = filterFormula) => {
     str = str + "";
     str = str.toUpperCase();
@@ -219,6 +225,7 @@ const division = (str, ff = filterFormula) => {
     }
 
     let arr = str.split(/([(-\/,+*，><=^&])/);
+    let na = [];
     // // 去除字符串两端的空格
     for (let i = 0; i < arr.length; i++) {
         arr[i] = arr[i].replace(/(^\s*)|(\s*$)/g, "");
@@ -226,8 +233,19 @@ const division = (str, ff = filterFormula) => {
             arr[i] = arr[i].split("!")[1];
         }
 
+        if(isAbsoluteValue(arr[i].replace(/\$/g, ''), 4)) {
+            let value = arr[i].replace(/\$/g, '').split(":");
+            let a1 = expr2xy(value[0]);
+            let a2 =  expr2xy(value[1]);
+            let cell = new CellRange(a1[0], a1[1], a2[0], a2[1]);
+            cell.each((i, j) => {
+                na.push(xy2expr(i, j));
+            });
+        }
         // let value = arr[i].replace(/(^\s*)|(\s*$)/g, "");
     }
+    arr.push(...na);
+    arr = [...new Set(arr)];
 
     return arr;
 };
@@ -23358,6 +23376,9 @@ const isAbsoluteValue = (str, rule = 1) => {
         if (str.search(/^[A-Z]+\$\d+$/) != -1)
             return true;
         return false;
+    } else if(rule == 4) {
+        if (str.search(/^[A-Za-z]+\d+:[A-Za-z]+\d+$/) != -1)
+            return true;
     } else {
         if (str.search(/^[A-Za-z]+\d+$/) != -1)
             return true;

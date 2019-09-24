@@ -102,7 +102,7 @@ const infixExprToSuffixExpr = (src) => {
 };
 
 const evalSubExpr = (subExpr, cellRender) => {
-    if(!subExpr) {
+    if (!subExpr) {
         subExpr = "";
     }
     if (subExpr[0] >= '0' && subExpr[0] <= '9') {
@@ -166,18 +166,18 @@ function evalFormula(text, rule) {
 }
 
 const cellRender = (data, sheetbook, y, x, src, formulaMap, getCellText, cellList = []) => {
-    if(typeof src === 'undefined') {
+    if (typeof src === 'undefined') {
         return "";
     }
 
-    if( typeof src === 'string' &&  src.indexOf(look) != -1) {
+    if (typeof src === 'string' && look.indexOf(src.split("!")[0]) != -1) {
         let a = JSON.parse(src.substring(src.indexOf("!") + 1, src.length));
-        if(a &&  a[0]) {
-            let {  name,  value} = a[0];
+        if (a && a[0]) {
+            let {name, value} = a[0];
 
-            if(value === 0 && a[1] && a[1].value !== 0) {
+            if (value === 0 && a[1] && a[1].value !== 0) {
                 return name;
-            } else if(value === 0 && !a[1]) {
+            } else if (value === 0 && !a[1]) {
                 return name;
             }
         }
@@ -196,13 +196,13 @@ const cellRender = (data, sheetbook, y, x, src, formulaMap, getCellText, cellLis
             // XLSX_CALC.import_functions(formulajs);
             // XLSX_CALC(sheetbook);
 
-            if((sheetbook.Sheets[data.name][xy2expr(x, y)].f && sheetbook.Sheets[data.name][xy2expr(x, y)].f.search(/\((\+|\-|\*|\/)/) != -1) || sheetbook.Sheets[data.name][xy2expr(x, y)].v == undefined || sheetbook.Sheets[data.name][xy2expr(x, y)].v === "") {
+            if ((sheetbook.Sheets[data.name][xy2expr(x, y)].f && sheetbook.Sheets[data.name][xy2expr(x, y)].f.search(/\((\+|\-|\*|\/)/) != -1) || sheetbook.Sheets[data.name][xy2expr(x, y)].v == undefined || sheetbook.Sheets[data.name][xy2expr(x, y)].v === "") {
                 return "#ERROR!";
             }
             sheetbook.Sheets[data.name][xy2expr(x, y)].v = sheetbook.Sheets[data.name][xy2expr(x, y)].v + "";
 
             // let value = sheetbook.Sheets.Sheet1[xy2expr(x, y)].v ? sheetbook.Sheets.Sheet1[xy2expr(x, y)].v : "NaN";
-            return sheetbook.Sheets[data.name][xy2expr(x, y)].w ? sheetbook.Sheets[data.name][xy2expr(x, y)].w :sheetbook.Sheets[data.name][xy2expr(x, y)].v.replace(/'/g, "\"");
+            return sheetbook.Sheets[data.name][xy2expr(x, y)].w ? sheetbook.Sheets[data.name][xy2expr(x, y)].w : sheetbook.Sheets[data.name][xy2expr(x, y)].v.replace(/'/g, "\"");
         }
         const stack = infixExprToSuffixExpr(src.substring(1));
         if (stack.length <= 0) return src;
