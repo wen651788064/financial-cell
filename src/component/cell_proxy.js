@@ -303,7 +303,7 @@ export default class CellProxy {
         Object.keys(workbook.Sheets[name]).forEach(i => {
             data.Sheets[name][i] = workbook.Sheets[name][i];
 
-            if (formula.indexOf(filterFormula) == -1 && workbook.Sheets[name][i].f && workbook.Sheets[name][i].f[0] === '=') {
+            if (workbook.Sheets[name][i].f && workbook.Sheets[name][i].f[0] === '=' && filterFormula.indexOf(workbook.Sheets[name][i].f) == -1 ) {
                 data.Sheets[name][i].v = "-";
                 if (isSheetVale(workbook.Sheets[name][i].f)) {
                     data.Sheets[name][i].f = workbook.Sheets[name][i].f;
@@ -427,7 +427,7 @@ export default class CellProxy {
     }
 
     calc(newData, name, initd = false) {
-        if(this.diff === 306 && this.lastResult !== "") {
+        if (this.diff === 306 && this.lastResult !== "") {
             this.diff = 402;
             Object.keys(this.lastResult).forEach(i => {
                 this.lastResult[i] = newData.Sheets[name][i];
