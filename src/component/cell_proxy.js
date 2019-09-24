@@ -14,6 +14,7 @@ export default class CellProxy {
         this.diff = 0;
         this.refRow = refRow;
         this.lastResult = "";
+        this.lastResultTimer = "";
         // this.worker = new Worker();
     }
 
@@ -432,7 +433,10 @@ export default class CellProxy {
     }
 
     isDone() {
-        this.lastResult = "";
+        clearTimeout(this.lastResultTimer);
+        this.lastResultTimer = setTimeout(() => {
+            this.lastResult = "";
+        }, 500);
     }
 
     calc(newData, name, initd = false) {
@@ -546,7 +550,7 @@ export default class CellProxy {
         this.oldData = this.deepCopy(newData);
         if(this.lastResult !== "") {
             console.log("548")
-            // this.lastResult = Object.assign(this.lastResult, workbook.Sheets[name]);
+            this.lastResult = Object.assign(this.lastResult, workbook.Sheets[name]);
         } else {
             this.lastResult = workbook.Sheets[name];
         }
