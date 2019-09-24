@@ -217,7 +217,6 @@ const division = (str, ff = filterFormula) => {
     if (str[0] !== "=") {
         return [];
     }
-    console.log(ff, filterFormula)
     for (let i = 0; i < ff.length; i++) {
         if (str.indexOf(ff[i]) !== -1) {
             return [];
