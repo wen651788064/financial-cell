@@ -310,11 +310,11 @@ export default class CellProxy {
                     data.Sheets[name][i].f = "";
                 } else {
                     data.Sheets[name][i].v = "-";
-                }
-                if (isSheetVale(workbook.Sheets[name][i].f)) {
-                    data.Sheets[name][i].f = workbook.Sheets[name][i].f;
-                } else {
-                    data.Sheets[name][i].f = toUpperCase(workbook.Sheets[name][i].f);
+                    if (isSheetVale(workbook.Sheets[name][i].f)) {
+                        data.Sheets[name][i].f = workbook.Sheets[name][i].f;
+                    } else {
+                        data.Sheets[name][i].f = toUpperCase(workbook.Sheets[name][i].f);
+                    }
                 }
             }
         });
