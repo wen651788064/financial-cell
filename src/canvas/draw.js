@@ -206,7 +206,7 @@ class Draw {
     }
 
     selfAdaptionHeight(box, txt, font) {
-        if (font == undefined || txt ==  undefined)
+        if (font == undefined || txt == undefined)
             return;
         let n = 1;
         const textLine = {len: 0, start: 0};
@@ -285,12 +285,12 @@ class Draw {
             innerWidth = box.width - box.padding * 2;
             const n = this.selfAdaptionHeight(box, txt, font);
             hoffset = ((n - 1) * font.size) / 2;
-            for (let i = 0; i < ignore.length; i++) {
-                if (cindex != ignore[i]) {
-                    // hoffset = 0;
-                } else if (cindex == ignore[i]) {
-                }
-            }
+            // for (let i = 0; i < ignore.length; i++) {
+            //     if (cindex != ignore[i]) {
+            //         // hoffset = 0;
+            //     } else if (cindex == ignore[i]) {
+            //     }
+            // }
         }
         let ty = box.texty(valign, font.size, hoffset);
         if (textWrap && txtWidth > innerWidth) {

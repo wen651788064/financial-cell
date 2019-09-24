@@ -2,6 +2,7 @@ import {h} from "../component/element";
 import {cssPrefix, look} from "../config";
 import CellRange from "../core/cell_range";
 import {bind} from "./event";
+import {  isSpecialWebsite} from "./special_formula_process";
 
 export default class Website {
     constructor(data, editor) {
@@ -44,7 +45,7 @@ export default class Website {
         clearTimeout(this.timer);
         clearTimeout(this.timer2);
 
-        if (text.indexOf(look) != -1) {
+        if (look.indexOf(text.split("!")[0]) == 0) {
             let rect = data.getRect(new CellRange(ri, ci, ri, ci));
             let left = rect.left + 55;
             let top = rect.top + 50;
@@ -112,6 +113,10 @@ export default class Website {
                 this.el.hide();
             }, 150);
         } else {
+            let args = isSpecialWebsite(text);
+            if(args.state) {
+                text = args.text;
+            }
             let regex = /^http(s)?:\/\/([\w-]+\.)+[\w-]+(\/[\w- ./?%&=]*)?$/;
             text = text.substr(0, 3).toLowerCase() == "www" ? "http://" + text : text;
             // console.log(regex.test(text))

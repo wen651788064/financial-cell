@@ -8,6 +8,8 @@ import {Draw, DrawBox, npx, thinLineWidth,} from '../canvas/draw';
 import ApplicationFactory from "./application";
 import {isSheetVale} from "../core/operator";
 import CellProxy from "./cell_proxy";
+import {look} from "../config";
+import Worker from 'worker-loader!../external/Worker.js';
 
 var formulajs = require('formulajs');
 // gobal var
@@ -59,6 +61,34 @@ function getCellTextStyle(rindex, cindex) {
     return style;
 }
 
+function getStr(str) {
+    let result = str.match(/\"(.*?)\"/ig);
+    if (!result)
+        return "";
+    return result.map(function (element) {
+        return element.replace(/\"/g, '');
+    });
+}
+
+
+export function toUpperCase(text) {
+    let strArr = getStr(text);
+    let arr = text.split("\"");
+    let newText = "";
+
+    arr.find(item => {
+        if (strArr.includes(item)) {
+            newText += '"';
+            newText += item;
+            newText += '"';
+        } else {
+            item = item + "";
+            newText += item.toUpperCase();
+        }
+    });
+    return newText;
+}
+
 export function loadData(viewRange, load = false, read = false) {
     let {data} = this;
     let workbook = [];
@@ -71,7 +101,7 @@ export function loadData(viewRange, load = false, read = false) {
 
     console.time("x");
     let {mri, mci} = this.data.rows.getMax();
-    viewRange.each3((ri, ci, eri, eci,  ) => {
+    viewRange.each3((ri, ci, eri, eci,) => {
         let cell = data.getCell(ri, ci);
         let expr = xy2expr(ci, ri);
         if (cell && (cell.text || cell.formulas)) {
@@ -94,7 +124,7 @@ export function loadData(viewRange, load = false, read = false) {
 
                 if (cell.text && cell.text[0] === "=") {
                     if (isNaN(cell.text)) {
-                        cell.text = cell.text.toUpperCase();  // 为什么要.toUpperCase() 呢？ => =a1 需要变成=A1
+                        cell.text = toUpperCase(cell.text); // 为什么要.toUpperCase() 呢？ => =a1 需要变成=A1
                     }
                     if (load) {
                         workbook.Sheets[data.name][expr] = {
@@ -139,7 +169,6 @@ export function loadData(viewRange, load = false, read = false) {
     };
 }
 
-
 async function parseCell(viewRange, state = false, src = '') {
 
 
@@ -167,9 +196,9 @@ async function parseCell(viewRange, state = false, src = '') {
     if (state) {
         workbook.Sheets[data.name]['A1'] = {v: '', f: `=${src}`};
     }
-     console.time("x3");
+    console.time("x3");
 
-    if(ca.state) {
+    if (ca.state) {
         let assoc = proxy.associated(data.name, workbook);
         ca.state = ca.state === false ? assoc.enter : ca.state;
         workbook = assoc.enter === true ? assoc.nd : workbook;
@@ -179,39 +208,43 @@ async function parseCell(viewRange, state = false, src = '') {
     let redo = false;
     // this.editor.display &&
     if (ca.state) {
-         try {
-             console.time("x4");
+        try {
+            console.time("x4");
+            redo = true;
+            if(proxy.countProperties(workbook)) {
+                let {worker} = this;
+                worker.terminate();
+                worker = new Worker();
 
-             redo = true;
-            workbook = proxy.pack(data.name, workbook);
-            data.calc(workbook);
-            let {factory} = this;
-            factory.data = workbook;
-            workbook = proxy.concat(data.name, workbook);
-            let cells = proxy.unpack(workbook.Sheets[data.name], data.rows._);
-            data.rows.setData(cells);
-            data.change(data.getData());
-             console.timeEnd("x4");
+                workbook = proxy.pack(data.name, workbook);
+                worker.postMessage({workbook});
 
-             // this.editor.display = false;
-            // let {worker} = this;
-            // worker.terminate();
-            // worker = new Worker();
-            // workbook = proxy.pack(data.name, workbook);
-            // worker.postMessage({workbook});
-            // worker.addEventListener("message", (event) => {
-            //     workbook = event.data.data;
-            //     let {factory} = this;
-            //     factory.data = workbook;
-            //     workbook = proxy.concat(data.name, workbook);
-            //     let cells = proxy.unpack(workbook.Sheets[data.name],  data.rows._);
-            //     data.rows.setData(cells);
-            //     this.render(true, workbook);
-            // });
+                worker.addEventListener("message", (event) => {
+                    workbook = event.data.data;
+                    let {factory} = this;
+                    factory.data = workbook;
+                    workbook = proxy.concat(data.name, workbook);
+                    let cells = proxy.unpack(workbook.Sheets[data.name],  data.rows._);
+                    data.rows.setData(cells);
+                    data.change(data.getData());
+                    this.render(true, workbook);
+                });
+            } else {
+                workbook = proxy.pack(data.name, workbook);
+
+                data.calc(workbook);
+                let {factory} = this;
+                factory.data = workbook;
+                workbook = proxy.concat(data.name, workbook);
+                let cells = proxy.unpack(workbook.Sheets[data.name], data.rows._);
+                data.rows.setData(cells);
+                data.change(data.getData());
+            }
+            console.timeEnd("x4");
         } catch (e) {
             console.error(e);
         }
-     } else {
+    } else {
         factory.data = sall;
         proxy.oldData = sall;
         workbook = factory.data;
@@ -271,6 +304,16 @@ export function parseCell2(viewRange, state = false, src = '') {
     return workbook;
 }
 
+function specialStyle(text) {
+    if(!text) {
+        return false;
+    }
+    if (look.indexOf(text.split("!")[0]) === 1) {
+        return true;
+    }
+    return false;
+}
+
 function renderCell(rindex, cindex, sheetbook) {
     const {draw, data} = this;
     const {sortedRowMap} = data;
@@ -321,7 +364,7 @@ function renderCell(rindex, cindex, sheetbook) {
         let regex = /^http(s)?:\/\/([\w-]+\.)+[\w-]+(\/[\w- ./?%&=]*)?$/;
         cellText = cellText + "";
         let text = cellText.substr(0, 3).toLowerCase() == "www" ? "http://" + cellText : cellText;
-        if (regex.test(text)) {
+        if (regex.test(text) || specialStyle(cell.text)) {
             color = "#4b89ff";
             underline = true;
         }
@@ -566,7 +609,7 @@ class Table {
         this.factory = new ApplicationFactory(data.methods, data.name, this);
         this.editor = editor;
         this.data = data;
-        // this.worker = new Worker();
+        this.worker = new Worker();
         this.proxy = new CellProxy(data.refRow);
         this.autoAdaptList = [];
     }

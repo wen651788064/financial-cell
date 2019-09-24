@@ -2,6 +2,7 @@ import {contain, division, getSheetVale, isSheetVale} from "../core/operator";
 import {expr2xy, xy2expr} from "../core/alphabet";
 // import Worker from 'worker-loader!../external/Worker.js';
 import {filterFormula} from "../config";
+import {toUpperCase} from "./table";
 
 export default class CellProxy {
     constructor(refRow) {
@@ -111,8 +112,8 @@ export default class CellProxy {
                     }
                     let value = data[i][j][k].f + "";
                     if (value[0] === '=') {
-                        for(let c = 0; c < arr.length; c++) {
-                            if(value.indexOf(arr[c]) != -1) {
+                        for (let c = 0; c < arr.length; c++) {
+                            if (value.indexOf(arr[c]) != -1) {
                                 fd[i][j][k] = data[i][j][k];
                             }
                         }
@@ -261,6 +262,31 @@ export default class CellProxy {
         console.timeEnd("xx");
     }
 
+
+    countProperties(workbook) {
+        let count = 0;
+        Object.keys(workbook).forEach(i => {
+            Object.keys(workbook[i]).forEach(j => {
+                Object.keys(workbook[i][j]).forEach(k => {
+                    let cell = workbook[i][j][k];
+                    if (cell && cell.f && cell.f[0] === "=") {
+                        count++;
+                    }
+
+                    if (count >= 1) {
+                        return true;
+                    }
+                })
+            });
+        });
+
+        if (count >= 1) {
+            return true;
+        }
+        return false;
+    }
+
+
     // =a1 要变成=A1  不破坏数据源
     pack(name, workbook) {
         if (typeof this.oldData === "string") {
@@ -285,7 +311,7 @@ export default class CellProxy {
                 if (isSheetVale(workbook.Sheets[name][i].f)) {
                     data.Sheets[name][i].f = workbook.Sheets[name][i].f;
                 } else {
-                    data.Sheets[name][i].f = workbook.Sheets[name][i].f.toUpperCase();
+                    data.Sheets[name][i].f = toUpperCase(workbook.Sheets[name][i].f);
                 }
             }
         });
@@ -515,7 +541,7 @@ export default class CellProxy {
                 Object.keys(data[i][j]).forEach(k => {
                     let formula = data[i][j][k].f + "";
 
-                    if(formula.indexOf(filterFormula) == -1) {
+                    if (formula.indexOf(filterFormula) == -1) {
                         data[i][j][k] = {
                             f: "",
                             v: ""
