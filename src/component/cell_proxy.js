@@ -285,7 +285,6 @@ export default class CellProxy {
         return false;
     }
 
-
     // =a1 要变成=A1  不破坏数据源
     pack(name, workbook) {
         if (typeof this.oldData === "string") {
@@ -432,6 +431,10 @@ export default class CellProxy {
         }
     }
 
+    isDone() {
+        this.lastResult = "";
+    }
+
     calc(newData, name, initd = false) {
         if (this.diff === 306 && this.lastResult !== "") {
             this.diff = 402;
@@ -541,7 +544,12 @@ export default class CellProxy {
         }
         this.diff = 402;
         this.oldData = this.deepCopy(newData);
-        this.lastResult = workbook.Sheets[name];
+        if(this.lastResult !== "") {
+            console.log("548")
+            // this.lastResult = Object.assign(this.lastResult, workbook.Sheets[name]);
+        } else {
+            this.lastResult = workbook.Sheets[name];
+        }
 
         return {
             "state": true,
