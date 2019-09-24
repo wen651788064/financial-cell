@@ -438,6 +438,7 @@ export default class CellProxy {
             Object.keys(this.lastResult).forEach(i => {
                 this.lastResult[i] = newData.Sheets[name][i];
             });
+            this.oldData = this.deepCopy(newData);
             return {
                 "state": true,
                 "data": this.lastResult
