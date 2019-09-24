@@ -434,8 +434,17 @@ export default class CellProxy {
 
     isDone() {
         clearTimeout(this.lastResultTimer);
+        let enter = true;
         this.lastResultTimer = setTimeout(() => {
-            this.lastResult = "";
+
+            Object.keys(this.lastResult).forEach(i => {
+                if(enter && this.lastResult[i].v === "-") {
+                    enter = false;
+                }
+            });
+            if(enter) {
+                this.lastResult = "";
+            }
         }, 500);
     }
 
