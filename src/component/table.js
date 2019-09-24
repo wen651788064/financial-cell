@@ -233,7 +233,7 @@ async function parseCell(viewRange, state = false, src = '') {
                 workbook = proxy.pack(data.name, workbook);
 
                 data.calc(workbook);
-                proxy.isDone();
+                // proxy.isDone();
                 let {factory} = this;
                 factory.data = workbook;
                 workbook = proxy.concat(data.name, workbook);
