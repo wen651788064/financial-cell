@@ -655,84 +655,81 @@ class Table {
 
     async render(temp = false, tempData, redo = false) {
         // resize canvas
-        clearTimeout(this.timer);
-        this.timer = setTimeout(async () => {
-            const {data} = this;
-            const {rows, cols} = data;
-            let viewRange = data.viewRange();
+        const {data} = this;
+        const {rows, cols} = data;
+        let viewRange = data.viewRange();
 
-            let workbook = "";
-            if (!temp) {
-                let args = await parseCell.call(this, viewRange);
+        let workbook = "";
+        if (!temp) {
+            let args = await parseCell.call(this, viewRange);
 
-                // if(args.redo === false && redo == false) {
-                //     return;
-                // }
+            // if(args.redo === false && redo == false) {
+            //     return;
+            // }
 
-                if (args.state == 1) {
-                    this.render();
-                    return;
-                } else if (args.state == 2) {
-                    return;
-                } else {
-                    this.clear();
-                }
-                workbook = args.data;
+            if (args.state == 1) {
+                this.render();
+                return;
+            } else if (args.state == 2) {
+                return;
             } else {
-                workbook = tempData;
+                this.clear();
             }
+            workbook = args.data;
+        } else {
+            workbook = tempData;
+        }
 
-            this.draw.resize(data.viewWidth(), data.viewHeight());
+        this.draw.resize(data.viewWidth(), data.viewHeight());
 
 
-            const tx = data.freezeTotalWidth();
-            const ty = data.freezeTotalHeight();
-            const {x, y} = data.scroll;
+        const tx = data.freezeTotalWidth();
+        const ty = data.freezeTotalHeight();
+        const {x, y} = data.scroll;
 
-            // fixed width of header
-            const fw = cols.indexWidth;
-            // fixed height of header
-            let fh = rows.height;
+        // fixed width of header
+        const fw = cols.indexWidth;
+        // fixed height of header
+        let fh = rows.height;
 
-            renderContentGrid.call(this, viewRange, fw, fh, tx, ty);
+        renderContentGrid.call(this, viewRange, fw, fh, tx, ty);
 
-            renderContent.call(this, viewRange, fw, fh, -x, -y, workbook);
+        renderContent.call(this, viewRange, fw, fh, -x, -y, workbook);
 
-            renderFixedHeaders.call(this, 'all', viewRange, fw, fh, tx, ty);
+        renderFixedHeaders.call(this, 'all', viewRange, fw, fh, tx, ty);
 
-            renderFixedLeftTopCell.call(this, fw, fh);
+        renderFixedLeftTopCell.call(this, fw, fh);
 
-            const [fri, fci] = data.freeze;
-            if (fri > 0 || fci > 0) {
-                // 2
-                if (fri > 0) {
-                    const vr = viewRange.clone();
-                    vr.sri = 0;
-                    vr.eri = fri - 1;
-                    vr.h = ty;
-                    renderContentGrid.call(this, vr, fw, fh, tx, 0);
-                    renderContent.call(this, vr, fw, fh, -x, 0, workbook);
-                    renderFixedHeaders.call(this, 'top', vr, fw, fh, tx, 0);
-                }
-                // 3x
-                if (fci > 0) {
-                    const vr = viewRange.clone();
-                    vr.sci = 0;
-                    vr.eci = fci - 1;
-                    vr.w = tx;
-                    renderContentGrid.call(this, vr, fw, fh, 0, ty);
-                    renderFixedHeaders.call(this, 'left', vr, fw, fh, 0, ty);
-                    renderContent.call(this, vr, fw, fh, 0, -y, workbook);
-                }
-                // 4
-                const freezeViewRange = data.freezeViewRange();
-                renderContentGrid.call(this, freezeViewRange, fw, fh, 0, 0);
-                renderFixedHeaders.call(this, 'all', freezeViewRange, fw, fh, 0, 0);
-                renderContent.call(this, freezeViewRange, fw, fh, 0, 0, workbook);
-                // 5
-                renderFreezeHighlightLine.call(this, fw, fh, tx, ty);
+        const [fri, fci] = data.freeze;
+        if (fri > 0 || fci > 0) {
+            // 2
+            if (fri > 0) {
+                const vr = viewRange.clone();
+                vr.sri = 0;
+                vr.eri = fri - 1;
+                vr.h = ty;
+                renderContentGrid.call(this, vr, fw, fh, tx, 0);
+                renderContent.call(this, vr, fw, fh, -x, 0, workbook);
+                renderFixedHeaders.call(this, 'top', vr, fw, fh, tx, 0);
             }
-        }, 200);
+            // 3x
+            if (fci > 0) {
+                const vr = viewRange.clone();
+                vr.sci = 0;
+                vr.eci = fci - 1;
+                vr.w = tx;
+                renderContentGrid.call(this, vr, fw, fh, 0, ty);
+                renderFixedHeaders.call(this, 'left', vr, fw, fh, 0, ty);
+                renderContent.call(this, vr, fw, fh, 0, -y, workbook);
+            }
+            // 4
+            const freezeViewRange = data.freezeViewRange();
+            renderContentGrid.call(this, freezeViewRange, fw, fh, 0, 0);
+            renderFixedHeaders.call(this, 'all', freezeViewRange, fw, fh, 0, 0);
+            renderContent.call(this, freezeViewRange, fw, fh, 0, 0, workbook);
+            // 5
+            renderFreezeHighlightLine.call(this, fw, fh, tx, ty);
+        }
     }
 
     clear() {
