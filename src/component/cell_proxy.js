@@ -305,9 +305,12 @@ export default class CellProxy {
         Object.keys(workbook.Sheets[name]).forEach(i => {
             data.Sheets[name][i] = workbook.Sheets[name][i];
 
-            if (workbook.Sheets[name][i].f && workbook.Sheets[name][i].f[0] === '=' &&
-                !find(filterFormula, workbook.Sheets[name][i].f)) {
-                data.Sheets[name][i].v = "-";
+            if (workbook.Sheets[name][i].f && workbook.Sheets[name][i].f[0] === '=' ) {
+                if(find(filterFormula, workbook.Sheets[name][i].f)) {
+                    data.Sheets[name][i].f = "";
+                } else {
+                    data.Sheets[name][i].v = "-";
+                }
                 if (isSheetVale(workbook.Sheets[name][i].f)) {
                     data.Sheets[name][i].f = workbook.Sheets[name][i].f;
                 } else {
