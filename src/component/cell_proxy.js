@@ -306,7 +306,7 @@ export default class CellProxy {
             data.Sheets[name][i] = workbook.Sheets[name][i];
 
             if (workbook.Sheets[name][i].f && workbook.Sheets[name][i].f[0] === '=' ) {
-                if(find(filterFormula, workbook.Sheets[name][i].f)) {
+                if(find(filterFormula, workbook.Sheets[name][i].f) && workbook.Sheets[name][i].v !== "") {
                     data.Sheets[name][i].f = "";
                 } else {
                     data.Sheets[name][i].v = "-";
