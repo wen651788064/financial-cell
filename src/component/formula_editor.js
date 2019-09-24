@@ -186,7 +186,7 @@ function lockCells(evt, _selector, isAb = false, p = -1) {
 
 
         // clearSelectors.call(this);
-        console.log(it);
+        // console.log(it);
         div2span.call(this, cutting(it), cutting2(it, this.selectors));
         if (enter) {
             setTimeout(() => {
@@ -221,7 +221,6 @@ function filterSelectors(cut) {
         selectors_new,
     };
 }
-
 
 function makeSelector(ri, ci, selectors = this.selectors, multiple = false, _selector, mergeSelector) {
     const {data} = this;
@@ -274,7 +273,7 @@ function makeSelector(ri, ci, selectors = this.selectors, multiple = false, _sel
         ci,
         index: len,
         color,
-        index,
+        index2: index,
         className: selector.el.el.className,
         erpx: it,
         selector,

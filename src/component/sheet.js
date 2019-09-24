@@ -348,6 +348,7 @@ function overlayerMousedown(evt) {
             return;
         }
     }
+
     // console.log('ri:', ri, ', ci:', ci);
     if (!evt.shiftKey) {
         // console.log('selectorSetStart:::');
@@ -361,6 +362,10 @@ function overlayerMousedown(evt) {
         // let {pageX, pageY} = evt;
         let {verticalScrollbar} = this;
         const {rows} = data;
+        const {top} = verticalScrollbar.scroll();
+        ri = data.scroll.ri + 1;
+        let ttop = top + rows.getHeight(ri) - 1;
+
         // mouse move up
         mouseMoveUp(window, (e) => {
             this.selector.setBoxinner("none");
@@ -371,6 +376,7 @@ function overlayerMousedown(evt) {
             ({ri, ci} = data.getCellRectByXY(e.layerX, e.layerY));
             if (isAutofillEl) {
                 let pos = positionAngle(evt.clientX, e.clientX, evt.clientY, e.clientY);
+                console.log(pos);
                 let orien = selector.showAutofill(ri, ci, pos);
                 let o = orientation(this.data.settings.view.height(), this.data.settings.view.width(), e.layerY, e.layerX, orien);
 
@@ -385,7 +391,6 @@ function overlayerMousedown(evt) {
                         verticalScrollbar.move({top: ri === 0 ? 0 : top - rows.getHeight(ri)});
                     }
                 }
-                console.log(orientation(this.data.settings.view.height(), this.data.settings.view.width(), e.layerY, e.layerX, orien));
             } else if (e.buttons === 1 && !e.shiftKey) {
                 // console.log("2", e.offsetX, e.offsetY, ri, ci, e);
                 selectorSet.call(this, true, ri, ci, true, true);
@@ -397,23 +402,7 @@ function overlayerMousedown(evt) {
                 let dateDiff = dateEnd.getTime() - dateBegin.getTime();
                 if (dateDiff > 50) {
                     if (data.autofill(selector.arange, 'all', msg => xtoast('Tip', msg), this.table.proxy)) {
-                        editor.display = true;
-                        let enter = false;
-                        this.selector.arange.each((ri, ci) => {
-                            let cell = data.rows.getCell( ri, ci);
-                            if(cell && cell.formulas) {
-                                let enter2 = this.editorProxy.change( ri,  ci, cell.formulas, data.rows, data, true);
-                                if(enter2 === true) {
-                                    enter = true;
-                                }
-                            }
-                        });
-                        if(enter) {
-                            data.change(data.getData());
-                        }
-                        this.selector.arange = null;
-                        loadFormula.call(this);
-                        table.render();
+                        autofillNext.call(this);
                     }
                 }
             }
@@ -432,6 +421,29 @@ function overlayerMousedown(evt) {
             selectorSet.call(this, true, ri, ci);
         }
     }
+}
+
+function autofillNext() {
+    const {
+        data, table, editor
+    } = this;
+    editor.display = true;
+    let enter = false;
+    this.selector.arange.each((ri, ci) => {
+        let cell = data.rows.getCell(ri, ci);
+        if (cell && cell.formulas) {
+            let enter2 = this.editorProxy.change(ri, ci, cell.formulas, data.rows, data, true);
+            if (enter2 === true) {
+                enter = true;
+            }
+        }
+    });
+    if (enter) {
+        data.change(data.getData());
+    }
+    this.selector.arange = null;
+    loadFormula.call(this);
+    table.render();
 }
 
 function loadFormula(load = false) {
@@ -464,12 +476,15 @@ function pictureSetOffset() {
     const {data} = this;
     let {pictureOffsetLeft, pictureOffsetTop} = this;
 
+
     this.data.pasteDirectionsArr.forEach(i => {
         const sOffset = data.getMoveRect(i.range);
+
         i.img.el.style['top'] = `${sOffset.top + pictureOffsetTop + i.number * 15 + i.offsetTop }px`;
         i.img.el.style['left'] = `${sOffset.left + pictureOffsetLeft + i.number * 15 + i.offsetLeft}px`;
     });
 }
+
 
 function editorSetOffset(show = true, cri = -1, cci = -1) {
     const {
@@ -969,9 +984,9 @@ function sheetInitEvents() {
 
                     let state = editor.clear();
                     if (state) {
-                        let cell = data.rows.getCell( ri, ci);
-                        if(cell && cell.formulas) {
-                            this.editorProxy.change( ri, ci, cell.formulas, data.rows, data);
+                        let cell = data.rows.getCell(ri, ci);
+                        if (cell && cell.formulas) {
+                            this.editorProxy.change(ri, ci, cell.formulas, data.rows, data);
                         }
                         loadFormula.call(this);
                     }
@@ -1373,7 +1388,6 @@ export default class Sheet {
         this.direction = false;   // 图片移动
 
         // root element
-
         this.el.children(
             this.tableEl,
             this.rowResizer.el,
@@ -1407,6 +1421,16 @@ export default class Sheet {
         editorSetOffset.call(this);
         this.editor.setRiCi(this.data.selector.ri, this.data.selector.ci)
         sheetReset.call(this);
+    }
+
+    clickCopyPaste() {
+        let {data} = this;
+        let args = data.clickCopyPaste();
+        if (args.enter) {
+            this.selector.arange = args.dstCellRange;
+            data.clickAutofill(args.srcCellRange, args.dstCellRange, "all", msg => xtoast('Tip', msg), this.table.proxy);
+            autofillNext.call(this);
+        }
     }
 
     selectorEditorReset(ri, ci) {

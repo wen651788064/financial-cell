@@ -56,13 +56,13 @@ class CellRange {
         let extraRiValue = eri;
         let extraCiValue = eci;
 
-        if(sri - extraRiValue <= 0) {
+        if (sri - extraRiValue <= 0) {
             sri = 0;
-        }else {
+        } else {
             sri = sri - extraRiValue;
         }
 
-        if(sci  - extraCiValue <= 0) {
+        if (sci - extraCiValue <= 0) {
             sci = 0;
         } else {
             sci = sci - extraCiValue;
@@ -77,7 +77,7 @@ class CellRange {
         }
     }
 
-    each3(cb,  mri, mci) {
+    each3(cb, mri, mci) {
         let sri = 0;
         let sci = 0;
         let eri = mri;
@@ -97,6 +97,13 @@ class CellRange {
         this.sci = ci;
         this.eri = this.sri + d;
         this.eci = this.sci + d2;
+    }
+
+    move2(ri, ci, eri, eci) {
+        this.sri = ri;
+        this.sci = ci;
+        this.eri = eri;
+        this.eci = eci;
     }
 
     contains(other) {

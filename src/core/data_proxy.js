@@ -187,6 +187,7 @@ function processPasteDirectionsArr(pasteDirectionsArr, type = 'to', sheet) {
         let arr = [];
         for (let i = 0; i < pasteDirectionsArr.length; i++) {
             let item = pasteDirectionsArr[i];
+            console.log(item);
             let newItem = {
                 src: item.img2.src,
                 ri: item.ri,
@@ -197,7 +198,10 @@ function processPasteDirectionsArr(pasteDirectionsArr, type = 'to', sheet) {
                 offsetLeft: item.offsetLeft,
                 offsetTop: item.offsetTop,
                 nextLeft: item.nextLeft,
-                nextTop: item.nextLeft,
+                nextTop: item.nextTop,
+                img: item.img,
+                arr: item.arr,
+                img2: item.img2
             };
 
             arr.push(newItem);
@@ -205,6 +209,9 @@ function processPasteDirectionsArr(pasteDirectionsArr, type = 'to', sheet) {
 
         return arr;
     } else if (type == 'from') {
+        if(typeof sheet === 'string') {
+            return;
+        }
         for (let i = 0; i < pasteDirectionsArr.length; i++) {
             let item = pasteDirectionsArr[i];
             let img = h('img', '');
@@ -212,6 +219,22 @@ function processPasteDirectionsArr(pasteDirectionsArr, type = 'to', sheet) {
             mountImg.call(sheet, img.el, true, item.ri, item.ci, item.range);
         }
     }
+}
+
+function clickCopyPasteHelp(ri, lci) {
+    let {rows} = this;
+    let lri = ri + 1;
+    let enter = true;
+    while (enter) {
+        let lcell = rows.getCellOrNew(lri, lci);
+        if (!lcell || !lcell.text) {
+            enter = false;
+        } else {
+            lri = lri + 1;
+        }
+    }
+
+    return lri;
 }
 
 function setStyleBorders({mode, style, color}) {
@@ -419,6 +442,44 @@ export default class DataProxy {
         });
     }
 
+    clickCopyPaste() {
+        let ri = this.selector.range.eri;
+        let ci = this.selector.range.eci;
+        let {rows} = this;
+        const cell = rows.getCellOrNew(ri, ci);
+        const cell2 = rows.getCellOrNew(ri + 1, ci);
+        if (!cell || !cell.text || (cell2 && cell2.text)) {
+            return {
+                enter: false
+            };
+        }
+
+        let left = clickCopyPasteHelp.call(this, ri, ci - 1);
+        let right = clickCopyPasteHelp.call(this, ri, ci + 1);
+        let eri = left < right ? right : left;
+
+        let enter = false;
+        for(let i = 1; i < eri && enter === false; i++) {
+            let cell3 = rows.getCellOrNew(ri + i, ci);
+
+            if(cell3 && cell3.text) {
+                eri = ri + i;
+                enter = true;
+            }
+        }
+
+
+        let dstCellRange = new CellRange(ri + 1, ci, eri - 1, ci);
+        let srcCellRange = new CellRange(ri, ci, ri, ci);
+
+        return {
+            enter: true,
+            dstCellRange: dstCellRange,
+            srcCellRange: srcCellRange
+        };
+    }
+
+
     getSelectedValidator() {
         const {ri, ci} = this.selector;
         const v = this.validations.get(ri, ci);
@@ -490,6 +551,15 @@ export default class DataProxy {
     autofill(cellRange, what, error = () => {
     }, proxy = "") {
         const srcRange = this.selector.range;
+        if (!canPaste.call(this, srcRange, cellRange, error)) return false;
+        this.changeData(() => {
+            copyPaste.call(this, srcRange, cellRange, what, true, proxy);
+        });
+        return true;
+    }
+
+    clickAutofill(srcRange, cellRange, what, error = () => {
+    }, proxy = "") {
         if (!canPaste.call(this, srcRange, cellRange, error)) return false;
         this.changeData(() => {
             copyPaste.call(this, srcRange, cellRange, what, true, proxy);
@@ -1013,7 +1083,7 @@ export default class DataProxy {
         } else {
             if (state === 'end') {
                 rows.setCellAll(ri, ci, text);
-            } else if(state === 'formulas') {
+            } else if (state === 'formulas') {
                 rows.setCellAll(ri, ci, text, "-");
             } else {
                 rows.setCellText(ri, ci, text, proxy, this.name);
@@ -1026,7 +1096,7 @@ export default class DataProxy {
     }
 
     setCellWithFormulas(ri, ci, text, formulas) {
-        const {rows } = this;
+        const {rows} = this;
         rows.setCellAll(ri, ci, text, formulas);
     }
 

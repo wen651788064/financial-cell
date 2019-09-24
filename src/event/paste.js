@@ -6,6 +6,7 @@ import {cssPrefix} from "../config";
 import {getChooseImg} from "../event/copy";
 import {expr2xy, xy2expr} from "../core/alphabet";
 import CellRange from "../core/cell_range";
+import {deepCopy} from "../core/operator";
 
 export let resizeOption = {
     onBegin(data) {
@@ -54,6 +55,14 @@ export let dragOption = {
         img.offsetLeft = offsetLeft;
         img.offsetTop = offsetTop;
         img.range = range;
+        if(typeof img.lastCi !== 'undefined' && typeof img.lastRi !== 'undefined') {
+            img.ri = img.lastRi;
+            img.ci = img.lastCi;
+        }
+        img.lastCi = range.ci;
+        img.lastRi = range.ri;
+
+        self.data.history.addPic(deepCopy(self.data.pasteDirectionsArr), "delete");
     },
     onDrag(data) {
     },
@@ -242,7 +251,7 @@ function getMaxCoord(ri, ci) {
 }
 
 
-export function mountImg(imgDom, init = false, sri, sci, range) {
+export function mountImg(imgDom, init = false, sri, sci, range, add = true) {
     let image = new Image();
     image.src = imgDom.src;
     image.onload = () => {
@@ -251,7 +260,10 @@ export function mountImg(imgDom, init = false, sri, sci, range) {
         let img = imgDom;
         let {container, data} = this;
         let {pasteDirectionsArr} = data;
-        data.history.addPic(Object.assign([], pasteDirectionsArr), "delete");
+        if(add) {
+            data.history.addPic(Object.assign([], pasteDirectionsArr), "delete");
+        }
+
         let {ri, ci} = data.selector;
         if(init) {
            ri = sri;
@@ -287,7 +299,9 @@ export function mountImg(imgDom, init = false, sri, sci, range) {
             let {data} = this;
             let directionsArr = new Resize(resizeOption, this).register(div.el);
             let index = pasteDirectionsArr.length;
+
             pasteDirectionsArr.push({
+                "src": img.src,
                 "state": true,
                 "arr": directionsArr,
                 "img": div,

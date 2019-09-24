@@ -6,6 +6,7 @@ import {lockCells} from "../component/formula_editor";
 import {cuttingByPos} from "../core/operator";
 import {expr2xy} from "../core/alphabet";
 import {cuttingByPosEnd, isAbsoluteValue} from "../core/operator";
+import SelectorMove from "./selector_move";
 
 const selectorHeightBorderWidth = 2 * 2 - 1;
 let startZIndex = 10;
@@ -37,6 +38,7 @@ class SelectorElement {
 
         this.boxinner = h('div', `${cssPrefix}-selector-boxinner`)
             .children(this.b, this.t, this.r, this.l);
+        this.selectorMove = new SelectorMove(this.boxinner, data, sheet, selector);
         this.areaEl = h('div', `${cssPrefix}-selector-area`)
             .child(this.boxinner)
             .hide();            // this.boxinner
@@ -50,10 +52,7 @@ class SelectorElement {
     }
 
     find(str, cha, num) {
-        let x = str.indexOf(cha);
-        for (let i = 0; i < num; i++) {
-            x = str.indexOf(cha, x + 1);
-        }
+        let x = str.lastIndexOf(cha);
         return x;
     }
 
@@ -144,6 +143,10 @@ class SelectorElement {
         this.r.css("pointer-events", pointer);
         this.t.css("pointer-events", pointer);
         this.b.css("pointer-events", pointer);
+        this.selectorMove.l.css("pointer-events", pointer);
+        this.selectorMove.r.css("pointer-events", pointer);
+        this.selectorMove.t.css("pointer-events", pointer);
+        this.selectorMove.b.css("pointer-events", pointer);
     }
 
     setCss(b, key = true) {

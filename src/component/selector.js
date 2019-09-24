@@ -3,7 +3,6 @@ import {cssPrefix} from '../config';
 import {CellRange} from '../core/cell_range';
 import {mouseMoveUp} from "../component/event";
 import {xy2expr} from "../core/alphabet";
-import {changeFormula, cutStr} from "../core/operator";
 
 const selectorHeightBorderWidth = 2 * 2 - 1;
 let startZIndex = 10;
@@ -32,6 +31,13 @@ class SelectorElement {
                 this.moveEvent(4);
             });
 
+        this.cornerEl.on('mousedown', evt => {
+            let {detail} = evt;
+            if(detail === 2) {
+                 sheet.clickCopyPaste();
+                 evt.stopPropagation();
+            }
+        });
         this.boxinner = h('div', `${cssPrefix}-selector-boxinner`)
             .children(this.b, this.t, this.r, this.l);
         this.areaEl = h('div', `${cssPrefix}-selector-area`)
@@ -71,13 +77,13 @@ class SelectorElement {
             if (ri !== -1 && ci !== -1) {
                 cellRange = new CellRange(sri, sci, eri, eci, w, h);
                 cellRange.move(ri, ci);
-            //     if(direction == 4) {
-            //         cellRange = new CellRange(eri, eci, eri, eci, w, h);
-            //     } else if(direction == 2) {
-            //         cellRange = new CellRange(sri, eci, eri, eci, w, h);
-            //     } else if(direction == 1) {
-            //         cellRange = new CellRange(sri, sci, eri, eci, w, h);
-            // }
+                //     if(direction == 4) {
+                //         cellRange = new CellRange(eri, eci, eri, eci, w, h);
+                //     } else if(direction == 2) {
+                //         cellRange = new CellRange(sri, eci, eri, eci, w, h);
+                //     } else if(direction == 1) {
+                //         cellRange = new CellRange(sri, sci, eri, eci, w, h);
+                // }
 
                 const rect = data.getMoveRect(cellRange);
                 selectorMoveEl.range = cellRange;
@@ -108,21 +114,21 @@ class SelectorElement {
                 let erpxArr = [];
                 let erpxArr2 = [];
                 let erpxArr3 = [];
-                for(let i = _cellRange.sci; i <= _cellRange.eci; i++) {
-                    for(let j = _cellRange.sri; j <= _cellRange.eri; j++) {
+                for (let i = _cellRange.sci; i <= _cellRange.eci; i++) {
+                    for (let j = _cellRange.sri; j <= _cellRange.eri; j++) {
                         erpxArr.push(xy2expr(i, j));
                     }
                 }
 
-                for(let i = 0; i < erpxArr.length; i++) {
-                    for(let j = 0; j < erpxArr.length; j++) {
-                        if(i <= j) {
+                for (let i = 0; i < erpxArr.length; i++) {
+                    for (let j = 0; j < erpxArr.length; j++) {
+                        if (i <= j) {
                             erpxArr2.push([i, j])
                         }
                     }
                 }
 
-                for(let i = 0; i < erpxArr2.length; i++) {
+                for (let i = 0; i < erpxArr2.length; i++) {
                     let [a, b] = erpxArr2[i];
 
                     let a2 = erpxArr[a];
@@ -131,13 +137,13 @@ class SelectorElement {
                     arr3.push(`${a2}:${a1}`);
                 }
 
-                for(let i = cellRange.sci; i <= cellRange.eci; i++) {
-                    for(let j = cellRange.sri; j <= cellRange.eri; j++) {
+                for (let i = cellRange.sci; i <= cellRange.eci; i++) {
+                    for (let j = cellRange.sri; j <= cellRange.eri; j++) {
                         erpxArr3.push(xy2expr(i, j));
                     }
                 }
 
-                for(let i = 0; i < erpxArr2.length; i++) {
+                for (let i = 0; i < erpxArr2.length; i++) {
                     let [a, b] = erpxArr2[i];
 
                     let a2 = erpxArr3[a];
@@ -171,7 +177,7 @@ class SelectorElement {
             rows.moveChange(arr, arr2, arr3);
 
             sheet.selectorMoveReset();
-         });
+        });
     }
 
     setCss(b) {
@@ -512,7 +518,6 @@ export default class Selector {
         } = this.range;
 
         // pos == 1 往下，pos == 3 往右， pos == 2 往左， pos == 4 往上
-        console.log(pos, 23324);
         let drisc = 0;
         const [nri, nci] = [ri, ci];
         // const rn = eri - sri;
@@ -521,13 +526,14 @@ export default class Selector {
         const scn = sci - ci;
         const ern = eri - ri;
         const ecn = eci - ci;
-        console.log(srn, scn, ern, ecn)
+        console.log(srn, scn, ern, ecn, ri, ci);
         if (pos == 2) {
             console.log("11")
             drisc = 11;
             // left
             // console.log('left');
             this.arange = new CellRange(sri, nci, eri, sci - 1);
+            console.log(this.arange);
             // this.saIndexes = [sri, nci];
             // this.eaIndexes = [eri, sci - 1];
             // data.calRangeIndexes2(

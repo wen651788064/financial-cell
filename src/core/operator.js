@@ -23321,7 +23321,6 @@ const positionAngle = (x1, x2, y1, y2) => {
         angle = 4;
     }
 
-    console.log(af, angle);
     if(angle == 1 && af < 45) {
         angle = 3;
         return angle;
@@ -23435,6 +23434,19 @@ const cutting2 = (str, s) => {
     return colors;
 };
 
+const deepCopy = (obj) => {
+    var result = Array.isArray(obj) ? [] : {};
+    for (var key in obj) {
+        if (obj.hasOwnProperty(key)) {
+            if (typeof obj[key] === 'object' && obj[key] !== null) {
+                result[key] = deepCopy(obj[key]);
+            } else {
+                result[key] = obj[key];
+            }
+        }
+    }
+    return result;
+};
 
 export {
     operator,
@@ -23459,4 +23471,5 @@ export {
     division,
     haveManyFunc,
     positionAngle,
+    deepCopy,
 }
