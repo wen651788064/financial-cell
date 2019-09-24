@@ -3,6 +3,8 @@ import {expr2xy, xy2expr} from "../core/alphabet";
 // import Worker from 'worker-loader!../external/Worker.js';
 import {filterFormula} from "../config";
 import {toUpperCase} from "./table";
+import {find} from "../core/helper";
+import {formulas} from "../core/formula";
 
 export default class CellProxy {
     constructor(refRow) {
@@ -303,7 +305,8 @@ export default class CellProxy {
         Object.keys(workbook.Sheets[name]).forEach(i => {
             data.Sheets[name][i] = workbook.Sheets[name][i];
 
-            if (workbook.Sheets[name][i].f && workbook.Sheets[name][i].f[0] === '=' && filterFormula.indexOf(workbook.Sheets[name][i].f) == -1 ) {
+            if (workbook.Sheets[name][i].f && workbook.Sheets[name][i].f[0] === '=' &&
+                !find(filterFormula, workbook.Sheets[name][i].f)) {
                 data.Sheets[name][i].v = "-";
                 if (isSheetVale(workbook.Sheets[name][i].f)) {
                     data.Sheets[name][i].f = workbook.Sheets[name][i].f;

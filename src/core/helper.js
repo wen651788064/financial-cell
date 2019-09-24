@@ -24,6 +24,15 @@ const mergeDeep = (object = {}, ...sources) => {
     return object;
 };
 
+function find(arr, str) {
+    for(let i = 0; i < arr.length; i++) {
+        if(str.indexOf(arr[i]) != -1) {
+            return true;
+        }
+    }
+    return false;
+}
+
 function orientation(y, x, dy, dx, orien) {
     if (orien == 44 && dy - y + 100 > 0) {
         return true;
@@ -128,4 +137,5 @@ export default {
 
 export {
     orientation,
+    find,
 }
