@@ -24,6 +24,7 @@ export default {
         calc: '开始计算',
         formula: '函数',
         more: '更多',
+        throwFormula: '清除公式',
     },
     contextmenu: {
         copy: '复制',

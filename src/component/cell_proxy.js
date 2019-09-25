@@ -5,6 +5,7 @@ import {filterFormula} from "../config";
 import {toUpperCase} from "./table";
 import {find} from "../core/helper";
 import {formulas} from "../core/formula";
+import {specialWebsiteValue} from "./special_formula_process";
 
 export default class CellProxy {
     constructor(refRow) {
@@ -74,6 +75,10 @@ export default class CellProxy {
             if (!isNaN(t)) {
                 return t;
             }
+        }
+
+        if (typeof v === 'string' && v.indexOf("%") !== -1) {
+            return f;
         }
 
         return v;
@@ -358,6 +363,11 @@ export default class CellProxy {
 
             if (cells[i].w) {
                 cells[i].v = cells[i].w;
+            }
+
+            let args = specialWebsiteValue(cells[i].v + "", cells[i].f + "");
+            if(args.state) {
+                cells[i].v =  args.text;
             }
 
             if (cells[i].v + "" === '0' && cells[i].f && cells[i].f[0] && cells[i].f[0] === '=') {

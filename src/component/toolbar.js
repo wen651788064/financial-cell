@@ -163,6 +163,7 @@ export default class Toolbar {
             this.addEl = buildButtonWithIcon(`${t('toolbar.add')}`, 'add', () => toggleChange.call(this, 'add')),
             this.closeEl = buildButtonWithIcon(`${t('toolbar.calc')}`, 'close', () => toggleChange.call(this, 'close')),
             this.autofilterEl = buildButtonWithIcon(`${t('toolbar.autofilter')}`, 'autofilter', () => toggleChange.call(this, 'autofilter')),
+            this.throwFormulaEl = buildButtonWithIcon(`${t('toolbar.throwFormula')}`, 'chevron-right', () => toggleChange.call(this, 'throwFormula')),
             // buildButton(`${t('toolbar.formula')}`).child(this.ddFormula.el),
             // buildDivider(),
             this.moreEl = buildButton(`${t('toolbar.more')}`).child(this.ddMore.el).hide(),
@@ -221,6 +222,7 @@ export default class Toolbar {
         this.textwrapEl.active(style.textwrap);
         this.addEl.active(data.equationIsActive());
         this.closeEl.active(false);
+        this.throwFormulaEl.active(false);
         // console.log('freeze is Active:', data.freezeIsActive());
         this.freezeEl.active(data.freezeIsActive());
         if (cell) {

@@ -743,6 +743,12 @@ function dataSetCellText(text, state = 'finished') {
     if (state === 'finished') table.render();
 }
 
+function throwFormula() {
+    const {data} = this;
+    data.throwFormula();
+    // sheetReset.call(this);
+}
+
 function insertDeleteRowColumn(type) {
     const {data} = this;
     if (type === 'insert-row') {
@@ -784,6 +790,8 @@ function toolbarChange(type, value) {
     } else if (type === 'autofilter') {
         // filter
         autofilter.call(this);
+    } else if (type === 'throwFormula') {
+        throwFormula.call(this);
     } else if (type === 'close') {
         loadFormula.call(this, true);
     } else if (type === 'freeze') {
@@ -1051,7 +1059,6 @@ function sheetInitEvents() {
         let {lock} = editor;
         editor.setMouseDownIndex(data.rows, []);
         editingSelectors.call(this, itext);
-
 
         if (lock && itext != '=') {
             return;

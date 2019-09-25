@@ -865,7 +865,6 @@ export default class DataProxy {
     autofilter() {
         const {autoFilter, selector} = this;
         this.changeData(() => {
-            // console.log(autoFilter.active(), "706")
             if (autoFilter.active()) {
                 autoFilter.clear();
                 this.exceptRowSet = new Set();
@@ -874,6 +873,19 @@ export default class DataProxy {
             } else {
                 autoFilter.ref = selector.range.toString();
             }
+        });
+    }
+
+    throwFormula() {
+        const { selector, rows} = this;
+
+        this.changeData(() => {
+            selector.range.each((i, j) => {
+                const cell = rows.getCellOrNew(i, j);
+                if(cell && cell.text && cell.formulas) {
+                    rows.setCellAll(i, j, cell.text, cell.text);
+                }
+            });
         });
     }
 
