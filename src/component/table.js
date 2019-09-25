@@ -306,7 +306,7 @@ export function parseCell2(viewRange, state = false, src = '') {
 }
 
 function specialStyle(text) {
-    text = text + "";
+    text = text + ""
     if(!text) {
         return false;
     }

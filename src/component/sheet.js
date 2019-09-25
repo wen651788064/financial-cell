@@ -1430,6 +1430,14 @@ export default class Sheet {
         sheetReset.call(this);
     }
 
+    getTable() {
+        let {table} = this;
+        return {
+            recalc: false,
+            table: table
+        }
+    }
+
     clickCopyPaste() {
         let {data} = this;
         let args = data.clickCopyPaste();
