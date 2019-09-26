@@ -64,6 +64,7 @@ export default class revision {
                 setColor.call(this);
                 el.css('color', 'red');
                 this.sheet.loadData(sd.sheet_data);
+                this.contextMenu.hide();
                 evt.stopPropagation();
             } else {
                 setColor.call(this);
