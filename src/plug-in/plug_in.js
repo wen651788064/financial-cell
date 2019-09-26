@@ -157,9 +157,9 @@ export default class PlugIn {
 
         this.data.settings.view.width = () => {
             let result = w();
-            w = result - 150 < 0 ? 0 : result - 150;
+            result = result - 150 < 0 ? 0 : result - 150;
 
-            return w;
+            return result;
         };
         setCssToRight.call(this);
         createEvent.call(this, 8, false, 'resize');
