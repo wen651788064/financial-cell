@@ -21,6 +21,17 @@ function findData(sp) {
     return null;
 }
 
+function sendRequest(info, sheet_path) {
+    let {axios, url} = info;
+    axios.get(url, {
+        params: {
+            id: sheet_path,
+        }
+    }).then(response => {
+        console.log(response);
+    })
+}
+
 export default class revision {
     constructor(width, sheet) {
         this.el = h('div', `${cssPrefix}-revisions-sidebar`);
@@ -52,7 +63,7 @@ export default class revision {
 
     }
 
-    clickEvent(el, data, axios) {
+    clickEvent(el, data, info) {
         el.on('mousedown', evt => {
             let {buttons} = evt;
             if(buttons === 2) {
@@ -68,12 +79,12 @@ export default class revision {
                 evt.stopPropagation();
             } else {
                 setColor.call(this);
-
+                sendRequest.call(this, sheet_path);
             }
         });
     }
 
-    setData(d, args, axios) {
+    setData(d, args, info) {
         let enter = false;
         Object.keys(d).forEach(i => {
             let year = d[i];
@@ -88,7 +99,7 @@ export default class revision {
                     "history_id": history_id,
                     "sheet_id": sheet_id,
                     "sheet_path": sheet_path
-                }, axios);
+                }, info);
                 if (!enter) {
                     el.css('color', 'red');
                     this.sheet.loadData(args);

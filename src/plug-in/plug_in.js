@@ -150,7 +150,7 @@ export default class PlugIn {
                 "width": 300
             }
         }
-    }, axios) {
+    }, info) {
         this.data.settings.showEditor = false;
          w = w - 150 < 0 ? 0 : w - 150;
         this.data.settings.view.width = () => {
@@ -161,7 +161,7 @@ export default class PlugIn {
         sheetReset.call(this.sheet);
 
         this.revision = new Revision('150px', this.sheet);
-        this.revision.setData(data, args, axios);
+        this.revision.setData(data, args, info);
         this.targetEl.children(
             this.revision.el,
             this.revision.contextMenu.el
