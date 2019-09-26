@@ -56,8 +56,8 @@ export default class revision {
         el.on('mousedown', evt => {
             let {sheet_path} = data;
             let sd = findData.call(this, sheet_path);
-            if (sd) {
-                this.sheet.loadData(data);
+            if (sd.sheet_data) {
+                this.sheet.loadData(sd.sheet_data);
             }
         });
     }
