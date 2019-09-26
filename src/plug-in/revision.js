@@ -10,6 +10,13 @@ export function setColor() {
     }
 }
 
+function loadNeatFlex(neat_flex) {
+    if (neat_flex) {
+        return neat_flex.neat_flex;
+    }
+    return {};
+}
+
 function findData(sp) {
     for (let i = 0; i < this.sheet_data.length; i++) {
         let {sheet_path} = this.sheet_data[i];
@@ -21,14 +28,80 @@ function findData(sp) {
     return null;
 }
 
-function sendRequest(info, sheet_path) {
+function loadRowAndCol(options, neat_flex, op) {
+    if (neat_flex) {
+        options.row = {
+            len: neat_flex["rows"],
+        };
+        options.rowWidth = {
+            state: !0,
+            width: 240
+        };
+        options.view = {
+            height: () => 150 * 25,
+        };
+        options.col = {
+            len: neat_flex["col"],
+        };
+
+    }
+    options.view = {
+        width: () => {
+            return document.body.clientWidth - 280 - 10 - 68;
+        }
+    };
+    if(typeof op === 'string') {
+        op = JSON.parse(op)
+    }
+    if(op.cols) {
+        options.cols = op.cols
+    }
+    if(op.row) {
+        options.row = op.row
+    }
+    options.showFreeze = true;
+    return options;
+}
+
+function sendRequest(info, sheet_path, el) {
     let {axios, url} = info;
     axios.get(url, {
         params: {
             sheet_path: sheet_path,
         }
-    }).then(response => {
-        console.log(response);
+    }).then(res => {
+        if(res.data.status === true) {
+            if(res.data.data === "error") {
+                return;
+            }
+            let data = typeof res.data.data.sheet_details == 'string'
+                ? JSON.parse(res.data.data.sheet_details) : res.data.data.sheet_details;
+            let styles = "";
+            if (typeof res.data.data.sheet_styles === "string" && JSON.parse(res.data.data.sheet_styles)) {
+                styles = JSON.parse(res.data.data.sheet_styles);
+            } else {
+                styles = res.data.data.sheet_styles;
+            }
+            let options = loadRowAndCol({}, res.data.data.neat_flex, res.data.data.sheet_options);
+
+            let args = {
+                styles: styles,
+                rows:  data,
+                options: options,
+                merges:  res.data.data.sheet_merges,
+                autofilter:  res.data.data.sheet_auto_filter,
+                pictures:  res.data.data.sheet_pictures,
+                flex: loadNeatFlex(res.data.data.neat_flex),
+                cols: ( options && options.cols) || {}
+            };
+
+            el.css('color', 'red');
+            this.sheet_data.push({
+                "sheet_path": sheet_path,
+                "sheet_data": args
+            })
+            this.sheet.loadData(args);
+        }
     })
 }
 
