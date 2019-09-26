@@ -3,8 +3,8 @@ import {createEvent} from "../component/event";
 import Revision from "./revision";
 
 function setCssToRight() {
-    this.sheet.el.css('float', 'right');
-    this.sheet.toolbar.el.css('float', 'right');
+    this.sheet.el.css('margin', '0 auto');
+    this.sheet.toolbar.el.css('margin', '0 auto');
 }
 
 export default class PlugIn {
