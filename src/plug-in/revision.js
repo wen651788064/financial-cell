@@ -25,7 +25,7 @@ function sendRequest(info, sheet_path) {
     let {axios, url} = info;
     axios.get(url, {
         params: {
-            id: sheet_path,
+            sheet_path: sheet_path,
         }
     }).then(response => {
         console.log(response);
