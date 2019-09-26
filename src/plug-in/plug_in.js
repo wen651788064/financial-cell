@@ -5,6 +5,7 @@ import Revision from "./revision";
 function setCssToRight() {
     this.sheet.el.css('left', '150px');
     this.sheet.toolbar.el.css('left', '150px');
+    this.sheet.toolbar.el.css('position', 'relative');
 }
 
 export default class PlugIn {
