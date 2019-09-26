@@ -4,10 +4,21 @@ import ContextMenu from "./contextmenu";
 
 
 export function setColor() {
-    for(let i = 0; i < this.dateArr.length; i++) {
+    for (let i = 0; i < this.dateArr.length; i++) {
         let d = this.dateArr[i];
         d.css('color', 'black');
     }
+}
+
+function findData(sp) {
+    for (let i = 0; i < this.sheet_data.length; i++) {
+        let {sheet_path} = this.sheet_data[i];
+        if (sp === sheet_path) {
+            return this.sheet_data[i];
+        }
+    }
+
+    return null;
 }
 
 export default class revision {
@@ -24,11 +35,12 @@ export default class revision {
             this.title,
         );
 
-       this.dateArr = [];
+        this.sheet_data = [];
+        this.dateArr = [];
         this.el.on('mousedown', evt => {
             let {buttons, target} = evt;
             let className = target.className;
-            if(buttons === 2 && className === `${cssPrefix}-revisions-sidebar-date`) {
+            if (buttons === 2 && className === `${cssPrefix}-revisions-sidebar-date`) {
                 setColor.call(this);
                 target.style['color'] = 'red';
                 this.contextMenu.setPosition(evt.layerX, evt.layerY, this);
@@ -42,7 +54,11 @@ export default class revision {
 
     clickEvent(el, data) {
         el.on('mousedown', evt => {
-            this.sheet.loadData(data);
+            let {sheet_path} = data;
+            let sd = findData.call(this, sheet_path);
+            if (sd) {
+                this.sheet.loadData(data);
+            }
         });
     }
 
@@ -53,15 +69,23 @@ export default class revision {
             let el = h('div', `${cssPrefix}-revisions-sidebar-year`).html(i);
             this.el.children(el);
             Object.keys(year).forEach(j => {
-                let {date, data} = year[j];
+                let {date, history_id, sheet_id, sheet_path} = year[j];
                 el = h('div', `${cssPrefix}-revisions-sidebar-date`).html(date);
                 this.dateArr.push(el);
                 this.el.children(el);
-                this.clickEvent(el, data);
-                if(!enter) {
+                this.clickEvent(el, {
+                    "history_id": history_id,
+                    "sheet_id": sheet_id,
+                    "sheet_path": sheet_path
+                });
+                if (!enter) {
                     el.css('color', 'red');
                     this.sheet.loadData(args);
                     enter = true;
+                    this.sheet_data.push({
+                        "sheet_path": sheet_path,
+                        "sheet_data": args
+                    })
                 }
             });
         });
