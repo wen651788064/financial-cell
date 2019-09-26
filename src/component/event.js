@@ -69,7 +69,7 @@ export function bindClickoutside2(el, revision) {
             unbindClickoutside(el);
         }
     };
-    bind(window.document.body, 'click', el.xclickoutside);
+    bind(window.document.body, 'mousedown', el.xclickoutside);
 }
 
 export function mouseMoveUp(target, movefunc, upfunc) {
