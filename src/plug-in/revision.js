@@ -153,6 +153,8 @@ export default class revision {
                 el.css('color', 'red');
                 this.sheet.loadData(sd.sheet_data);
                 this.contextMenu.hide();
+                let {tipMesage} = this;
+                tipMesage.$message({message: "打开成功", type: 'success', showClose: true});
                 evt.stopPropagation();
             } else {
                 setColor.call(this);
