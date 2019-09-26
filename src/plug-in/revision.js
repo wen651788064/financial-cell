@@ -59,6 +59,7 @@ export default class revision {
             if (sd && sd.sheet_data) {
                 el.css('color', 'red');
                 this.sheet.loadData(sd.sheet_data);
+                evt.stopPropagation();
             } else {
 
             }
