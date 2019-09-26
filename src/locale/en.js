@@ -39,6 +39,7 @@ export default {
         deleteCell: 'Delete cell',
         deleteCellText: 'Delete cell text',
         validation: 'Data validations',
+        recover: 'recover',
     },
     format: {
         normal: 'Normal',

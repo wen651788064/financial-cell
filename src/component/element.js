@@ -132,6 +132,7 @@ class Element {
             ele = arg.el;
         }
         this.el.appendChild(ele);
+
         return this;
     }
 

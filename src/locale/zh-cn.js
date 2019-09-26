@@ -40,6 +40,7 @@ export default {
         deleteCellText: '删除数据',
         validation: '数据验证',
         errorPop: '出现问题',
+        recover: '恢复此版本',
     },
     format: {
         normal: '正常',

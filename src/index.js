@@ -6,6 +6,7 @@ import {cssPrefix} from './config';
 import {locale} from './locale/locale';
 import './index.less';
 import zhCN from './locale/zh-cn';
+import PlugIn from "./plug-in/plug_in";
 
 class Spreadsheet {
     constructor(selectors, options = {}, methods = {}, alias = 'sheet1') {
@@ -25,6 +26,7 @@ class Spreadsheet {
         //
         // worker.addEventListener("message", function (event) {});
         this.sheet = new Sheet(rootEl, this.data);
+        this.plugIn = new PlugIn(rootEl, this.sheet, this.data);
     }
 
 

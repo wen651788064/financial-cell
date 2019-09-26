@@ -82,12 +82,12 @@ function initBtns2() {
     });
 }
 
-function moreResize() {
+function moreResize(widthFn = this.widthFn) {
     const {
         el, btns, moreEl, ddMore, btns2,
     } = this;
     const {moreBtns, contentEl} = ddMore;
-    el.css('width', `${this.widthFn() - 60}px`);
+    el.css('width', `${ widthFn() - 60}px`);
     const elBox = el.box();
 
     let sumWidth = 160;
@@ -179,7 +179,7 @@ export default class Toolbar {
             moreResize.call(this);
         }, 0);
         bind(window, 'resize', () => {
-            moreResize.call(this);
+            moreResize.call(this, data.settings.view.width);
         });
     }
 

@@ -12,7 +12,6 @@ export default class Scrollbar {
             })
             .on('scroll.stop', (evt) => {
                 let {scrollTop, scrollLeft} = evt.target;
-                console.log('scrollTop:', scrollTop);
                 scrollTop = scrollTop * 2;
                 // moveArr.call(this.sheet, scrollTop, scrollLeft);
                 if (this.moveFn) {
