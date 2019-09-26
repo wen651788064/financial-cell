@@ -44,7 +44,7 @@ export default class revision {
                 setColor.call(this);
                 target.style['color'] = 'red';
                 this.contextMenu.setPosition(evt.layerX, evt.layerY, this);
-            } else {
+            } else if (buttons === 2) {
                 setColor.call(this);
                 this.contextMenu.hide();
             }
@@ -57,7 +57,7 @@ export default class revision {
             let {sheet_path} = data;
             let sd = findData.call(this, sheet_path);
             if (sd.sheet_data) {
-                el.el.css('color', 'red');
+                el.css('color', 'red');
                 this.sheet.loadData(sd.sheet_data);
             }
         });
