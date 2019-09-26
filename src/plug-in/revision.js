@@ -65,6 +65,8 @@ function loadRowAndCol(options, neat_flex, op) {
 
 function sendRequest(info, sheet_path, el) {
     let {axios, url} = info;
+    el.css('color', 'red');
+
     axios.get(url, {
         params: {
             sheet_path: sheet_path,
@@ -74,7 +76,6 @@ function sendRequest(info, sheet_path, el) {
             if(res.data.data === "error") {
                 return;
             }
-            el.css('color', 'red');
             let data = typeof res.data.data.sheet_details == 'string'
                 ? JSON.parse(res.data.data.sheet_details) : res.data.data.sheet_details;
             let styles = "";
