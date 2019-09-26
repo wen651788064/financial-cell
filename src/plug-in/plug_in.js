@@ -27,7 +27,7 @@ export default class PlugIn {
         createEvent.call(this, 8, false, 'resize');
         sheetReset.call(this.sheet);
 
-        this.revision = new Revision('150px');
+        this.revision = new Revision('150px', this.sheet);
         this.revision.setData();
         this.targetEl.children(
             this.revision.el,

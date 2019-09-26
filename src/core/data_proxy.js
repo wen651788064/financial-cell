@@ -82,6 +82,7 @@ const defaultSettings = {
     showGrid: true,
     showToolbar: true,
     showContextmenu: true,
+    showEditor: true,
     autoLoad: true,
     ignore: [],
     cellWidth: 0,
