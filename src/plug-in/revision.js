@@ -63,7 +63,7 @@ function loadRowAndCol(options, neat_flex, op) {
     return options;
 }
 
-function sendRequest(info, sheet_path, el) {
+function sendRequest(info, sheet_path, el, tipMesage) {
     let {axios, url} = info;
     el.css('color', 'red');
 
@@ -100,14 +100,16 @@ function sendRequest(info, sheet_path, el) {
             this.sheet_data.push({
                 "sheet_path": sheet_path,
                 "sheet_data": args
-            })
+            });
+            let {tipMesage} = this;
+            tipMesage.$message({message: "打开成功", type: 'success', showClose: true});
             this.sheet.loadData(args);
         }
     })
 }
 
 export default class revision {
-    constructor(width, sheet) {
+    constructor(width, sheet, tipMesage) {
         this.el = h('div', `${cssPrefix}-revisions-sidebar`);
         this.el.css('width', width);
         this.sheet = sheet;
@@ -120,6 +122,7 @@ export default class revision {
             this.title,
         );
 
+        this.tipMesage = tipMesage;
         this.sheet_data = [];
         this.dateArr = [];
         this.el.on('mousedown', evt => {

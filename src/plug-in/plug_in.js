@@ -150,7 +150,7 @@ export default class PlugIn {
                 "width": 300
             }
         }
-    }, info) {
+    }, info, tipMesage) {
         this.data.settings.showEditor = false;
          w = w - 150 < 0 ? 0 : w - 150;
         this.data.settings.view.width = () => {
@@ -160,7 +160,7 @@ export default class PlugIn {
         createEvent.call(this, 8, false, 'resize');
         sheetReset.call(this.sheet);
 
-        this.revision = new Revision('150px', this.sheet);
+        this.revision = new Revision('150px', this.sheet, tipMesage);
         this.revision.setData(data, args, info);
         this.targetEl.children(
             this.revision.el,
