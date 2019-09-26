@@ -47,24 +47,6 @@ export default class revision {
     }
 
     setData(d, args) {
-        d = {
-            "2019年": [
-                {
-                    "date": "09-25 17:21:59",
-                    "data": {
-
-                    }
-                }
-            ],
-            "2018年": [
-                {
-                    "date": "09-25 17:21:59",
-                    "data": {
-
-                    }
-                }
-            ]
-        };
         let enter = false;
         Object.keys(d).forEach(i => {
             let year = d[i];
