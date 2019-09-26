@@ -62,7 +62,7 @@ export function bindClickoutside2(el, revision) {
     el.xclickoutside = (evt) => {
         // ignore double click
         // console.log('evt:', evt);
-        if (evt.detail === 2 || el.contains(evt.target)) return;
+        if (evt.buttons === 2 || el.contains(evt.target)) return;
         else {
             setColor.call(revision);
             el.hide();
