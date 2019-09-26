@@ -54,6 +54,10 @@ export default class revision {
 
     clickEvent(el, data, axios) {
         el.on('mousedown', evt => {
+            let {buttons} = evt;
+            if(buttons === 2) {
+                return;
+            }
             let {sheet_path} = data;
             let sd = findData.call(this, sheet_path);
             if (sd && sd.sheet_data) {
