@@ -1333,6 +1333,7 @@ export default class DataProxy {
             name, freeze, styles, merges, rows, cols, validations, autoFilter, pasteDirectionsArr,
         } = this;
         return {
+            editor: this.settings.showEditor,
             name,
             freeze: xy2expr(freeze[1], freeze[0]),
             styles,
