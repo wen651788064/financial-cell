@@ -19,7 +19,7 @@ export default class PlugIn {
     openFrame(w = document.body.clientWidth) {
         w = w - 150 < 0 ? 0 : w - 150;
         this.data.settings.view.width = () => {
-            return w;
+            return 352;
         };
         setCssToRight.call(this);
         createEvent.call(this, 8, false, 'resize');
