@@ -30,7 +30,7 @@ export default class revision {
             if(buttons === 2 && className === `${cssPrefix}-revisions-sidebar-date`) {
                 setColor.call(this);
                 target.style['color'] = 'red';
-                this.contextMenu.setPosition(evt.pageX, evt.pageY, this);
+                this.contextMenu.setPosition(evt.layerX, evt.layerY, this);
             } else {
                 setColor.call(this);
                 this.contextMenu.hide();
