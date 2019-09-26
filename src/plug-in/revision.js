@@ -57,6 +57,7 @@ export default class revision {
             let {sheet_path} = data;
             let sd = findData.call(this, sheet_path);
             if (sd.sheet_data) {
+                el.css('color', 'red');
                 this.sheet.loadData(sd.sheet_data);
             }
         });
