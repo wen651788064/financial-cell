@@ -70,10 +70,11 @@ function sendRequest(info, sheet_path, el) {
             sheet_path: sheet_path,
         }
     }).then(res => {
-        if(res.data.status === true) {
+        if(res.data.state === true) {
             if(res.data.data === "error") {
                 return;
             }
+            el.css('color', 'red');
             let data = typeof res.data.data.sheet_details == 'string'
                 ? JSON.parse(res.data.data.sheet_details) : res.data.data.sheet_details;
             let styles = "";
@@ -95,7 +96,6 @@ function sendRequest(info, sheet_path, el) {
                 cols: ( options && options.cols) || {}
             };
 
-            el.css('color', 'red');
             this.sheet_data.push({
                 "sheet_path": sheet_path,
                 "sheet_data": args
