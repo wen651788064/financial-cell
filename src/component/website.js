@@ -128,15 +128,14 @@ export default class Website {
 
             let rect = data.getRect(new CellRange(ri, ci, ri, ci));
             let left = rect.left + 55;
-            let top = rect.top;
+            let top = rect.top + 5;
             this.el.html('');
             this.el.css('color', 'blue');
             this.el.children(
                 h('div', 'aaa').css("border-bottom", "1px solid blue")
                     .on('click', evt => {
-                        console.log("115");
-                        var iWidth = 650; //弹出窗口的宽度;
-                        var iHeight = 500; //弹出窗口的高度;
+                        let iWidth = 650; //弹出窗口的宽度;
+                        let iHeight = 500; //弹出窗口的高度;
 
                         console.log(evt);
                         let {screenX, screenY} = evt;

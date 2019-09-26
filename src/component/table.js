@@ -188,7 +188,6 @@ async function parseCell(viewRange, state = false, src = '') {
         }
     });
 
-
     let ca = proxy.calc(sall, data.name);
     if (ca.state) {
         workbook.Sheets[data.name] = ca.data;

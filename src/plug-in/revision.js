@@ -52,18 +52,20 @@ export default class revision {
 
     }
 
-    clickEvent(el, data) {
+    clickEvent(el, data, axios) {
         el.on('mousedown', evt => {
             let {sheet_path} = data;
             let sd = findData.call(this, sheet_path);
-            if (sd.sheet_data) {
+            if (sd && sd.sheet_data) {
                 el.css('color', 'red');
                 this.sheet.loadData(sd.sheet_data);
+            } else {
+
             }
         });
     }
 
-    setData(d, args) {
+    setData(d, args, axios) {
         let enter = false;
         Object.keys(d).forEach(i => {
             let year = d[i];
@@ -78,7 +80,7 @@ export default class revision {
                     "history_id": history_id,
                     "sheet_id": sheet_id,
                     "sheet_path": sheet_path
-                });
+                }, axios);
                 if (!enter) {
                     el.css('color', 'red');
                     this.sheet.loadData(args);
