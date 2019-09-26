@@ -529,7 +529,7 @@ function hasEditor(showEditor = true) {
         return this.overlayerCEl = h('div', `${cssPrefix}-overlayer-content`)
             .children(
                 // this.editor.el,
-                this.selector.el,
+                // this.selector.el,
                 this.selectorMoveEl.el
             );
     }
@@ -540,7 +540,9 @@ function editorSet(type = 1) {
     editorSetOffset.call(this);
     editor.setCellEnd(data.getSelectedCell());
     // editor.setCell(data.getSelectedCell(), data.getSelectedValidator(), type);
-    selector.el.hide();
+    if(this.data.settings.showEditor) {
+        selector.el.hide();
+    }
     clearClipboard.call(this);
 
     setTimeout(() => {

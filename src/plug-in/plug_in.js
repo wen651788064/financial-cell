@@ -1,4 +1,4 @@
-import {sheetReset} from "../component/sheet";
+import {hideEditor, sheetReset} from "../component/sheet";
 import {createEvent} from "../component/event";
 import Revision from "./revision";
 
@@ -18,7 +18,8 @@ export default class PlugIn {
     }
 
     openFrame(w = document.body.clientWidth) {
-        w = w - 150 < 0 ? 0 : w - 150;
+        this.data.settings.showEditor = false;
+         w = w - 150 < 0 ? 0 : w - 150;
         this.data.settings.view.width = () => {
             return w;
         };

@@ -145,7 +145,12 @@ function inputEventHandler(evt, txt = '', formulas = '', state = "input") {
     setTimeout(() => {
         if (this.chinese == false) return;
         let v = '';
-        this.sheet.selector.hide();
+        if(this.data.settings.showEditor) {
+            this.sheet.selector.hide();
+        } else {
+            return;
+        }
+
         if (txt == '' && evt) {
             let t1 = '';
             for (let i = 0, len = evt.target.childNodes.length; i < len; i++) {
@@ -535,7 +540,7 @@ export default class Editor {
 
 
     show(off = true) {
-        if (off) {
+        if (off && this.data.settings.showEditor) {
             this.textEl.css('caret-color', 'black');
             this.textEl.css('cursor', 'text');
             this.textEl.css('opacity', '1');
