@@ -17,7 +17,9 @@ export default class PlugIn {
 
     }
 
-    openFrame(w = document.body.clientWidth, data = {}, args = {
+    openFrame(w = () => {
+        return document.body.clientWidth
+    }, data = {}, args = {
         "styles": [
             {
                 bgcolor: 'rgb(146, 208, 80)',
@@ -89,45 +91,45 @@ export default class PlugIn {
             }
         ],
         "flex": [],
-        "rows":  {
+        "rows": {
             0: {
                 cells: {
-                    0: { text: '2222' },
-                    1: { text: '苏州' },
-                    2: { text: '苏州' },
-                    3: { text: 46601 },
-                    4: { text: 46601,  },
+                    0: {text: '2222'},
+                    1: {text: '苏州'},
+                    2: {text: '苏州'},
+                    3: {text: 46601},
+                    4: {text: 46601,},
                 },
             },
             1: {
                 cells: {
-                    0: { text: '上海花屿湾' },
-                    1: { text: '上海' },
-                    2: { formulas: '=PQUERY(A1:A5, B1:B5, C1, D1:D5, E1)', text: '苏州群尚海' },
-                    3: { text: 79748},
-                    4: { text: '常熟',  },
+                    0: {text: '上海花屿湾'},
+                    1: {text: '上海'},
+                    2: {formulas: '=PQUERY(A1:A5, B1:B5, C1, D1:D5, E1)', text: '苏州群尚海'},
+                    3: {text: 79748},
+                    4: {text: '常熟',},
                 }
             },
             2: {
                 cells: {
-                    0: { text: '苏州红树湾东侧046、049地铁' },
-                    1: { text: '苏州',  },
-                    3: { text: 57294},
+                    0: {text: '苏州红树湾东侧046、049地铁'},
+                    1: {text: '苏州',},
+                    3: {text: 57294},
                 }
             },
             3: {
                 cells: {
-                    0: { text: '上海龙泉棉城公馆' },
-                    1: { text: '上海' },
-                    3: { text: 87273},
-                    4: { text: 44048,  },
+                    0: {text: '上海龙泉棉城公馆'},
+                    1: {text: '上海'},
+                    3: {text: 87273},
+                    4: {text: 44048,},
                 }
             },
             4: {
                 cells: {
-                    0: { text: '常熟万科公望花园',  },
-                    1: { text: '常熟' },
-                    3: { text: 44048,  },
+                    0: {text: '常熟万科公望花园',},
+                    1: {text: '常熟'},
+                    3: {text: 44048,},
                 }
             }
         },
@@ -152,8 +154,11 @@ export default class PlugIn {
         }
     }, info, tipMesage) {
         this.data.settings.showEditor = false;
-         w = w - 150 < 0 ? 0 : w - 150;
+
         this.data.settings.view.width = () => {
+            let result = w();
+            w = result - 150 < 0 ? 0 : result - 150;
+
             return w;
         };
         setCssToRight.call(this);
