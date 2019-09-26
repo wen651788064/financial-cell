@@ -152,7 +152,7 @@ export default class revision {
                 evt.stopPropagation();
             } else {
                 setColor.call(this);
-                sendRequest.call(this, info, sheet_path);
+                sendRequest.call(this, info, sheet_path, el);
             }
         });
     }
