@@ -69,7 +69,7 @@ function loadRowAndCol(options, neat_flex, op) {
     return options;
 }
 
-function sendRequest(info, sheet_path, el, right = false) {
+function sendRequest(info, sheet_path, el, right = false, date) {
     let {axios, url} = info;
 
     axios.get(url, {
@@ -104,7 +104,8 @@ function sendRequest(info, sheet_path, el, right = false) {
 
             this.sheet_data.push({
                 "sheet_path": sheet_path,
-                "sheet_data": args
+                "sheet_data": args,
+                "sheet_date": date
             });
             if(!right) {
                 let {tipMesage} = this;
@@ -117,7 +118,7 @@ function sendRequest(info, sheet_path, el, right = false) {
     })
 }
 
-function closeFrame(history) {
+function closeFrame(history, save = false, date = "") {
     let {revision} = this;
     if (revision) {
         this.sheet.loadData(history);
@@ -132,7 +133,11 @@ function closeFrame(history) {
         this.sheet.toolbar.el.css('left', '0px');
         createEvent.call(this, 8, false, 'resize');
         sheetReset.call(this.sheet);
-        this.data.change(this.data.getData());
+        if(save) {
+            let {tipMesage} = this;
+            tipMesage.$notify({message: "以还原至 " + date + " 的版本",title: '成功', type: 'success', showClose: true});
+            this.data.change(this.data.getData());
+        }
     }
 }
 
@@ -180,9 +185,9 @@ export default class revision {
     initContextEvent() {
         this.contextMenu.itemClick = (type, evt) => {
             if(type === 'recover') {
-                let {sheet_data} = this.rightEl;
+                let {sheet_data, sheet_date} = this.rightEl;
                 this.history = sheet_data;
-                closeFrame.call(this.plugIn,  this.history)
+                closeFrame.call(this.plugIn,  this.history, true, sheet_date);
             }
         }
     }
@@ -196,7 +201,7 @@ export default class revision {
                 if (sd && sd.sheet_data) {
                     this.rightEl = sd;
                 } else {
-                    sendRequest.call(this, info, sheet_path, el, true);
+                    sendRequest.call(this, info, sheet_path, el, true, date);
                 }
             } else {
                 let {sheet_path} = data;
@@ -212,7 +217,7 @@ export default class revision {
                 } else {
                     setColor.call(this, "color", chooseColor, 'black');
                     el.css('color', chooseColor);
-                    sendRequest.call(this, info, sheet_path, el);
+                    sendRequest.call(this, info, sheet_path, el, false, date);
                 }
             }
         });
@@ -237,14 +242,15 @@ export default class revision {
                     "history_id": history_id,
                     "sheet_id": sheet_id,
                     "sheet_path": sheet_path
-                }, info);
+                }, info, date);
                 if (!enter) {
                     el.css('color', chooseColor);
                     this.sheet.loadData(args);
                     enter = true;
                     this.sheet_data.push({
                         "sheet_path": sheet_path,
-                        "sheet_data": args
+                        "sheet_data": args,
+                        "sheet_date": date
                     })
                 }
             });
