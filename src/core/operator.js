@@ -209,7 +209,7 @@ function distinct(a, b) {
     return Array.from(new Set([...a, ...b]))
 }
 
-const division = (str, ff = filterFormula) => {
+const division = (str, ff = filterFormula, other = true) => {
     str = str + "";
     str = str.toUpperCase();
 
@@ -228,18 +228,19 @@ const division = (str, ff = filterFormula) => {
     // // 去除字符串两端的空格
     for (let i = 0; i < arr.length; i++) {
         arr[i] = arr[i].replace(/(^\s*)|(\s*$)/g, "");
-        if (isSheetVale(arr[i])) {
+        if (other && isSheetVale(arr[i])) {
             arr[i] = arr[i].split("!")[1];
-        }
-
-        if(isAbsoluteValue(arr[i].replace(/\$/g, ''), 4)) {
-            let value = arr[i].replace(/\$/g, '').split(":");
-            let a1 = expr2xy(value[0]);
-            let a2 =  expr2xy(value[1]);
-            let cell = new CellRange(a1[0], a1[1], a2[0], a2[1]);
-            cell.each((i, j) => {
-                na.push(xy2expr(i, j));
-            });
+            if(isAbsoluteValue(arr[i].replace(/\$/g, ''), 4)) {
+                let value = arr[i].replace(/\$/g, '').split(":");
+                let a1 = expr2xy(value[0]);
+                let a2 =  expr2xy(value[1]);
+                let cell = new CellRange(a1[0], a1[1], a2[0], a2[1]);
+                cell.each((i, j) => {
+                    na.push(xy2expr(i, j));
+                });
+            }
+        } else {
+            arr[i] = "";
         }
         // let value = arr[i].replace(/(^\s*)|(\s*$)/g, "");
     }
