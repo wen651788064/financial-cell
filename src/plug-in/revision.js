@@ -114,6 +114,7 @@ function sendRequest(info, sheet_path, el, tipMesage) {
 function closeFrame() {
     let {revision} = this;
     if (revision) {
+        this.sheet.loadData(this.history);
         revision.el.removeEl();
         this.data.settings.showEditor = true;
         this.data.settings.view.width = () => {
@@ -148,6 +149,7 @@ export default class revision {
             this.title_content
         );
 
+        this.history = {};
         this.tipMesage = tipMesage;
         this.sheet_data = [];
         this.dateArr = [];
@@ -187,6 +189,10 @@ export default class revision {
                 sendRequest.call(this, info, sheet_path, el);
             }
         });
+    }
+
+    historyData(args) {
+        this.history = args;
     }
 
     setData(d, args, info) {

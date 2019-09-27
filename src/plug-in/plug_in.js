@@ -166,6 +166,7 @@ export default class PlugIn {
         sheetReset.call(this.sheet);
 
         this.revision = new Revision('150px', this.sheet, tipMesage, this);
+        this.revision.historyData(this.data.getData());
         this.revision.setData(data, args, info);
         this.targetEl.children(
             this.revision.el,
