@@ -1290,7 +1290,7 @@ export default class DataProxy {
     // }
 
     changeData(cb) {
-        if(this.data.settings.showEditor === false) {
+        if(this.settings.showEditor === false) {
             return;
         }
 
