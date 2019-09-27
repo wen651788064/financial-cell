@@ -161,11 +161,11 @@ export default class revision {
             let {buttons, target} = evt;
             let className = target.className;
             if (buttons === 2 && className === `${cssPrefix}-revisions-sidebar-date`) {
-                setColor.call(this, "backgroundColor", '#fafafa');
+                setColor.call(this, "backgroundColor",rightColor, '#fafafa');
                 target.style['background-color'] = rightColor;
                 this.contextMenu.setPosition(evt.layerX, evt.layerY, this);
             } else if (buttons === 2) {
-                setColor.call(this, "backgroundColor", '#fafafa');
+                setColor.call(this, "backgroundColor", rightColor, '#fafafa');
                 this.contextMenu.hide();
             }
         });
