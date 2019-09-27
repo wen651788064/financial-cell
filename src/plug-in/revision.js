@@ -134,7 +134,7 @@ function closeFrame(history, save = false, date = "") {
         createEvent.call(this, 8, false, 'resize');
         sheetReset.call(this.sheet);
         if(save) {
-            let {tipMesage} = this;
+            let {tipMesage} = this.revision;
             tipMesage.$notify({message: "以还原至 " + date + " 的版本",title: '成功', type: 'success', showClose: true});
             this.data.change(this.data.getData());
         }
