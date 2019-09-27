@@ -418,7 +418,7 @@ export default class DataProxy {
         // don't save object
         this.selector = new Selector();
         this.scroll = new Scroll();
-        this.history = new History();
+        this.history = new History(this);
         this.clipboard = new Clipboard();
         this.moved = new Moved();
         this.autoFilter = new AutoFilter();

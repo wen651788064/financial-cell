@@ -3,17 +3,25 @@ import {deleteAllImg, mountImg} from "../event/paste";
 import {h} from "../component/element";
 
 export default class History {
-    constructor() {
+    constructor(data) {
         this.undoItems = [];
         this.redoItems = [];
+        this.data = data;
     }
 
     add(data) {
+        if(!this.data.settings.showEditor) {
+            return;
+        }
         this.undoItems.push(JSON.stringify(data));
         this.redoItems = [];
     }
 
     addPic(data, operation) {
+        if(!this.data.settings.showEditor) {
+            return;
+        }
+
         let newData = Object.assign([], data);
         this.undoItems.push({
             type: "picture",
@@ -34,6 +42,10 @@ export default class History {
     }
 
     undo(currentd, cb, sheet) {
+        if(!this.data.settings.showEditor) {
+            return;
+        }
+
         const {undoItems, redoItems} = this;
         if (this.canUndo()) {
             let item = undoItems.pop();
@@ -58,6 +70,10 @@ export default class History {
     }
 
     redo(currentd, cb) {
+        if(!this.data.settings.showEditor) {
+            return;
+        }
+
         const {undoItems, redoItems} = this;
         if (this.canRedo()) {
             undoItems.push(JSON.stringify(currentd));
