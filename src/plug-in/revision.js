@@ -158,6 +158,7 @@ export default class revision {
         this.tipMesage = tipMesage;
         this.sheet_data = [];
         this.dateArr = [];
+        this.rightEl = '';
         this.el.on('mousedown', evt => {
             let {buttons, target} = evt;
             let className = target.className;
@@ -176,6 +177,7 @@ export default class revision {
         this.contextMenu.itemClick = (type, evt) => {
             console.log(type, evt);
             if(type === 'recover') {
+                let {textContent} = this.rightEl;
 
             }
         }
@@ -185,21 +187,28 @@ export default class revision {
         el.on('mousedown', evt => {
             let {buttons} = evt;
             if(buttons === 2) {
-                return;
-            }
-            let {sheet_path} = data;
-            let sd = findData.call(this, sheet_path);
-            if (sd && sd.sheet_data) {
-                setColor.call(this, "color", chooseColor, 'black');
-                el.css('color', chooseColor);
-                this.sheet.loadData(sd.sheet_data);
-                this.contextMenu.hide();
-                let {tipMesage} = this;
-                tipMesage.$notify({message: "打开成功",title: '成功', type: 'success', showClose: true});
-                evt.stopPropagation();
+                let {sheet_path} = data;
+                let sd = findData.call(this, sheet_path);
+                if (sd && sd.sheet_data) {
+                    this.rightEl = sd;
+                } else {
+
+                }
             } else {
-                setColor.call(this, "color", chooseColor, 'black');
-                sendRequest.call(this, info, sheet_path, el);
+                let {sheet_path} = data;
+                let sd = findData.call(this, sheet_path);
+                if (sd && sd.sheet_data) {
+                    setColor.call(this, "color", chooseColor, 'black');
+                    el.css('color', chooseColor);
+                    this.sheet.loadData(sd.sheet_data);
+                    this.contextMenu.hide();
+                    let {tipMesage} = this;
+                    tipMesage.$notify({message: "打开成功",title: '成功', type: 'success', showClose: true});
+                    evt.stopPropagation();
+                } else {
+                    setColor.call(this, "color", chooseColor, 'black');
+                    sendRequest.call(this, info, sheet_path, el);
+                }
             }
         });
     }
