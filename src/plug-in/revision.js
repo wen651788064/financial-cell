@@ -210,8 +210,8 @@ export default class revision {
                     tipMesage.$notify({message: "打开成功",title: '成功', type: 'success', showClose: true});
                     evt.stopPropagation();
                 } else {
-                    el.css('color', chooseColor);
                     setColor.call(this, "color", chooseColor, 'black');
+                    el.css('color', chooseColor);
                     sendRequest.call(this, info, sheet_path, el);
                 }
             }
