@@ -110,6 +110,8 @@ function sendRequest(info, sheet_path, el, right = false) {
                 let {tipMesage} = this;
                 tipMesage.$notify({message: "打开成功",title: '成功', type: 'success', showClose: true});
                 this.sheet.loadData(args);
+            } else {
+                this.rightEl = findData.call(this, sheet_path);
             }
         }
     })
@@ -192,7 +194,6 @@ export default class revision {
                     this.rightEl = sd;
                 } else {
                     sendRequest.call(this, info, sheet_path, el, true);
-                    this.rightEl = findData.call(this, sheet_path);
                 }
             } else {
                 let {sheet_path} = data;
