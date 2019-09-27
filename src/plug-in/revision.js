@@ -71,7 +71,6 @@ function loadRowAndCol(options, neat_flex, op) {
 
 function sendRequest(info, sheet_path, el, right = false) {
     let {axios, url} = info;
-    el.css('color', chooseColor);
 
     axios.get(url, {
         params: {
@@ -207,6 +206,7 @@ export default class revision {
                     tipMesage.$notify({message: "打开成功",title: '成功', type: 'success', showClose: true});
                     evt.stopPropagation();
                 } else {
+                    el.css('color', chooseColor);
                     setColor.call(this, "color", chooseColor, 'black');
                     sendRequest.call(this, info, sheet_path, el);
                 }
