@@ -6,9 +6,13 @@ import {buildButtonWithIcon} from "../component/toolbar";
 import {sheetReset} from "../component/sheet";
 import {createEvent} from "../component/event";
 
+let chooseColor = "#0EAA10";
+let rightColor = "red";
+
 export function setColor() {
     for (let i = 0; i < this.dateArr.length; i++) {
         let d = this.dateArr[i];
+        console.log(d.el.style['backgroundColor']);
         d.css('color', 'black');
     }
 }
@@ -68,7 +72,7 @@ function loadRowAndCol(options, neat_flex, op) {
 
 function sendRequest(info, sheet_path, el, tipMesage) {
     let {axios, url} = info;
-    el.css('color', 'red');
+    el.css('color', chooseColor);
 
     axios.get(url, {
         params: {
@@ -114,7 +118,7 @@ function sendRequest(info, sheet_path, el, tipMesage) {
 function closeFrame(history) {
     let {revision} = this;
     if (revision) {
-        this.sheet.loadData( history);
+        this.sheet.loadData(history);
         revision.el.removeEl();
         this.data.settings.showEditor = true;
         this.data.settings.view.width = () => {
@@ -126,6 +130,7 @@ function closeFrame(history) {
         this.sheet.toolbar.el.css('left', '0px');
         createEvent.call(this, 8, false, 'resize');
         sheetReset.call(this.sheet);
+        this.data.change(this.data.getData());
     }
 }
 
@@ -158,7 +163,7 @@ export default class revision {
             let className = target.className;
             if (buttons === 2 && className === `${cssPrefix}-revisions-sidebar-date`) {
                 setColor.call(this);
-                target.style['color'] = 'red';
+                target.style['background-color'] = rightColor;
                 this.contextMenu.setPosition(evt.layerX, evt.layerY, this);
             } else if (buttons === 2) {
                 setColor.call(this);
@@ -178,7 +183,7 @@ export default class revision {
             let sd = findData.call(this, sheet_path);
             if (sd && sd.sheet_data) {
                 setColor.call(this);
-                el.css('color', 'red');
+                el.css('color', chooseColor);
                 this.sheet.loadData(sd.sheet_data);
                 this.contextMenu.hide();
                 let {tipMesage} = this;
@@ -212,7 +217,7 @@ export default class revision {
                     "sheet_path": sheet_path
                 }, info);
                 if (!enter) {
-                    el.css('color', 'red');
+                    el.css('color', chooseColor);
                     this.sheet.loadData(args);
                     enter = true;
                     this.sheet_data.push({
