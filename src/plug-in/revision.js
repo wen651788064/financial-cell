@@ -147,6 +147,7 @@ export default class revision {
             this.title,
         );
         this.title_content = h('span', `${cssPrefix}-revisions-sidebar-title-content`).html('版本历史记录');
+        this.comeback.css('margin', '3px');
         this.comeback.css('display', 'inline');
         this.title.children(
             this.comeback,
