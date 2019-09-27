@@ -9,7 +9,7 @@ import {createEvent} from "../component/event";
 let chooseColor = "#0EAA10";
 let rightColor = "#f5f5f5";
 
-export function setColor(key, value, replaceColor) {
+export function setColor(key = "backgroundColor", value = rightColor, replaceColor = '#fafafa') {
     for (let i = 0; i < this.dateArr.length; i++) {
         let d = this.dateArr[i];
         d.css(key, replaceColor);
