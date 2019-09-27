@@ -153,6 +153,7 @@ export default class revision {
             this.title_content
         );
 
+        this.initContextEvent();
         this.history = {};
         this.tipMesage = tipMesage;
         this.sheet_data = [];
@@ -169,7 +170,15 @@ export default class revision {
                 this.contextMenu.hide();
             }
         });
+    }
 
+    initContextEvent() {
+        this.contextMenu.itemClick = (type, evt) => {
+            console.log(type, evt);
+            if(type === 'recover') {
+
+            }
+        }
     }
 
     clickEvent(el, data, info) {
