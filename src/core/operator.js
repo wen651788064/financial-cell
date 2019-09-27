@@ -1532,6 +1532,57 @@ const helpFormula = {
             "文本": "需要删除其中空格的文本"
         }
     },
+    "HYPERLINK":{
+        "title": [
+            {
+                "name": "HYPERLINK(",
+                "editor": false,
+            },
+            {
+                "name": "网址",
+                "editor": false
+            },
+            {
+                "name": ",",
+                "editor": false
+            },
+            {
+                "name": "[链接标签]",
+                "editor": false
+            },
+            {
+                "name": ")",
+                "editor": false
+            },
+        ],
+        "example": [
+            {
+                "name": "HYPERLINK(",
+                "editor": false,
+            },
+            {
+                "name": '"http://www.google.com/"',
+                "editor": false
+            },
+            {
+                "name": ",",
+                "editor": false
+            },
+            {
+                "name": "\"Google\"",
+                "editor": false
+            },
+            {
+                "name": ")",
+                "editor": false
+            },
+        ],
+        "content": {
+            "摘要": "在单元格内创建一个超链接。",
+            "网址": "以引号括住的链接位置的完整网址，或对包含这种网址的单元格的引用。",
+            "链接标签": "用引号括住的要在单元格中作为链接显示的文字，或对包含此类标签的单元格的引用。"
+        }
+    },
     "LEN": {
         "title": [
             {

@@ -145,7 +145,7 @@ function inputEventHandler(evt, txt = '', formulas = '', state = "input") {
     setTimeout(() => {
         if (this.chinese == false) return;
         let v = '';
-        if(this.data.settings.showEditor) {
+        if (this.data.settings.showEditor) {
             this.sheet.selector.hide();
         } else {
             return;
@@ -172,7 +172,7 @@ function inputEventHandler(evt, txt = '', formulas = '', state = "input") {
             this.pos = v.length;
             set_focus.call(this, this.textEl.el, -1);
         }
-
+        this.changed = true;
         const {
             suggest, textlineEl, validator, textEl, save,
         } = this;
@@ -408,6 +408,7 @@ export default class Editor {
         this.ci = -1;
         this.spanArr = [];
         this.mousedownIndex = [];
+        this.changed = false;
         this.chinese = true;
         this.areaEl = h('div', `${cssPrefix}-editor-area`)
             .children(
@@ -570,9 +571,12 @@ export default class Editor {
 
     clear(c = false) {
         this.display = isDisplay.call(this);
-        if (this.inputText != '' && isNaN(this.inputText) && this.inputText.replace(/\s/g, "").lastIndexOf('¥') === 0) {
+        if (this.inputText !== '' && isNaN(this.inputText) && this.inputText.replace(/\s/g, "").lastIndexOf('¥') === 0) {
             this.change('format', this.inputText);
+        } else if (this.changed) {
+            this.change('finish', this.inputText);
         }
+        this.changed = false;
         this.cell = null;
         this.areaOffset = null;
         this.inputText = '';

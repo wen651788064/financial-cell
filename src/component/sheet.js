@@ -72,9 +72,7 @@ function selectorSet(multiple, ri, ci, indexesUpdated = true, moving = false) {
     toolbar.reset();
 
     // add
-    if (this.render_timer) {
-        clearTimeout(this.render_timer);
-    }
+    clearTimeout(this.render_timer);
 
     this.render_timer = setTimeout(() => {
         table.render();
@@ -1039,6 +1037,14 @@ function sheetInitEvents() {
     };
     // editor
     editor.change = (state, itext) => {
+        if(state === 'finish') {
+            this.table.render();
+            setTimeout(() => {
+                clearTimeout(this.render_timer);
+            });
+            return;
+        }
+
         // 如果是 esc
         if (itext == "@~esc") {
             let {text, formulas} = editor.oldCell;
