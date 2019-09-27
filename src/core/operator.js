@@ -239,7 +239,7 @@ const division = (str, ff = filterFormula, other = true) => {
                     na.push(xy2expr(i, j));
                 });
             }
-        } else {
+        } else if(!other && isSheetVale(arr[i])) {
             arr[i] = "";
         }
         // let value = arr[i].replace(/(^\s*)|(\s*$)/g, "");
