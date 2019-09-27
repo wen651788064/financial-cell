@@ -25,6 +25,10 @@ export default {
         formula: '函数',
         more: '更多',
         throwFormula: '清除公式',
+        comeBack: '返回',
+    },
+    revision: {
+        comeBack: '返回',
     },
     contextmenu: {
         copy: '复制',
@@ -125,3 +129,4 @@ export default {
         },
     },
 };
+

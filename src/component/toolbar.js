@@ -18,7 +18,7 @@ function buildIcon(name) {
     return new Icon(name);
 }
 
-function buildButton(tooltipdata) {
+export function buildButton(tooltipdata) {
     return h('div', `${cssPrefix}-toolbar-btn`)
         .on('mouseenter', (evt) => {
             tooltip(tooltipdata, evt.target);
@@ -30,7 +30,7 @@ function buildDivider() {
     return h('div', `${cssPrefix}-toolbar-divider`);
 }
 
-function buildButtonWithIcon(tooltipdata, iconName, change = () => {
+export function buildButtonWithIcon(tooltipdata, iconName, change = () => {
 }) {
     return buildButton(tooltipdata)
         .child(buildIcon(iconName))

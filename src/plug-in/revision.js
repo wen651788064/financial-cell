@@ -1,7 +1,8 @@
 import {h} from "../component/element";
 import {cssPrefix} from "../config";
 import ContextMenu from "./contextmenu";
-
+import {t} from "../locale/locale";
+import {buildButtonWithIcon} from "../component/toolbar";
 
 export function setColor() {
     for (let i = 0; i < this.dateArr.length; i++) {
@@ -113,13 +114,19 @@ export default class revision {
         this.el = h('div', `${cssPrefix}-revisions-sidebar`);
         this.el.css('width', width);
         this.sheet = sheet;
-
-        this.title = h('div', `${cssPrefix}-revisions-sidebar-title`).html('版本历史记录');
+        this.comeback = buildButtonWithIcon(`${t('revision.comeBack')}`, 'comeback', () => {});
+        this.title = h('div', `${cssPrefix}-revisions-sidebar-title`)
         this.contextMenu = new ContextMenu(() => () => {
             return "300px";
         }, false);
         this.el.children(
             this.title,
+        );
+        this.title_content = h('span', `${cssPrefix}-revisions-sidebar-title-content`).html('版本历史记录');
+        this.comeback.css('display', 'inline');
+        this.title.children(
+            this.comeback,
+            this.title_content
         );
 
         this.tipMesage = tipMesage;
@@ -154,7 +161,7 @@ export default class revision {
                 this.sheet.loadData(sd.sheet_data);
                 this.contextMenu.hide();
                 let {tipMesage} = this;
-                tipMesage.$message({message: "打开成功", type: 'success', showClose: true});
+                tipMesage.$notify({message: "打开成功", type: 'success', showClose: true});
                 evt.stopPropagation();
             } else {
                 setColor.call(this);

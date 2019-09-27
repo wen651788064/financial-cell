@@ -90,7 +90,7 @@ body {
   border-radius: 1px;
   background: rgba(0, 0, 0, 1);
   font-size: 12px;
-  z-index: 201;
+  z-index: 100000;
 
   &:before {
     pointer-events: none;
@@ -1266,6 +1266,10 @@ body {
       left: -3 * @icon-size;
       top: -3 * @icon-size;
     }
+    &.comeback {
+      left: -5 * @icon-size;
+      top: -3 * @icon-size;
+    }
   }
 }
 
@@ -1302,11 +1306,15 @@ body {
 }
 
 .@{css-prefix}-revisions-sidebar-title {
-  font-size: 16px;
+  font-size: 14px;
   line-height: 24px;
   padding: 10px 8px;
   height: 20.5px;
   border-bottom: 1px solid #e0e2e4;
+}
+
+.@{css-prefix}-revisions-sidebar-title-content {
+  margin-left: 20px;
 }
 
 .@{css-prefix}-hyperlink-tooltip {

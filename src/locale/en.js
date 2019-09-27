@@ -24,7 +24,8 @@ export default {
         formula: 'Functions',
         more: 'More',
         flexible: 'Flexible',
-        throwFormula: 'Throw formula'
+        throwFormula: 'Throw formula',
+        comeBack: 'come back',
     },
     contextmenu: {
         copy: 'Copy',
