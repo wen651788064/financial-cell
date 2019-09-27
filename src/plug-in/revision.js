@@ -9,11 +9,12 @@ import {createEvent} from "../component/event";
 let chooseColor = "#0EAA10";
 let rightColor = "red";
 
-export function setColor() {
+export function setColor(key, value) {
     for (let i = 0; i < this.dateArr.length; i++) {
         let d = this.dateArr[i];
-        console.log(d.el.style['backgroundColor']);
-        d.css('color', 'black');
+        if(d.el.style[key] === value) {
+            d.css(key, 'black');
+        }
     }
 }
 
@@ -162,11 +163,11 @@ export default class revision {
             let {buttons, target} = evt;
             let className = target.className;
             if (buttons === 2 && className === `${cssPrefix}-revisions-sidebar-date`) {
-                setColor.call(this);
+                setColor.call(this, "backgroundColor", rightColor);
                 target.style['background-color'] = rightColor;
                 this.contextMenu.setPosition(evt.layerX, evt.layerY, this);
             } else if (buttons === 2) {
-                setColor.call(this);
+                setColor.call(this, "backgroundColor", rightColor);
                 this.contextMenu.hide();
             }
         });
@@ -182,7 +183,7 @@ export default class revision {
             let {sheet_path} = data;
             let sd = findData.call(this, sheet_path);
             if (sd && sd.sheet_data) {
-                setColor.call(this);
+                setColor.call(this, "color", chooseColor);
                 el.css('color', chooseColor);
                 this.sheet.loadData(sd.sheet_data);
                 this.contextMenu.hide();
@@ -190,7 +191,7 @@ export default class revision {
                 tipMesage.$notify({message: "打开成功",title: '成功', type: 'success', showClose: true});
                 evt.stopPropagation();
             } else {
-                setColor.call(this);
+                setColor.call(this, "color", chooseColor);
                 sendRequest.call(this, info, sheet_path, el);
             }
         });
