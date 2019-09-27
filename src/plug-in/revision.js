@@ -103,7 +103,7 @@ function sendRequest(info, sheet_path, el, tipMesage) {
                 "sheet_data": args
             });
             let {tipMesage} = this;
-            tipMesage.$message({message: "打开成功", type: 'success', showClose: true});
+            tipMesage.$notify({message: "打开成功",title: '成功', type: 'success', showClose: true});
             this.sheet.loadData(args);
         }
     })
@@ -161,7 +161,7 @@ export default class revision {
                 this.sheet.loadData(sd.sheet_data);
                 this.contextMenu.hide();
                 let {tipMesage} = this;
-                tipMesage.$notify({message: "打开成功", type: 'success', showClose: true});
+                tipMesage.$notify({message: "打开成功",title: '成功', type: 'success', showClose: true});
                 evt.stopPropagation();
             } else {
                 setColor.call(this);
