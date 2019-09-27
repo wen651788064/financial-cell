@@ -192,7 +192,7 @@ export default class revision {
         }
     }
 
-    clickEvent(el, data, info) {
+    clickEvent(el, data, info, date) {
         el.on('mousedown', evt => {
             let {buttons} = evt;
             if(buttons === 2) {
