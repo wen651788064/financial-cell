@@ -69,7 +69,7 @@ function loadRowAndCol(options, neat_flex, op) {
     return options;
 }
 
-function sendRequest(info, sheet_path, el, tipMesage) {
+function sendRequest(info, sheet_path, el, right = false) {
     let {axios, url} = info;
     el.css('color', chooseColor);
 
@@ -107,9 +107,11 @@ function sendRequest(info, sheet_path, el, tipMesage) {
                 "sheet_path": sheet_path,
                 "sheet_data": args
             });
-            let {tipMesage} = this;
-            tipMesage.$notify({message: "打开成功",title: '成功', type: 'success', showClose: true});
-            this.sheet.loadData(args);
+            if(!right) {
+                let {tipMesage} = this;
+                tipMesage.$notify({message: "打开成功",title: '成功', type: 'success', showClose: true});
+                this.sheet.loadData(args);
+            }
         }
     })
 }
@@ -175,10 +177,8 @@ export default class revision {
 
     initContextEvent() {
         this.contextMenu.itemClick = (type, evt) => {
-            console.log(type, evt);
             if(type === 'recover') {
-                let {textContent} = this.rightEl;
-
+                console.log(this.rightEl);
             }
         }
     }
@@ -192,7 +192,8 @@ export default class revision {
                 if (sd && sd.sheet_data) {
                     this.rightEl = sd;
                 } else {
-
+                    sendRequest.call(this, info, sheet_path, el, true);
+                    this.rightEl = findData.call(this, sheet_path);
                 }
             } else {
                 let {sheet_path} = data;
