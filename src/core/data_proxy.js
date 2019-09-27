@@ -1290,6 +1290,10 @@ export default class DataProxy {
     // }
 
     changeData(cb) {
+        if(this.data.settings.showEditor === false) {
+            return;
+        }
+
         this.history.add(this.getData());
         cb();
         this.change(this.getData());
