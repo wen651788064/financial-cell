@@ -14,12 +14,12 @@ export default class PlugIn {
         this.sheet = sheet;
         this.data = data;
         this.revision = new Revision();
-
+        this.w = () => {
+            return document.body.clientWidth
+        };
     }
 
-    openFrame(w = () => {
-        return document.body.clientWidth
-    }, data = {}, args = {
+    openFrame(w = this.w, data = {}, args = {
         "styles": [
             {
                 bgcolor: 'rgb(146, 208, 80)',
@@ -154,7 +154,7 @@ export default class PlugIn {
         }
     }, info, tipMesage) {
         this.data.settings.showEditor = false;
-
+        this.w = w;
         this.data.settings.view.width = () => {
             let result = w();
             result = result - 150 < 0 ? 0 : result - 150;
@@ -165,7 +165,7 @@ export default class PlugIn {
         createEvent.call(this, 8, false, 'resize');
         sheetReset.call(this.sheet);
 
-        this.revision = new Revision('150px', this.sheet, tipMesage);
+        this.revision = new Revision('150px', this.sheet, tipMesage, this);
         this.revision.setData(data, args, info);
         this.targetEl.children(
             this.revision.el,

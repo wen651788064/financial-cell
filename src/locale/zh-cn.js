@@ -28,7 +28,7 @@ export default {
         comeBack: '返回',
     },
     revision: {
-        comeBack: '返回',
+        comeBack: '退出',
     },
     contextmenu: {
         copy: '复制',

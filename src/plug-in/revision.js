@@ -3,6 +3,8 @@ import {cssPrefix} from "../config";
 import ContextMenu from "./contextmenu";
 import {t} from "../locale/locale";
 import {buildButtonWithIcon} from "../component/toolbar";
+import {sheetReset} from "../component/sheet";
+import {createEvent} from "../component/event";
 
 export function setColor() {
     for (let i = 0; i < this.dateArr.length; i++) {
@@ -109,12 +111,29 @@ function sendRequest(info, sheet_path, el, tipMesage) {
     })
 }
 
+function closeFrame() {
+    let {revision} = this;
+    if (revision) {
+        revision.el.removeEl();
+        this.data.settings.showEditor = true;
+        this.data.settings.view.width = () => {
+            let result = this.w();
+            result = result + 150;
+            return result;
+        };
+        this.sheet.el.css('left', '0px');
+        this.sheet.toolbar.el.css('left', '0px');
+        createEvent.call(this, 8, false, 'resize');
+        sheetReset.call(this.sheet);
+    }
+}
+
 export default class revision {
-    constructor(width, sheet, tipMesage) {
+    constructor(width, sheet, tipMesage, plugIn) {
         this.el = h('div', `${cssPrefix}-revisions-sidebar`);
         this.el.css('width', width);
         this.sheet = sheet;
-        this.comeback = buildButtonWithIcon(`${t('revision.comeBack')}`, 'comeback', () => {});
+        this.comeback = buildButtonWithIcon(`${t('revision.comeBack')}`, 'comeback', () => closeFrame.call(plugIn));
         this.title = h('div', `${cssPrefix}-revisions-sidebar-title`)
         this.contextMenu = new ContextMenu(() => () => {
             return "300px";
