@@ -179,7 +179,8 @@ export default class revision {
     initContextEvent() {
         this.contextMenu.itemClick = (type, evt) => {
             if(type === 'recover') {
-                console.log(this.rightEl);
+                let {sheet_data} = this.rightEl;
+                this.history = sheet_data;
             }
         }
     }
