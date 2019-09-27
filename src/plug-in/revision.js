@@ -7,7 +7,7 @@ import {sheetReset} from "../component/sheet";
 import {createEvent} from "../component/event";
 
 let chooseColor = "#0EAA10";
-let rightColor = "red";
+let rightColor = "#f5f5f5";
 
 export function setColor(key, value, replaceColor) {
     for (let i = 0; i < this.dateArr.length; i++) {
