@@ -12,9 +12,7 @@ let rightColor = "red";
 export function setColor(key, value) {
     for (let i = 0; i < this.dateArr.length; i++) {
         let d = this.dateArr[i];
-        if(d.el.style[key] === value) {
-            d.css(key, 'black');
-        }
+        d.css(key, 'black');
     }
 }
 
