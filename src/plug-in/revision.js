@@ -141,6 +141,7 @@ export default class revision {
         this.el = h('div', `${cssPrefix}-revisions-sidebar`);
         this.el.css('width', width);
         this.sheet = sheet;
+        this.plugIn = plugIn;
         this.comeback = buildButtonWithIcon(`${t('revision.comeBack')}`, 'comeback', () => closeFrame.call(plugIn,  this.history));
         this.title = h('div', `${cssPrefix}-revisions-sidebar-title`)
         this.contextMenu = new ContextMenu(() => () => {
@@ -181,6 +182,7 @@ export default class revision {
             if(type === 'recover') {
                 let {sheet_data} = this.rightEl;
                 this.history = sheet_data;
+                closeFrame.call(this.plugIn,  this.history)
             }
         }
     }
