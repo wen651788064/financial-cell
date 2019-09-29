@@ -72,20 +72,31 @@ function getStr(str) {
 
 
 export function toUpperCase(text) {
-    let strArr = getStr(text);
-    let arr = text.split("\"");
+    let enter = 1;
+    // let k = 1;
     let newText = "";
-
-    arr.find(item => {
-        if (strArr.includes(item)) {
-            newText += '"';
-            newText += item;
-            newText += '"';
-        } else {
-            item = item + "";
-            newText += item.toUpperCase();
+    for(let i = 0; i < text.length; i++) {
+        if(text[i] === '\"' && enter === 1)
+            enter = 3;
+        else if(text[i] === '\"' && enter === 3) {
+            enter = 1;
         }
-    });
+
+        if(text[i] === ')' && enter !== 1) {
+            newText = newText + "\"";
+            enter = 1;
+        }
+
+        if(enter !== 3) {
+            newText = newText + (text[i] + "").toUpperCase();
+        } else {
+            newText = newText + text[i] + "";
+        }
+    }
+    if(enter === 3) {
+        newText = newText +  "\"";
+    }
+
     return newText;
 }
 

@@ -523,7 +523,6 @@ export default class Editor {
         this.ci = ci;
         const cell = this.data.rows.getCellOrNew(ri, ci);
 
-        console.log(cell);
         this.oldCell = {
             text: (cell && cell.text) || '',
             formulas: (cell && cell.formulas) || '',
