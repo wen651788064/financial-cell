@@ -186,6 +186,8 @@ function mountPaste(e, cb) {
                 }, 0);
             };
 
+            if(!f)
+                return;
             reader.readAsDataURL(f);
         }
     }

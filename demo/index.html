@@ -5,6 +5,17 @@
     <title>Marked in the browser</title>
     <link href="https://cdn.quilljs.com/1.0.0/quill.snow.css" rel="stylesheet">
 </head>
+<style>
+    .d3{
+        /*margin-left: 10px;*/
+        /*float: left;*/
+        width: 0;
+        height: 0;
+        border-width: 100px;
+        border-style: solid;
+        border-color:#FFCCCC transparent transparent transparent;
+    }
+</style>
 <body>
 <!-- Create the toolbar container -->
 <div id="toolbar">
@@ -12,20 +23,7 @@
     <button class="ql-italic">Italic</button>
 </div>
 
-<!-- Create the editor container -->
-<div id="editor">
-    <p>Hello World!</p>
-</div>
-
-<!-- Include the Quill library -->
-<script src="https://cdn.quilljs.com/1.0.0/quill.js"></script>
-
-<!-- Initialize Quill editor -->
-<script>
-    var editor = new Quill('#editor', {
-        modules: { toolbar: '#toolbar' },
-        theme: 'snow'
-    });
-</script>
+/**html*/
+<div class="d3"></div>
 </body>
 </html>
