@@ -194,6 +194,10 @@ function mountPaste(e, cb) {
     setTimeout(() => {
         if (!p)
             cb();
+        else {
+            let {data} = this;
+            data.change(data.getData());
+        }
     })
 }
 
