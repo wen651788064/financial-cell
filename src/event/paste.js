@@ -374,7 +374,9 @@ function deleteImg(d = false) {
     });
 
     this.pasteDirectionsArr = direction_new;
+
     let {data} = this;
+    data.pasteDirectionsArr = direction_new;
     data.change(data.getData());
 }
 
