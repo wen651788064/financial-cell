@@ -836,9 +836,9 @@ function pasteEvent(evt) {
     clearClipboard.call(this);
     mountPaste.call(this, evt, () => {
         sheetReset.call(this);
+        let {data} = this;
+        data.change(data.getData());
     });
-    let {data} = this;
-    data.change(data.getData());
 }
 
 function sheetInitEvents() {
