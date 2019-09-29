@@ -538,7 +538,7 @@ function editorSet(type = 1) {
     editorSetOffset.call(this);
     editor.setCellEnd(data.getSelectedCell());
     // editor.setCell(data.getSelectedCell(), data.getSelectedValidator(), type);
-    if(this.data.settings.showEditor) {
+    if (this.data.settings.showEditor) {
         selector.el.hide();
     }
     clearClipboard.call(this);
@@ -1037,7 +1037,7 @@ function sheetInitEvents() {
     };
     // editor
     editor.change = (state, itext) => {
-        if(state === 'finish') {
+        if (state === 'finish') {
             this.table.render();
             setTimeout(() => {
                 clearTimeout(this.render_timer);
@@ -1048,6 +1048,10 @@ function sheetInitEvents() {
         // 如果是 esc
         if (itext == "@~esc") {
             let {text, formulas} = editor.oldCell;
+            editor.oldCell = {
+                text: '',
+                formulas: '',
+            };
             let {ri, ci} = editor;
             data.setSelectedCell(text, 'input', formulas, ri, ci);
             editor.setText("");

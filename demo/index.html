@@ -1,29 +1,31 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-
-<html xmlns="http://www.w3.org/1999/xhtml">
+<!doctype html>
+<html>
 <head>
-    <title>无标题页</title>
-    <style>
-        table {
-            border-collapse: collapse;
-        }
-        table td {
-            border:1px solid black;
-        }
-    </style>
+    <meta charset="utf-8"/>
+    <title>Marked in the browser</title>
+    <link href="https://cdn.quilljs.com/1.0.0/quill.snow.css" rel="stylesheet">
 </head>
 <body>
-<table cellpadding="0">
-    <tr>
-        <td>First</td>
-        <td>Second</td>
-        <td>Three</td>
-    </tr>
-    <tr>
-        <td>第一</td>
-        <td>第二</td>
-        <td>第三</td>
-    </tr>
-</table>
+<!-- Create the toolbar container -->
+<div id="toolbar">
+    <button class="ql-bold">Bold</button>
+    <button class="ql-italic">Italic</button>
+</div>
+
+<!-- Create the editor container -->
+<div id="editor">
+    <p>Hello World!</p>
+</div>
+
+<!-- Include the Quill library -->
+<script src="https://cdn.quilljs.com/1.0.0/quill.js"></script>
+
+<!-- Initialize Quill editor -->
+<script>
+    var editor = new Quill('#editor', {
+        modules: { toolbar: '#toolbar' },
+        theme: 'snow'
+    });
+</script>
 </body>
 </html>

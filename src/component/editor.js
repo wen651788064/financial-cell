@@ -221,17 +221,6 @@ function inputEventHandler(evt, txt = '', formulas = '', state = "input") {
             set_focus.call(this, textEl.el, -1);
         }
 
-        // 注释的原因是  copy之后把v 设置为""， 然后会把ri, ci重置
-        // if (v === "") {
-        //     this.tmp.hide();
-        //     this.lock = false;
-        //     this.pos = 0;
-        //     this.inputText = "";
-        //     this.ri = -1;
-        //     this.ci = -1;
-        //     this.setText("");
-        // }
-
         if (formulas && formulas[0] === '=') {
             v = formulas;
         }
@@ -467,10 +456,13 @@ export default class Editor {
                             this.clear();
                             createEvent.call(this, 40, false);
                         } else if (key_num === 39) {
+                            this.clear();
                             createEvent.call(this, 39, false);
                         } else if (key_num === 37) {
+                            this.clear();
                             createEvent.call(this, 37, false);
                         } else if (key_num === 38) {
+                            this.clear();
                             createEvent.call(this, 38, false);
                         } else if (ctrlKey || metaKey) {
                             if (key_num === 67) {
@@ -529,6 +521,13 @@ export default class Editor {
     setRiCi(ri, ci) {
         this.ri = ri;
         this.ci = ci;
+        const cell = this.data.rows.getCellOrNew(ri, ci);
+
+        console.log(cell);
+        this.oldCell = {
+            text: (cell && cell.text) || '',
+            formulas: (cell && cell.formulas) || '',
+        };
     }
 
     setLock(lock) {
@@ -541,6 +540,9 @@ export default class Editor {
 
 
     show(off = true) {
+        // let d = isDisplay.call(this);
+        // console.log(d);
+
         if (off && this.data.settings.showEditor) {
             this.textEl.css('caret-color', 'black');
             this.textEl.css('cursor', 'text');
