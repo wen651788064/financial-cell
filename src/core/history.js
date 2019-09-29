@@ -28,7 +28,6 @@ export default class History {
             pic: newData,
             operation: operation
         });
-        console.log(this.undoItems, data);
 
         this.redoItems = [];
     }
