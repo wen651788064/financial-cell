@@ -29,6 +29,9 @@ class Spreadsheet {
         this.plugIn = new PlugIn(rootEl, this.sheet, this.data);
     }
 
+    setDataSettings(value) {
+        this.data.settings.showEditor = value;
+    }
 
     loadData(data) {
         this.sheet.loadData(data);
