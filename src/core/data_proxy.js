@@ -1051,6 +1051,22 @@ export default class DataProxy {
         return this.rows.getCell(ri, ci);
     }
 
+    isEmpty(cell) {
+        return this.rows.isEmpty(cell);
+    }
+
+    getRegularText(text) {
+        return this.rows.getRegularText(text);
+    }
+
+    backEndCalc(text) {
+        return this.rows.backEndCalc();
+    }
+
+    isNeedCalc(cell) {
+        return this.rows.isNeedCalc(cell);
+    }
+
     getCellTextOrDefault(ri, ci) {
         const cell = this.getCell(ri, ci);
         return (cell && cell.text) ? cell.text : '';

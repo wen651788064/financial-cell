@@ -4,6 +4,7 @@ import {absoluteType, changeFormula, cutStr, isAbsoluteValue, value2absolute} fr
 import {expr2xy} from "../core/alphabet";
 import CellRange from "./cell_range";
 import dayjs from 'dayjs'
+import {isSheetVale} from "./operator";
 
 class Rows {
     constructor({len, height}) {
@@ -69,6 +70,32 @@ class Rows {
         const row = this.getOrNew(ri);
         row.cells[ci] = row.cells[ci] || {};
         return row.cells[ci];
+    }
+
+    getRegularText(text) {
+        return text + "";
+    }
+
+    backEndCalc(text) {
+        if (text.indexOf("MD.RTD") != -1) {
+            return true;
+        }
+
+        return true;
+    }
+
+    isNeedCalc(cell) {
+        if (cell.formulas && cell.formulas[0] == "=" && isSheetVale(cell.formulas)) {
+            return true;
+        }
+        return false;
+    }
+
+    isEmpty(cell) {
+        if(cell && (cell.text || cell.formulas)) {
+            return false;
+        }
+        return true;
     }
 
     // what: all | text | format

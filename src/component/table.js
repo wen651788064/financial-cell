@@ -105,29 +105,30 @@ export function loadData(viewRange, load = false, read = false) {
     let workbook = [];
     workbook.Sheets = {};
     workbook.Sheets[data.name] = {};
-    let workbook2 = [];
-    workbook2.Sheets = {};
-    workbook2.Sheets[data.name] = {};
+    let workbook_no_formula = [];
+    workbook_no_formula.Sheets = {};
+    workbook_no_formula.Sheets[data.name] = {};
     let enter = 0;
 
     console.time("x");
     let {mri, mci} = this.data.rows.getMax();
-    viewRange.each3((ri, ci, eri, eci,) => {
+    viewRange.eachGivenRange((ri, ci, eri, eci,) => {
         let cell = data.getCell(ri, ci);
         let expr = xy2expr(ci, ri);
-        if (cell && (cell.text || cell.formulas)) {
+        if (data.isEmpty(cell) === false) {
+            cell.text = data.getRegularText(cell.text);
 
-            cell.text = cell.text + "";
-            if (cell.text.indexOf("MD.RTD") != -1) {
+            if (data.backEndCalc(cell.text)) {
                 workbook.Sheets[data.name][expr] = {v: "", f: ""};
             } else {
-                if (cell.formulas && cell.formulas[0] == "=" && isSheetVale(cell.formulas)) {
+                if (data.isNeedCalc(cell)) {
                     let {factory} = this;
                     factory.push(cell.formulas);
                     enter = factory.lock;
                     enter = enter ? 1 : 0;
                 }
-                workbook2.Sheets[data.name][expr] = {
+
+                workbook_no_formula.Sheets[data.name][expr] = {
                     v: cell.text,
                     f: cell.formulas,
                     z: true
@@ -176,7 +177,7 @@ export function loadData(viewRange, load = false, read = false) {
     return {
         workbook,
         enter,
-        workbook2
+        workbook2: workbook_no_formula
     };
 }
 

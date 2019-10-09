@@ -79,7 +79,7 @@ export default class ApplicationFactory {
             }
         }
         if (needPush.length > 0) {
-            this.createSample(...needPush);
+            // this.createSample(...needPush);
             this.table.render(true, this.data);
             this.lock = true;
         }
