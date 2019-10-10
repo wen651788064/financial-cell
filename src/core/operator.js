@@ -1,6 +1,11 @@
 import {filterFormula} from "../config";
 import {expr2xy, xy2expr} from "./alphabet";
 import CellRange from "./cell_range";
+import {
+    blankOperator, letterOperator, letterOperatorWithDollor, letterOperatorWithDollorEnd, letterOperatorWithDollorPrex,
+    logicOperator, letterAndLetterOperator,
+    str2Re
+} from "./re";
 
 const operator = [
     "+", "-", "*", "/", "&", "^", "(", ",", "=", " ", " ", "，"
@@ -70,26 +75,26 @@ const cutStr = (str, filter = false, f = false) => {
 
     // 把空格去除的原因是因为 => A   1 这种情况不应该被包含在内
     // str = str.replace(/\s/g, "");
-    let arr = str.split(/([(-\/,+*，=^&])/);
+    let arr = str.split(str2Re(logicOperator));
     // 去除字符串两端的空格
     for (let i = 0; i < arr.length; i++) {
-        arr[i] = arr[i].replace(/(^\s*)|(\s*$)/g, "");
+        arr[i] = arr[i].replace(str2Re(blankOperator), "");
     }
     let express = [];
     arr.filter(i => {
         if (f) {
-            if (i.search(/^[A-Z]+\d+$/) != -1
-                || i.search(/^[A-Za-z]+\d+:[A-Za-z]+\d+$/) != -1)
+            if (i.search(str2Re(letterOperator)) != -1
+                || i.search(str2Re(letterAndLetterOperator)) != -1)
                 if (express.indexOf(i) == -1)
                     express.push(i);
         } else {
-            if (i.search(/^[A-Z]+\d+$/) != -1 || i.search(/^\$[A-Z]+\$\d+$/) != -1
-                || i.search(/^[A-Z]+\$\d+$/) != -1 || i.search(/^\$[A-Z]+\d+$/) != -1) {
+            if (i.search(str2Re(letterOperator)) != -1 || i.search(str2Re(letterOperatorWithDollor)) != -1
+                || i.search(str2Re(letterOperatorWithDollorEnd)) != -1 || i.search(str2Re(letterOperatorWithDollorPrex)) != -1) {
                 if (express.indexOf(i) == -1 || filter == true)
                     express.push(i);
             } else {
                 let is = i.replace(/\$/g, "");
-                if (is.search(/^[A-Za-z]+\d+:[A-Za-z]+\d+$/) != -1) {
+                if (is.search(str2Re(letterAndLetterOperator)) != -1) {
                     express.push(i);
                 }
             }

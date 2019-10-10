@@ -81,7 +81,7 @@ class Rows {
             return true;
         }
 
-        return true;
+        return false;
     }
 
     isNeedCalc(cell) {
@@ -96,6 +96,13 @@ class Rows {
             return false;
         }
         return true;
+    }
+
+    textIsFormula(text) {
+        if(text && text[0] === "=") {
+            return true;
+        }
+        return false;
     }
 
     // what: all | text | format

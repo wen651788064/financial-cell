@@ -9,6 +9,7 @@ import ApplicationFactory from "./application";
 import {isSheetVale} from "../core/operator";
 import CellProxy from "./cell_proxy";
 import {look} from "../config";
+import {textReplace, textReplaceAndToUpperCase, textReplaceQM} from "./context_process";
 // import Worker from 'worker-loader!../external/Worker.js';
 
 var formulajs = require('formulajs');
@@ -134,10 +135,11 @@ export function loadData(viewRange, load = false, read = false) {
                     z: true
                 };
 
-                if (cell.text && cell.text[0] === "=") {
+                if (data.textIsFormula(cell.text)) {
                     if (isNaN(cell.text)) {
                         cell.text = toUpperCase(cell.text); // 为什么要.toUpperCase() 呢？ => =a1 需要变成=A1
                     }
+
                     if (load) {
                         workbook.Sheets[data.name][expr] = {
                             v: '-',
@@ -145,23 +147,23 @@ export function loadData(viewRange, load = false, read = false) {
                             z: true
                         };
                     } else {
+                        // 命名还要再仔细想一下
                         workbook.Sheets[data.name][expr] = {
                             v: '',
-                            f: cell.text.replace(/ /g, '').replace(/\"/g, "\"").replace(/\"\"\"\"&/g, "\"'\"&"),
+                            f: textReplace(cell.text),
                             z: true,
                         };
                     }
 
                 } else {
-                    // cell.text.replace(/ /g, '').toUpperCase().replace(/\"/g, "\"") * 1
-                    if (!isNaN(cell.text.replace(/ /g, '').toUpperCase().replace(/\"/g, "\""))) {
+                    if (!isNaN(textReplaceAndToUpperCase(cell.text))) {
                         workbook.Sheets[data.name][expr] = {
-                            v: cell.text.replace(/\"/g, "\"") * 1,
+                            v: textReplaceQM(cell.text, true),
                             z: true
                         };
                     } else {
                         workbook.Sheets[data.name][expr] = {
-                            v: cell.text.replace(/\"/g, "\""),
+                            v: textReplaceQM(cell.text),
                             z: true
                         };
                     }
@@ -317,7 +319,7 @@ export function parseCell2(viewRange, state = false, src = '') {
 }
 
 function specialStyle(text) {
-    text = text + ""
+    text = text + "";
     if(!text) {
         return false;
     }

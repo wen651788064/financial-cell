@@ -1055,6 +1055,10 @@ export default class DataProxy {
         return this.rows.isEmpty(cell);
     }
 
+    textIsFormula(text) {
+        return this.rows.textIsFormula(text);
+    }
+
     getRegularText(text) {
         return this.rows.getRegularText(text);
     }
