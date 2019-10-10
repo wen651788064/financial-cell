@@ -1060,7 +1060,7 @@ export default class DataProxy {
     }
 
     backEndCalc(text) {
-        return this.rows.backEndCalc();
+        return this.rows.backEndCalc(text);
     }
 
     isNeedCalc(cell) {

@@ -655,6 +655,16 @@ class Rows {
                 if (this._[ri].cells[ci].text != '' && this._[ri].cells[ci].formulas != '') {
                     ncellmm[nri].cells[nci] = this._[ri].cells[ci];
                 }
+                if(this._[ri].cells[ci].style) {
+                    if(!ncellmm[nri].cells[nci]) {
+                        ncellmm[nri].cells[nci] = {
+                            "style":  this._[ri].cells[ci].style,
+                        }
+                    } else {
+                        ncellmm[nri].cells[nci]['style'] = this._[ri].cells[ci].style;
+                    }
+
+                }
             });
         });
         this._ = ncellmm;
