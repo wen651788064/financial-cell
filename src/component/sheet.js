@@ -432,7 +432,6 @@ function overlayerMousedown(evt) {
 
     if (!isAutofillEl && evt.buttons === 1) {
         if (evt.shiftKey) {
-            console.log("3")
             // console.log('shiftKey::::');
             selectorSet.call(this, true, ri, ci);
         }

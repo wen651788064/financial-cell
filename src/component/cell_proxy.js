@@ -6,6 +6,7 @@ import {toUpperCase} from "./table";
 import {find} from "../core/helper";
 import {formulas} from "../core/formula";
 import {specialWebsiteValue} from "./special_formula_process";
+import {textReplace} from "./context_process";
 
 export default class CellProxy {
     constructor(refRow) {
@@ -504,10 +505,11 @@ export default class CellProxy {
                                 deep.push(newCell.f);
                             }
 
+                            // f: d.replace(/ /g, '').replace(/\"/g, "\"").replace(/\"\"\"\"&/g, "\"'\"&")
                             if (d[0] === '=' && (this.isNull(p) || this.isEqual(d, p) || this.diff === 305)) {
                                 workbook.Sheets[name][expr] = {
                                     v: '',
-                                    f: d.replace(/ /g, '').replace(/\"/g, "\"").replace(/\"\"\"\"&/g, "\"'\"&")
+                                    f: textReplace(d)
                                 };
                             }
                         } else if (newCell.z == true) {
@@ -530,10 +532,11 @@ export default class CellProxy {
                                     deep.push(newCell.f);
                                 }
 
+                                //   f: d.replace(/ /g, '').replace(/\"/g, "\"").replace(/\"\"\"\"&/g, "\"'\"&")
                                 if (d[0] === '=' && (p === "" || this.isNull(p) || this.isEqual(d, p) || this.diff === 305)) {
                                     workbook.Sheets[name][expr] = {
                                         v: '',
-                                        f: d.replace(/ /g, '').replace(/\"/g, "\"").replace(/\"\"\"\"&/g, "\"'\"&")
+                                        f:  textReplace(d)
                                     };
                                 } else if (oldCell && newCell && oldCell.v + "" !== newCell.v + "") {
                                     let p = newCell.v;

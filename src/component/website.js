@@ -117,10 +117,10 @@ export default class Website {
             if(args.state) {
                 text = args.text;
             }
-            let regex = /^http(s)?:\/\/([\w-]+\.)+[\w-]+(\/[\w- ./?%&=]*)?$/;
             text = text.substr(0, 3).toLowerCase() == "www" ? "http://" + text : text;
             // console.log(regex.test(text))
-            if (!regex.test(text)) {
+            if (text.substr(0, 7).toLowerCase() !== 'http://' &&
+                text.substr(0, 8).toLowerCase() !== 'https://') {
                 this.el.hide();
                 this.tableEl.hide();
                 return;

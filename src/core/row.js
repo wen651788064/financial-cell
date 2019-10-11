@@ -5,7 +5,17 @@ import {expr2xy} from "../core/alphabet";
 import CellRange from "./cell_range";
 import dayjs from 'dayjs'
 import {isSheetVale} from "./operator";
+import Recast from "./recast";
 
+// 2019-10-11 cell里新增一个字段   recast
+/* 目前数据结构 =>
+    cell = {
+        "text": "",
+        "formula: "",
+        "style": "",
+        "recast": recast
+    }
+ */
 class Rows {
     constructor({len, height}) {
         this._ = {};
@@ -84,8 +94,8 @@ class Rows {
         return false;
     }
 
-    isNeedCalc(cell) {
-        if (cell.formulas && cell.formulas[0] == "=" && isSheetVale(cell.formulas)) {
+    isNeedCalc(cell, state = false) {
+        if (cell.formulas && cell.formulas[0] == "=" && (state || isSheetVale(cell.formulas))) {
             return true;
         }
         return false;
@@ -118,13 +128,14 @@ class Rows {
             row.cells[ci].style = cell.style;
             if (cell.merge) row.cells[ci].merge = cell.merge;
         }
+        this.recast(cell);
     }
 
     setCellText(ri, ci, text, proxy = "", name = "") {
         const cell = this.getCellOrNew(ri, ci);
         cell.formulas = text;
         cell.text = text;  // todo 自定义公式： text 为公式计算结果, formulas 为公式
-        console.log(xy2expr(ci, ri))
+        this.recast(cell);
         if (typeof proxy != "string") {
             proxy.setCell(name, xy2expr(ci, ri));
         }
@@ -778,6 +789,20 @@ class Rows {
         }
     }
 
+    recast(cell) {
+        try {
+            if(this.isNeedCalc(cell, true)) {
+                let recast = new Recast(cell.formulas);
+                recast.parse();
+                cell['recast'] = recast;
+            } else {
+                cell['recast'] = null;
+            }
+        } catch (e) {
+            cell['recast'] = null;
+        }
+    }
+
     setData(d) {
         try {
             if (d.len) {
@@ -785,6 +810,15 @@ class Rows {
                 delete d.len;
             }
             this._ = d;
+
+            // this.each((ri, row) => {
+            //     this.eachCells(ri, (ci, cell) => {
+            //         if(this.isNeedCalc(cell, true)) {
+            //             this.recast(cell);
+            //         }
+            //     });
+            // });
+
         } catch(e) {
             console.log("745", e);
         }

@@ -150,11 +150,10 @@ export function loadData(viewRange, load = false, read = false) {
                         // 命名还要再仔细想一下
                         workbook.Sheets[data.name][expr] = {
                             v: '',
-                            f: textReplace(cell.text),
+                            f: cell.text,
                             z: true,
                         };
                     }
-
                 } else {
                     if (!isNaN(textReplaceAndToUpperCase(cell.text))) {
                         workbook.Sheets[data.name][expr] = {

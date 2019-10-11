@@ -1,5 +1,5 @@
 export function textReplace(text) {
-    return text.replace(/ /g, '').replace(/\"/g, "\"").replace(/\"\"\"\"&/g, "\"'\"&");
+    return text.replace(/\"/g, "\"").replace(/\"\"\"\"&/g, "\"'\"&");
 }
 
 export function textReplaceAndToUpperCase(text) {
