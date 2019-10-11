@@ -110,48 +110,48 @@ class SelectorElement {
             let {rows} = data;
             let arr = [], arr2 = [], arr3 = [];
             // 多个单元格
-            if (_cellRange.eri != _cellRange.sri || _cellRange.eci != _cellRange.sci) {
-                let erpxArr = [];
-                let erpxArr2 = [];
-                let erpxArr3 = [];
-                for (let i = _cellRange.sci; i <= _cellRange.eci; i++) {
-                    for (let j = _cellRange.sri; j <= _cellRange.eri; j++) {
-                        erpxArr.push(xy2expr(i, j));
-                    }
-                }
-
-                for (let i = 0; i < erpxArr.length; i++) {
-                    for (let j = 0; j < erpxArr.length; j++) {
-                        if (i <= j) {
-                            erpxArr2.push([i, j])
-                        }
-                    }
-                }
-
-                for (let i = 0; i < erpxArr2.length; i++) {
-                    let [a, b] = erpxArr2[i];
-
-                    let a2 = erpxArr[a];
-                    let a1 = erpxArr[b];
-                    arr.push(`${a2}:${a1}`);
-                    arr3.push(`${a2}:${a1}`);
-                }
-
-                for (let i = cellRange.sci; i <= cellRange.eci; i++) {
-                    for (let j = cellRange.sri; j <= cellRange.eri; j++) {
-                        erpxArr3.push(xy2expr(i, j));
-                    }
-                }
-
-                for (let i = 0; i < erpxArr2.length; i++) {
-                    let [a, b] = erpxArr2[i];
-
-                    let a2 = erpxArr3[a];
-                    let a1 = erpxArr3[b];
-
-                    arr2.push(`${a2}:${a1}`);
-                }
-            }
+            // if (_cellRange.eri != _cellRange.sri || _cellRange.eci != _cellRange.sci) {
+            //     let erpxArr = [];
+            //     let erpxArr2 = [];
+            //     let erpxArr3 = [];
+            //     for (let i = _cellRange.sci; i <= _cellRange.eci; i++) {
+            //         for (let j = _cellRange.sri; j <= _cellRange.eri; j++) {
+            //             erpxArr.push(xy2expr(i, j));
+            //         }
+            //     }
+            //
+            //     for (let i = 0; i < erpxArr.length; i++) {
+            //         for (let j = 0; j < erpxArr.length; j++) {
+            //             if (i <= j) {
+            //                 erpxArr2.push([i, j])
+            //             }
+            //         }
+            //     }
+            //
+            //     for (let i = 0; i < erpxArr2.length; i++) {
+            //         let [a, b] = erpxArr2[i];
+            //
+            //         let a2 = erpxArr[a];
+            //         let a1 = erpxArr[b];
+            //         arr.push(`${a2}:${a1}`);
+            //         arr3.push(`${a2}:${a1}`);
+            //     }
+            //
+            //     for (let i = cellRange.sci; i <= cellRange.eci; i++) {
+            //         for (let j = cellRange.sri; j <= cellRange.eri; j++) {
+            //             erpxArr3.push(xy2expr(i, j));
+            //         }
+            //     }
+            //
+            //     for (let i = 0; i < erpxArr2.length; i++) {
+            //         let [a, b] = erpxArr2[i];
+            //
+            //         let a2 = erpxArr3[a];
+            //         let a1 = erpxArr3[b];
+            //
+            //         arr2.push(`${a2}:${a1}`);
+            //     }
+            // }
             _cellRange.each((i, j) => {
                 arr.push(`${xy2expr(j, i)}:${xy2expr(j, i)}`);
                 arr3.push(`${xy2expr(j, i)}`)
