@@ -312,6 +312,34 @@ function toolbarChangePaintformatPaste() {
     }
 }
 
+function dropDown( e, isAutofillEl, selector, data, verticalScrollbar, rows, evt) {
+    this.selector.setBoxinner("none");
+
+    this.container.css('pointer-events', 'none');
+    let {ri, ci} = data.getCellRectByXY(e.layerX, e.layerY);
+    if (isAutofillEl) {
+        let pos = positionAngle(evt.clientX, e.clientX, evt.clientY, e.clientY);
+        console.log(pos);
+        let orien = selector.showAutofill(ri, ci, pos);
+        let o = orientation(this.data.settings.view.height(), this.data.settings.view.width(), e.layerY, e.layerX, orien);
+
+        if (o && orien == 44) {
+            const {top} = verticalScrollbar.scroll();
+            ri = data.scroll.ri + 1;
+            verticalScrollbar.move({top: top + rows.getHeight(ri) - 1});
+        } else if (o && orien == 22) {
+            const {top} = verticalScrollbar.scroll();
+            ri = data.scroll.ri - 1;
+            if (ri >= 0) {
+                verticalScrollbar.move({top: ri === 0 ? 0 : top - rows.getHeight(ri)});
+            }
+        }
+    } else if (e.buttons === 1 && !e.shiftKey) {
+        selectorSet.call(this, true, ri, ci, true, true);
+    }
+}
+
+
 function overlayerMousedown(evt) {
     // console.log(':::::overlayer.mousedown:', evt.detail, evt.button, evt.buttons, evt.shiftKey);
     // console.log('evt.target.className:', evt.target.className);
@@ -363,39 +391,29 @@ function overlayerMousedown(evt) {
         const {top} = verticalScrollbar.scroll();
         ri = data.scroll.ri + 1;
         let ttop = top + rows.getHeight(ri) - 1;
-
+        let stopTimer = null;
+        let stopTimer2 = null;
         // mouse move up
         mouseMoveUp(window, (e) => {
-            this.selector.setBoxinner("none");
+            clearTimeout(stopTimer);
+            clearInterval(stopTimer2);
+            stopTimer = setTimeout(() => {
+                stopTimer2 = setInterval(() => {
+                    if (!dateBegin) {
+                        dateBegin = new Date();
+                    }
+                    dropDown.call(this, e, isAutofillEl, selector, data, verticalScrollbar, rows, evt);
+                }, 50);
+            }, 200);
             if (!dateBegin) {
                 dateBegin = new Date();
             }
-            this.container.css('pointer-events', 'none');
-            ({ri, ci} = data.getCellRectByXY(e.layerX, e.layerY));
-            if (isAutofillEl) {
-                let pos = positionAngle(evt.clientX, e.clientX, evt.clientY, e.clientY);
-                console.log(pos);
-                let orien = selector.showAutofill(ri, ci, pos);
-                let o = orientation(this.data.settings.view.height(), this.data.settings.view.width(), e.layerY, e.layerX, orien);
-
-                if (o && orien == 44) {
-                    const {top} = verticalScrollbar.scroll();
-                    ri = data.scroll.ri + 1;
-                    verticalScrollbar.move({top: top + rows.getHeight(ri) - 1});
-                } else if (o && orien == 22) {
-                    const {top} = verticalScrollbar.scroll();
-                    ri = data.scroll.ri - 1;
-                    if (ri >= 0) {
-                        verticalScrollbar.move({top: ri === 0 ? 0 : top - rows.getHeight(ri)});
-                    }
-                }
-            } else if (e.buttons === 1 && !e.shiftKey) {
-                // console.log("2", e.offsetX, e.offsetY, ri, ci, e);
-                selectorSet.call(this, true, ri, ci, true, true);
-            }
+            dropDown.call(this, e, isAutofillEl, selector, data, verticalScrollbar, rows, evt);
         }, (e) => {
-            let dateEnd = new Date();
+            clearTimeout(stopTimer);
+            clearInterval(stopTimer2);
 
+            let dateEnd = new Date();
             if (dateBegin && isAutofillEl) {
                 let dateDiff = dateEnd.getTime() - dateBegin.getTime();
                 if (dateDiff > 50) {
