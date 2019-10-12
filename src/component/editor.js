@@ -759,7 +759,7 @@ export default class Editor {
             this.sheet.selector.hide();
             this.isCors = true;
         }
-        this.pos = pos;
+        this.setCursorPos(pos);
         inputEventHandler.call(this, null, text);
     }
 
