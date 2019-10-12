@@ -306,7 +306,7 @@ export function parseCell2(viewRange, state = false, src = '') {
 
 
     if (state) {
-        workbook.Sheets[data.name]['A1'] = {v: '', f: `=${src}`};
+        workbook.Sheets[data.name]['A1'] = {v: '', f: `${src}`};
     }
 
     try {
