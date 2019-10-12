@@ -1,5 +1,8 @@
 const recast = require("recast");
 
+const colon = "$$$";
+const fqm = '"\\"\\""';
+
 export default class Recast {
     constructor(formula) {
         this.formula = formula;
@@ -8,7 +11,8 @@ export default class Recast {
 
     preProcess() {
         this.formula = this.formula.replace(/=/g, '');
-        this.formula = this.formula.replace(/:/g, '$$$');
+        this.formula = this.formula.replace(/:/g, colon);
+        this.formula = this.formula.replace(/""""/g, fqm);
     }
 
     parse() {

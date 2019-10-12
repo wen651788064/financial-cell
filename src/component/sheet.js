@@ -21,13 +21,14 @@ import {clearSelectors, editingSelectors, lockCells, makeSelector} from "../comp
 import {deleteImg, hideDirectionArr, mountPaste} from "../event/paste";
 import {getChooseImg, mountCopy} from "../event/copy";
 import Website from "../component/website";
-import {cutStr, cuttingByPos, haveManyFunc, positionAngle} from "../core/operator";
+import {cutStr, cuttingByPos, haveManyFunc, isLegal, positionAngle} from "../core/operator";
 import {moveCell} from "../event/move";
 import CellRange from "../core/cell_range";
 import {orientation} from "../core/helper";
 import {expr2xy} from "../core/alphabet";
 import ErrorPopUp from "./error_pop_up";
 import EditorProxy from "./editor_proxy";
+import Recast from "../core/recast";
 
 function scrollbarMove() {
     const {
@@ -732,17 +733,35 @@ function selectorCellText(ri, ci, text, state, proxy = "") {
         return;
     }
     const {data, table, editor, errorPopUp} = this;
-    text = haveManyFunc(text);
-    let rb = text.match(/\(/g) || [];
-    let lb = text.match(/\)/g) || [];
+    // text = haveManyFunc(text);
+    // let rb = text.match(/\(/g) || [];
+    // let lb = text.match(/\)/g) || [];
+    let enter = false;
+    let msg = "";
+    try {
+        let recast = new Recast(text);
+        recast.parse();
+    } catch (e) {
+        console.log(e);
+        msg = '您输入的公式存在问题，请更正';
+        enter = true;
+    }
 
-    if (rb.length < lb.length && editor.isDisplay() && !errorPopUp.open) {
-        errorPopUp.show();
+    if(enter == true) {
+        if(isLegal(text) == false) {
+            msg = '缺少左括号或右括号';
+            enter = true;
+        }
+    }
+
+    if (enter && !errorPopUp.open) {
+        errorPopUp.show(msg);
         return true;
     } else if (errorPopUp.open) {
         errorPopUp.hide();
         return true;
     }
+
     data.setCellText(ri, ci, text, state, proxy);
     editor.setRiCi(-1, -1);
     return false;

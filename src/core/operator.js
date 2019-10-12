@@ -115,6 +115,55 @@ function changeFormula(cut) {
     return cut;
 }
 
+export function isLegal(str){
+    const left=0;
+    const right=1;
+    const other=2;
+    //判断括号是左边还是右边，或者其他
+    let verifyFlag=function(char){
+        if(char==="(" || char==="[" || char==="{"  || char==="/*"  ){
+            return left;
+        }else if(char===")" || char==="]" || char==="}"  || char==="*/" ){
+            return right;
+        }else{
+            return other;
+        }
+    }
+    //判断左右括号是否匹配
+    let matches=function(char1,char2){
+        if( (char1 ===  "(" && char2 === ")")
+            || (char1 === "{" && char2 === "}")
+            || (char1 ===  "[" && char2 === "]")
+            || (char1 ===  "/*" && char2 === "*/")  ){
+            return true;
+        }else{
+            return false;
+        }
+    }
+    //入口
+    let leftStack=[];
+    if(str!==null||str!==""||str!==undefined){
+        for(let i=0;i<str.length;i++){
+            //处理字符
+            let char=str.charAt(i);
+            if(verifyFlag(char)===left){
+                leftStack.push(char);
+            }else if(verifyFlag(char)===right){
+                //如果不匹配，或者左括号栈已经为空，则匹配失败
+                if(leftStack.length===0||!matches(leftStack.pop(),char)){
+                    return false;
+                }
+            }else{
+            }
+        }
+        //循环结束，如果左括号栈还有括号，也是匹配失败
+        if(leftStack.length !== 0){
+            return  false;
+        }
+        return true;
+    }
+}
+
 const haveManyFunc = (str) => {
     let corss = 0;
     for (let i = 0; i < str.length; i++) {
