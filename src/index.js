@@ -91,7 +91,7 @@ class Spreadsheet {
 
         setTimeout(() => {
             editor.setCursorPos(cell.formulas.length);
-        })
+        }, 100)
     }
 
     getText(alias, inputText, pos) {
