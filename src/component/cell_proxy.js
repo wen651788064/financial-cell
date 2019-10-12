@@ -162,7 +162,7 @@ export default class CellProxy {
                         for (let f = 0; f < targetArr.length; f++) {
                             let n = targetArr[f];
                             if (value.indexOf(n) !== -1) {
-                                if (contain(division(value, filterFormula, false), n)) {
+                                if (contain(division(value, filterFormula, true), n)) {
                                     workbook.Sheets[name][k] = data[i][j][k];
                                     enter = true;
 

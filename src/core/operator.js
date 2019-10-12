@@ -233,8 +233,10 @@ const division = (str, ff = filterFormula, other = true) => {
     // // 去除字符串两端的空格
     for (let i = 0; i < arr.length; i++) {
         arr[i] = arr[i].replace(/(^\s*)|(\s*$)/g, "");
-        if (other && isSheetVale(arr[i])) {
-            arr[i] = arr[i].split("!")[1];
+        if (other) {
+            if(isSheetVale(arr[i])) {
+                arr[i] = arr[i].split("!")[1];
+            }
             if(isAbsoluteValue(arr[i].replace(/\$/g, ''), 4)) {
                 let value = arr[i].replace(/\$/g, '').split(":");
                 let a1 = expr2xy(value[0]);
