@@ -73,10 +73,10 @@ class Spreadsheet {
         return args;
     }
 
-    setEditorText(text = '') {
+    setEditorText(text = '', pos = 1) {
         let {editor} = this.sheet;
         text = text != '' ? text : '=';
-        editor.inputEventHandler(text, true);
+        editor.inputEventHandler(text, pos, true);
     }
 
     setTextEnd(cell, ri, ci) {

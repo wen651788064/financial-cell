@@ -753,12 +753,13 @@ export default class Editor {
         });
     }
 
-    inputEventHandler(text = '', hide = false) {
+    inputEventHandler(text = '', pos = 1, hide = false) {
         if (hide) {
             this.areaEl.hide();
             this.sheet.selector.hide();
             this.isCors = true;
         }
+        this.pos = pos;
         inputEventHandler.call(this, null, text);
     }
 
