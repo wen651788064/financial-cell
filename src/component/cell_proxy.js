@@ -538,7 +538,7 @@ export default class CellProxy {
                                         v: '',
                                         f:  textReplace(d)
                                     };
-                                } else if (oldCell && newCell && oldCell.v + "" !== newCell.v + "") {
+                                } else if (newCell) {
                                     let p = newCell.v;
                                     let expr = k;
                                     workbook.Sheets[name][expr] = {
