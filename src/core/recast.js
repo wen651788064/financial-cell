@@ -2,7 +2,7 @@ const recast = require("recast");
 
 const colon = "$$$";
 const fqm = '"\\"\\""';
-const exclamationPoint = "%%%";
+const exclamationPoint = "///";
 export default class Recast {
     constructor(formula) {
         this.formula = formula;
