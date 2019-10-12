@@ -214,7 +214,7 @@ function distinct(a, b) {
     return Array.from(new Set([...a, ...b]))
 }
 
-const division = (str, ff = filterFormula, other = true) => {
+const division = (str, ff = filterFormula, other = true, other2 = false) => {
     str = str + "";
     str = str.toUpperCase();
 
@@ -234,10 +234,12 @@ const division = (str, ff = filterFormula, other = true) => {
     for (let i = 0; i < arr.length; i++) {
         arr[i] = arr[i].replace(/(^\s*)|(\s*$)/g, "");
         if (other) {
+            let enter = true;
             if(isSheetVale(arr[i])) {
                 arr[i] = arr[i].split("!")[1];
+                enter = other2 == false ? false : true;
             }
-            if(isAbsoluteValue(arr[i].replace(/\$/g, ''), 4)) {
+            if(enter && isAbsoluteValue(arr[i].replace(/\$/g, ''), 4)) {
                 let value = arr[i].replace(/\$/g, '').split(":");
                 let a1 = expr2xy(value[0]);
                 let a2 =  expr2xy(value[1]);
