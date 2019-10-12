@@ -94,14 +94,14 @@ class Spreadsheet {
         })
     }
 
-    getText(alias) {
+    getText(alias, inputText, pos) {
         let {selectors, data, table} = this.sheet;
         let text = "";
         for(let i = 0; i < selectors.length; i++) {
             let {erpx} = selectors[i];
             text += erpx;
         }
-        let t = data.getCellByExpr(text, table, alias);
+        let t = data.getCellByExpr(text, table, alias, inputText, pos);
 
         return t;
     }

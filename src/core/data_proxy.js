@@ -1096,7 +1096,10 @@ export default class DataProxy {
         return this.getCellStyleOrDefault(ri, ci);
     }
 
-    getCellByExpr(src, table, name) {
+    getCellByExpr(src, table, name, inputText, pos) {
+        let p1 = inputText.substring(0, pos);
+        let p2 = inputText.substring(pos , inputText.length);
+        src = p1 + src + p2;
         let workbook = parseCell2.call(table, this.viewRange(), true, src);
         return {
             "text": workbook['Sheets'][name].A1.w ? workbook['Sheets'][name].A1.w : workbook['Sheets'][name].A1.v,
