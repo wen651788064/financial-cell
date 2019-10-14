@@ -66,6 +66,10 @@ export default class CellProxy {
         return result;
     }
 
+    setOldData(old) {
+        this.oldData = old;
+    }
+
     preProcess(v, f) {
         if (typeof v === 'string' && v.indexOf("%") !== -1) {
             return f;
@@ -447,7 +451,7 @@ export default class CellProxy {
     checkDiff() {
         let {diff} = this;
         if (diff === 101) {
-            this.oldData = "";
+            this.setOldData("");
         }
     }
 

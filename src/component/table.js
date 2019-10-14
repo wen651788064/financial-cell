@@ -259,7 +259,7 @@ async function parseCell(viewRange, state = false, src = '') {
         }
     } else {
         factory.data = sall;
-        proxy.oldData = sall;
+        proxy.setOldData(sall);
         workbook = factory.data;
         redo = false;
     }
