@@ -181,9 +181,7 @@ export function loadData(viewRange, load = false, read = false) {
     };
 }
 
-async function parseCell(viewRange, state = false, src = '', state) {
-
-
+async function parseCell(viewRange, state = false, src = '', state2 = true) {
     let {data, proxy} = this;
     let {workbook, workbook2, enter} = loadData.call(this, viewRange, false, true);
 
@@ -257,7 +255,7 @@ async function parseCell(viewRange, state = false, src = '', state) {
             console.error(e);
         }
     } else {
-        if(state != false) {
+        if(state2 != false) {
             factory.data = sall;
             proxy.setOldData(sall);
             workbook = factory.data;
