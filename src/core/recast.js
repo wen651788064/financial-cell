@@ -3,6 +3,9 @@ const recast = require("recast");
 const colon = "$$$";
 const fqm = '"\\"\\""';
 const exclamationPoint = ">>>";
+const braceLeft = "(((";
+const braceRight = ")))";
+
 export default class Recast {
     constructor(formula) {
         this.formula = formula;
@@ -14,6 +17,8 @@ export default class Recast {
         this.formula = this.formula.replace(/:/g, colon);
         this.formula = this.formula.replace(/""""/g, fqm);
         this.formula = this.formula.replace(/!/g, exclamationPoint);
+        this.formula = this.formula.replace(/{/g, braceLeft);
+        this.formula = this.formula.replace(/}/g, braceRight);
     }
 
     parse() {
