@@ -733,8 +733,12 @@ function colResizerFinished(cRect, distance) {
 
 function selectorCellText(ri, ci, text, state, proxy = "") {
     if (ri == -1 || ci == -1) {
-        return;
+        return false;
     }
+    if(!text || text[0] !== '=') {
+        return false;
+    }
+
     const {data, table, editor, errorPopUp} = this;
     // text = haveManyFunc(text);
     // let rb = text.match(/\(/g) || [];
