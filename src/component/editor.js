@@ -556,7 +556,7 @@ export default class Editor {
             this.textEl.css('opacity', '0');
             this.textEl.el.blur();
             this.areaEl.css('pointer-events', 'none');
-            this.areaEl.css('background', 'rgba(75, 137, 255, 0.1)');
+            this.areaEl.css('background', 'rgba(75, 137, 255, 0)');
             this.areaEl.css('border', 'none');
         }
     }

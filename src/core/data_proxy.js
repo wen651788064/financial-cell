@@ -1330,13 +1330,15 @@ export default class DataProxy {
         const {autoFilter} = this;
         Object.keys(d).forEach((property) => {
             // this.judgeAutoWidth(d.rows);
-            if (property === 'merges' || property === 'rows'
+            if (property === 'merges'
                 || property === 'cols' || property === 'validations'
                 || property === 'refRow') {
                 this[property].setData(d[property]);
             } else if (property === 'flex') {
                 autoFilter.addFiexRows(d[property]);
-            } else if (property === 'freeze') {
+            } else if(property === 'rows') {
+                this[property].setData(d[property], sheet);
+            }else if (property === 'freeze') {
                 const [x, y] = expr2xy(d[property]);
                 this.freeze = [y, x];
             } else if (property === 'pictures') {

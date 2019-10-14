@@ -6,6 +6,7 @@ import CellRange from "./cell_range";
 import dayjs from 'dayjs'
 import {isSheetVale} from "./operator";
 import Recast from "./recast";
+import {parseCell2} from "../component/table";
 
 // 2019-10-11 cell里新增一个字段   recast
 /* 目前数据结构 =>
@@ -102,14 +103,14 @@ class Rows {
     }
 
     isEmpty(cell) {
-        if(cell && (cell.text || cell.formulas)) {
+        if (cell && (cell.text || cell.formulas)) {
             return false;
         }
         return true;
     }
 
     textIsFormula(text) {
-        if(text && text[0] === "=") {
+        if (text && text[0] === "=") {
             return true;
         }
         return false;
@@ -674,10 +675,10 @@ class Rows {
                 if (this._[ri].cells[ci].text != '' && this._[ri].cells[ci].formulas != '') {
                     ncellmm[nri].cells[nci] = this._[ri].cells[ci];
                 }
-                if(this._[ri].cells[ci].style) {
-                    if(!ncellmm[nri].cells[nci]) {
+                if (this._[ri].cells[ci].style) {
+                    if (!ncellmm[nri].cells[nci]) {
                         ncellmm[nri].cells[nci] = {
-                            "style":  this._[ri].cells[ci].style,
+                            "style": this._[ri].cells[ci].style,
                         }
                     } else {
                         ncellmm[nri].cells[nci]['style'] = this._[ri].cells[ci].style;
@@ -792,7 +793,7 @@ class Rows {
 
     recast(cell) {
         try {
-            if(this.isNeedCalc(cell, true)) {
+            if (this.isNeedCalc(cell, true)) {
                 let recast = new Recast(cell.formulas);
                 recast.parse();
                 cell['recast'] = recast;
@@ -804,13 +805,19 @@ class Rows {
         }
     }
 
-    setData(d) {
+    setData(d, sheet = "") {
         try {
             if (d.len) {
                 this.len = d.len;
                 delete d.len;
             }
             this._ = d;
+            if (sheet !== '') {
+                const {table, data} = sheet;
+                const {proxy} = table;
+                let viewRange = data.viewRange();
+                proxy.oldData = parseCell2.call(sheet, viewRange)
+            }
 
             // this.each((ri, row) => {
             //     this.eachCells(ri, (ci, cell) => {
@@ -820,7 +827,7 @@ class Rows {
             //     });
             // });
 
-        } catch(e) {
+        } catch (e) {
             console.log("745", e);
         }
     }
