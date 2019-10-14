@@ -816,7 +816,7 @@ class Rows {
                 const {table, data} = sheet;
                 const {proxy} = table;
                 let viewRange = data.viewRange();
-                let {workbook2} = loadData.call(this, viewRange, false, true);
+                let {workbook2} = loadData.call(sheet, viewRange, false, true);
                 proxy.oldData = workbook2;
             }
 
@@ -829,7 +829,7 @@ class Rows {
             // });
 
         } catch (e) {
-            console.log("745", e);
+            console.error("745", e);
         }
     }
 
