@@ -416,6 +416,9 @@ export default class CellProxy {
     }
 
     setOldData(newData) {
+        if(newData === "") {
+            return;
+        }
         this.oldData = this.deepCopy(newData);
     }
 
