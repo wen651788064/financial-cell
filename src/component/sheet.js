@@ -836,9 +836,6 @@ function toolbarChange(type, value) {
     } else if (type === 'throwFormula') {
         throwFormula.call(this);
     } else if (type === 'close') {
-        this.table.proxy.diff = 305;
-        this.table.proxy.oldData = "";
-        sheetReset.call(this);
         // loadFormula.call(this, true);
     } else if (type === 'freeze') {
         let {showFreeze} = data.settings;
