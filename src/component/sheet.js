@@ -259,7 +259,7 @@ function sheetReset(state = true) {
     verticalScrollbarSet.call(this);
     horizontalScrollbarSet.call(this);
     sheetFreeze.call(this);
-    table.render(false, false, state);
+    table.render(false, false, false, state);
     toolbar.reset();
     selector.reset();
 }
