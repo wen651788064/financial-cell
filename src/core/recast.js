@@ -2,7 +2,7 @@ const recast = require("recast");
 
 const colon = "$$$";
 const fqm = '"\\"\\""';
-const exclamationPoint = ">>>";
+const exclamationPoint = "";
 const braceLeft = "(((";
 const braceRight = ")))";
 
@@ -19,6 +19,7 @@ export default class Recast {
         this.formula = this.formula.replace(/!/g, exclamationPoint);
         this.formula = this.formula.replace(/{/g, braceLeft);
         this.formula = this.formula.replace(/}/g, braceRight);
+        this.formula = this.formula.replace(/#/g, '');
     }
 
     parse() {
