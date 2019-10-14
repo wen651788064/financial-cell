@@ -236,7 +236,7 @@ function sheetFreeze() {
     selector.resetAreaOffset();
 }
 
-function sheetReset(redo = true) {
+function sheetReset(state = true) {
     // debugger
     const {
         tableEl,
@@ -259,7 +259,7 @@ function sheetReset(redo = true) {
     verticalScrollbarSet.call(this);
     horizontalScrollbarSet.call(this);
     sheetFreeze.call(this);
-    table.render();
+    table.render(false, false, state);
     toolbar.reset();
     selector.reset();
 }
@@ -1473,7 +1473,7 @@ export default class Sheet {
         // table
         this.table = new Table(this.tableEl.el, data, this.editor);
         sheetInitEvents.call(this);
-        sheetReset.call(this);
+        sheetReset.call(this, false);
         // init selector [0, 0]
         selectorSet.call(this, false, 0, 0);
 

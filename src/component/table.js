@@ -6,10 +6,9 @@ import {formatm} from '../core/format';
 import {isMinus} from "../utils/number_util";
 import {Draw, DrawBox, npx, thinLineWidth,} from '../canvas/draw';
 import ApplicationFactory from "./application";
-import {isSheetVale} from "../core/operator";
 import CellProxy from "./cell_proxy";
 import {look} from "../config";
-import {textReplace, textReplaceAndToUpperCase, textReplaceQM} from "./context_process";
+import {textReplaceAndToUpperCase, textReplaceQM} from "./context_process";
 // import Worker from 'worker-loader!../external/Worker.js';
 
 var formulajs = require('formulajs');
@@ -76,26 +75,26 @@ export function toUpperCase(text) {
     let enter = 1;
     // let k = 1;
     let newText = "";
-    for(let i = 0; i < text.length; i++) {
-        if(text[i] === '\"' && enter === 1)
+    for (let i = 0; i < text.length; i++) {
+        if (text[i] === '\"' && enter === 1)
             enter = 3;
-        else if(text[i] === '\"' && enter === 3) {
+        else if (text[i] === '\"' && enter === 3) {
             enter = 1;
         }
 
-        if(text[i] === ')' && enter !== 1) {
+        if (text[i] === ')' && enter !== 1) {
             newText = newText + "\"";
             enter = 1;
         }
 
-        if(enter !== 3) {
+        if (enter !== 3) {
             newText = newText + (text[i] + "").toUpperCase();
         } else {
             newText = newText + text[i] + "";
         }
     }
-    if(enter === 3) {
-        newText = newText +  "\"";
+    if (enter === 3) {
+        newText = newText + "\"";
     }
 
     return newText;
@@ -182,7 +181,7 @@ export function loadData(viewRange, load = false, read = false) {
     };
 }
 
-async function parseCell(viewRange, state = false, src = '') {
+async function parseCell(viewRange, state = false, src = '', state) {
 
 
     let {data, proxy} = this;
@@ -242,26 +241,28 @@ async function parseCell(viewRange, state = false, src = '') {
             //         this.render(true, workbook);
             //     });
             // // } else {
-                workbook = proxy.pack(data.name, workbook);
+            workbook = proxy.pack(data.name, workbook);
 
-                data.calc(workbook);
-                proxy.isDone();
-                let {factory} = this;
-                factory.data = workbook;
-                workbook = proxy.concat(data.name, workbook);
-                let cells = proxy.unpack(workbook.Sheets[data.name], data.rows._);
-                data.rows.setData(cells);
-                data.change(data.getData());
+            data.calc(workbook);
+            proxy.isDone();
+            let {factory} = this;
+            factory.data = workbook;
+            workbook = proxy.concat(data.name, workbook);
+            let cells = proxy.unpack(workbook.Sheets[data.name], data.rows._);
+            data.rows.setData(cells);
+            data.change(data.getData());
             // }
             console.timeEnd("x4");
         } catch (e) {
             console.error(e);
         }
     } else {
-        factory.data = sall;
-        proxy.setOldData(sall);
-        workbook = factory.data;
-        redo = false;
+        if(state != false) {
+            factory.data = sall;
+            proxy.setOldData(sall);
+            workbook = factory.data;
+            redo = false;
+        }
     }
 
 
@@ -320,7 +321,7 @@ export function parseCell2(viewRange, state = false, src = '') {
 
 function specialStyle(text) {
     text = text + "";
-    if(!text) {
+    if (!text) {
         return false;
     }
     if (look.indexOf(text.split("!")[0]) === 1) {
@@ -668,7 +669,7 @@ class Table {
         return style;
     }
 
-    async render(temp = false, tempData, redo = false) {
+    async render(temp = false, tempData, redo = false, state = true) {
         // resize canvas
         const {data} = this;
         const {rows, cols} = data;
@@ -676,7 +677,7 @@ class Table {
 
         let workbook = "";
         if (!temp) {
-            let args = await parseCell.call(this, viewRange);
+            let args = await parseCell.call(this, viewRange, false, '', state);
 
             // if(args.redo === false && redo == false) {
             //     return;
