@@ -303,10 +303,10 @@ export default class CellProxy {
             Object.keys(data[i]).forEach(j => {
                 Object.keys(data[i][j]).forEach(k => {
                     const value = this.preProcess(data[i][j][k].v, data[i][j][k].f);
-                    if(this.isNaN(value)) {
+                    if(isNaN(value)) {
                         data[i][j][k].v = value * 1;
                     } else {
-                        data[i][j][k].v = this.preProcess(data[i][j][k].v, data[i][j][k].f);
+                        data[i][j][k].v = this.preProcess(value);
                     }
                     data[i][j][k].f = "";
                 })
