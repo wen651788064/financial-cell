@@ -463,14 +463,17 @@ function autofillNext() {
 }
 
 function loadFormula(load = false) {
-    clearTimeout(this.formulaTime);
-    let {data, table} = this;
-    this.formulaTime = setTimeout(() => {
-        let {formula} = data.settings;
-        if (formula && typeof formula.wland == "function") {
-            formula.wland(formula, data, table, load);
-        }
-    }, 1500);
+    this.table.proxy.diff = 305;
+    this.table.proxy.oldData = "";
+    sheetReset.call(this);
+    // clearTimeout(this.formulaTime);
+    // let {data, table} = this;
+    // this.formulaTime = setTimeout(() => {
+    //     let {formula} = data.settings;
+    //     if (formula && typeof formula.wland == "function") {
+    //         formula.wland(formula, data, table, load);
+    //     }
+    // }, 1500);
 }
 
 function firstRowToWidth(width) {
