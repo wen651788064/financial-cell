@@ -743,7 +743,7 @@ function selectorCellText(ri, ci, text, state, proxy = "") {
         recast.parse();
     } catch (e) {
         console.log(e);
-        msg = '您输入的公式存在问题，请更正';
+        msg = '您输入的公式存在问题，请更正, 错误原因: ' + e;
         enter = true;
     }
 
