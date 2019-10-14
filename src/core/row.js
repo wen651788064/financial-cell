@@ -6,7 +6,7 @@ import CellRange from "./cell_range";
 import dayjs from 'dayjs'
 import {isSheetVale} from "./operator";
 import Recast from "./recast";
-import {parseCell2} from "../component/table";
+import {loadData, parseCell2} from "../component/table";
 
 // 2019-10-11 cell里新增一个字段   recast
 /* 目前数据结构 =>
@@ -816,7 +816,7 @@ class Rows {
                 const {table, data} = sheet;
                 const {proxy} = table;
                 let viewRange = data.viewRange();
-                proxy.oldData = parseCell2.call(sheet, viewRange)
+                proxy.oldData = loadData.call(this, viewRange, false, true).workbook2;
             }
 
             // this.each((ri, row) => {

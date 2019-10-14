@@ -295,6 +295,7 @@ export function parseCell2(viewRange, state = false, src = '') {
                 } else {
                     workbook.Sheets[data.name][expr] = {
                         v: cell.text.replace(/ /g, '').toUpperCase().replace(/\"/g, "\""),
+                        f: ''
                     };
                 }
             }
