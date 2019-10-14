@@ -128,14 +128,14 @@ class Rows {
             row.cells[ci].style = cell.style;
             if (cell.merge) row.cells[ci].merge = cell.merge;
         }
-        this.recast(cell);
+        // this.recast(cell);
     }
 
     setCellText(ri, ci, text, proxy = "", name = "") {
         const cell = this.getCellOrNew(ri, ci);
         cell.formulas = text;
         cell.text = text;  // todo 自定义公式： text 为公式计算结果, formulas 为公式
-        this.recast(cell);
+        // this.recast(cell);
         if (typeof proxy != "string") {
             proxy.setCell(name, xy2expr(ci, ri));
         }
