@@ -66,10 +66,6 @@ export default class CellProxy {
         return result;
     }
 
-    setOldData(old) {
-        this.oldData = old;
-    }
-
     preProcess(v, f) {
         if (typeof v === 'string' && v.indexOf("%") !== -1) {
             return f;
