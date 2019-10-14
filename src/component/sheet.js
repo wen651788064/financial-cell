@@ -463,9 +463,9 @@ function autofillNext() {
 }
 
 function loadFormula(load = false) {
-    this.table.proxy.diff = 305;
-    this.table.proxy.oldData = "";
-    sheetReset.call(this);
+    // this.table.proxy.diff = 305;
+    // this.table.proxy.oldData = "";
+    // sheetReset.call(this);
     // clearTimeout(this.formulaTime);
     // let {data, table} = this;
     // this.formulaTime = setTimeout(() => {
@@ -836,7 +836,10 @@ function toolbarChange(type, value) {
     } else if (type === 'throwFormula') {
         throwFormula.call(this);
     } else if (type === 'close') {
-        loadFormula.call(this, true);
+        this.table.proxy.diff = 305;
+        this.table.proxy.oldData = "";
+        sheetReset.call(this);
+        // loadFormula.call(this, true);
     } else if (type === 'freeze') {
         let {showFreeze} = data.settings;
         console.log(showFreeze, 449)
