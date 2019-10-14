@@ -314,6 +314,9 @@ export default class CellProxy {
         });
 
         Object.keys(workbook.Sheets[name]).forEach(i => {
+            if(!isNaN(workbook.Sheets[name][i].v)) {
+                workbook.Sheets[name][i].v = workbook.Sheets[name][i].v * 1;
+            }
             data.Sheets[name][i] = workbook.Sheets[name][i];
 
             if (workbook.Sheets[name][i].f && workbook.Sheets[name][i].f[0] === '=' ) {
