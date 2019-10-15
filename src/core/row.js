@@ -816,7 +816,7 @@ class Rows {
                 const {table, data} = sheet;
                 const {proxy} = table;
                 let viewRange = data.viewRange();
-                let {workbook2} = loadData.call(sheet, viewRange, false, true);
+                let {workbook2} = loadData.call(table, viewRange, false, true);
                 proxy.setOldData(workbook2);
             }
 
