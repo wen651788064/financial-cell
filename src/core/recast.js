@@ -21,6 +21,7 @@ export default class Recast {
         this.formula = this.formula.replace(/}/g, braceRight);
         this.formula = this.formula.replace(/#/g, '');
         this.formula = this.formula.replace(/#/g, '');
+        this.formula = this.formula.replace(/./g, 'a');
         this.formula = this.formula.replace(/[1-9][0-9]*/g, 'a');
     }
 
