@@ -2,8 +2,13 @@ import {filterFormula} from "../config";
 import {expr2xy, xy2expr} from "./alphabet";
 import CellRange from "./cell_range";
 import {
-    blankOperator, letterOperator, letterOperatorWithDollor, letterOperatorWithDollorEnd, letterOperatorWithDollorPrex,
-    logicOperator, letterAndLetterOperator,
+    blankOperator,
+    letterAndLetterOperator,
+    letterOperator,
+    letterOperatorWithDollor,
+    letterOperatorWithDollorEnd,
+    letterOperatorWithDollorPrex,
+    logicOperator,
     str2Re
 } from "./re";
 
@@ -83,6 +88,7 @@ const cutStr = (str, filter = false, f = false) => {
     let express = [];
     arr.filter(i => {
         if (f) {
+            i = i.replace(/\$/g, '');
             if (i.search(str2Re(letterOperator)) != -1
                 || i.search(str2Re(letterAndLetterOperator)) != -1)
                 if (express.indexOf(i) == -1)
@@ -115,50 +121,50 @@ function changeFormula(cut) {
     return cut;
 }
 
-export function isLegal(str){
-    const left=0;
-    const right=1;
-    const other=2;
+export function isLegal(str) {
+    const left = 0;
+    const right = 1;
+    const other = 2;
     //判断括号是左边还是右边，或者其他
-    let verifyFlag=function(char){
-        if(char==="(" || char==="[" || char==="{"  || char==="/*"  ){
+    let verifyFlag = function (char) {
+        if (char === "(" || char === "[" || char === "{" || char === "/*") {
             return left;
-        }else if(char===")" || char==="]" || char==="}"  || char==="*/" ){
+        } else if (char === ")" || char === "]" || char === "}" || char === "*/") {
             return right;
-        }else{
+        } else {
             return other;
         }
     }
     //判断左右括号是否匹配
-    let matches=function(char1,char2){
-        if( (char1 ===  "(" && char2 === ")")
+    let matches = function (char1, char2) {
+        if ((char1 === "(" && char2 === ")")
             || (char1 === "{" && char2 === "}")
-            || (char1 ===  "[" && char2 === "]")
-            || (char1 ===  "/*" && char2 === "*/")  ){
+            || (char1 === "[" && char2 === "]")
+            || (char1 === "/*" && char2 === "*/")) {
             return true;
-        }else{
+        } else {
             return false;
         }
     }
     //入口
-    let leftStack=[];
-    if(str!==null||str!==""||str!==undefined){
-        for(let i=0;i<str.length;i++){
+    let leftStack = [];
+    if (str !== null || str !== "" || str !== undefined) {
+        for (let i = 0; i < str.length; i++) {
             //处理字符
-            let char=str.charAt(i);
-            if(verifyFlag(char)===left){
+            let char = str.charAt(i);
+            if (verifyFlag(char) === left) {
                 leftStack.push(char);
-            }else if(verifyFlag(char)===right){
+            } else if (verifyFlag(char) === right) {
                 //如果不匹配，或者左括号栈已经为空，则匹配失败
-                if(leftStack.length===0||!matches(leftStack.pop(),char)){
+                if (leftStack.length === 0 || !matches(leftStack.pop(), char)) {
                     return false;
                 }
-            }else{
+            } else {
             }
         }
         //循环结束，如果左括号栈还有括号，也是匹配失败
-        if(leftStack.length !== 0){
-            return  false;
+        if (leftStack.length !== 0) {
+            return false;
         }
         return true;
     }
@@ -284,20 +290,20 @@ const division = (str, ff = filterFormula, other = true, other2 = false) => {
         arr[i] = arr[i].replace(/(^\s*)|(\s*$)/g, "");
         if (other) {
             let enter = true;
-            if(isSheetVale(arr[i])) {
+            if (isSheetVale(arr[i])) {
                 arr[i] = arr[i].split("!")[1];
                 enter = other2 == false ? false : true;
             }
-            if(enter && isAbsoluteValue(arr[i].replace(/\$/g, ''), 4)) {
+            if (enter && isAbsoluteValue(arr[i].replace(/\$/g, ''), 4)) {
                 let value = arr[i].replace(/\$/g, '').split(":");
                 let a1 = expr2xy(value[0]);
-                let a2 =  expr2xy(value[1]);
+                let a2 = expr2xy(value[1]);
                 let cell = new CellRange(a1[0], a1[1], a2[0], a2[1]);
                 cell.each((i, j) => {
                     na.push(xy2expr(i, j));
                 });
             }
-        } else if(!other && isSheetVale(arr[i])) {
+        } else if (!other && isSheetVale(arr[i])) {
             arr[i] = "";
         }
         // let value = arr[i].replace(/(^\s*)|(\s*$)/g, "");
@@ -1591,7 +1597,7 @@ const helpFormula = {
             "文本": "需要删除其中空格的文本"
         }
     },
-    "HYPERLINK":{
+    "HYPERLINK": {
         "title": [
             {
                 "name": "HYPERLINK(",
@@ -23438,26 +23444,26 @@ const positionAngle = (x1, x2, y1, y2) => {
     let angle = 0;
     let af = Math.abs(angleFunc({x: x1, y: y1}, {x: x2, y: y2}));
 
-    if (x1 < x2 && y1 < y2  ) {
+    if (x1 < x2 && y1 < y2) {
         angle = 1;
-    } else if (x1 > x2 && y1 < y2  ) {
+    } else if (x1 > x2 && y1 < y2) {
         angle = 2;
-    } else if (x1 < x2 && y1 > y2 ) {
+    } else if (x1 < x2 && y1 > y2) {
         angle = 3;
-    } else if (x1 > x2 && y1 > y2 ) {
+    } else if (x1 > x2 && y1 > y2) {
         angle = 4;
     }
 
-    if(angle == 1 && af < 45) {
+    if (angle == 1 && af < 45) {
         angle = 3;
         return angle;
-    } else if(angle == 2 && af > 30) {
+    } else if (angle == 2 && af > 30) {
         angle = 1;
         return angle;
-    } else if(angle == 3 && af > 30) {
+    } else if (angle == 3 && af > 30) {
         angle = 4;
         return angle;
-    } else if(angle == 4 && af < 45) {
+    } else if (angle == 4 && af < 45) {
         angle = 2;
         return angle;
     }
@@ -23485,9 +23491,41 @@ const isAbsoluteValue = (str, rule = 1) => {
         if (str.search(/^[A-Z]+\$\d+$/) != -1)
             return true;
         return false;
-    } else if(rule == 4) {
+    } else if (rule == 4) {
         if (str.search(/^[A-Za-z]+\d+:[A-Za-z]+\d+$/) != -1)
             return true;
+    } else if (rule == 5) {
+        if(str.search(/^[A-Z]+\d+:\$[A-Z]+\d+$/) != -1) {
+            return 8;
+        }
+        if(str.search(/^[A-Z]+\d+:[A-Z]+\$\d+$/) != -1) {
+            return 9;
+        }
+        if(str.search(/^[A-Z]+\$\d+:[A-Z]+\d+$/) != -1) {
+            return 10;
+        }
+        if(str.search(/^\$[A-Z]+\d+:[A-Z]+\d+$/) != -1) {
+            return 11;
+        }
+        if (str.search(/^\$[A-Z]+\$\d+$/) != -1)
+            return 3;
+        if (str.search(/^\$[A-Z]+\d+$/) != -1)
+            return 1;
+        if (str.search(/^[A-Z]+\$\d+$/) != -1)
+            return 2;
+        if(str.search(/^[A-Z]+\$\d+:[A-Z]+\$\d+$/) != -1) {
+            return 4;
+        }
+        if(str.search(/^[A-Z]+\$\d+:\$[A-Z]+\d+$/) != -1) {
+            return 5;
+        }
+        if(str.search(/^\$[A-Z]+\d+:[A-Z]+\$\d+$/) != -1) {
+            return 6;
+        }
+        if(str.search(/^\$[A-Z]+\d+:\$[A-Z]+\d+$/) != -1) {
+            return 7;
+        }
+        return false
     } else {
         if (str.search(/^[A-Za-z]+\d+$/) != -1)
             return true;

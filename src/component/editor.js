@@ -7,6 +7,7 @@ import {cutting, cuttingByPos, cuttingByPos2, cuttingByPosEnd, isAbsoluteValue, 
 import SuggestContent from './suggest_content';
 import {findBracket, suggestContent} from './formula_editor';
 import {createEvent} from './event';
+import EditorText from "./editor_text";
 
 function resetTextareaSize() {
     const {
@@ -39,9 +40,10 @@ const getCursortPosition = function (containerEl) {
     preSelectionRange.selectNodeContents(this.textEl.el);
     preSelectionRange.setEnd(range.startContainer, range.startOffset);
     const start = preSelectionRange.toString().length;
+    let {editorText} = this;
+    let inputText = editorText.getText();
 
-    // text == ")"
-    const {exist, left, right} = findBracket(start - 1, cutting(this.inputText), this.inputText);
+    const {exist, left, right} = findBracket(start - 1, cutting(inputText), inputText);
     Object.keys(this.spanArr).forEach((i) => {
         this.spanArr[i].css('background-color', 'rgba(255,255,255,0.1)');
     });
@@ -53,7 +55,7 @@ const getCursortPosition = function (containerEl) {
         spanRight.css('background-color', 'rgb(229, 229, 229)');
     } else {
         const {show} = this.suggest;
-        const content = suggestContent.call(this, start, cutting(this.inputText), this.inputText);
+        const content = suggestContent.call(this, start, cutting(inputText), inputText);
         if (content.suggestContent && !show) {
             this.suggestContent.content(content.cut, content.pos);
         }
@@ -116,8 +118,11 @@ const setCursorPosition = (elem, index) => {
 };
 
 function mouseDownEventHandler(evt) {
+    let {editorText} = this;
+    let inputText = editorText.getText();
+
     this.pos = getCursortPosition.call(this, evt);
-    parse2.call(this, this.inputText, this.pos);
+    parse2.call(this, inputText, this.pos);
 }
 
 function inputEventHandler(evt, txt = '', formulas = '', state = "input") {
@@ -136,7 +141,10 @@ function inputEventHandler(evt, txt = '', formulas = '', state = "input") {
         }
     }
 
-    if (this.inputText === '') {
+    let {editorText} = this;
+    let inputText = editorText.getText();
+
+    if (inputText === '') {
         const {data} = this;
         const {history} = data;
         history.add(data.getData());
@@ -176,10 +184,12 @@ function inputEventHandler(evt, txt = '', formulas = '', state = "input") {
         const {
             suggest, textlineEl, validator, textEl, save,
         } = this;
-        this.inputText = `${v}`;
-        this.inputText = this.inputText.replace(/，/g, ',');
+        editorText.setText(`${v}`);
+        // inputText = `${v}`;
+        editorText.changeText(1);
+        // inputText = inputText.replace(/，/g, ',');
         this.pos = getCursortPosition.call(this, evt);
-        console.log(this.chinese, v);
+
         if (validator) {
             if (validator.type === 'list') {
                 suggest.search(v);
@@ -211,9 +221,9 @@ function inputEventHandler(evt, txt = '', formulas = '', state = "input") {
             }
         }
 
-
         textlineEl.html(formulas || v);
-        this.inputText = formulas || v;
+        editorText.setText(formulas || v);
+        // this.inputText = formulas || v;
         this.suggest.itemIndex = -1;
         resetTextareaSize.call(this);
         if (v && v[0] !== '=') {
@@ -318,11 +328,13 @@ function setText(text, position) {
 
 
 function suggestItemClick(it) {
-    const {inputText, validator} = this;
+    const { validator, editorText } = this;
+    let inputText = editorText.getText();
     let position = 0;
     if (validator && validator.type === 'list') {
-        this.inputText = it;
-        position = this.inputText.length;
+        // this.inputText = it;
+        inputText = editorText.setText(it);
+        position = inputText.length;
     } else {
         this.pos = getCursortPosition.call(this);
         const begin = this.pos - cuttingByPos(inputText, this.pos).length;
@@ -338,15 +350,17 @@ function suggestItemClick(it) {
                 arr[1] += inputText[i];
             }
         }
-        this.inputText = `${arr[0] + it.key}(`;
-        this.pos = this.inputText.length;
-        this.inputText += `)${arr[1]}`;
+        inputText = editorText.setText(`${arr[0] + it.key}(`);
+        // this.inputText = `${arr[0] + it.key}(`;
+        this.pos = editorText.getText().length;
+        inputText = editorText.setText(inputText + `)${arr[1]}`);
+        // this.inputText += `)${arr[1]}`;
     }
-    this.textEl.html(this.inputText);
-    this.textlineEl.html(this.inputText);
+    this.textEl.html(inputText);
+    this.textlineEl.html(inputText);
     this.suggest.hide();
-    parse2.call(this, this.inputText, this.pos);
-    this.change('input', this.inputText);
+    parse2.call(this, inputText, this.pos);
+    this.change('input', inputText);
     set_focus.call(this, this.textEl.el, -1);
     resetTextareaSize.call(this);
 }
@@ -399,6 +413,9 @@ export default class Editor {
         this.mousedownIndex = [];
         this.changed = false;
         this.chinese = true;
+
+        this.editorText = new EditorText('');
+
         this.areaEl = h('div', `${cssPrefix}-editor-area`)
             .children(
                 this.textEl = h('div', `${cssPrefix}-editor-textEl`)
@@ -501,7 +518,7 @@ export default class Editor {
         this.areaOffset = null;
         this.freeze = {w: 0, h: 0};
         this.cell = null;
-        this.inputText = '';
+
         setTimeout(() => {
             this.show(false);
         });
@@ -562,25 +579,31 @@ export default class Editor {
     }
 
     parse(pos = -1) {
+        let {editorText} = this;
+        let inputText = editorText.getText();
         if (pos != -1) {
             this.pos = getCursortPosition.call(this);
-            parse2.call(this, this.inputText, this.pos);
+            parse2.call(this,  inputText, this.pos);
         } else {
-            parse.call(this, this.inputText);
+            parse.call(this, inputText);
         }
     }
 
     clear(c = false) {
+        let {editorText} = this;
+        let inputText = editorText.getText();
+
         this.display = isDisplay.call(this);
-        if (this.inputText !== '' && isNaN(this.inputText) && this.inputText.replace(/\s/g, "").lastIndexOf('¥') === 0) {
-            this.change('format', this.inputText);
+        if (inputText !== '' && isNaN(inputText) && inputText.replace(/\s/g, "").lastIndexOf('¥') === 0) {
+            this.change('format', inputText);
         } else if (this.changed) {
-            this.change('finish', this.inputText);
+            this.change('finish',inputText);
         }
         this.changed = false;
         this.cell = null;
         this.areaOffset = null;
-        this.inputText = '';
+        inputText = editorText.setText('');
+        // this.inputText = '';
         this.show(false);
         this.copy = false;
         set_focus.call(this, this.textEl.el, -1);
@@ -636,8 +659,11 @@ export default class Editor {
     }
 
     handler(text) {
+        let {editorText} = this;
+        let inputText = editorText.getText();
+
         const cursorPos = this.pos;
-        if (cursorPos >= this.inputText) {
+        if (cursorPos >= inputText) {
             this.setMouseDownIndex([]);
             return;
         }
@@ -764,7 +790,10 @@ export default class Editor {
     }
 
     isDisplay() {
-        if (isDisplay.call(this) && this.inputText.lastIndexOf("=") == 0)
+        let {editorText} = this;
+        let inputText = editorText.getText();
+
+        if (isDisplay.call(this) &&  editorText.isFormula())
             return true;
         else
             return false
@@ -783,7 +812,9 @@ export default class Editor {
     }
 
     setText(text) {
-        this.inputText = text;
+        let {editorText} = this;
+        editorText.setText(text);
+        // this.inputText = text;
         setText.call(this, text, text.length);
         resetTextareaSize.call(this);
         this.textEl.child(this.tmp);

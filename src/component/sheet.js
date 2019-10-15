@@ -524,7 +524,7 @@ function editorSetOffset(show = true, cri = -1, cci = -1) {
 
     editor.setOffset(sOffset, sPosition, show);
     setTimeout(() => {
-        editor.setCursorPos(editor.inputText.length);
+        editor.setCursorPos( editor.editorText.getText().length);
     });
 }
 
@@ -565,7 +565,7 @@ function editorSet(type = 1) {
     clearClipboard.call(this);
 
     setTimeout(() => {
-        editor.setCursorPos(editor.inputText.length);
+        editor.setCursorPos(editor.editorText.getText().length);
     });
 }
 
@@ -869,7 +869,8 @@ function sortFilterChange(ci, order, operator, value) {
 
 function afterSelector(editor) {
     if (editor.getLock() || editor.state === 2) {
-        let {inputText, ri, ci} = editor;
+        let {  ri, ci} = editor;
+        let inputText = editor.editorText.getText();
         let {selector} = this;
         selector.indexes = [ri, ci];
         let error = selectorCellText.call(this, ri, ci, inputText, 'input', this.table.proxy);
@@ -951,7 +952,8 @@ function sheetInitEvents() {
 
                         let enter = true;
                         let {merges} = data;
-                        let {inputText} = editor;
+                        // let {inputText} = editor;
+                        let inputText = editor.editorText.getText();
                         let it = inputText;
 
                         Object.keys(merges._).forEach(i => {
@@ -979,7 +981,8 @@ function sheetInitEvents() {
                                     lockCells.call(this, evt, _selector);
                                     this.mergeSelector = true;
                                 } else {
-                                    let {inputText, pos} = editor;
+                                    let {  pos} = editor;
+                                    let inputText = editor.editorText.getText();
                                     for (let i = 0; i < this.selectors.length; i++) {
                                         let selector = this.selectors[i];
                                         let {erpx} = selector;
@@ -1027,7 +1030,8 @@ function sheetInitEvents() {
                 }
 
                 if (!editor.getLock() && !editor.isCors) {
-                    let {inputText, ri, ci} = editor;
+                    let {  ri, ci} = editor;
+                    let inputText = editor.editorText.getText();
                     if (ri !== -1 && ci !== -1 && inputText[0] === "=") {
                         let error = selectorCellText.call(this, ri, ci, inputText, 'input', this.table.proxy);
 
@@ -1327,7 +1331,7 @@ function sheetInitEvents() {
                     break;
                 case 9: // tab
                     // lockCells
-                    this.editorProxy.change(editor.ri, editor.ci, editor.inputText, data.rows, data);
+                    this.editorProxy.change(editor.ri, editor.ci, editor.editorText.getText(), data.rows, data);
                     let error = afterSelector.call(this, editor);
                     if (error) {
                         return;
@@ -1343,7 +1347,7 @@ function sheetInitEvents() {
                     break;
                 case 13: // enter
                     // lockCells
-                    this.editorProxy.change(editor.ri, editor.ci, editor.inputText, data.rows, data);
+                    this.editorProxy.change(editor.ri, editor.ci,editor.editorText.getText(), data.rows, data);
                     let error2 = afterSelector.call(this, editor);
                     if (error2) {
                         return;

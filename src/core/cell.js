@@ -215,15 +215,10 @@ const cellRender = (data, sheetbook, y, x, src, formulaMap, getCellText, cellLis
             // let value = sheetbook.Sheets.Sheet1[xy2expr(x, y)].v ? sheetbook.Sheets.Sheet1[xy2expr(x, y)].v : "NaN";
             return sheetbook.Sheets[data.name][xy2expr(x, y)].w ? sheetbook.Sheets[data.name][xy2expr(x, y)].w : sheetbook.Sheets[data.name][xy2expr(x, y)].v.replace(/'/g, "\"");
         }
-        const stack = infixExprToSuffixExpr(src.substring(1));
-        if (stack.length <= 0) return src;
+        // const stack = infixExprToSuffixExpr(src.substring(1));
+        // if (stack.length <= 0) return src;
 
-        return evalSuffixExpr(
-            stack,
-            formulaMap,
-            (x, y) => cellRender(getCellText(x, y), formulaMap, getCellText, cellList, sheetbook),
-            cellList,
-        );
+        return "-";
     }
     return src;
 };

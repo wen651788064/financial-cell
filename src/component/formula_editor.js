@@ -20,7 +20,8 @@ function lockCells(evt, _selector, isAb = false, p = -1) {
     const cellRect = data.getCellRectByXY(offsetX, offsetY);
     const {ri, ci} = cellRect;
 
-    let {inputText, pos} = editor;
+    let { pos} = editor;
+    let inputText = editor.editorText.getText();
     let input = '';
 
     editor.handler(inputText);
@@ -162,7 +163,8 @@ function lockCells(evt, _selector, isAb = false, p = -1) {
     }
     editor.parse(editor.pos);
     if (this.selectors.length > 0 || _selector) {
-        const {inputText} = editor;
+        // const {inputText} = editor;
+        let inputText = editor.editorText.getText();
         // 处理 合并单元格
         let it = inputText, enter = false;
         let {merges} = this.data;
@@ -225,7 +227,8 @@ function filterSelectors(cut) {
 function makeSelector(ri, ci, selectors = this.selectors, multiple = false, _selector, mergeSelector) {
     const {data} = this;
     let selector = null;
-    const {inputText} = this.editor;
+    // const {inputText} = this.editor;
+    let inputText = this.editor.editorText.getText();
     const {color, index} = selectorColor(selectors.length);
     if (_selector) {
         selector = _selector;
@@ -489,7 +492,8 @@ function div2span(cut, cutcolor) {
     });
 
     // 高亮
-    const {pos, inputText} = editor;
+    const {pos} = editor;
+    let inputText = editor.editorText.getText();
     let content = {suggestContent: false, cut: ''};
     if (inputText[pos - 1] == ')') {
         begin = pos - 1;

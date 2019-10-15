@@ -44,7 +44,12 @@ export function expr2expr(src, xn, yn) {
 }
 
 // x,y => B10
-export function xy2expr(x, y) {
+export function xy2expr(x, y, ab = 0) {
+  if(ab === 2) {
+    return `${stringAt(x)}$${y + 1}`;
+  } else if(ab === 1) {
+      return `$${stringAt(x)}${y + 1}`;
+  }
   return `${stringAt(x)}${y + 1}`;
 }
 

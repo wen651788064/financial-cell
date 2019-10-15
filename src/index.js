@@ -62,7 +62,8 @@ class Spreadsheet {
 
     getEditorStatus() {
         let {editor} = this.sheet;
-        let {inputText, ri, ci, pos} = editor;
+        let { ri, ci, pos} = editor;
+        let inputText = editor.editorText.getText();
         let args = {
             "status": editor.isDisplay(),
             "inputText": inputText,

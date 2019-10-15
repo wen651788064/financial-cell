@@ -6,7 +6,7 @@ import {cssPrefix} from "../config";
 import {getChooseImg} from "../event/copy";
 import {expr2xy, xy2expr} from "../core/alphabet";
 import CellRange from "../core/cell_range";
-import {deepCopy} from "../core/operator";
+import {deepCopy, isAbsoluteValue} from "../core/operator";
 
 export let resizeOption = {
     onBegin(data) {
@@ -55,7 +55,7 @@ export let dragOption = {
         img.offsetLeft = offsetLeft;
         img.offsetTop = offsetTop;
         img.range = range;
-        if(typeof img.lastCi !== 'undefined' && typeof img.lastRi !== 'undefined') {
+        if (typeof img.lastCi !== 'undefined' && typeof img.lastRi !== 'undefined') {
             img.ri = img.lastRi;
             img.ci = img.lastCi;
         }
@@ -73,7 +73,7 @@ function spanDomPackage(spanDom, tableDom) {
     let tbody = h('tbody', '');
 
     let textArr = spanDom.innerText.split("\n");
-    for(let i = 0; i < textArr.length; i++) {
+    for (let i = 0; i < textArr.length; i++) {
         let text = textArr[i];
         let tr = h('tr', '');
         let td = h('td', '');
@@ -186,7 +186,7 @@ function mountPaste(e, cb) {
                 }, 0);
             };
 
-            if(!f)
+            if (!f)
                 return;
             reader.readAsDataURL(f);
         }
@@ -266,14 +266,14 @@ export function mountImg(imgDom, init = false, sri, sci, range, add = true) {
         let img = imgDom;
         let {container, data} = this;
         let {pasteDirectionsArr} = data;
-        if(add) {
+        if (add) {
             data.history.addPic(Object.assign([], pasteDirectionsArr), "delete");
         }
 
         let {ri, ci} = data.selector;
-        if(init) {
-           ri = sri;
-           ci = sci;
+        if (init) {
+            ri = sri;
+            ci = sci;
         }
         let {pictureOffsetLeft, pictureOffsetTop} = this;
 
@@ -318,13 +318,13 @@ export function mountImg(imgDom, init = false, sri, sci, range, add = true) {
                 "offsetLeft": 0,
                 "offsetTop": 0,
                 "number": number,
-                "range": init ? range :data.selector.range,
+                "range": init ? range : data.selector.range,
                 "top": top,
                 "left": left,
                 "nextLeft": left + 15,
                 "nextTop": top + 15,
             });
-            if(!init) {
+            if (!init) {
                 this.data.change(this.data.getData());
             }
             this.direction = true;
@@ -406,7 +406,7 @@ function containerHandlerEvent(directionsArr, index, pasteDirectionsArr, init) {
     });
 
     let {selector, editor} = this;
-    if(!init) {
+    if (!init) {
         selector.hide();
         editor.clear();
 
@@ -474,8 +474,8 @@ function GetInfoFromTable(tableObj) {
         }
         for (let j = 0; j < tableObj.rows[i].cells.length; j++) {
             let len = tableObj.rows[i].cells[j].getAttribute("colspan");
-            if(len && len > 1) {
-                for(let c = 0; c < len - 1; c++) {
+            if (len && len > 1) {
+                for (let c = 0; c < len - 1; c++) {
                     tableObj.rows[i].insertBefore(document.createElement("td"), tableObj.rows[i].cells[j + 1]);
                 }
             }
@@ -527,6 +527,135 @@ function GetInfoFromTable(tableObj) {
                         let s = xy2expr(ds1[0] + dei, ds1[1] + dci) + ":";
                         s += xy2expr(ds2[0] + dei, ds2[1] + dci)
                         arr[i] = s;
+                    } else {
+                        let value = isAbsoluteValue(arr[i], 5);
+
+                        if (value === 2) {
+                            let ds = expr2xy(arr[i].replace(/\$/g, ''));
+                            if (ds[0] + dei < 0 || ds[1] + dci < 0) {
+                                bad = true;
+                            }
+
+                            arr[i] = xy2expr(ds[0] + dei, ds[1], 2);
+                        } else if (value === 1) {
+                            let ds = expr2xy(arr[i].replace(/\$/g, ''));
+                            if (ds[0] + dei < 0 || ds[1] + dci < 0) {
+                                bad = true;
+                            }
+
+                            arr[i] = xy2expr(ds[0], ds[1] + dci, 1);
+                        } else if (value === 4) {
+                            let sp = arr[i].split(":");
+                            console.log(arr[i], sp);
+                            for (let item = 0; item < sp.length; item++) {
+                                let ds = expr2xy(sp[item].replace(/\$/g, ''));
+                                if (ds[0] + dei < 0 || ds[1] + dci < 0) {
+                                    bad = true;
+                                }
+
+                                sp[item] = xy2expr(ds[0] + dei, ds[1], 2);
+                            }
+                            arr[i] = sp.join(':');
+                        } else if (value === 5) {
+                            let sp = arr[i].split(":");
+                            for (let item = 0; item < sp.length; item++) {
+                                let ds = expr2xy(sp[item].replace(/\$/g, ''));
+                                if (ds[0] + dei < 0 || ds[1] + dci < 0) {
+                                    bad = true;
+                                }
+                                if (item === 1) {
+                                    sp[item] = xy2expr(ds[0], ds[1] + dci, 1);
+                                } else {
+                                    sp[item] = xy2expr(ds[0] + dei, ds[1], 2);
+                                }
+                            }
+                            arr[i] = sp.join(':');
+                        } else if (value === 7) {
+                            let sp = arr[i].split(':');
+                            console.log(arr[i], sp);
+                            for (let item = 0; item < sp.length; item++) {
+                                let ds = expr2xy(sp[item].replace(/\$/g, ''));
+                                if (ds[0] + dei < 0 || ds[1] + dci < 0) {
+                                    bad = true;
+                                }
+                                sp[item] = xy2expr(ds[0], ds[1] + dci, 1);
+                            }
+                            arr[i] = sp.join(':');
+                        } else if (value === 6) {
+                            let sp = arr[i].split(":");
+                            for (let item = 0; item < sp.length; item++) {
+                                let ds = expr2xy(sp[item].replace(/\$/g, ''));
+                                if (ds[0] + dei < 0 || ds[1] + dci < 0) {
+                                    bad = true;
+                                }
+                                if (item === 0) {
+                                    sp[item] = xy2expr(ds[0], ds[1] + dci, 1);
+                                } else {
+                                    sp[item] = xy2expr(ds[0] + dei, ds[1], 2);
+                                }
+                            }
+                            arr[i] = sp.join(':');
+                        } else if (value === 8) {
+                            let sp = arr[i].split(":");
+                            for (let item = 0; item < sp.length; item++) {
+                                let ds = expr2xy(sp[item].replace(/\$/g, ''));
+                                if (ds[0] + dei < 0 || ds[1] + dci < 0) {
+                                    bad = true;
+                                }
+
+                                if (item === 0) {
+                                    sp[item] = xy2expr(ds[0] + dei, ds[1] + dci, 0);
+                                } else {
+                                    sp[item] = xy2expr(ds[0] + dei, ds[1], 1);
+                                }
+                            }
+                            arr[i] = sp.join(':');
+                        } else if (value === 9) {
+                            let sp = arr[i].split(":");
+                            for (let item = 0; item < sp.length; item++) {
+                                let ds = expr2xy(sp[item].replace(/\$/g, ''));
+                                if (ds[0] + dei < 0 || ds[1] + dci < 0) {
+                                    bad = true;
+                                }
+
+                                if (item === 0) {
+                                    sp[item] = xy2expr(ds[0] + dei, ds[1] + dci, 0);
+                                } else {
+                                    sp[item] = xy2expr(ds[0] + dei, ds[1], 2);
+                                }
+                            }
+                            arr[i] = sp.join(':');
+                        } else if (value === 10) {
+                            let sp = arr[i].split(":");
+                            for (let item = 0; item < sp.length; item++) {
+                                let ds = expr2xy(sp[item].replace(/\$/g, ''));
+                                if (ds[0] + dei < 0 || ds[1] + dci < 0) {
+                                    bad = true;
+                                }
+
+                                if (item === 1) {
+                                    sp[item] = xy2expr(ds[0] + dei, ds[1] + dci, 0);
+                                } else {
+                                    sp[item] = xy2expr(ds[0] + dei, ds[1], 2);
+                                }
+                            }
+                            arr[i] = sp.join(':');
+                        } else if (value === 11) {
+                            let sp = arr[i].split(":");
+                            for (let item = 0; item < sp.length; item++) {
+                                let ds = expr2xy(sp[item].replace(/\$/g, ''));
+                                if (ds[0] + dei < 0 || ds[1] + dci < 0) {
+                                    bad = true;
+                                }
+
+                                if (item === 1) {
+                                    sp[item] = xy2expr(ds[0] + dei, ds[1] + dci, 0);
+                                } else {
+                                    sp[item] = xy2expr(ds[0] + dei, ds[1], 1);
+                                }
+                            }
+                            arr[i] = sp.join(':');
+                        }
                     }
                     newStr += arr[i];
                 }
@@ -590,6 +719,14 @@ function GetInfoFromTable(tableObj) {
         rows: rows,
         styles: styles
     };
+}
+
+function pasteType(type, ds, dei) {
+    if (type === 1) {
+
+    } else if (type === 2) {
+        xy2expr(ds[0] + dei, ds[1], 2);
+    }
 }
 
 export {

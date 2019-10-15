@@ -39,8 +39,11 @@ function mountCopy(event) {
                 if(!rows._[i].cells[j].text) {
                     rows._[i].cells[j].text = "";
                 }
+                if(!rows._[i].cells[j].formulas) {
+                    rows._[i].cells[j].formulas = "";
+                }
 
-                let text = rows._[i].cells[j].text;
+                let text = rows._[i].cells[j].formulas != "" ? rows._[i].cells[j].formulas : rows._[i].cells[j].text;
                 if(rows._[i].cells[j].formulas && cutStr(rows._[i].cells[j].formulas, false, true).length > 0) {
                     let hidden = h('tt', '');
                     hidden.html(text);
