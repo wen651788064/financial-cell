@@ -1,4 +1,5 @@
 import dayjs from 'dayjs'
+import {dateRule, str2Re} from "../core/re";
 
 export function formatDate(numb, format) {
     const time = new Date((numb - 1) * 24 * 3600000 + 1);
@@ -17,8 +18,13 @@ export function dateDiff(date) {
     // console.log(dayjs('2019/01').format('YYYY-MM-DD'));
     // console.log(dayjs('2019').format('YYYY-MM-DD'));
     // console.log(dayjs('2019sa').format('YYYY-MM-DD'));
-    let d = dayjs(date).format('YYYY-MM-DD');
-    if(dayjs(date).format('YYYY-MM-DD') === 'Invalid Date') {
+    let valid = false;
+
+    for (let i = 0; valid === false && i < dateRule.length; i++) {
+        valid = str2Re(dateRule[i]).test(date);
+    }
+
+    if (valid === false) {
         return {
             "isValid": false,
         };
