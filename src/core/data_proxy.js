@@ -1111,6 +1111,7 @@ export default class DataProxy {
             return true;
         } else if(style.format === type && dateDiff(text).isValid === false) {
             delete cell['style'];
+            delete cell['diff'];
             this.rows.setCell(ri, ci, cell, 'all');
         }
         return false;
