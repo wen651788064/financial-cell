@@ -140,7 +140,7 @@ export function loadData(viewRange, load = false, read = false, cb = (ri, ci) =>
     let {mri, mci} = this.data.rows.getMax();
     viewRange.eachGivenRange((ri, ci, eri, eci,) => {
         let cell2 = this.proxy.deepCopy(data.getCell(ri, ci));
-        cb(ri, ci, data, cell2.text);
+        cb(ri, ci, cell2.text, data);
         let cell = data.getCell(ri, ci);
         let expr = xy2expr(ci, ri);
         if (data.isEmpty(cell) === false) {
