@@ -373,7 +373,7 @@ export default class CellProxy {
             if(args.state) {
                 cells[i].v =  args.text;
             }
-            let {state} = this.table.specialHandle('date', this.deepCopy(data[ri]['cells'][ci]));
+            let {state} = this.table.specialHandle('date', this.deepCopy(data[ri]['cells'][ci]), ri, ci);
             cells[i].v = state ? data[ri]['cells'][ci].formulas : cells[i].v;
 
             if (cells[i].v + "" === '0' && cells[i].f && cells[i].f[0] && cells[i].f[0] === '=') {

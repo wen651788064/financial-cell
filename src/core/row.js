@@ -6,7 +6,7 @@ import CellRange from "./cell_range";
 import dayjs from 'dayjs'
 import {isSheetVale} from "./operator";
 import Recast from "./recast";
-import {loadData, parseCell2} from "../component/table";
+import {loadData} from "../component/table";
 import {dateDiff} from "../component/date";
 
 // 2019-10-11 cell里新增一个字段   recast
@@ -129,7 +129,7 @@ class Rows {
             row.cells[ci] = row.cells[ci] || {};
             row.cells[ci].style = cell.style;
             if (cell.merge) row.cells[ci].merge = cell.merge;
-        } else if(what === 'date') {
+        } else if (what === 'date') {
             this.setCellAll(ri, ci, cell.text, cell.formula);
             row.cells[ci].style = cell.style;
             row.cells[ci].diff = cell.diff;
@@ -222,7 +222,7 @@ class Rows {
         console.log(range, ref);
         let [ci, ri] = expr2xy(ref);
         let cell = this.getCell(ri, ci);
-        while(cell !== null) {
+        while (cell !== null) {
             ri += 1;
             cell = this.getCell(ri, ci);
         }
@@ -836,8 +836,8 @@ class Rows {
                 let viewRange = data.viewRange();
                 let {workbook2} = loadData.call(table, viewRange, false, true, (ri, ci, itext, data) => {
                     const {isValid, diff} = dateDiff(itext);
-                    if(isValid) {
-                        data.dateInput(itext, itext, diff, ri,  ci);
+                    if (isValid) {
+                        data.dateInput(itext, itext, diff, ri, ci);
                     }
                 });
                 proxy.setOldData(workbook2);

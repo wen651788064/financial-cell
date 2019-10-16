@@ -100,7 +100,7 @@ export function toUpperCase(text) {
     return newText;
 }
 
-function specialHandle(type, cell) {
+function specialHandle(type, cell, ri, ci) {
     if(typeof cell.style === 'undefined') {
         return {
             "state": false,
@@ -109,7 +109,7 @@ function specialHandle(type, cell) {
     }
     if(type === 'date') {
         const {data} = this;
-        let d = data.getCellStyleHandle(cell.style, type);
+        let d = data.getCellStyleHandle(cell.style, type, cell, ri, ci);
         return {
             "state": true,
             "text": d ? cell.diff : cell.text
@@ -144,7 +144,7 @@ export function loadData(viewRange, load = false, read = false, cb = (ri, ci) =>
         let cell = data.getCell(ri, ci);
         let expr = xy2expr(ci, ri);
         if (data.isEmpty(cell) === false) {
-            let {state, text} = specialHandle.call(this, 'date', cell);
+            let {state, text} = specialHandle.call(this, 'date', cell, ri, ci);
             cell.text = text;
             cell.text = data.getRegularText(cell.text);
 
@@ -700,8 +700,8 @@ class Table {
         return style;
     }
 
-    specialHandle(type, cell) {
-        return specialHandle.call(this, type, cell);
+    specialHandle(type, cell, ri, ci) {
+        return specialHandle.call(this, type, cell, ri, ci);
     }
 
     async render(temp = false, tempData, redo = false, state = true) {

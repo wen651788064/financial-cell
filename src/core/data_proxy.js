@@ -19,6 +19,7 @@ import {h} from "../component/element";
 import {mountImg} from "../event/paste";
 import {parseCell2} from "../component/table";
 import {RefRow} from "./ref_row";
+import {dateDiff} from "../component/date";
 // private methods
 /*
  * {
@@ -1104,10 +1105,13 @@ export default class DataProxy {
         return null;
     }
 
-    getCellStyleHandle(index, type) {
+    getCellStyleHandle(index, type, cell, ri, ci) {
         let style = this.styles[index];
         if (style && style.format === type) {
             return true;
+        } else if(style.format === type && dateDiff(text).isValid === false) {
+            delete cell['style'];
+            this.rows.setCell(ri, ci, cell, 'date');
         }
         return false;
     }
