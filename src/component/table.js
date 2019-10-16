@@ -121,7 +121,12 @@ function specialHandle(type, cell) {
     };
 }
 
-export function loadData(viewRange, load = false, read = false) {
+function each() {
+
+}
+
+// 第五个参数cb 在row setdata的时候 才会执行
+export function loadData(viewRange, load = false, read = false, cb = (ri, ci) => {}) {
     let {data} = this;
     let workbook = [];
     workbook.Sheets = {};
@@ -131,10 +136,11 @@ export function loadData(viewRange, load = false, read = false) {
     workbook_no_formula.Sheets[data.name] = {};
     let enter = 0;
 
-    console.time("x");
+    console.time("loadData need time");
     let {mri, mci} = this.data.rows.getMax();
     viewRange.eachGivenRange((ri, ci, eri, eci,) => {
         let cell2 = this.proxy.deepCopy(data.getCell(ri, ci));
+        cb(ri, ci, data, cell2.text);
         let cell = data.getCell(ri, ci);
         let expr = xy2expr(ci, ri);
         if (data.isEmpty(cell) === false) {
@@ -199,7 +205,7 @@ export function loadData(viewRange, load = false, read = false) {
             workbook.Sheets[data.name][expr] = {v: 0, f: 0, z: false};
         }
     }, mri, mci);
-    console.timeEnd("x");
+    console.timeEnd("loadData need time");
 
     return {
         workbook,

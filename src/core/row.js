@@ -7,6 +7,7 @@ import dayjs from 'dayjs'
 import {isSheetVale} from "./operator";
 import Recast from "./recast";
 import {loadData, parseCell2} from "../component/table";
+import {dateDiff} from "../component/date";
 
 // 2019-10-11 cell里新增一个字段   recast
 /* 目前数据结构 =>
@@ -833,7 +834,12 @@ class Rows {
                 const {table, data} = sheet;
                 const {proxy} = table;
                 let viewRange = data.viewRange();
-                let {workbook2} = loadData.call(table, viewRange, false, true);
+                let {workbook2} = loadData.call(table, viewRange, false, true, (ri, ci, itext, data) => {
+                    const {isValid, diff} = dateDiff(itext);
+                    if(isValid) {
+                        data.dateInput(itext, itext, diff, ri,  ci);
+                    }
+                });
                 proxy.setOldData(workbook2);
             }
 
