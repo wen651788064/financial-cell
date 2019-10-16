@@ -1089,12 +1089,6 @@ function sheetInitEvents() {
     // editor
     editor.change = (state, itext) => {
         if (state === 'finish') {
-            // 当用户离开一个单元格的时候 执行这个操作
-            const {isValid, diff} = dateDiff(itext);
-            if(isValid) {
-                data.dateInput(itext, itext, diff, editor.ri, editor.ci);
-            }
-
             this.table.render();
             setTimeout(() => {
                 clearTimeout(this.render_timer);

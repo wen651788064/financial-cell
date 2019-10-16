@@ -62,7 +62,7 @@ export default class SelectorMove {
                     let {ri, ci} = data.getCellRectByXY(e.layerX, e.layerY);
                     if (ri != -1 && ci != -1) {
                         let {  pos} = this.sheet.editor;
-                        let inputText = this.sheet.editorText.getText();
+                        let inputText = this.sheet.editor.editorText.getText();
                         let _erpx = cuttingByPos(inputText, pos - 1, true);
                         if (inputText.length > pos - 1) {
                             let c = cuttingByPosEnd(inputText, pos - 1);

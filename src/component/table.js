@@ -9,6 +9,7 @@ import ApplicationFactory from "./application";
 import CellProxy from "./cell_proxy";
 import {look} from "../config";
 import {textReplaceAndToUpperCase, textReplaceQM} from "./context_process";
+import {dateDiff} from "./date";
 // import Worker from 'worker-loader!../external/Worker.js';
 
 var formulajs = require('formulajs');
@@ -101,14 +102,22 @@ export function toUpperCase(text) {
 }
 
 function specialHandle(type, cell, ri, ci) {
+    const {data} = this;
+    // 当用户离开一个单元格的时候 执行这个操作
+    const {isValid, diff} = dateDiff(cell.text);
+    if(isValid) {
+        data.dateInput(cell.text, cell.text, diff,  ri,  ci);
+    }
+
     if(typeof cell.style === 'undefined') {
         return {
             "state": false,
             "text": cell.text
         };
     }
-    if(type === 'date') {
-        const {data} = this;
+
+    let cellStyle = data.getCellStyle(ri, ci);
+    if(type === 'date' && cellStyle.format && cellStyle.format === type) {
         let d = data.getCellStyleHandle(cell.style, type, cell, ri, ci);
         return {
             "state": true,
@@ -140,7 +149,7 @@ export function loadData(viewRange, load = false, read = false, cb = (ri, ci) =>
     let {mri, mci} = this.data.rows.getMax();
     viewRange.eachGivenRange((ri, ci, eri, eci,) => {
         let cell2 = this.proxy.deepCopy(data.getCell(ri, ci));
-        cb(ri, ci, cell2.text, data);
+        // cb(ri, ci, cell2.text, data);
         let cell = data.getCell(ri, ci);
         let expr = xy2expr(ci, ri);
         if (data.isEmpty(cell) === false) {
