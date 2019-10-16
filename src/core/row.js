@@ -128,9 +128,13 @@ class Rows {
             row.cells[ci] = row.cells[ci] || {};
             row.cells[ci].style = cell.style;
             if (cell.merge) row.cells[ci].merge = cell.merge;
+        } else if(what === 'date') {
+            this.setCellAll(ri, ci, cell.text, cell.formula);
+            row.cells[ci].style = cell.style;
+            row.cells[ci].diff = cell.diff;
         }
-        // this.recast(cell);
     }
+
 
     setCellText(ri, ci, text, proxy = "", name = "") {
         const cell = this.getCellOrNew(ri, ci);
@@ -211,6 +215,19 @@ class Rows {
             }
         }
         return s;
+    }
+
+    autoFilterRef(ref, range) {
+        console.log(range, ref);
+        let [ci, ri] = expr2xy(ref);
+        let cell = this.getCell(ri, ci);
+        while(cell !== null) {
+            ri += 1;
+            cell = this.getCell(ri, ci);
+        }
+        range.eri = ri;
+
+        return range;
     }
 
     // what: all | format | text

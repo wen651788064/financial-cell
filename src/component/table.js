@@ -100,6 +100,27 @@ export function toUpperCase(text) {
     return newText;
 }
 
+function specialHandle(type, cell) {
+    if(typeof cell.style === 'undefined') {
+        return {
+            "state": false,
+            "text": cell.text
+        };
+    }
+    if(type === 'date') {
+        const {data} = this;
+        let d = data.getCellStyleHandle(cell.style, type);
+        return {
+            "state": true,
+            "text": d ? cell.diff : cell.text
+        };
+    }
+    return {
+        "state": false,
+        "text": cell.text
+    };
+}
+
 export function loadData(viewRange, load = false, read = false) {
     let {data} = this;
     let workbook = [];
@@ -113,9 +134,12 @@ export function loadData(viewRange, load = false, read = false) {
     console.time("x");
     let {mri, mci} = this.data.rows.getMax();
     viewRange.eachGivenRange((ri, ci, eri, eci,) => {
+        let cell2 = this.proxy.deepCopy(data.getCell(ri, ci));
         let cell = data.getCell(ri, ci);
         let expr = xy2expr(ci, ri);
         if (data.isEmpty(cell) === false) {
+            let {state, text} = specialHandle.call(this, 'date', cell);
+            cell.text = text;
             cell.text = data.getRegularText(cell.text);
 
             if (data.backEndCalc(cell.text)) {
@@ -130,7 +154,7 @@ export function loadData(viewRange, load = false, read = false) {
 
                 workbook_no_formula.Sheets[data.name][expr] = {
                     v: cell.text,
-                    f: cell.formulas,
+                    f: !cell.formulas ? cell.text : cell.formulas,
                     z: true
                 };
 
@@ -146,7 +170,6 @@ export function loadData(viewRange, load = false, read = false) {
                             z: true
                         };
                     } else {
-                        // 命名还要再仔细想一下
                         workbook.Sheets[data.name][expr] = {
                             v: '',
                             f: cell.text,
@@ -167,6 +190,10 @@ export function loadData(viewRange, load = false, read = false) {
                     }
                 }
             }
+            if(state) {
+                data.setCellWithFormulas(ri, ci, cell2.text, cell.formulas);
+            }
+
         }
         else {
             workbook.Sheets[data.name][expr] = {v: 0, f: 0, z: false};
@@ -242,7 +269,7 @@ async function parseCell(viewRange, state = false, src = '', state2 = true) {
             workbook = proxy.pack(data.name, workbook);
 
             data.calc(workbook);
-            proxy.isDone();
+            // proxy.isDone();   // 如果有问题再取消注释，看看是否有问题
             let {factory} = this;
             factory.data = workbook;
             workbook = proxy.concat(data.name, workbook);
@@ -625,7 +652,7 @@ class Table {
         this.data = data;
         this.timer = null;
         // this.worker = new Worker();
-        this.proxy = new CellProxy(data.refRow);
+        this.proxy = new CellProxy(data.refRow, this);
         this.autoAdaptList = [];
     }
 
@@ -665,6 +692,10 @@ class Table {
         const style = data.getCellStyleOrDefault(nrindex, cindex);
 
         return style;
+    }
+
+    specialHandle(type, cell) {
+        return specialHandle.call(this, type, cell);
     }
 
     async render(temp = false, tempData, redo = false, state = true) {

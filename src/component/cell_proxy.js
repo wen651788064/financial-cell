@@ -9,7 +9,7 @@ import {specialWebsiteValue} from "./special_formula_process";
 import {textReplace} from "./context_process";
 
 export default class CellProxy {
-    constructor(refRow) {
+    constructor(refRow, table) {
         this.oldData = "";
         // diff 为 101 => 则为跨sheet但是没找到跨sheet的数据  402 => 则为跨sheet而且找到跨sheet的数据
         // 305 => 为重新计算  306 => 后端计算结果
@@ -17,6 +17,7 @@ export default class CellProxy {
         this.refRow = refRow;
         this.lastResult = "";
         this.lastResultTimer = "";
+        this.table = table;
         // this.worker = new Worker();
     }
 
@@ -357,10 +358,6 @@ export default class CellProxy {
                 cells[i].v = "#ERROR!"
             }
 
-            // if (cells[i].v === '-') {
-            //     cells[i].v = "#ERROR!"
-            // }
-
             if (typeof cells[i].f === 'undefined') {
                 cells[i].f = "";
             }
@@ -376,6 +373,8 @@ export default class CellProxy {
             if(args.state) {
                 cells[i].v =  args.text;
             }
+            let {state} = this.table.specialHandle('date', this.deepCopy(data[ri]['cells'][ci]));
+            cells[i].v = state ? data[ri]['cells'][ci].formulas : cells[i].v;
 
             if (cells[i].v + "" === '0' && cells[i].f && cells[i].f[0] && cells[i].f[0] === '=') {
                 data[ri]['cells'][ci].text = cells[i].v + "";
@@ -457,7 +456,6 @@ export default class CellProxy {
         clearTimeout(this.lastResultTimer);
         let enter = true;
         this.lastResultTimer = setTimeout(() => {
-
             Object.keys(this.lastResult).forEach(i => {
                 if(enter && this.lastResult[i].v === "-") {
                     enter = false;

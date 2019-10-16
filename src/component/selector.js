@@ -202,6 +202,7 @@ class SelectorElement {
         return this;
     }
 
+
     setAreaOffset(v) {
         const {
             left, top, width, height,
@@ -474,6 +475,10 @@ export default class Selector {
         this.range = cellRange;
         this.resetAreaOffset();
         this.el.show();
+    }
+
+    autoFilterRef() {
+        console.log(this.range);
     }
 
     setEnd(ri, ci, moving = true) {

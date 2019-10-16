@@ -265,6 +265,14 @@ const cuttingByPosEnd = (str, pos) => {
     return value.toUpperCase();
 };
 
+const cuttingByPosEnd2 = (str, pos) => {
+    let value = "";
+    for (let i = pos - 1; i < str.length; i++) {
+        value += str[i];
+    }
+    return value;
+};
+
 function distinct(a, b) {
     return Array.from(new Set([...a, ...b]))
 }
@@ -23495,34 +23503,38 @@ const isAbsoluteValue = (str, rule = 1) => {
         if (str.search(/^[A-Za-z]+\d+:[A-Za-z]+\d+$/) != -1)
             return true;
     } else if (rule == 5) {
-        if(str.search(/^[A-Z]+\d+:\$[A-Z]+\d+$/) != -1) {
+        if (str.search(/^[A-Z]+\d+:\$[A-Z]+\d+$/) != -1) {
             return 8;
         }
-        if(str.search(/^[A-Z]+\d+:[A-Z]+\$\d+$/) != -1) {
+        if (str.search(/^[A-Z]+\d+:[A-Z]+\$\d+$/) != -1) {
             return 9;
         }
-        if(str.search(/^[A-Z]+\$\d+:[A-Z]+\d+$/) != -1) {
+        if (str.search(/^[A-Z]+\$\d+:[A-Z]+\d+$/) != -1) {
             return 10;
         }
-        if(str.search(/^\$[A-Z]+\d+:[A-Z]+\d+$/) != -1) {
+        if (str.search(/^\$[A-Z]+\d+:[A-Z]+\d+$/) != -1) {
             return 11;
         }
         if (str.search(/^\$[A-Z]+\$\d+$/) != -1)
             return 3;
+        if (str.search(/^[A-Z]+\d+$/) != -1)
+            return 12;
+        if (str.search(/^[A-Z]+\d+:[A-Z]+\d+$/) != -1)
+            return 13;
         if (str.search(/^\$[A-Z]+\d+$/) != -1)
             return 1;
         if (str.search(/^[A-Z]+\$\d+$/) != -1)
             return 2;
-        if(str.search(/^[A-Z]+\$\d+:[A-Z]+\$\d+$/) != -1) {
+        if (str.search(/^[A-Z]+\$\d+:[A-Z]+\$\d+$/) != -1) {
             return 4;
         }
-        if(str.search(/^[A-Z]+\$\d+:\$[A-Z]+\d+$/) != -1) {
+        if (str.search(/^[A-Z]+\$\d+:\$[A-Z]+\d+$/) != -1) {
             return 5;
         }
-        if(str.search(/^\$[A-Z]+\d+:[A-Z]+\$\d+$/) != -1) {
+        if (str.search(/^\$[A-Z]+\d+:[A-Z]+\$\d+$/) != -1) {
             return 6;
         }
-        if(str.search(/^\$[A-Z]+\d+:\$[A-Z]+\d+$/) != -1) {
+        if (str.search(/^\$[A-Z]+\d+:\$[A-Z]+\d+$/) != -1) {
             return 7;
         }
         return false
@@ -23634,6 +23646,7 @@ export {
     splitStr,
     isSheetVale,
     getSheetVale,
+    cuttingByPosEnd2,
     cuttingByPos2,
     contain,
     division,

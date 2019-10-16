@@ -461,7 +461,16 @@ export default class Editor {
                         if (key_num === 38 || key_num === 40) {
                             evt.preventDefault();
                         }
-
+                        console.log(key_num);
+                        if(key_num === 115) {       // F4
+                            let {inputText, pos} = this.editorText.f4ShortcutKey(this.pos);
+                            inputEventHandler.call(this, null, inputText, inputText);
+                            setTimeout(() => {
+                                this.pos = pos;
+                                set_focus.call(this, this.textEl.el, -1);
+                            });
+                            return;
+                        }
                         if (this.textEl.el.style['caret-color'] == 'black') return;
                         const {
                             ctrlKey, metaKey,
@@ -599,6 +608,7 @@ export default class Editor {
         } else if (this.changed) {
             this.change('finish',inputText);
         }
+
         this.changed = false;
         this.cell = null;
         this.areaOffset = null;

@@ -210,7 +210,7 @@ function processPasteDirectionsArr(pasteDirectionsArr, type = 'to', sheet) {
 
         return arr;
     } else if (type == 'from') {
-        if(typeof sheet === 'string') {
+        if (typeof sheet === 'string') {
             return;
         }
         for (let i = 0; i < pasteDirectionsArr.length; i++) {
@@ -460,10 +460,10 @@ export default class DataProxy {
         let eri = left < right ? right : left;
 
         let enter = false;
-        for(let i = 1; i < eri && enter === false; i++) {
+        for (let i = 1; i < eri && enter === false; i++) {
             let cell3 = rows.getCellOrNew(ri + i, ci);
 
-            if(cell3 && cell3.text) {
+            if (cell3 && cell3.text) {
                 eri = ri + i;
                 enter = true;
             }
@@ -830,6 +830,19 @@ export default class DataProxy {
         return false;
     }
 
+    dateInput(text, formula, diff, ri, ci) {
+        let cell = {
+            "formulas": formula,
+            "text": text,
+            "diff": diff,
+        };
+        let cstyle = {};
+
+        cstyle.format = 'date';
+        cell.style = this.addStyle(cstyle);
+        this.rows.setCell(ri, ci, cell, 'date');
+    }
+
     merge() {
         const {selector, rows} = this;
         if (this.isSignleSelected()) return;
@@ -872,18 +885,25 @@ export default class DataProxy {
                 this.sortedRowMap = new Map();
                 this.unsortedRowMap = new Map();
             } else {
-                autoFilter.ref = selector.range.toString();
+                let v = selector.range.toString();
+                if (v.indexOf(":") === -1) {
+                    const {rows} = this;
+                    selector.range = rows.autoFilterRef(v, selector.range);
+                    autoFilter.ref = selector.range.toString();
+                } else {
+                    autoFilter.ref = v;
+                }
             }
         });
     }
 
     throwFormula() {
-        const { selector, rows} = this;
+        const {selector, rows} = this;
 
         this.changeData(() => {
             selector.range.each((i, j) => {
                 const cell = rows.getCellOrNew(i, j);
-                if(cell && cell.text && cell.formulas) {
+                if (cell && cell.text && cell.formulas) {
                     rows.setCellAll(i, j, cell.text, cell.text);
                 }
             });
@@ -1084,6 +1104,14 @@ export default class DataProxy {
         return null;
     }
 
+    getCellStyleHandle(index, type) {
+        let style = this.styles[index];
+        if (style && style.format === type) {
+            return true;
+        }
+        return false;
+    }
+
     getCellStyleOrDefault(ri, ci) {
         const {styles, rows} = this;
         const cell = rows.getCell(ri, ci);
@@ -1098,7 +1126,7 @@ export default class DataProxy {
 
     getCellByExpr(src, table, name, inputText, pos) {
         let p1 = inputText.substring(0, pos);
-        let p2 = inputText.substring(pos , inputText.length);
+        let p2 = inputText.substring(pos, inputText.length);
         inputText = p1 + src + p2;
         let workbook = parseCell2.call(table, this.viewRange(), true, inputText);
         return {
@@ -1313,7 +1341,7 @@ export default class DataProxy {
     // }
 
     changeData(cb) {
-        if(this.settings.showEditor === false) {
+        if (this.settings.showEditor === false) {
             return;
         }
 
@@ -1336,9 +1364,9 @@ export default class DataProxy {
                 this[property].setData(d[property]);
             } else if (property === 'flex') {
                 autoFilter.addFiexRows(d[property]);
-            } else if(property === 'rows') {
+            } else if (property === 'rows') {
                 this[property].setData(d[property], sheet);
-            }else if (property === 'freeze') {
+            } else if (property === 'freeze') {
                 const [x, y] = expr2xy(d[property]);
                 this.freeze = [y, x];
             } else if (property === 'pictures') {

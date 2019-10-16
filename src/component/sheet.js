@@ -29,6 +29,7 @@ import {expr2xy} from "../core/alphabet";
 import ErrorPopUp from "./error_pop_up";
 import EditorProxy from "./editor_proxy";
 import Recast from "../core/recast";
+import {dateDiff} from "./date";
 
 function scrollbarMove() {
     const {
@@ -1088,6 +1089,12 @@ function sheetInitEvents() {
     // editor
     editor.change = (state, itext) => {
         if (state === 'finish') {
+            // 当用户离开一个单元格的时候 执行这个操作
+            const {isValid, diff} = dateDiff(itext);
+            if(isValid) {
+                data.dateInput(itext, itext, diff, editor.ri, editor.ci);
+            }
+
             this.table.render();
             setTimeout(() => {
                 clearTimeout(this.render_timer);

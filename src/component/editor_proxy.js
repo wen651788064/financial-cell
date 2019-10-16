@@ -41,7 +41,12 @@ export default class EditorProxy {
         return false;
     }
 
+    // 当用户离开一个单元格的时候，会执行这个函数
+
+
     change(ri, ci, text, rows,  data, needcallback = false) {
+        console.log("84....")
+
         let erpx = xy2expr(ci, ri);
         let has = -1;
         for (let i = 0; i < this.items.length && has === -1; i++) {
