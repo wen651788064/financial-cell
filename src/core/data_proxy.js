@@ -1107,12 +1107,12 @@ export default class DataProxy {
 
     getCellStyleHandle(index, type, cell, ri, ci) {
         let style = this.styles[index];
-        if (style && style.format === type) {
-            return true;
-        } else if(style.format === type && dateDiff(cell.text).isValid === false) {
+        if (style.format === type && dateDiff(cell.text).isValid === false) {
             delete cell['style'];
             delete cell['diff'];
             this.rows.setCell(ri, ci, cell, 'all');
+        } else if (style && style.format === type) {
+            return true;
         }
         return false;
     }
