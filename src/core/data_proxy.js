@@ -1362,7 +1362,7 @@ export default class DataProxy {
         cutPaste.call(this, srcCellRange, dstCellRange);
     }
 
-    setData(d, sheet = "") {
+    setData(d, sheet = "", out = false) {
         const {autoFilter} = this;
         Object.keys(d).forEach((property) => {
             // this.judgeAutoWidth(d.rows);
@@ -1373,7 +1373,7 @@ export default class DataProxy {
             } else if (property === 'flex') {
                 autoFilter.addFiexRows(d[property]);
             } else if (property === 'rows') {
-                this[property].setData(d[property], sheet);
+                this[property].setData(d[property], sheet, out);
             } else if (property === 'freeze') {
                 const [x, y] = expr2xy(d[property]);
                 this.freeze = [y, x];
