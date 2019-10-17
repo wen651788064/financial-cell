@@ -856,6 +856,11 @@ class Rows {
 
                 let workbook_no_formula = this.workbook.getWorkbook(2);
                 proxy.setOldData(workbook_no_formula);
+            } else if(sheet === 'out') {
+                const {table, data} = sheet;
+                const {proxy} = table;
+                let workbook = proxy.outCalc(this._, this.workbook.getWorkbook(2));
+                this.workbook.setWorkBook(2, workbook);
             }
 
             // this.each((ri, row) => {

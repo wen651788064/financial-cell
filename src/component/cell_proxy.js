@@ -516,6 +516,15 @@ export default class CellProxy {
         }, 5000);
     }
 
+    outCalc(_, workbook) {
+        Object.keys(this.lastResult).forEach(i => {
+            let [ci, ri] = expr2xy(i);
+            workbook.Sheets[name][i] = _[ri]['cells'][ci];
+        });
+
+        return workbook;
+    }
+
     calc(newData, name, initd = false) {
         if (this.diff === 306 && this.lastResult !== "") {
             this.diff = 402;
