@@ -299,7 +299,7 @@ async function parseCell(viewRange, state = false, src = '', state2 = true) {
             data.rows.setWorkBook(2, workbook);
             console.log(tileArr);
             console.time("x5");
-            let cells = proxy.unpack(workbook.Sheets[data.name], data.rows._);
+            let cells = proxy.unpack(workbook.Sheets[data.name], data.rows._, tileArr);
             console.timeEnd("x5");
             data.rows.setData(cells);
 
