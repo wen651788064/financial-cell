@@ -851,7 +851,7 @@ class Rows {
             if(out) {
                 const {table, data} = sheet;
                 const {proxy} = table;
-                let workbook = proxy.outCalc(this._, this.workbook.getWorkbook(2));
+                let workbook = proxy.outCalc(this._, this.workbook.getWorkbook(2),  data.name);
                 this.workbook.setWorkBook(2, workbook);
             } else if (sheet !== '') {
                 const {table, data} = sheet;
