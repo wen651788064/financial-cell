@@ -839,7 +839,7 @@ class Rows {
         this.workbook.setWorkBook(type, workbook);
     }
 
-    setData(d, sheet = "") {
+    setData(d, sheet = "", out = false) {
         try {
             if (d.len) {
                 this.len = d.len;
@@ -848,7 +848,7 @@ class Rows {
             this._ = d;
 
             // 为什么要判断sheet = '' ?
-            if(sheet === 'out') {
+            if(out) {
                 const {table, data} = sheet;
                 const {proxy} = table;
                 let workbook = proxy.outCalc(this._, this.workbook.getWorkbook(2));
