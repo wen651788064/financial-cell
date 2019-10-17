@@ -44,40 +44,14 @@ export default class EditorProxy {
     // 当用户离开一个单元格的时候，会执行这个函数
 
 
+    // 如果包含 city 则改成 -
     change(ri, ci, text, rows,  data, needcallback = false) {
         console.log("84....")
-
-        let erpx = xy2expr(ci, ri);
-        let has = -1;
-        for (let i = 0; i < this.items.length && has === -1; i++) {
-            let {f} = this.items[i];
-            if (f === text) {
-                has = i;
-            }
-        }
-
         let th = this.indexOf(text);
-        if (th && has === -1) {
-            this.items.push({
-                erpx: erpx,
-                f: text
-            });
-        } else if (!th && has !== -1) {
-            this.items.splice(has - 1, has);
-        }
-
         let e = false;
-        for (let i = 0; i < this.items.length; i++) {
-            let args = this.items[i];
-            let {f} = args;
-
-            if (contain(division(f, []), erpx)) {
-                let a = expr2xy(args.erpx);
-
-                console.log(a, f);
-                data.setCellWithFormulas(a[1], a[0], '-',  f);
-                e = true;
-            }
+        if (th) {
+            e = true;
+            data.setCellWithFormulas(ri, ci, '-',  text);
         }
         if(needcallback) {
             return e;
@@ -85,5 +59,44 @@ export default class EditorProxy {
         if(e) {
             data.change(data.getData());
         }
+
+        // let erpx = xy2expr(ci, ri);
+        // let has = -1;
+        // for (let i = 0; i < this.items.length && has === -1; i++) {
+        //     let {f} = this.items[i];
+        //     if (f === text) {
+        //         has = i;
+        //     }
+        // }
+        //
+        // let th = this.indexOf(text);
+        // if (th && has === -1) {
+        //     this.items.push({
+        //         erpx: erpx,
+        //         f: text
+        //     });
+        // } else if (!th && has !== -1) {
+        //     this.items.splice(has - 1, has);
+        // }
+        //
+        // let e = false;
+        // for (let i = 0; i < this.items.length; i++) {
+        //     let args = this.items[i];
+        //     let {f} = args;
+        //
+        //     if (contain(division(f, []), erpx)) {
+        //         let a = expr2xy(args.erpx);
+        //
+        //         console.log(a, f);
+        //         data.setCellWithFormulas(a[1], a[0], '-',  f);
+        //         e = true;
+        //     }
+        // }
+        // if(needcallback) {
+        //     return e;
+        // }
+        // if(e) {
+        //     data.change(data.getData());
+        // }
     }
 }
