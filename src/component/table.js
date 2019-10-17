@@ -294,11 +294,13 @@ async function parseCell(viewRange, state = false, src = '', state2 = true) {
             console.time("x4");
             workbook = proxy.concat(data.name, workbook);
             console.timeEnd("x4");
-            console.time("x5");
+
             data.rows.setWorkBook(2, workbook);
+            console.time("x5");
             let cells = proxy.unpack(workbook.Sheets[data.name], data.rows._);
-            data.rows.setData(cells);
             console.timeEnd("x5");
+            data.rows.setData(cells);
+
             data.change(data.getData());
             // }
         } catch (e) {
