@@ -265,7 +265,6 @@ async function parseCell(viewRange, state = false, src = '', state2 = true) {
     // this.editor.display &&
     if (ca.state) {
         try {
-            console.time("x4");
             redo = true;
             // if(proxy.countProperties(workbook)) {
             //     let {worker} = this;
@@ -292,13 +291,16 @@ async function parseCell(viewRange, state = false, src = '', state2 = true) {
             // proxy.isDone();   // 如果有问题再取消注释，看看是否有问题
             let {factory} = this;
             factory.data = workbook;
+            console.time("x4");
             workbook = proxy.concat(data.name, workbook);
+            console.timeEnd("x4");
+            console.time("x5");
             data.rows.setWorkBook(2, workbook);
             let cells = proxy.unpack(workbook.Sheets[data.name], data.rows._);
             data.rows.setData(cells);
+            console.timeEnd("x5");
             data.change(data.getData());
             // }
-            console.timeEnd("x4");
         } catch (e) {
             console.error(e);
         }
