@@ -229,6 +229,7 @@ export function loadData(viewRange, load = false, read = false) {
 }
 
 async function parseCell(viewRange, state = false, src = '', state2 = true) {
+    console.time("parse cell need time");
     let {data, proxy} = this;
     let {workbook, workbook2, enter} = loadData.call(this, viewRange, false, true);
 
@@ -318,7 +319,7 @@ async function parseCell(viewRange, state = false, src = '', state2 = true) {
         }
     }
 
-
+    console.time("parse cell need time");
     return {
         "state": enter,
         "redo": redo,
