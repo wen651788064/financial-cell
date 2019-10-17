@@ -183,7 +183,8 @@ export default class CellProxy {
 
         return {
             enter: enter,
-            nd: workbook
+            nd: workbook,
+            changeArr: tileArr
         };
     }
 
@@ -328,6 +329,7 @@ export default class CellProxy {
         return data;
     }
 
+    // unpack 应该只对改变的单元格进行重新赋值
     unpack(cells, _) {
         let data = _;
         Object.keys(cells).forEach(i => {

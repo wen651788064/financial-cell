@@ -253,11 +253,12 @@ async function parseCell(viewRange, state = false, src = '', state2 = true) {
         workbook.Sheets[data.name]['A1'] = {v: '', f: `=${src}`};
     }
     console.time("x3");
-
+    let tileArr = [];
     if (ca.state) {
         let assoc = proxy.associated(data.name, workbook);
         ca.state = ca.state === false ? assoc.enter : ca.state;
         workbook = assoc.enter === true ? assoc.nd : workbook;
+        tileArr = assoc.changeArr;
     }
     console.timeEnd("x3");
 
@@ -296,6 +297,7 @@ async function parseCell(viewRange, state = false, src = '', state2 = true) {
             console.timeEnd("x4");
 
             data.rows.setWorkBook(2, workbook);
+            console.log(tileArr);
             console.time("x5");
             let cells = proxy.unpack(workbook.Sheets[data.name], data.rows._);
             console.timeEnd("x5");
