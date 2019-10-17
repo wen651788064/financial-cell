@@ -24,6 +24,7 @@ export function dateDiff(date) {
         try {
             valid = str2Re(dateRule[i]).test(date);
         } catch (e) {
+            console.log(date)
             console.log(e);
         }
     }
