@@ -21,12 +21,8 @@ export function dateDiff(date) {
     let valid = false;
 
     for (let i = 0; valid === false && i < dateRule.length; i++) {
-        try {
-            valid = str2Re(dateRule[i]).test(date);
-        } catch (e) {
-            console.log(date)
-            console.log(e);
-        }
+        console.log(date)
+        valid = str2Re(dateRule[i]).test(date);
     }
 
     if (valid === false) {
