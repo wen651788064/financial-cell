@@ -319,7 +319,7 @@ async function parseCell(viewRange, state = false, src = '', state2 = true) {
         }
     }
 
-    console.time("parse cell need time");
+    console.timeEnd("parse cell need time");
     return {
         "state": enter,
         "redo": redo,
