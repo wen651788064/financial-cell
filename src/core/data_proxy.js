@@ -1158,6 +1158,7 @@ export default class DataProxy {
                 rows.setCellText(ri, ci, {text, style}, proxy, this.name, 'style');
             } else {
                 rows.setCellText(ri, ci, {text}, proxy, this.name);
+                // rows.
             }
             // 不应该没打开一个单元格就 change一次
             this.change(this.getData());
@@ -1166,9 +1167,9 @@ export default class DataProxy {
         validations.validate(ri, ci, text);
     }
 
-    setCellWithFormulas(ri, ci, text, formulas) {
+    setCellWithFormulas(ri, ci, text, formulas, what = 'all') {
         const {rows} = this;
-        rows.setCellAll(ri, ci, text, formulas);
+        rows.setCellAll(ri, ci, text, formulas, what);
     }
 
 

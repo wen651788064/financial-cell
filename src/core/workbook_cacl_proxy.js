@@ -86,7 +86,7 @@ export default class WorkBook {
                 }
             }
             if (state) {
-                data.setCellWithFormulas(ri, ci, cell2.text, cell.formulas);
+                data.setCellWithFormulas(ri, ci, cell2.text, cell.formulas, 'date');
             }
         } else {
             this.workbook.Sheets[data.name][expr] = {v: 0, f: 0, z: false};

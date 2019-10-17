@@ -121,21 +121,22 @@ class Rows {
     setCell(ri, ci, cell, what = 'all') {
         const row = this.getOrNew(ri);
         if (what === 'all') {
+            this.workbook.change(ri, ci, row.cells[ci], deepCopy(row.cells[ci]));
             row.cells[ci] = cell;
         } else if (what === 'text') {
+            this.workbook.change(ri, ci, row.cells[ci], deepCopy(row.cells[ci]));
             row.cells[ci] = row.cells[ci] || {};
             row.cells[ci].text = cell.text;
         } else if (what === 'format') {
+            this.workbook.change(ri, ci, row.cells[ci], deepCopy(row.cells[ci]));
             row.cells[ci] = row.cells[ci] || {};
             row.cells[ci].style = cell.style;
             if (cell.merge) row.cells[ci].merge = cell.merge;
         } else if (what === 'date') {
-            this.setCellAll(ri, ci, cell.text, cell.formula);
+            this.setCellAll(ri, ci, cell.text, cell.formula, what);
             row.cells[ci].style = cell.style;
             row.cells[ci].diff = cell.diff;
         }
-
-        this.workbook.change(ri, ci, row.cells[ci], deepCopy(row.cells[ci]));
     }
 
     setCellText(ri, ci, {text, style}, proxy = "", name = "", what = 'all') {
@@ -149,14 +150,19 @@ class Rows {
         if (typeof proxy != "string") {
             proxy.setCell(name, xy2expr(ci, ri));
         }
-        this.workbook.change(ri, ci, cell, deepCopy(cell));
+        if(what !== 'date') {
+            this.workbook.change(ri, ci, cell, deepCopy(cell));
+        }
     }
 
-    setCellAll(ri, ci, text, formulas = "") {
+    setCellAll(ri, ci, text, formulas = "", what = '') {
         const cell = this.getCellOrNew(ri, ci);
         cell.formulas = formulas == "" ? cell.formulas : formulas;
         cell.text = text;
-        this.workbook.change(ri, ci, cell, deepCopy(cell));
+
+        if(what !== 'date') {
+            this.workbook.change(ri, ci, cell, deepCopy(cell));
+        }
     }
 
 
