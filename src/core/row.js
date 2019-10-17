@@ -121,17 +121,17 @@ class Rows {
     setCell(ri, ci, cell, what = 'all') {
         const row = this.getOrNew(ri);
         if (what === 'all') {
-            this.workbook.change(ri, ci, row.cells[ci], deepCopy(row.cells[ci]));
             row.cells[ci] = cell;
-        } else if (what === 'text') {
             this.workbook.change(ri, ci, row.cells[ci], deepCopy(row.cells[ci]));
+        } else if (what === 'text') {
             row.cells[ci] = row.cells[ci] || {};
             row.cells[ci].text = cell.text;
-        } else if (what === 'format') {
             this.workbook.change(ri, ci, row.cells[ci], deepCopy(row.cells[ci]));
+        } else if (what === 'format') {
             row.cells[ci] = row.cells[ci] || {};
             row.cells[ci].style = cell.style;
             if (cell.merge) row.cells[ci].merge = cell.merge;
+            this.workbook.change(ri, ci, row.cells[ci], deepCopy(row.cells[ci]));
         } else if (what === 'date') {
             this.setCellAll(ri, ci, cell.text, cell.formula, what);
             row.cells[ci].style = cell.style;
