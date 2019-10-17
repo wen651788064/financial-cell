@@ -7,6 +7,7 @@ export default class WorkBook {
     constructor() {
         this.workbook = "";
         this.workbook_no_formula = "";
+        this.name = "";
 
         this.data = "";
         this.proxy = "";
@@ -20,7 +21,7 @@ export default class WorkBook {
         this.workbook.Sheets[data.name] = {};
         this.workbook_no_formula.Sheets = {};
         this.workbook_no_formula.Sheets[data.name] = {};
-
+        this.name = data.name;
         this.data = data;
         this.proxy = proxy;
         this.table = table;
@@ -55,6 +56,17 @@ export default class WorkBook {
                 return "";
             }
             return deepCopy(this.workbook_no_formula);
+        }
+    }
+
+    deleteWorkbook(ri, ci, what = 'all') {
+        let expr = xy2expr(ci, ri);
+        if (what === 'all') {
+            delete   this.workbook.Sheets[this.name][expr];
+        } else if (what === 'text') {
+            let cell = this.workbook.Sheets[this.name][expr];
+            if (cell.text) delete cell.v;
+            if (cell.formulas) delete cell.f;
         }
     }
 
