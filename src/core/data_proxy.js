@@ -685,7 +685,7 @@ export default class DataProxy {
         if (this.unsortedRowMap.has(ri)) {
             nri = this.unsortedRowMap.get(ri);
         }
-        this.setCellText(nri, ci, text, state);
+        this.setCellText(nri, ci, {text}, state);
         this.resetAutoFilter();
     }
 
@@ -1141,21 +1141,23 @@ export default class DataProxy {
     }
 
     // state: input | finished
-    setCellText(ri, ci, text, state, proxy = "") {
+    setCellText(ri, ci, {text, style}, state, proxy = "") {
         // text = text.replace(/\"/g)
         const {rows, history, validations} = this;
         console.log(ri, ci);
         if (state === 'finished') {
-            rows.setCellText(ri, ci, '');
+            rows.setCellText(ri, ci, {text: ''});
             history.add(this.getData());
-            rows.setCellText(ri, ci, text);
+            rows.setCellText(ri, ci, {text});
         } else {
             if (state === 'end') {
                 rows.setCellAll(ri, ci, text);
             } else if (state === 'formulas') {
                 rows.setCellAll(ri, ci, text, "-");
+            } else if (state === 'style') {
+                rows.setCellText(ri, ci, {text, style}, proxy, this.name, 'style');
             } else {
-                rows.setCellText(ri, ci, text, proxy, this.name);
+                rows.setCellText(ri, ci, {text}, proxy, this.name);
             }
             // 不应该没打开一个单元格就 change一次
             this.change(this.getData());

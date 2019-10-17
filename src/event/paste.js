@@ -1,4 +1,4 @@
-import {selectorSet, sheetReset} from "../component/sheet";
+import {selectorCellText, selectorSet, sheetReset} from "../component/sheet";
 import {h} from "../component/element";
 import Drag from "../external/drag";
 import Resize from "../external/resize";
@@ -661,36 +661,51 @@ function GetInfoFromTable(tableObj) {
                 }
 
                 if (bad) {
-                    cells[j + ci] = {
-                        text: "=#REF!",
-                        style: index,
-                    };
+                    selectorCellText.call(this, i + ri, j + ci, {text: "=#REF!", style: index}, 'style', this.table.proxy);
+                    // cells[j + ci] = {
+                    //     text: "=#REF!",
+                    //     style: index,
+                    // };
                     cells2[j + ci] = {
                         text: "=#REF!",
                     };
                 } else {
-                    cells[j + ci] = {
-                        text: newStr != "" ? newStr : tableObj.rows[i].cells[j].innerText,
-                        style: index,
-                    };
+                    selectorCellText.call(this, i + ri, j + ci,
+                        {text: newStr != "" ? newStr : tableObj.rows[i].cells[j].innerText, style: index},
+                        'style', this.table.proxy);
+                    // cells[j + ci] = {
+                    //     text: newStr != "" ? newStr : tableObj.rows[i].cells[j].innerText,
+                    //     formulas: newStr != "" ? newStr : tableObj.rows[i].cells[j].innerText,
+                    //     style: index,
+                    // };
                     cells2[j + ci] = {
                         text: newStr != "" ? newStr : tableObj.rows[i].cells[j].innerText,
+                        formulas: newStr != "" ? newStr : tableObj.rows[i].cells[j].innerText,
                     };
+
                 }
             } else if (index !== -1) {
-                cells[j + ci] = {
+                selectorCellText.call(this, i + ri, j + ci, {
                     text: tableObj.rows[i].cells[j].innerText,
-                    style: index,
-                };
+                    style: index
+                }, 'style', this.table.proxy);
+                // cells[j + ci] = {
+                //     text: tableObj.rows[i].cells[j].innerText,
+                //     style: index,
+                // };
                 cells2[j + ci] = {
                     text: tableObj.rows[i].cells[j].innerText,
                 };
             } else {
                 styles.push(args);
-                cells[j + ci] = {
+                selectorCellText.call(this, i + ri, j + ci, {
                     text: tableObj.rows[i].cells[j].innerText,
-                    style: styles.length - 1,
-                };
+                    style: styles.length - 1
+                }, 'style', this.table.proxy);
+                // cells[j + ci] = {
+                //     text: tableObj.rows[i].cells[j].innerText,
+                //     style: styles.length - 1,
+                // };
                 cells2[j + ci] = {
                     text: tableObj.rows[i].cells[j].innerText,
                 };
@@ -699,9 +714,9 @@ function GetInfoFromTable(tableObj) {
             lastCi = j + ci;
             selectorSet.call(this, true, i + ri, j + ci, true, true);
         }
-        rows[i + ri] = {
-            "cells": cells
-        };
+        // rows[i + ri] = {
+        //     "cells": cells
+        // };
         rows2[i + ri] = {
             "cells": cells2
         };

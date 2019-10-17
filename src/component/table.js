@@ -117,7 +117,7 @@ function specialHandle(type, cell, ri, ci) {
     }
 
     let cellStyle = data.getCellStyle(ri, ci);
-    if(type === 'date' && cellStyle.format && cellStyle.format === type) {
+    if(type === 'date' && cellStyle && cellStyle.format && cellStyle.format === type) {
         let d = data.getCellStyleHandle(cell.style, type, cell, ri, ci);
         return {
             "state": true,
@@ -135,7 +135,7 @@ function each() {
 }
 
 // 第五个参数cb 在row setdata的时候 才会执行
-export function loadData(viewRange, load = false, read = false, cb = (ri, ci) => {}) {
+export function loadData(viewRange, load = false, read = false) {
     let {data} = this;
     let workbook = [];
     workbook.Sheets = {};

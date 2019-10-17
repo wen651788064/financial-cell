@@ -8,6 +8,7 @@ import {isSheetVale} from "./operator";
 import Recast from "./recast";
 import {loadData} from "../component/table";
 import {dateDiff} from "../component/date";
+import WorkBook from "./workbook_cacl_proxy";
 
 // 2019-10-11 cell里新增一个字段   recast
 /* 目前数据结构 =>
@@ -21,6 +22,7 @@ import {dateDiff} from "../component/date";
 class Rows {
     constructor({len, height}) {
         this._ = {};
+        this.workbook = new WorkBook();
         this.len = len;
         // default row height
         this.height = height;
@@ -119,6 +121,8 @@ class Rows {
 
     // what: all | text | format
     setCell(ri, ci, cell, what = 'all') {
+        console.log("change......");
+        this.workbook.change(ri, ci, cell);
         const row = this.getOrNew(ri);
         if (what === 'all') {
             row.cells[ci] = cell;
@@ -136,10 +140,13 @@ class Rows {
         }
     }
 
-
-    setCellText(ri, ci, text, proxy = "", name = "") {
+    setCellText(ri, ci, {text, style}, proxy = "", name = "", what = 'all') {
+        this.workbook.change(ri, ci, cell);
         const cell = this.getCellOrNew(ri, ci);
         cell.formulas = text;
+        if(what === 'style') {
+            cell.style = style;
+        }
         cell.text = text;  // todo 自定义公式： text 为公式计算结果, formulas 为公式
         // this.recast(cell);
         if (typeof proxy != "string") {
@@ -148,6 +155,7 @@ class Rows {
     }
 
     setCellAll(ri, ci, text, formulas = "") {
+        this.workbook.change(ri, ci, cell);
         const cell = this.getCellOrNew(ri, ci);
         cell.formulas = formulas == "" ? cell.formulas : formulas;
         cell.text = text;
@@ -830,17 +838,15 @@ class Rows {
                 delete d.len;
             }
             this._ = d;
+
             if (sheet !== '') {
                 const {table, data} = sheet;
                 const {proxy} = table;
+                this.workbook.init(this._, data, proxy, table);
                 let viewRange = data.viewRange();
-                let {workbook2} = loadData.call(table, viewRange, false, true, (ri, ci, itext, data) => {
-                    const {isValid, diff} = dateDiff(itext);
-                    if (isValid) {
-                        data.dateInput(itext, itext, diff, ri, ci);
-                    }
-                });
-                proxy.setOldData(workbook2);
+
+                let workbook_no_formula = this.workbook.getWorkbook(2);
+                proxy.setOldData(workbook_no_formula);
             }
 
             // this.each((ri, row) => {

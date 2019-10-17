@@ -732,11 +732,11 @@ function colResizerFinished(cRect, distance) {
     editorSetOffset.call(this);
 }
 
-function selectorCellText(ri, ci, text, state, proxy = "") {
+export function selectorCellText(ri, ci, {text, style}, state, proxy = "") {
     if (ri == -1 || ci == -1) {
         return false;
     }
-    if(!text || text[0] !== '=') {
+    if(state !== 'style' && (!text || text[0] !== '=')) {
         return false;
     }
 
@@ -770,7 +770,7 @@ function selectorCellText(ri, ci, text, state, proxy = "") {
         return true;
     }
 
-    data.setCellText(ri, ci, text, state, proxy);
+    data.setCellText(ri, ci, {text, style}, state, proxy);
     editor.setRiCi(-1, -1);
     return false;
 }
@@ -874,7 +874,7 @@ function afterSelector(editor) {
         let inputText = editor.editorText.getText();
         let {selector} = this;
         selector.indexes = [ri, ci];
-        let error = selectorCellText.call(this, ri, ci, inputText, 'input', this.table.proxy);
+        let error = selectorCellText.call(this, ri, ci, {text: inputText}, 'input', this.table.proxy);
         return error;
     }
     return false;
@@ -1034,7 +1034,7 @@ function sheetInitEvents() {
                     let {  ri, ci} = editor;
                     let inputText = editor.editorText.getText();
                     if (ri !== -1 && ci !== -1 && inputText[0] === "=") {
-                        let error = selectorCellText.call(this, ri, ci, inputText, 'input', this.table.proxy);
+                        let error = selectorCellText.call(this, ri, ci, {text: inputText}, 'input', this.table.proxy);
 
                         if (error) {
                             return;
