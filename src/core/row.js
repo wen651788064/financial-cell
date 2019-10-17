@@ -853,6 +853,7 @@ class Rows {
                 const {proxy} = table;
                 let workbook = proxy.outCalc(this._, this.workbook.getWorkbook(2),  data.name);
                 this.workbook.setWorkBook(2, workbook);
+                proxy.setOldData(workbook);
             } else if (sheet !== '') {
                 const {table, data} = sheet;
                 const {proxy} = table;
