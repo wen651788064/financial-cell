@@ -1,4 +1,4 @@
-import {contain, division, getSheetVale, isSheetVale} from "../core/operator";
+import {contain, deepCopy, division, getSheetVale, isSheetVale} from "../core/operator";
 import {expr2xy, xy2expr} from "../core/alphabet";
 // import Worker from 'worker-loader!../external/Worker.js';
 import {filterFormula} from "../config";
@@ -7,6 +7,8 @@ import {find} from "../core/helper";
 import {formulas} from "../core/formula";
 import {specialWebsiteValue} from "./special_formula_process";
 import {textReplace} from "./context_process";
+
+
 
 export default class CellProxy {
     constructor(refRow, table) {
@@ -54,16 +56,7 @@ export default class CellProxy {
     }
 
     deepCopy(obj) {
-        var result = Array.isArray(obj) ? [] : {};
-        for (var key in obj) {
-            if (obj.hasOwnProperty(key)) {
-                if (typeof obj[key] === 'object' && obj[key] !== null) {
-                    result[key] = this.deepCopy(obj[key]);
-                } else {
-                    result[key] = obj[key];
-                }
-            }
-        }
+        let result = deepCopy(obj);
         return result;
     }
 

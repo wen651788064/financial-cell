@@ -21,7 +21,7 @@ import {clearSelectors, editingSelectors, lockCells, makeSelector} from "../comp
 import {deleteImg, hideDirectionArr, mountPaste} from "../event/paste";
 import {getChooseImg, mountCopy} from "../event/copy";
 import Website from "../component/website";
-import {cutStr, cuttingByPos, haveManyFunc, isLegal, positionAngle} from "../core/operator";
+import {cutStr, cuttingByPos, isLegal, positionAngle} from "../core/operator";
 import {moveCell} from "../event/move";
 import CellRange from "../core/cell_range";
 import {orientation} from "../core/helper";
@@ -29,7 +29,6 @@ import {expr2xy} from "../core/alphabet";
 import ErrorPopUp from "./error_pop_up";
 import EditorProxy from "./editor_proxy";
 import Recast from "../core/recast";
-import {dateDiff} from "./date";
 
 function scrollbarMove() {
     const {
@@ -314,7 +313,7 @@ function toolbarChangePaintformatPaste() {
     }
 }
 
-function dropDown( e, isAutofillEl, selector, data, verticalScrollbar, rows, evt) {
+function dropDown(e, isAutofillEl, selector, data, verticalScrollbar, rows, evt) {
     this.selector.setBoxinner("none");
 
     this.container.css('pointer-events', 'none');
@@ -525,7 +524,7 @@ function editorSetOffset(show = true, cri = -1, cci = -1) {
 
     editor.setOffset(sOffset, sPosition, show);
     setTimeout(() => {
-        editor.setCursorPos( editor.editorText.getText().length);
+        editor.setCursorPos(editor.editorText.getText().length);
     });
 }
 
@@ -732,18 +731,8 @@ function colResizerFinished(cRect, distance) {
     editorSetOffset.call(this);
 }
 
-export function selectorCellText(ri, ci, {text, style}, state, proxy = "") {
-    if (ri == -1 || ci == -1) {
-        return false;
-    }
-    if(state !== 'style' && (!text || text[0] !== '=')) {
-        return false;
-    }
-
-    const {data, table, editor, errorPopUp} = this;
-    // text = haveManyFunc(text);
-    // let rb = text.match(/\(/g) || [];
-    // let lb = text.match(/\)/g) || [];
+function errorPop(text) {
+    const {errorPopUp} = this;
     let enter = false;
     let msg = "";
     try {
@@ -755,8 +744,8 @@ export function selectorCellText(ri, ci, {text, style}, state, proxy = "") {
         enter = true;
     }
 
-    if(enter == true) {
-        if(isLegal(text) == false) {
+    if (enter == true) {
+        if (isLegal(text) == false) {
             msg = '缺少左括号或右括号';
             enter = true;
         }
@@ -764,9 +753,29 @@ export function selectorCellText(ri, ci, {text, style}, state, proxy = "") {
 
     if (enter && !errorPopUp.open) {
         errorPopUp.show(msg);
-        return true;
+        return {
+            "state": true,
+            "msg": msg
+        };
     } else if (errorPopUp.open) {
         errorPopUp.hide();
+        return true;
+    }
+    return {
+        "state": false,
+        "msg": msg
+    };
+}
+
+export function selectorCellText(ri, ci, {text, style}, state, proxy = "") {
+    if (ri == -1 || ci == -1) {
+        return false;
+    }
+    if (state !== 'style' && (!text || text[0] !== '=')) {
+        return false;
+    }
+    const {data,  editor, } = this;
+    if (state !== 'style' && errorPop.call(this, state).state === true) {
         return true;
     }
 
@@ -870,7 +879,7 @@ function sortFilterChange(ci, order, operator, value) {
 
 function afterSelector(editor) {
     if (editor.getLock() || editor.state === 2) {
-        let {  ri, ci} = editor;
+        let {ri, ci} = editor;
         let inputText = editor.editorText.getText();
         let {selector} = this;
         selector.indexes = [ri, ci];
@@ -982,7 +991,7 @@ function sheetInitEvents() {
                                     lockCells.call(this, evt, _selector);
                                     this.mergeSelector = true;
                                 } else {
-                                    let {  pos} = editor;
+                                    let {pos} = editor;
                                     let inputText = editor.editorText.getText();
                                     for (let i = 0; i < this.selectors.length; i++) {
                                         let selector = this.selectors[i];
@@ -1031,7 +1040,7 @@ function sheetInitEvents() {
                 }
 
                 if (!editor.getLock() && !editor.isCors) {
-                    let {  ri, ci} = editor;
+                    let {ri, ci} = editor;
                     let inputText = editor.editorText.getText();
                     if (ri !== -1 && ci !== -1 && inputText[0] === "=") {
                         let error = selectorCellText.call(this, ri, ci, {text: inputText}, 'input', this.table.proxy);
@@ -1348,7 +1357,7 @@ function sheetInitEvents() {
                     break;
                 case 13: // enter
                     // lockCells
-                    this.editorProxy.change(editor.ri, editor.ci,editor.editorText.getText(), data.rows, data);
+                    this.editorProxy.change(editor.ri, editor.ci, editor.editorText.getText(), data.rows, data);
                     let error2 = afterSelector.call(this, editor);
                     if (error2) {
                         return;

@@ -4,10 +4,8 @@ import {absoluteType, changeFormula, cutStr, isAbsoluteValue, value2absolute} fr
 import {expr2xy} from "../core/alphabet";
 import CellRange from "./cell_range";
 import dayjs from 'dayjs'
-import {isSheetVale} from "./operator";
+import {deepCopy, isSheetVale} from "./operator";
 import Recast from "./recast";
-import {loadData} from "../component/table";
-import {dateDiff} from "../component/date";
 import WorkBook from "./workbook_cacl_proxy";
 
 // 2019-10-11 cell里新增一个字段   recast
@@ -121,8 +119,6 @@ class Rows {
 
     // what: all | text | format
     setCell(ri, ci, cell, what = 'all') {
-        console.log("change......");
-        this.workbook.change(ri, ci, cell);
         const row = this.getOrNew(ri);
         if (what === 'all') {
             row.cells[ci] = cell;
@@ -138,13 +134,14 @@ class Rows {
             row.cells[ci].style = cell.style;
             row.cells[ci].diff = cell.diff;
         }
+
+        this.workbook.change(ri, ci, row.cells[ci], deepCopy(row.cells[ci]));
     }
 
     setCellText(ri, ci, {text, style}, proxy = "", name = "", what = 'all') {
-        this.workbook.change(ri, ci, cell);
         const cell = this.getCellOrNew(ri, ci);
         cell.formulas = text;
-        if(what === 'style') {
+        if (what === 'style') {
             cell.style = style;
         }
         cell.text = text;  // todo 自定义公式： text 为公式计算结果, formulas 为公式
@@ -152,13 +149,14 @@ class Rows {
         if (typeof proxy != "string") {
             proxy.setCell(name, xy2expr(ci, ri));
         }
+        this.workbook.change(ri, ci, cell, deepCopy(cell));
     }
 
     setCellAll(ri, ci, text, formulas = "") {
-        this.workbook.change(ri, ci, cell);
         const cell = this.getCellOrNew(ri, ci);
         cell.formulas = formulas == "" ? cell.formulas : formulas;
         cell.text = text;
+        this.workbook.change(ri, ci, cell, deepCopy(cell));
     }
 
 

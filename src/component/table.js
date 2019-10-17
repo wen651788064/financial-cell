@@ -146,74 +146,76 @@ export function loadData(viewRange, load = false, read = false) {
     let enter = 0;
 
     console.time("loadData need time");
-    let {mri, mci} = this.data.rows.getMax();
-    viewRange.eachGivenRange((ri, ci, eri, eci,) => {
-        let cell2 = this.proxy.deepCopy(data.getCell(ri, ci));
-        // cb(ri, ci, cell2.text, data);
-        let cell = data.getCell(ri, ci);
-        let expr = xy2expr(ci, ri);
-        if (data.isEmpty(cell) === false) {
-            let {state, text} = specialHandle.call(this, 'date', cell, ri, ci);
-            cell.text = text;
-            cell.text = data.getRegularText(cell.text);
-
-            if (data.backEndCalc(cell.text)) {
-                workbook.Sheets[data.name][expr] = {v: "", f: ""};
-            } else {
-                if (data.isNeedCalc(cell)) {
-                    let {factory} = this;
-                    factory.push(cell.formulas);
-                    enter = factory.lock;
-                    enter = enter ? 1 : 0;
-                }
-
-                workbook_no_formula.Sheets[data.name][expr] = {
-                    v: cell.text,
-                    f: !cell.formulas ? cell.text : cell.formulas,
-                    z: true
-                };
-
-                if (data.textIsFormula(cell.text)) {
-                    if (isNaN(cell.text)) {
-                        cell.text = toUpperCase(cell.text); // 为什么要.toUpperCase() 呢？ => =a1 需要变成=A1
-                    }
-
-                    if (load) {
-                        workbook.Sheets[data.name][expr] = {
-                            v: '-',
-                            f: '',
-                            z: true
-                        };
-                    } else {
-                        workbook.Sheets[data.name][expr] = {
-                            v: '',
-                            f: cell.text,
-                            z: true,
-                        };
-                    }
-                } else {
-                    if (!isNaN(textReplaceAndToUpperCase(cell.text))) {
-                        workbook.Sheets[data.name][expr] = {
-                            v: textReplaceQM(cell.text, true),
-                            z: true
-                        };
-                    } else {
-                        workbook.Sheets[data.name][expr] = {
-                            v: textReplaceQM(cell.text),
-                            z: true
-                        };
-                    }
-                }
-            }
-            if(state) {
-                data.setCellWithFormulas(ri, ci, cell2.text, cell.formulas);
-            }
-
-        }
-        else {
-            workbook.Sheets[data.name][expr] = {v: 0, f: 0, z: false};
-        }
-    }, mri, mci);
+    // let {mri, mci} = this.data.rows.getMax();
+    workbook = this.data.rows.workbook.workbook === "" ? workbook : this.data.rows.workbook.workbook;
+    workbook_no_formula = this.data.rows.workbook.workbook_no_formula === "" ? workbook : this.data.rows.workbook.workbook;
+    // viewRange.eachGivenRange((ri, ci, eri, eci,) => {
+    //     let cell2 = this.proxy.deepCopy(data.getCell(ri, ci));
+    //     // cb(ri, ci, cell2.text, data);
+    //     let cell = data.getCell(ri, ci);
+    //     let expr = xy2expr(ci, ri);
+    //     if (data.isEmpty(cell) === false) {
+    //         let {state, text} = specialHandle.call(this, 'date', cell, ri, ci);
+    //         cell.text = text;
+    //         cell.text = data.getRegularText(cell.text);
+    //
+    //         if (data.backEndCalc(cell.text)) {
+    //             workbook.Sheets[data.name][expr] = {v: "", f: ""};
+    //         } else {
+    //             if (data.isNeedCalc(cell)) {
+    //                 let {factory} = this;
+    //                 factory.push(cell.formulas);
+    //                 enter = factory.lock;
+    //                 enter = enter ? 1 : 0;
+    //             }
+    //
+    //             workbook_no_formula.Sheets[data.name][expr] = {
+    //                 v: cell.text,
+    //                 f: !cell.formulas ? cell.text : cell.formulas,
+    //                 z: true
+    //             };
+    //
+    //             if (data.textIsFormula(cell.text)) {
+    //                 if (isNaN(cell.text)) {
+    //                     cell.text = toUpperCase(cell.text); // 为什么要.toUpperCase() 呢？ => =a1 需要变成=A1
+    //                 }
+    //
+    //                 if (load) {
+    //                     workbook.Sheets[data.name][expr] = {
+    //                         v: '-',
+    //                         f: '',
+    //                         z: true
+    //                     };
+    //                 } else {
+    //                     workbook.Sheets[data.name][expr] = {
+    //                         v: '',
+    //                         f: cell.text,
+    //                         z: true,
+    //                     };
+    //                 }
+    //             } else {
+    //                 if (!isNaN(textReplaceAndToUpperCase(cell.text))) {
+    //                     workbook.Sheets[data.name][expr] = {
+    //                         v: textReplaceQM(cell.text, true),
+    //                         z: true
+    //                     };
+    //                 } else {
+    //                     workbook.Sheets[data.name][expr] = {
+    //                         v: textReplaceQM(cell.text),
+    //                         z: true
+    //                     };
+    //                 }
+    //             }
+    //         }
+    //         if(state) {
+    //             data.setCellWithFormulas(ri, ci, cell2.text, cell.formulas);
+    //         }
+    //
+    //     }
+    //     else {
+    //         workbook.Sheets[data.name][expr] = {v: 0, f: 0, z: false};
+    //     }
+    // }, mri, mci);
     console.timeEnd("loadData need time");
 
     return {
