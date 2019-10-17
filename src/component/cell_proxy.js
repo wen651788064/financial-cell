@@ -519,7 +519,10 @@ export default class CellProxy {
     outCalc(_, workbook, name) {
         Object.keys(this.lastResult).forEach(i => {
             let [ci, ri] = expr2xy(i);
-            workbook.Sheets[name][i] = _[ri]['cells'][ci];
+            workbook.Sheets[name][i] = {
+                v: _[ri]['cells'][ci].text || "",
+                f: _[ri]['cells'][ci].formulas || ""
+            };
         });
 
         return workbook;
