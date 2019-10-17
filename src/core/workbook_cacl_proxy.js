@@ -36,9 +36,9 @@ export default class WorkBook {
     }
 
     setWorkBook(type, workbook) {
-        if(type === 1) {
+        if (type === 1) {
             this.workbook = workbook;
-        } else if(type === 2) {
+        } else if (type === 2) {
             this.workbook_no_formula = workbook;
         }
     }
@@ -70,6 +70,10 @@ export default class WorkBook {
             if (data.backEndCalc(cell.text)) {
                 this.workbook.Sheets[data.name][expr] = {v: "", f: ""};
             } else {
+                if (data.isNeedCalc(cell)) {
+                    let {factory} = table;
+                    factory.push(cell.formulas);
+                }
                 this.workbook_no_formula.Sheets[data.name][expr] = {
                     v: cell.text,
                     f: !cell.formulas ? cell.text : cell.formulas,
