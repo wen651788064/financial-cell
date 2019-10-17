@@ -61,21 +61,23 @@ export default class WorkBook {
 
     deleteWorkbook(ri, ci, what = 'all') {
         let expr = xy2expr(ci, ri);
-        if (what === 'all') {
-            delete this.workbook.Sheets[this.name][expr];
-            delete this.workbook_no_formula.Sheets[this.name][expr];
-        } else if (what === 'text') {
-            let cell = this.workbook.Sheets[this.name][expr];
-            let cell2 = this.workbook.Sheets[this.name][expr];
-            if (cell.text) {
-                delete cell.v;
-                delete cell2.v;
-            }
-            if (cell.formulas) {
-                delete cell.f;
-                delete cell2.f;
-            }
-        }
+        delete this.workbook.Sheets[this.name][expr];
+        delete this.workbook_no_formula.Sheets[this.name][expr];
+        // if (what === 'all') {
+        //     delete this.workbook.Sheets[this.name][expr];
+        //     delete this.workbook_no_formula.Sheets[this.name][expr];
+        // } else if (what === 'text') {
+        //     let cell = this.workbook.Sheets[this.name][expr];
+        //     let cell2 = this.workbook.Sheets[this.name][expr];
+        //     if (cell.text) {
+        //         delete cell.v;
+        //         delete cell2.v;
+        //     }
+        //     if (cell.formulas) {
+        //         delete cell.f;
+        //         delete cell2.f;
+        //     }
+        // }
     }
 
     change(ri, ci, cell, cell2) {
