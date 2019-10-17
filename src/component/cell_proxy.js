@@ -4,10 +4,8 @@ import {expr2xy, xy2expr} from "../core/alphabet";
 import {filterFormula} from "../config";
 import {toUpperCase} from "./table";
 import {find} from "../core/helper";
-import {formulas} from "../core/formula";
 import {specialWebsiteValue} from "./special_formula_process";
 import {textReplace} from "./context_process";
-
 
 
 export default class CellProxy {
@@ -155,15 +153,15 @@ export default class CellProxy {
 
                         for (let f = 0; f < targetArr.length; f++) {
                             let n = targetArr[f];
-                                if (contain(division(value, filterFormula, true), n)) {
-                                    workbook.Sheets[name][k] = data[i][j][k];
-                                    enter = true;
+                            if (contain(division(value, filterFormula, true), n)) {
+                                workbook.Sheets[name][k] = data[i][j][k];
+                                enter = true;
 
-                                    if (tileArr.indexOf(k) == -1) {
-                                        arr.push(k);
-                                        tileArr.push(k);
-                                    }
+                                if (tileArr.indexOf(k) == -1) {
+                                    arr.push(k);
+                                    tileArr.push(k);
                                 }
+                            }
                         }
                     })
                 })
@@ -296,7 +294,7 @@ export default class CellProxy {
             Object.keys(data[i]).forEach(j => {
                 Object.keys(data[i][j]).forEach(k => {
                     const value = this.preProcess(data[i][j][k].v, data[i][j][k].f);
-                    if(!isNaN(value)) {
+                    if (!isNaN(value)) {
                         data[i][j][k].v = value * 1;
                     } else {
                         data[i][j][k].v = this.preProcess(value);
@@ -307,13 +305,13 @@ export default class CellProxy {
         });
 
         Object.keys(workbook.Sheets[name]).forEach(i => {
-            if(!isNaN(workbook.Sheets[name][i].v)) {
+            if (!isNaN(workbook.Sheets[name][i].v)) {
                 workbook.Sheets[name][i].v = workbook.Sheets[name][i].v * 1;
             }
             data.Sheets[name][i] = workbook.Sheets[name][i];
 
-            if (workbook.Sheets[name][i].f && workbook.Sheets[name][i].f[0] === '=' ) {
-                if(find(filterFormula, workbook.Sheets[name][i].f) && workbook.Sheets[name][i].v !== "") {
+            if (workbook.Sheets[name][i].f && workbook.Sheets[name][i].f[0] === '=') {
+                if (find(filterFormula, workbook.Sheets[name][i].f) && workbook.Sheets[name][i].v !== "") {
                     data.Sheets[name][i].f = "";
                 } else {
                     data.Sheets[name][i].v = "-";
@@ -332,7 +330,7 @@ export default class CellProxy {
     // unpack 应该只对改变的单元格进行重新赋值
     unpack(cells, _, tileArr) {
         let data = _;
-        for(let item = 0; item < tileArr.length; item++) {
+        for (let item = 0; item < tileArr.length; item++) {
             let i = tileArr[item];
             let [ci, ri] = expr2xy(i);
 
@@ -367,22 +365,23 @@ export default class CellProxy {
             }
 
             let args = specialWebsiteValue(cells[i].v + "", cells[i].f + "");
-            if(args.state) {
-                cells[i].v =  args.text;
+            if (args.state) {
+                cells[i].v = args.text;
             }
             let {state} = this.table.specialHandle('date', this.deepCopy(data[ri]['cells'][ci]), ri, ci);
             cells[i].v = state ? data[ri]['cells'][ci].text : cells[i].v;
             cells[i].f = state ? data[ri]['cells'][ci].text : cells[i].f;
 
-            if (cells[i].v + "" === '0' && cells[i].f && cells[i].f[0] && cells[i].f[0] === '=') {
+            if (cells[i].v + "" === '' && cells[i].f && cells[i].f[0] && cells[i].f[0] === '=') {
                 data[ri]['cells'][ci].text = cells[i].v + "";
                 data[ri]['cells'][ci].formulas = cells[i].f + "";
             } else if (typeof cells[i].v === 'boolean') {
                 data[ri]['cells'][ci].text = cells[i].v + "";
                 data[ri]['cells'][ci].formulas = cells[i].f + "";
             } else {
-                data[ri]['cells'][ci].text = cells[i].v;
-                data[ri]['cells'][ci].formulas = cells[i].f;
+                // 把 int也转成 string 原因是 autofilter
+                data[ri]['cells'][ci].text = cells[i].v + "";
+                data[ri]['cells'][ci].formulas = cells[i].f + "";
             }
         }
         // Object.keys(cells).forEach(i => {
@@ -462,7 +461,7 @@ export default class CellProxy {
     }
 
     setOldData(newData) {
-        if(newData === "") {
+        if (newData === "") {
             this.oldData = "";
             return;
         }
@@ -506,11 +505,11 @@ export default class CellProxy {
         let enter = true;
         this.lastResultTimer = setTimeout(() => {
             Object.keys(this.lastResult).forEach(i => {
-                if(enter && this.lastResult[i].v === "-") {
+                if (enter && this.lastResult[i].v === "-") {
                     enter = false;
                 }
             });
-            if(enter) {
+            if (enter) {
                 this.lastResult = "";
             }
         }, 5000);
@@ -605,7 +604,7 @@ export default class CellProxy {
                                 if (d[0] === '=' && (p === "" || this.isNull(p) || this.isEqual(d, p) || this.diff === 305)) {
                                     workbook.Sheets[name][expr] = {
                                         v: '',
-                                        f:  textReplace(d)
+                                        f: textReplace(d)
                                     };
                                 } else if (newCell) {
                                     let p = newCell.v;
@@ -639,7 +638,7 @@ export default class CellProxy {
         }
         this.diff = 402;
         this.oldData = this.deepCopy(newData);
-        if(this.lastResult !== "") {
+        if (this.lastResult !== "") {
             console.log("548")
             this.lastResult = Object.assign(this.lastResult, workbook.Sheets[name]);
         } else {

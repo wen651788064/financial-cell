@@ -563,6 +563,7 @@ class Rows {
                                         const nri = ii + (i - sri);
                                         const nci = jj + (j - sci);
                                         const ncell = helper.cloneDeep(this._[i].cells[j]);
+                                        console.log(this._[i].cells[j],ncell);
                                         // ncell.text
                                         if (autofill && ncell && ncell.text && ncell.text.length > 0 && isCopy) {
                                             let {text, formulas} = ncell;
