@@ -835,6 +835,10 @@ class Rows {
         }
     }
 
+    setWorkBook(type, workbook) {
+        this.workbook.setWorkBook(type, workbook);
+    }
+
     setData(d, sheet = "") {
         try {
             if (d.len) {
@@ -843,6 +847,7 @@ class Rows {
             }
             this._ = d;
 
+            // 为什么要判断sheet = '' ?
             if (sheet !== '') {
                 const {table, data} = sheet;
                 const {proxy} = table;

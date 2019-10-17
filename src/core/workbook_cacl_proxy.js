@@ -1,6 +1,7 @@
 import {xy2expr} from "./alphabet";
 import {textReplaceAndToUpperCase, textReplaceQM} from "../component/context_process";
 import {toUpperCase} from "../component/table";
+import {deepCopy} from "./operator";
 
 export default class WorkBook {
     constructor() {
@@ -34,12 +35,26 @@ export default class WorkBook {
         }, mri, mci);
     }
 
+    setWorkBook(type, workbook) {
+        if(type === 1) {
+            this.workbook = workbook;
+        } else if(type === 2) {
+            this.workbook_no_formula = workbook;
+        }
+    }
+
     getWorkbook(type) {
         if (type === 1) {
-            return this.workbook;
+            if (this.workbook === "") {
+                return "";
+            }
+            return deepCopy(this.workbook);
         }
         if (type === 2) {
-            return this.workbook_no_formula;
+            if (this.workbook_no_formula === "") {
+                return "";
+            }
+            return deepCopy(this.workbook_no_formula);
         }
     }
 

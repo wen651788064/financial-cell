@@ -10,6 +10,7 @@ import CellProxy from "./cell_proxy";
 import {look} from "../config";
 import {textReplaceAndToUpperCase, textReplaceQM} from "./context_process";
 import {dateDiff} from "./date";
+import {deepCopy} from "../core/operator";
 // import Worker from 'worker-loader!../external/Worker.js';
 
 var formulajs = require('formulajs');
@@ -147,8 +148,10 @@ export function loadData(viewRange, load = false, read = false) {
 
     console.time("loadData need time");
     // let {mri, mci} = this.data.rows.getMax();
-    workbook = this.data.rows.workbook.workbook === "" ? workbook : this.data.rows.workbook.workbook;
-    workbook_no_formula = this.data.rows.workbook.workbook_no_formula === "" ? workbook : this.data.rows.workbook.workbook;
+    let wb = data.rows.workbook.getWorkbook(1);
+    let wnf = data.rows.workbook.getWorkbook(2);
+    workbook = wb === "" ? workbook : deepCopy(wb);
+    workbook_no_formula = wnf === "" ? workbook : deepCopy(wnf);
     // viewRange.eachGivenRange((ri, ci, eri, eci,) => {
     //     let cell2 = this.proxy.deepCopy(data.getCell(ri, ci));
     //     // cb(ri, ci, cell2.text, data);
@@ -290,6 +293,7 @@ async function parseCell(viewRange, state = false, src = '', state2 = true) {
             let {factory} = this;
             factory.data = workbook;
             workbook = proxy.concat(data.name, workbook);
+            data.rows.setWorkBook(2, workbook);
             let cells = proxy.unpack(workbook.Sheets[data.name], data.rows._);
             data.rows.setData(cells);
             data.change(data.getData());
