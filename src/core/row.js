@@ -848,7 +848,12 @@ class Rows {
             this._ = d;
 
             // 为什么要判断sheet = '' ?
-            if (sheet !== '') {
+            if(sheet === 'out') {
+                const {table, data} = sheet;
+                const {proxy} = table;
+                let workbook = proxy.outCalc(this._, this.workbook.getWorkbook(2));
+                this.workbook.setWorkBook(2, workbook);
+            } else if (sheet !== '') {
                 const {table, data} = sheet;
                 const {proxy} = table;
                 this.workbook.init(this._, data, proxy, table);
@@ -856,11 +861,6 @@ class Rows {
 
                 let workbook_no_formula = this.workbook.getWorkbook(2);
                 proxy.setOldData(workbook_no_formula);
-            } else if(sheet === 'out') {
-                const {table, data} = sheet;
-                const {proxy} = table;
-                let workbook = proxy.outCalc(this._, this.workbook.getWorkbook(2));
-                this.workbook.setWorkBook(2, workbook);
             }
 
             // this.each((ri, row) => {
