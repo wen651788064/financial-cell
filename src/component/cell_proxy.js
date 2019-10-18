@@ -368,9 +368,14 @@ export default class CellProxy {
             if (args.state) {
                 cells[i].v = args.text;
             }
-            let {state} = this.table.specialHandle('date', this.deepCopy(data[ri]['cells'][ci]), ri, ci);
+
+            let copyCell = this.deepCopy(data[ri]['cells'][ci]);
+            copyCell.text = cells[i].v;
+            copyCell.formulas = cells[i].f;
+
+            let {state } = this.table.tryParseToNum('change', copyCell, ri, ci);
             cells[i].v = state ? data[ri]['cells'][ci].text : cells[i].v;
-            cells[i].f = state ? data[ri]['cells'][ci].text : cells[i].f;
+            cells[i].f = state ? data[ri]['cells'][ci].formulas : cells[i].f;
 
             if (cells[i].v + "" === '' && cells[i].f && cells[i].f[0] && cells[i].f[0] === '=') {
                 data[ri]['cells'][ci].text = cells[i].v + "";

@@ -26,6 +26,7 @@ class Spreadsheet {
         //
         // worker.addEventListener("message", function (event) {});
         this.sheet = new Sheet(rootEl, this.data);
+        this.data.sheet = this.sheet;
         this.plugIn = new PlugIn(rootEl, this.sheet, this.data);
     }
 

@@ -29,6 +29,7 @@
     "build-locale": "webpack --config build/webpack.locale.js",
     "lint": "./node_modules/eslint/bin/eslint.js src",
     "test": "nyc ./node_modules/mocha/bin/mocha --require @babel/register test/*",
+    "format_test": "nyc ./node_modules/mocha/bin/mocha --require @babel/register test/core/format_test.js",
     "selectors_test": "nyc ./node_modules/mocha/bin/mocha --require @babel/register test/core/selectors_test.js",
     "coverage": "nyc report --reporter=text-lcov > coverage.lcov && codecov -t 31ecdb12-8ecb-46f7-a486-65c2516307dd"
   },

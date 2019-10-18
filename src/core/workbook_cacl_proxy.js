@@ -80,19 +80,19 @@ export default class WorkBook {
         // }
     }
 
-    change(ri, ci, cell, cell2) {
+    change(ri, ci, cell, deep_cell, what = 'input') {
         let expr = xy2expr(ci, ri);
         let {data, proxy, table} = this;
 
         if (data.isEmpty(cell) === false) {
-            let {state, text} = table.specialHandle('date', cell, ri, ci);
+            let {state, text} = table.tryParseToNum(what, cell, ri, ci);
             cell.text = text;
-            cell.text = data.getRegularText(cell.text);
+            cell.text = data.toString(cell.text);
 
-            if (data.backEndCalc(cell.text)) {
+            if (data.isBackEndFunc(cell.text)) {
                 this.workbook.Sheets[data.name][expr] = {v: "", f: ""};
             } else {
-                if (data.isNeedCalc(cell)) {
+                if (data.isReferOtherSheet(cell)) {
                     let {factory} = table;
                     factory.push(cell.formulas);
                 }
@@ -102,7 +102,7 @@ export default class WorkBook {
                     z: true
                 };
 
-                if (data.textIsFormula(cell.text)) {
+                if (data.isFormula(cell.text)) {
                     if (isNaN(cell.text)) {
                         cell.text = toUpperCase(cell.text); // 为什么要.toUpperCase() 呢？ => =a1 需要变成=A1
                     }
@@ -127,9 +127,10 @@ export default class WorkBook {
                 }
             }
             if (state) {
-                data.setCellWithFormulas(ri, ci, cell2.text, cell.formulas, 'date');
+                data.setCellWithFormulas(ri, ci, deep_cell.text, cell.formulas, 'date');
             }
         } else {
+            delete this.workbook_no_formula.Sheets[data.name][expr];
             this.workbook.Sheets[data.name][expr] = {v: 0, f: 0, z: false};
         }
     }

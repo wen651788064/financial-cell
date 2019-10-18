@@ -84,11 +84,11 @@ class Rows {
         return row.cells[ci];
     }
 
-    getRegularText(text) {
+    toString(text) {
         return text + "";
     }
 
-    backEndCalc(text) {
+    isBackEndFunc(text) {
         if (text.indexOf("MD.RTD") != -1) {
             return true;
         }
@@ -96,7 +96,7 @@ class Rows {
         return false;
     }
 
-    isNeedCalc(cell, state = false) {
+    isReferOtherSheet(cell, state = false) {
         if (cell.formulas && cell.formulas[0] == "=" && (state || isSheetVale(cell.formulas))) {
             return true;
         }
@@ -110,7 +110,7 @@ class Rows {
         return true;
     }
 
-    textIsFormula(text) {
+    isFormula(text) {
         if (text && text[0] === "=") {
             return true;
         }
@@ -133,17 +133,29 @@ class Rows {
             if (cell.merge) row.cells[ci].merge = cell.merge;
             this.workbook.change(ri, ci, row.cells[ci], deepCopy(row.cells[ci]));
         } else if (what === 'date') {
-            this.setCellAll(ri, ci, cell.text, cell.formula, what);
+            // row.cells[ci] = {};
+            if(!this.isFormula(cell.formulas)) {
+                row.cells[ci].formulas = cell.text;
+            }
+            row.cells[ci].text = cell.text;
             row.cells[ci].style = cell.style;
-            row.cells[ci].diff = cell.diff;
+            row.cells[ci].to_calc_num = cell.to_calc_num;
+        } else if(what === 'normal') {
+            // row.cells[ci] = {};
+            if(!this.isFormula(cell.formulas)) {
+                row.cells[ci].formulas = cell.text;
+            }
+            row.cells[ci].text = cell.text;
+            row.cells[ci].style = cell.style;
         }
     }
 
     setCellText(ri, ci, {text, style}, proxy = "", name = "", what = 'all') {
         const cell = this.getCellOrNew(ri, ci);
-        cell.formulas = text;
         if (what === 'style') {
             cell.style = style;
+        } else {
+            cell.formulas = text;
         }
         cell.text = text;  // todo 自定义公式： text 为公式计算结果, formulas 为公式
         // this.recast(cell);
@@ -701,23 +713,30 @@ class Rows {
                     nci = dstCellRange.sci + (nci - srcCellRange.sci);
                 }
 
-                ncellmm[nri] = ncellmm[nri] || {cells: {}};
-                if (this._[ri].cells[ci].text != '' && this._[ri].cells[ci].formulas != '') {
-                    ncellmm[nri].cells[nci] = this._[ri].cells[ci];
-                }
-                if (this._[ri].cells[ci].style) {
-                    if (!ncellmm[nri].cells[nci]) {
-                        ncellmm[nri].cells[nci] = {
-                            "style": this._[ri].cells[ci].style,
-                        }
-                    } else {
-                        ncellmm[nri].cells[nci]['style'] = this._[ri].cells[ci].style;
+                if(ri * 1 !== nri || ci * 1 !== nci) {
+                    ncellmm[nri] = ncellmm[nri] || {cells: {}};
+                    if (this._[ri].cells[ci].text != '' && this._[ri].cells[ci].formulas != '') {
+                        this.setCell(nri, nci, this._[ri].cells[ci], 'all');
                     }
 
+                    if (this._[ri].cells[ci].style) {
+                        // if (!ncellmm[nri].cells[nci]) {
+                        //     ncellmm[nri].cells[nci] = {
+                        //         "style": this._[ri].cells[ci].style,
+                        //     }
+                        //     this.setCell(ri, ci, this._[ri].cells[ci], 'all');
+                        // } else {
+                        //     this.setCell(ri, ci, this._[ri].cells[ci], 'all');
+                        //     ncellmm[nri].cells[nci]['style'] = this._[ri].cells[ci].style;
+                        // }
+                        this.setCell(nri, nci, this._[ri].cells[ci], 'all');
+                    }
+
+                    this.setCell(ri, ci, {}, 'all');
                 }
             });
         });
-        this._ = ncellmm;
+        // this._ = ncellmm;
     }
 
     insert(sri, n = 1) {
@@ -824,7 +843,7 @@ class Rows {
 
     recast(cell) {
         try {
-            if (this.isNeedCalc(cell, true)) {
+            if (this.isReferOtherSheet(cell, true)) {
                 let recast = new Recast(cell.formulas);
                 recast.parse();
                 cell['recast'] = recast;
@@ -867,7 +886,7 @@ class Rows {
 
             // this.each((ri, row) => {
             //     this.eachCells(ri, (ci, cell) => {
-            //         if(this.isNeedCalc(cell, true)) {
+            //         if(this.isReferOtherSheet(cell, true)) {
             //             this.recast(cell);
             //         }
             //     });

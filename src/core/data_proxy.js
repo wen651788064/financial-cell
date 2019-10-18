@@ -20,6 +20,7 @@ import {mountImg} from "../event/paste";
 import {parseCell2} from "../component/table";
 import {RefRow} from "./ref_row";
 import {dateDiff} from "../component/date";
+import {deepCopy} from "./operator";
 // private methods
 /*
  * {
@@ -647,7 +648,9 @@ export default class DataProxy {
                         cstyle.format = value;
                         cell.text = cell.text.replace("¥", "");
                         cell.formulas = cell.formulas.replace("¥", "");
-                        cell.style = this.addStyle(cstyle);
+
+                        rows.setCellText(ri, ci, {text: cell.text, style: this.addStyle(cstyle)}, this.sheet.table.proxy, this.name, 'style');
+                        // this.rows.workbook.change(ri, ci, cell, deepCopy(cell), 'change');
                     } else if (property === 'font-bold' || property === 'font-italic'
                         || property === 'font-name' || property === 'font-size') {
                         const nfont = {};
@@ -831,17 +834,12 @@ export default class DataProxy {
         return false;
     }
 
-    dateInput(text, formula, diff, ri, ci) {
-        let cell = {
-            "formulas": formula,
-            "text": text,
-            "diff": diff,
-        };
+    dateInput(cell,  ri, ci, type) {
         let cstyle = {};
 
-        cstyle.format = 'date';
+        cstyle.format = type;
         cell.style = this.addStyle(cstyle);
-        this.rows.setCell(ri, ci, cell, 'date');
+        this.rows.setCell(ri, ci, cell, type);
     }
 
     merge() {
@@ -1076,20 +1074,20 @@ export default class DataProxy {
         return this.rows.isEmpty(cell);
     }
 
-    textIsFormula(text) {
-        return this.rows.textIsFormula(text);
+    isFormula(text) {
+        return this.rows.isFormula(text);
     }
 
-    getRegularText(text) {
-        return this.rows.getRegularText(text);
+    toString(text) {
+        return this.rows.toString(text);
     }
 
-    backEndCalc(text) {
-        return this.rows.backEndCalc(text);
+    isBackEndFunc(text) {
+        return this.rows.isBackEndFunc(text);
     }
 
-    isNeedCalc(cell) {
-        return this.rows.isNeedCalc(cell);
+    isReferOtherSheet(cell) {
+        return this.rows.isReferOtherSheet(cell);
     }
 
     getCellTextOrDefault(ri, ci) {
@@ -1107,11 +1105,8 @@ export default class DataProxy {
 
     getCellStyleHandle(index, type, cell, ri, ci) {
         let style = this.styles[index];
-        if (style.format === type && dateDiff(cell.text).isValid === false) {
-            delete cell['style'];
-            delete cell['diff'];
-            this.rows.setCell(ri, ci, cell, 'all');
-        } else if (style && style.format === type) {
+
+        if (style && style.format === type) {
             return true;
         }
         return false;

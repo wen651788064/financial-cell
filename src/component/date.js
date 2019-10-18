@@ -1,16 +1,17 @@
 import dayjs from 'dayjs'
-import {dateRule, str2Re} from "../core/re";
+import {datePattern, str2Re} from "../core/re";
 
-export function formatDate(numb, format) {
-    const time = new Date((numb - 1) * 24 * 3600000 + 1);
-    time.setYear(time.getFullYear() - 70);
-    const year = time.getFullYear() + '';
-    const month = time.getMonth() + 1 + '';
-    const date = time.getDate() - 1 + '';
-    if (format && format.length === 1) {
-        return year + format + month + format + date;
+export function formatDate(diff) {
+    let date = dayjs('1900-01-01').add(diff, 'day').subtract(2, 'day').format('YYYY-MM-DD');
+
+    return {
+        "state": date === 'Invalid Date' ? false : true,
+        "date": date,
     }
-    return year + (month < 10 ? '0' + month : month) + (date < 10 ? '0' + date : date);
+}
+
+export function cellDate() {
+
 }
 
 export function dateDiff(date) {
@@ -20,8 +21,8 @@ export function dateDiff(date) {
     // console.log(dayjs('2019sa').format('YYYY-MM-DD'));
     let valid = false;
 
-    for (let i = 0; valid === false && i < dateRule.length; i++) {
-        valid = str2Re(dateRule[i]).test(date);
+    for (let i = 0; valid === false && i < datePattern.length; i++) {
+        valid = str2Re(datePattern[i]).test(date);
     }
 
     if (valid === false) {

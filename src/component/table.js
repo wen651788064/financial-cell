@@ -8,11 +8,9 @@ import {Draw, DrawBox, npx, thinLineWidth,} from '../canvas/draw';
 import ApplicationFactory from "./application";
 import CellProxy from "./cell_proxy";
 import {look} from "../config";
-import {textReplaceAndToUpperCase, textReplaceQM} from "./context_process";
-import {dateDiff} from "./date";
+import {dateDiff, formatDate} from "./date";
 import {deepCopy} from "../core/operator";
 // import Worker from 'worker-loader!../external/Worker.js';
-
 var formulajs = require('formulajs');
 // gobal var
 const cellPaddingWidth = 5;
@@ -95,47 +93,79 @@ export function toUpperCase(text) {
             newText = newText + text[i] + "";
         }
     }
-    if (enter === 3) {
-        newText = newText + "\"";
-    }
+    // if (enter === 3) {
+    //     newText = newText + "\"";
+    // }
 
     return newText;
 }
 
-function specialHandle(type, cell, ri, ci) {
+// what = 'input' || 'change'
+function tryParseToNum(what = 'input', cell, ri, ci) {
     const {data} = this;
-    // 当用户离开一个单元格的时候 执行这个操作
-    const {isValid, diff} = dateDiff(cell.text);
-    if(isValid) {
-        data.dateInput(cell.text, cell.text, diff,  ri,  ci);
+
+    if (what === 'input') {
+        return getType.call(this, ri, ci, cell);
+    } else if (what === 'change') {
+        return getType.call(this, ri, ci, cell);
     }
 
-    if(typeof cell.style === 'undefined') {
-        return {
-            "state": false,
-            "text": cell.text
-        };
-    }
 
-    let cellStyle = data.getCellStyle(ri, ci);
-    if(type === 'date' && cellStyle && cellStyle.format && cellStyle.format === type) {
-        let d = data.getCellStyleHandle(cell.style, type, cell, ri, ci);
-        return {
-            "state": true,
-            "text": d ? cell.diff : cell.text
-        };
-    }
     return {
         "state": false,
         "text": cell.text
     };
 }
 
-function each() {
+function getType(ri, ci, cell) {
+    let {data} = this;
+    let cellStyle = data.getCellStyle(ri, ci);
+    let {isValid, diff} = dateDiff(cell.text);
 
+    if ((isValid && cellStyle && cellStyle.format !== 'normal') || cellStyle && cellStyle.format && cellStyle.format === 'date') {
+        let text = cell.text, formula = cell.formulas;
+        if (!isValid) {
+            let {state, date} = formatDate(cell.text);
+            isValid = state;
+            diff = cell.text;
+            text = date;
+        }
+
+        if (isValid) {
+            let _cell = {
+                "formulas": formula,
+                "text": text,
+                "to_calc_num": diff,
+            };
+            data.dateInput(_cell, ri, ci, 'date');
+        }
+
+        return {
+            "state": true,
+            "text": isValid ? cell.to_calc_num : cell.text,
+
+        };
+    } else if (isValid && cellStyle && cellStyle.format && cellStyle.format === 'normal') {
+        console.log(cell,cell.formulas )
+        let text = diff, formula = cell.formulas;
+        let _cell = {
+            "formulas": formula,
+            "text": text,
+        };
+        data.dateInput(_cell, ri, ci, 'normal');
+
+        return {
+            "state": true,
+            "text": cell.text,
+        }
+    }
+
+    return {
+        "state": false,
+        "text": cell.text
+    };
 }
 
-// 第五个参数cb 在row setdata的时候 才会执行
 export function loadData(viewRange, load = false, read = false) {
     let {data} = this;
     let workbook = [];
@@ -158,14 +188,14 @@ export function loadData(viewRange, load = false, read = false) {
     //     let cell = data.getCell(ri, ci);
     //     let expr = xy2expr(ci, ri);
     //     if (data.isEmpty(cell) === false) {
-    //         let {state, text} = specialHandle.call(this, 'date', cell, ri, ci);
+    //         let {state, text} = tryParseToNum.call(this, 'date', cell, ri, ci);
     //         cell.text = text;
-    //         cell.text = data.getRegularText(cell.text);
+    //         cell.text = data.toString(cell.text);
     //
-    //         if (data.backEndCalc(cell.text)) {
+    //         if (data.isBackEndFunc(cell.text)) {
     //             workbook.Sheets[data.name][expr] = {v: "", f: ""};
     //         } else {
-    //             if (data.isNeedCalc(cell)) {
+    //             if (data.isReferOtherSheet(cell)) {
     //                 let {factory} = this;
     //                 factory.push(cell.formulas);
     //                 enter = factory.lock;
@@ -178,7 +208,7 @@ export function loadData(viewRange, load = false, read = false) {
     //                 z: true
     //             };
     //
-    //             if (data.textIsFormula(cell.text)) {
+    //             if (data.isFormula(cell.text)) {
     //                 if (isNaN(cell.text)) {
     //                     cell.text = toUpperCase(cell.text); // 为什么要.toUpperCase() 呢？ => =a1 需要变成=A1
     //                 }
@@ -311,7 +341,7 @@ async function parseCell(viewRange, state = false, src = '', state2 = true) {
             console.error(e);
         }
     } else {
-        if(state2 != false) {
+        if (state2 != false) {
             factory.data = sall;
             proxy.setOldData(sall);
             workbook = factory.data;
@@ -723,8 +753,8 @@ class Table {
         return style;
     }
 
-    specialHandle(type, cell, ri, ci) {
-        return specialHandle.call(this, type, cell, ri, ci);
+    tryParseToNum(type, cell, ri, ci) {
+        return tryParseToNum.call(this, type, cell, ri, ci);
     }
 
     async render(temp = false, tempData, redo = false, state = true) {
