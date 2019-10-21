@@ -759,7 +759,10 @@ function errorPop(text) {
         };
     } else if (errorPopUp.open) {
         errorPopUp.hide();
-        return true;
+        return {
+            "state": true,
+            "msg": msg
+        };
     }
     return {
         "state": false,
@@ -775,7 +778,7 @@ export function selectorCellText(ri, ci, {text, style}, state, proxy = "") {
         return false;
     }
     const {data,  editor, } = this;
-    if (state !== 'style' && errorPop.call(this, state).state === true) {
+    if (state !== 'style' && errorPop.call(this, text).state === true) {
         return true;
     }
 
