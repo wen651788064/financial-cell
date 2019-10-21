@@ -47,7 +47,13 @@ describe('qq', () => {
         it(' =AMORLINC(2400,39679,39813,300,1,0.15,1) ', () => {
             let {state, msg} = data.selectorCellText(1, 1, '=AMORLINC(2400,39679,39813,300,1,0.15,1)', "input");
             assert.equal(state, false);
-        })
+        });
+    });
+
+    describe('copy', () => {
+       it(' copy =D1 ', () => {
+
+       });
     });
 
     describe(' autofilter  ', () => {
