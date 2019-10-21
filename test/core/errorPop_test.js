@@ -48,6 +48,11 @@ describe('qq', () => {
             let {state, msg} = data.selectorCellText(1, 1, '=AMORLINC(2400,39679,39813,300,1,0.15,1)', "input");
             assert.equal(state, false);
         });
+
+        it(' =INDEX({1,2;3,4},0,2) ', () => {
+            let {state, msg} = data.selectorCellText(1, 1, '=INDEX({1,2;3,4},0,2)', "input");
+            assert.equal(state, false);
+        });
     });
 
     describe('copy', () => {
