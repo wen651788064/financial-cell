@@ -1,16 +1,62 @@
-import assert from 'assert';
-import { describe, it } from 'mocha';
-import {selectorCellText} from "../../src/component/sheet";
+import {describe, it} from 'mocha';
 import DataProxy from "../../src/core/data_proxy";
-import Sheet from "../../src/component/sheet";
+import Recast from "../../src/core/recast";
 
-describe('format', () => {
-    describe('#render()', () => {
-        it(' ="""  ', function() {
-            console.log("...")
-            this.data = new DataProxy("sheet1", {}, {});
-            this.sheet = new Sheet(null, this.data);
-            selectorCellText.call(this, 1, 1, { text: "=\"\"\""}, "input", "");
+let assert = require('assert');
+
+describe('', () => {
+    let data = new DataProxy("sheet1", {}, {});
+
+    describe('  recast test ', () => {
+
+        it(' ="""  ', function () {
+            let {state, msg} = data.selectorCellText(1, 1, '="""', "input");
+            assert.equal(state, true);
+        });
+
+        it(' =""  ', function () {
+            let {state, msg} = data.selectorCellText(1, 1, '=""', "input");
+            assert.equal(state, false);
+        });
+
+        it(' =()  ', function () {
+            let {state, msg} = data.selectorCellText(1, 1, '=()', "input");
+            assert.equal(state, true);
+        });
+
+        it(' =(s)  ', function () {
+            let {state, msg} = data.selectorCellText(1, 1, '=(s)', "input");
+            assert.equal(state, false);
+        });
+
+        it(' =(s)  ', function () {
+            let {state, msg} = data.selectorCellText(-1, -1, '=()', "input");
+            assert.equal(state, true);
+        });
+    });
+
+    describe(' autofilter  ', () => {
+
+    });
+
+    describe.only(' date  ', () => {
+        it(' tryParseToNum test ', function () {
+            let cell = {"text": "2019-01-01", "formulas": "2019-01-01"};
+            let args = data.tryParseToNum('input', cell, 1, 1);
+            console.log(args);
+        });
+    });
+
+    describe('recast', () => {
+        it(' =() recast', function () {
+            let recast = new Recast('=()');
+            let error = false;
+            try {
+                recast.parse();
+            } catch {
+                error = true;
+            }
+            assert.equal(error, true);
         });
     });
 });

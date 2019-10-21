@@ -85,7 +85,7 @@ export default class WorkBook {
         let {data, proxy, table} = this;
 
         if (data.isEmpty(cell) === false) {
-            let {state, text} = table.tryParseToNum(what, cell, ri, ci);
+            let {state, text} = data.tryParseToNum(what, cell, ri, ci);
             cell.text = text;
             cell.text = data.toString(cell.text);
 

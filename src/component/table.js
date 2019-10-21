@@ -100,72 +100,6 @@ export function toUpperCase(text) {
     return newText;
 }
 
-// what = 'input' || 'change'
-function tryParseToNum(what = 'input', cell, ri, ci) {
-    const {data} = this;
-
-    if (what === 'input') {
-        return getType.call(this, ri, ci, cell);
-    } else if (what === 'change') {
-        return getType.call(this, ri, ci, cell);
-    }
-
-
-    return {
-        "state": false,
-        "text": cell.text
-    };
-}
-
-function getType(ri, ci, cell) {
-    let {data} = this;
-    let cellStyle = data.getCellStyle(ri, ci);
-    let {isValid, diff} = dateDiff(cell.text);
-
-    if ((isValid && cellStyle && cellStyle.format !== 'normal') || cellStyle && cellStyle.format && cellStyle.format === 'date') {
-        let text = cell.text, formula = cell.formulas;
-        if (!isValid) {
-            let {state, date} = formatDate(cell.text);
-            isValid = state;
-            diff = cell.text;
-            text = date;
-        }
-
-        if (isValid) {
-            let _cell = {
-                "formulas": formula,
-                "text": text,
-                "to_calc_num": diff,
-            };
-            data.dateInput(_cell, ri, ci, 'date');
-        }
-
-        return {
-            "state": true,
-            "text": isValid ? cell.to_calc_num : cell.text,
-
-        };
-    } else if (isValid && cellStyle && cellStyle.format && cellStyle.format === 'normal') {
-        console.log(cell,cell.formulas )
-        let text = diff, formula = cell.formulas;
-        let _cell = {
-            "formulas": formula,
-            "text": text,
-        };
-        data.dateInput(_cell, ri, ci, 'normal');
-
-        return {
-            "state": true,
-            "text": cell.text,
-        }
-    }
-
-    return {
-        "state": false,
-        "text": cell.text
-    };
-}
-
 export function loadData(viewRange, load = false, read = false) {
     let {data} = this;
     let workbook = [];
@@ -711,7 +645,7 @@ class Table {
         this.data = data;
         this.timer = null;
         // this.worker = new Worker();
-        this.proxy = new CellProxy(data.refRow, this);
+        this.proxy = new CellProxy(data.refRow, this, data);
         this.autoAdaptList = [];
     }
 
@@ -753,9 +687,6 @@ class Table {
         return style;
     }
 
-    tryParseToNum(type, cell, ri, ci) {
-        return tryParseToNum.call(this, type, cell, ri, ci);
-    }
 
     async render(temp = false, tempData, redo = false, state = true) {
         // resize canvas

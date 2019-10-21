@@ -9,7 +9,7 @@ import {textReplace} from "./context_process";
 
 
 export default class CellProxy {
-    constructor(refRow, table) {
+    constructor(refRow, table, data) {
         this.oldData = "";
         // diff 为 101 => 则为跨sheet但是没找到跨sheet的数据  402 => 则为跨sheet而且找到跨sheet的数据
         // 305 => 为重新计算  306 => 后端计算结果
@@ -18,6 +18,7 @@ export default class CellProxy {
         this.lastResult = "";
         this.lastResultTimer = "";
         this.table = table;
+        this.data = data;
         // this.worker = new Worker();
     }
 
@@ -373,7 +374,7 @@ export default class CellProxy {
             copyCell.text = cells[i].v;
             copyCell.formulas = cells[i].f;
 
-            let {state } = this.table.tryParseToNum('change', copyCell, ri, ci);
+            let {state } = this.data.tryParseToNum('change', copyCell, ri, ci);
             cells[i].v = state ? data[ri]['cells'][ci].text : cells[i].v;
             cells[i].f = state ? data[ri]['cells'][ci].formulas : cells[i].f;
 

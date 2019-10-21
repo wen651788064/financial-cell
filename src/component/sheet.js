@@ -21,14 +21,13 @@ import {clearSelectors, editingSelectors, lockCells, makeSelector} from "../comp
 import {deleteImg, hideDirectionArr, mountPaste} from "../event/paste";
 import {getChooseImg, mountCopy} from "../event/copy";
 import Website from "../component/website";
-import {cutStr, cuttingByPos, isLegal, positionAngle} from "../core/operator";
+import {cutStr, cuttingByPos, positionAngle} from "../core/operator";
 import {moveCell} from "../event/move";
 import CellRange from "../core/cell_range";
 import {orientation} from "../core/helper";
 import {expr2xy} from "../core/alphabet";
 import ErrorPopUp from "./error_pop_up";
 import EditorProxy from "./editor_proxy";
-import Recast from "../core/recast";
 
 function scrollbarMove() {
     const {
@@ -731,25 +730,8 @@ function colResizerFinished(cRect, distance) {
     editorSetOffset.call(this);
 }
 
-function errorPop(text) {
+function errorPop(enter, msg) {
     const {errorPopUp} = this;
-    let enter = false;
-    let msg = "";
-    try {
-        let recast = new Recast(text);
-        recast.parse();
-    } catch (e) {
-        console.log(e);
-        msg = '您输入的公式存在问题，请更正, 错误原因: ' + e.description;
-        enter = true;
-    }
-
-    if (enter == true) {
-        if (isLegal(text) == false) {
-            msg = '缺少左括号或右括号';
-            enter = true;
-        }
-    }
 
     if (enter && !errorPopUp.open) {
         errorPopUp.show(msg);
@@ -771,19 +753,18 @@ function errorPop(text) {
 }
 
 export function selectorCellText(ri, ci, {text, style}, state, proxy = "") {
-    if (ri == -1 || ci == -1) {
-        return false;
-    }
-    if (state !== 'style' && (!text || text[0] !== '=')) {
-        return false;
-    }
-    const {data,  editor, } = this;
-    if (state !== 'style' && errorPop.call(this, text).state === true) {
-        return true;
+    const {data, editor,} = this;
+    let args = data.selectorCellText(ri, ci, text, state);
+    if (args.state) {
+        args = errorPop.call(this, true, args.msg);
+        if(args.state) {
+            return true;
+        }
     }
 
     data.setCellText(ri, ci, {text, style}, state, proxy);
     editor.setRiCi(-1, -1);
+
     return false;
 }
 

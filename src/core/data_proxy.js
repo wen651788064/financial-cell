@@ -19,8 +19,9 @@ import {h} from "../component/element";
 import {mountImg} from "../event/paste";
 import {parseCell2} from "../component/table";
 import {RefRow} from "./ref_row";
-import {dateDiff} from "../component/date";
-import {deepCopy} from "./operator";
+import {isLegal} from "./operator";
+import Recast from "./recast";
+import {dateDiff, formatDate} from "../component/date";
 // private methods
 /*
  * {
@@ -183,6 +184,64 @@ function setStyleBorder(ri, ci, bss) {
     }
     Object.assign(cstyle, {border: bss});
     cell.style = this.addStyle(cstyle);
+}
+
+function selectorCellText(ri, ci, text, state) {
+    if (ri == -1 || ci == -1) {
+        return {
+            "state": true,
+            "msg": "单元格坐标有误"
+        };
+    }
+    if (state !== 'style' && (!text || text[0] !== '=')) {
+        return {
+            "state": false,
+            "msg": "正确"
+        };
+    }
+
+    let args = errorPop.call(this, text);
+    if (state !== 'style' && args.state === true) {
+        return {
+            "msg": args.msg,
+            "state": true,
+        };
+    }
+    return {
+        "msg": args.msg,
+        "state": false,
+    };
+}
+
+function errorPop(text) {
+    let enter = false;
+    let msg = "";
+    try {
+        let recast = new Recast(text);
+        recast.parse();
+    } catch (e) {
+        msg = '您输入的公式存在问题，请更正, 错误原因: ' + e.description;
+        enter = true;
+    }
+
+    if (enter == true) {
+        if (isLegal(text) == false) {
+            msg = '缺少左括号或右括号';
+            enter = true;
+        }
+    }
+
+    if (enter) {
+        return {
+            "state": true,
+            "msg": msg
+        };
+    } else {
+        return {
+            "state": false,
+            "msg": msg
+        };
+    }
 }
 
 function processPasteDirectionsArr(pasteDirectionsArr, type = 'to', sheet) {
@@ -396,6 +455,71 @@ function getCellColByX(x, scrollOffsetx) {
     return {ci: ci - 1, left, width};
 }
 
+// what = 'input' || 'change'
+function tryParseToNum(what = 'input', cell, ri, ci) {
+    if (what === 'input') {
+        return getType.call(this, ri, ci, cell);
+    } else if (what === 'change') {
+        return getType.call(this, ri, ci, cell);
+    }
+
+    return {
+        "state": false,
+        "text": cell.text
+    };
+}
+
+function getType(ri, ci, cell) {
+    let data = this;
+    let cellStyle = data.getCellStyle(ri, ci);
+    let {isValid, diff} = dateDiff(cell.text);
+
+    console.log(cell);
+    if ((isValid || cellStyle && cellStyle.format !== 'normal') || cellStyle && cellStyle.format && cellStyle.format === 'date') {
+        let text = cell.text, formula = cell.formulas;
+        if (!isValid) {
+            let {state, date} = formatDate(cell.text);
+            isValid = state;
+            diff = cell.text;
+            text = date;
+        }
+
+        if (isValid) {
+            let _cell = {
+                "formulas": formula,
+                "text": text,
+                "to_calc_num": diff,
+            };
+            data.dateInput(_cell, ri, ci, 'date');
+        }
+
+        return {
+            "state": true,
+            "text": isValid ? cell.to_calc_num : cell.text,
+
+        };
+    } else if (isValid && cellStyle && cellStyle.format && cellStyle.format === 'normal') {
+        console.log(cell,cell.formulas )
+        let text = diff, formula = cell.formulas;
+        let _cell = {
+            "formulas": formula,
+            "text": text,
+        };
+        data.dateInput(_cell, ri, ci, 'normal');
+
+        return {
+            "state": true,
+            "text": cell.text,
+        }
+    }
+
+    return {
+        "state": false,
+        "text": cell.text
+    };
+}
+
+
 export default class DataProxy {
     constructor(name, settings, methods) {
         this.settings = helper.merge(defaultSettings, settings || {});
@@ -443,6 +567,10 @@ export default class DataProxy {
         this.changeData(() => {
             this.validations.remove(range);
         });
+    }
+
+    tryParseToNum(type, cell, ri, ci) {
+        return tryParseToNum.call(this, type, cell, ri, ci);
     }
 
     clickCopyPaste() {
@@ -649,7 +777,10 @@ export default class DataProxy {
                         cell.text = cell.text.replace("¥", "");
                         cell.formulas = cell.formulas.replace("¥", "");
 
-                        rows.setCellText(ri, ci, {text: cell.text, style: this.addStyle(cstyle)}, this.sheet.table.proxy, this.name, 'style');
+                        rows.setCellText(ri, ci, {
+                            text: cell.text,
+                            style: this.addStyle(cstyle)
+                        }, this.sheet.table.proxy, this.name, 'style');
                         // this.rows.workbook.change(ri, ci, cell, deepCopy(cell), 'change');
                     } else if (property === 'font-bold' || property === 'font-italic'
                         || property === 'font-name' || property === 'font-size') {
@@ -834,9 +965,8 @@ export default class DataProxy {
         return false;
     }
 
-    dateInput(cell,  ri, ci, type) {
+    dateInput(cell, ri, ci, type) {
         let cstyle = {};
-
         cstyle.format = type;
         cell.style = this.addStyle(cstyle);
         this.rows.setCell(ri, ci, cell, type);
@@ -1387,6 +1517,10 @@ export default class DataProxy {
             }
         });
         return this;
+    }
+
+    selectorCellText(ri, ci, text, style) {
+        return selectorCellText.call(this, ri, ci, text, style);
     }
 
     getData() {

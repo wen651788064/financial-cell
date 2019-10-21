@@ -119,6 +119,7 @@ class Rows {
 
     // what: all | text | format
     setCell(ri, ci, cell, what = 'all') {
+        console.log("493", cell, ri, ci, what, cell.formulas)
         const row = this.getOrNew(ri);
         if (what === 'all') {
             row.cells[ci] = cell;
@@ -142,6 +143,9 @@ class Rows {
             row.cells[ci].to_calc_num = cell.to_calc_num;
         } else if(what === 'normal') {
             // row.cells[ci] = {};
+            if(!row.cells[ci]) {
+                row.cells[ci] = {}
+            }
             if(!this.isFormula(cell.formulas)) {
                 row.cells[ci].formulas = cell.text;
             }
