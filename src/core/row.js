@@ -119,7 +119,6 @@ class Rows {
 
     // what: all | text | format
     setCell(ri, ci, cell, what = 'all') {
-        console.log("493", cell, ri, ci, what, cell.formulas)
         const row = this.getOrNew(ri);
         if (what === 'all') {
             row.cells[ci] = cell;
@@ -137,6 +136,8 @@ class Rows {
             // row.cells[ci] = {};
             if(!this.isFormula(cell.formulas)) {
                 row.cells[ci].formulas = cell.text;
+            } else {
+                row.cells[ci].formulas = cell.formulas;
             }
             row.cells[ci].text = cell.text;
             row.cells[ci].style = cell.style;
@@ -151,6 +152,8 @@ class Rows {
             }
             row.cells[ci].text = cell.text;
             row.cells[ci].style = cell.style;
+        } else if(what === 'all_with_no_workbook') {
+            row.cells[ci] = cell;
         }
     }
 
@@ -390,6 +393,7 @@ class Rows {
                     } else {
                         diffValue = 1;
                     }
+
                     for (let i = 0; i < darr.length; i++) {
                         let d = darr[i];
                         let ncell = "";
@@ -412,6 +416,7 @@ class Rows {
                                 ncell = helper.cloneDeep(this._[d.ri].cells[d.ci - 1]);
                             }
                         }
+
                         if (ncell.text[0] == "=") {
                             let last1 = ncell.text.replace("=", "") * 1;
 

@@ -84,6 +84,10 @@ export default class WorkBook {
         let expr = xy2expr(ci, ri);
         let {data, proxy, table} = this;
 
+        if(typeof data === 'string') {
+            return;
+        }
+
         if (data.isEmpty(cell) === false) {
             let {state, text} = data.tryParseToNum(what, cell, ri, ci);
             cell.text = text;

@@ -186,22 +186,23 @@ function setStyleBorder(ri, ci, bss) {
     cell.style = this.addStyle(cstyle);
 }
 
-function selectorCellText(ri, ci, text, state) {
+function selectorCellText(ri, ci, text, event_type) {
     if (ri == -1 || ci == -1) {
         return {
             "state": true,
             "msg": "单元格坐标有误"
         };
     }
-    if (state !== 'style' && (!text || text[0] !== '=')) {
+    if (event_type !== 'style' && (!text || text[0] !== '=')) {
         return {
             "state": false,
             "msg": "正确"
         };
     }
 
+    // state
     let args = errorPop.call(this, text);
-    if (state !== 'style' && args.state === true) {
+    if (event_type !== 'style' && args.state === true) {
         return {
             "msg": args.msg,
             "state": true,
@@ -474,8 +475,7 @@ function getType(ri, ci, cell) {
     let cellStyle = data.getCellStyle(ri, ci);
     let {isValid, diff} = dateDiff(cell.text);
 
-    console.log(cell);
-    if ((isValid || cellStyle && cellStyle.format !== 'normal') || cellStyle && cellStyle.format && cellStyle.format === 'date') {
+    if ((isValid && cellStyle && cellStyle.format !== 'normal') || cellStyle && cellStyle.format && cellStyle.format === 'date') {
         let text = cell.text, formula = cell.formulas;
         if (!isValid) {
             let {state, date} = formatDate(cell.text);
@@ -499,7 +499,6 @@ function getType(ri, ci, cell) {
 
         };
     } else if (isValid && cellStyle && cellStyle.format && cellStyle.format === 'normal') {
-        console.log(cell,cell.formulas )
         let text = diff, formula = cell.formulas;
         let _cell = {
             "formulas": formula,
@@ -767,16 +766,16 @@ export default class DataProxy {
                 cell.formulas = `=${value}()`;
             } else {
                 selector.range.each((ri, ci) => {
-                    const cell = rows.getCellOrNew(ri, ci);
+                    let cell = rows.getCellOrNew(ri, ci);
+
                     let cstyle = {};
                     if (cell.style !== undefined) {
                         cstyle = helper.cloneDeep(styles[cell.style]);
                     }
                     if (property === 'format') {
                         cstyle.format = value;
-                        cell.text = cell.text.replace("¥", "");
-                        cell.formulas = cell.formulas.replace("¥", "");
-
+                        // cell.text = cell.text.replace("¥", "");
+                        // cell.formulas = cell.formulas.replace("¥", "");
                         rows.setCellText(ri, ci, {
                             text: cell.text,
                             style: this.addStyle(cstyle)
@@ -1519,8 +1518,8 @@ export default class DataProxy {
         return this;
     }
 
-    selectorCellText(ri, ci, text, style) {
-        return selectorCellText.call(this, ri, ci, text, style);
+    selectorCellText(ri, ci, text, event_type) {
+        return selectorCellText.call(this, ri, ci, text, event_type);
     }
 
     getData() {
