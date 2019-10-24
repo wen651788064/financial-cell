@@ -25,13 +25,14 @@ const mergeDeep = (object = {}, ...sources) => {
 };
 
 function find(arr, str) {
-    for(let i = 0; i < arr.length; i++) {
-        if(str.indexOf(arr[i]) != -1) {
+    for (let i = 0; i < arr.length; i++) {
+        if (str.indexOf(arr[i]) != -1) {
             return true;
         }
     }
     return false;
 }
+
 
 function orientation(y, x, dy, dx, orien) {
     if (orien == 44 && dy - y + 100 > 0) {
@@ -40,7 +41,7 @@ function orientation(y, x, dy, dx, orien) {
 
     } else if (orien == 33 && dx - x + 100 > 0) {
         return true;
-    } else if(orien == 22 && dy - 100 < 0) {
+    } else if (orien == 22 && dy - 100 < 0) {
         return true;
     }
     return false;
@@ -65,6 +66,18 @@ function equals(obj1, obj2) {
             if (!equals(v1, v2)) return false;
         }
     }
+    return true;
+}
+
+function isHave(param) {
+    if (typeof param === "undefined") {
+        return false;
+    }
+
+    if (param === null) {
+        return false;
+    }
+
     return true;
 }
 
@@ -138,4 +151,5 @@ export default {
 export {
     orientation,
     find,
+    isHave,
 }

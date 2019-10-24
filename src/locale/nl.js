@@ -47,7 +47,7 @@ export default {
     datetime: 'Datum tijd',
     duration: 'Duratie',
   },
-  formula: {
+  date_formula: {
     sum: 'Som',
     average: 'Gemiddelde',
     max: 'Max',

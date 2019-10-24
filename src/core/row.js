@@ -1,22 +1,21 @@
-import helper from './helper';
+import helper, {isHave} from './helper';
 import {expr2expr, xy2expr} from './alphabet';
 import {absoluteType, changeFormula, cutStr, isAbsoluteValue, value2absolute} from "../core/operator";
 import {expr2xy} from "../core/alphabet";
-import CellRange from "./cell_range";
 import dayjs from 'dayjs'
 import {deepCopy, isSheetVale} from "./operator";
 import Recast from "./recast";
 import WorkBook from "./workbook_cacl_proxy";
+import PasteProxy from "./paste_proxy";
 
-// 2019-10-11 cell里新增一个字段   recast
-/* 目前数据结构 =>
-    cell = {
-        "text": "",
-        "formula: "",
-        "style": "",
-        "recast": recast
+export function isFormula(text) {
+    if (text && text[0] === "=") {
+        return true;
     }
- */
+
+    return false;
+}
+
 class Rows {
     constructor({len, height}) {
         this._ = {};
@@ -24,6 +23,7 @@ class Rows {
         this.len = len;
         // default row height
         this.height = height;
+        this.pasteProxy = new PasteProxy();
     }
 
     getHeight(ri) {
@@ -111,10 +111,11 @@ class Rows {
     }
 
     isFormula(text) {
-        if (text && text[0] === "=") {
-            return true;
-        }
-        return false;
+        return isFormula(text);
+    }
+
+    setValue(value, cell) {
+        cell.value = value;
     }
 
     // what: all | text | format
@@ -122,10 +123,12 @@ class Rows {
         const row = this.getOrNew(ri);
         if (what === 'all') {
             row.cells[ci] = cell;
+            row.cells[ci].value = cell.text;
             this.workbook.change(ri, ci, row.cells[ci], deepCopy(row.cells[ci]));
         } else if (what === 'text') {
             row.cells[ci] = row.cells[ci] || {};
             row.cells[ci].text = cell.text;
+            row.cells[ci].value = cell.text;
             this.workbook.change(ri, ci, row.cells[ci], deepCopy(row.cells[ci]));
         } else if (what === 'format') {
             row.cells[ci] = row.cells[ci] || {};
@@ -134,7 +137,10 @@ class Rows {
             this.workbook.change(ri, ci, row.cells[ci], deepCopy(row.cells[ci]));
         } else if (what === 'date') {
             // row.cells[ci] = {};
-            if(!this.isFormula(cell.formulas)) {
+            if (!row.cells[ci]) {
+                row.cells[ci] = {}
+            }
+            if (!this.isFormula(cell.formulas) && !cell.minute) {
                 row.cells[ci].formulas = cell.text;
             } else {
                 row.cells[ci].formulas = cell.formulas;
@@ -142,19 +148,35 @@ class Rows {
             row.cells[ci].text = cell.text;
             row.cells[ci].style = cell.style;
             row.cells[ci].to_calc_num = cell.to_calc_num;
-        } else if(what === 'normal') {
+            row.cells[ci].value = cell.value;
+        } else if (what === 'normal' || what === 'number') {
             // row.cells[ci] = {};
-            if(!row.cells[ci]) {
+            if (!row.cells[ci]) {
                 row.cells[ci] = {}
             }
-            if(!this.isFormula(cell.formulas)) {
+            if (!this.isFormula(cell.formulas)) {
                 row.cells[ci].formulas = cell.text;
+            } else {
+                row.cells[ci].formulas = cell.formulas;
             }
+            row.cells[ci].value = cell.value;
             row.cells[ci].text = cell.text;
             row.cells[ci].style = cell.style;
-        } else if(what === 'all_with_no_workbook') {
+        } else if (what === 'all_with_no_workbook') {
             row.cells[ci] = cell;
+            row.cells[ci].value = cell.text;
         }
+    }
+
+    useOne(param, other, value = true) {
+        if (isHave(param) === false) {
+            return other;
+        }
+
+        if (value && this.isFormula(param)) {
+            return other;
+        }
+        return param;
     }
 
     setCellText(ri, ci, {text, style}, proxy = "", name = "", what = 'all') {
@@ -163,13 +185,14 @@ class Rows {
             cell.style = style;
         } else {
             cell.formulas = text;
+            cell.value = text;
         }
         cell.text = text;  // todo 自定义公式： text 为公式计算结果, formulas 为公式
         // this.recast(cell);
         if (typeof proxy != "string") {
             proxy.setCell(name, xy2expr(ci, ri));
         }
-        if(what !== 'date') {
+        if (what !== 'date') {
             this.workbook.change(ri, ci, cell, deepCopy(cell));
         }
     }
@@ -178,12 +201,13 @@ class Rows {
         const cell = this.getCellOrNew(ri, ci);
         cell.formulas = formulas == "" ? cell.formulas : formulas;
         cell.text = text;
-
-        if(what !== 'date') {
+        if (isHave(cell.value) === false) {
+            cell.value = cell.text;
+        }
+        if (what !== 'date') {
             this.workbook.change(ri, ci, cell, deepCopy(cell));
         }
     }
-
 
     moveChange(arr, arr2, arr3) {
         if (arr.length != arr2.length && arr3.length != arr2.length) {
@@ -236,17 +260,198 @@ class Rows {
         s = s.toString().replace(/^(\d*)$/, "$1.");
         s = (s + "00").replace(/(\d*\.\d\d)\d*/, "$1");
         s = s.replace(".", ",");
-        var re = /(\d)(\d{3},)/;
+        let re = /(\d)(\d{3},)/;
         while (re.test(s))
             s = s.replace(re, "$1,$2");
         s = s.replace(/,(\d\d)$/, ".$1");
         if (type == 0) {
-            var a = s.split(".");
+            let a = s.split(".");
             if (a[1] == "00") {
                 s = a[0];
             }
         }
         return s;
+    }
+
+    // isValid => true 为日期  false 为 数字
+    getCellStyleConvert(cellStyle, isValid) {
+        if (cellStyle && cellStyle.format && cellStyle.format === 'number') {
+            return "number";
+        } else if (
+            (isValid && cellStyle === null)
+            || (isValid && cellStyle && cellStyle.format !== 'normal')
+            || cellStyle && cellStyle.format && cellStyle.format === 'date') {
+            return "date";
+        } else if ((cellStyle && cellStyle.format && cellStyle.format === 'normal')) {
+            return "normal";
+        }
+
+        return "";
+    }
+
+    getCellTextByShift(arr, dei, dci) {
+        let bad = false;
+        let newStr = "";
+
+        for (let i = 0; i < arr.length; i++) {
+            if (arr[i].search(/^[A-Z]+\d+$/) != -1) {
+                let ds = expr2xy(arr[i]);
+                if (ds[0] + dei < 0 || ds[1] + dci < 0) {
+                    bad = true;
+                }
+                arr[i] = xy2expr(ds[0] + dei, ds[1] + dci);
+            } else if (arr[i].search(/^[A-Za-z]+\d+:[A-Za-z]+\d+$/) != -1) {
+                let a1 = arr[i].split(":")[0];
+                let a2 = arr[i].split(":")[1];
+                let ds1 = expr2xy(a1);
+                let ds2 = expr2xy(a2);
+
+                if (ds1[0] + dei < 0 || ds1[1] + dci < 0) {
+                    bad = true;
+                }
+                if (ds2[0] + dei < 0 || ds2[1] + dci < 0) {
+                    bad = true;
+                }
+
+                let s = xy2expr(ds1[0] + dei, ds1[1] + dci) + ":";
+                s += xy2expr(ds2[0] + dei, ds2[1] + dci)
+                arr[i] = s;
+            } else {
+                let value = isAbsoluteValue(arr[i], 5);
+
+                if (value === 2) {
+                    let ds = expr2xy(arr[i].replace(/\$/g, ''));
+                    if (ds[0] + dei < 0 || ds[1] + dci < 0) {
+                        bad = true;
+                    }
+
+                    arr[i] = xy2expr(ds[0] + dei, ds[1], 2);
+                } else if (value === 1) {
+                    let ds = expr2xy(arr[i].replace(/\$/g, ''));
+                    if (ds[0] + dei < 0 || ds[1] + dci < 0) {
+                        bad = true;
+                    }
+
+                    arr[i] = xy2expr(ds[0], ds[1] + dci, 1);
+                } else if (value === 4) {
+                    let sp = arr[i].split(":");
+                    console.log(arr[i], sp);
+                    for (let item = 0; item < sp.length; item++) {
+                        let ds = expr2xy(sp[item].replace(/\$/g, ''));
+                        if (ds[0] + dei < 0 || ds[1] + dci < 0) {
+                            bad = true;
+                        }
+
+                        sp[item] = xy2expr(ds[0] + dei, ds[1], 2);
+                    }
+                    arr[i] = sp.join(':');
+                } else if (value === 5) {
+                    let sp = arr[i].split(":");
+                    for (let item = 0; item < sp.length; item++) {
+                        let ds = expr2xy(sp[item].replace(/\$/g, ''));
+                        if (ds[0] + dei < 0 || ds[1] + dci < 0) {
+                            bad = true;
+                        }
+                        if (item === 1) {
+                            sp[item] = xy2expr(ds[0], ds[1] + dci, 1);
+                        } else {
+                            sp[item] = xy2expr(ds[0] + dei, ds[1], 2);
+                        }
+                    }
+                    arr[i] = sp.join(':');
+                } else if (value === 7) {
+                    let sp = arr[i].split(':');
+                    for (let item = 0; item < sp.length; item++) {
+                        let ds = expr2xy(sp[item].replace(/\$/g, ''));
+                        if (ds[0] + dei < 0 || ds[1] + dci < 0) {
+                            bad = true;
+                        }
+                        sp[item] = xy2expr(ds[0], ds[1] + dci, 1);
+                    }
+                    arr[i] = sp.join(':');
+                } else if (value === 6) {
+                    let sp = arr[i].split(":");
+                    for (let item = 0; item < sp.length; item++) {
+                        let ds = expr2xy(sp[item].replace(/\$/g, ''));
+                        if (ds[0] + dei < 0 || ds[1] + dci < 0) {
+                            bad = true;
+                        }
+                        if (item === 0) {
+                            sp[item] = xy2expr(ds[0], ds[1] + dci, 1);
+                        } else {
+                            sp[item] = xy2expr(ds[0] + dei, ds[1], 2);
+                        }
+                    }
+                    arr[i] = sp.join(':');
+                } else if (value === 8) {
+                    let sp = arr[i].split(":");
+                    for (let item = 0; item < sp.length; item++) {
+                        let ds = expr2xy(sp[item].replace(/\$/g, ''));
+                        if (ds[0] + dei < 0 || ds[1] + dci < 0) {
+                            bad = true;
+                        }
+
+                        if (item === 0) {
+                            sp[item] = xy2expr(ds[0] + dei, ds[1] + dci, 0);
+                        } else {
+                            sp[item] = xy2expr(ds[0] + dei, ds[1], 1);
+                        }
+                    }
+                    arr[i] = sp.join(':');
+                } else if (value === 9) {
+                    let sp = arr[i].split(":");
+                    for (let item = 0; item < sp.length; item++) {
+                        let ds = expr2xy(sp[item].replace(/\$/g, ''));
+                        if (ds[0] + dei < 0 || ds[1] + dci < 0) {
+                            bad = true;
+                        }
+
+                        if (item === 0) {
+                            sp[item] = xy2expr(ds[0] + dei, ds[1] + dci, 0);
+                        } else {
+                            sp[item] = xy2expr(ds[0] + dei, ds[1], 2);
+                        }
+                    }
+                    arr[i] = sp.join(':');
+                } else if (value === 10) {
+                    let sp = arr[i].split(":");
+                    for (let item = 0; item < sp.length; item++) {
+                        let ds = expr2xy(sp[item].replace(/\$/g, ''));
+                        if (ds[0] + dei < 0 || ds[1] + dci < 0) {
+                            bad = true;
+                        }
+
+                        if (item === 1) {
+                            sp[item] = xy2expr(ds[0] + dei, ds[1] + dci, 0);
+                        } else {
+                            sp[item] = xy2expr(ds[0] + dei, ds[1], 2);
+                        }
+                    }
+                    arr[i] = sp.join(':');
+                } else if (value === 11) {
+                    let sp = arr[i].split(":");
+                    for (let item = 0; item < sp.length; item++) {
+                        let ds = expr2xy(sp[item].replace(/\$/g, ''));
+                        if (ds[0] + dei < 0 || ds[1] + dci < 0) {
+                            bad = true;
+                        }
+
+                        if (item === 1) {
+                            sp[item] = xy2expr(ds[0] + dei, ds[1] + dci, 0);
+                        } else {
+                            sp[item] = xy2expr(ds[0] + dei, ds[1], 1);
+                        }
+                    }
+                    arr[i] = sp.join(':');
+                }
+            }
+            newStr += arr[i];
+        }
+
+        return {
+            "bad": bad,
+            "result": newStr
+        };
     }
 
     autoFilterRef(ref, range) {
@@ -262,201 +467,135 @@ class Rows {
         return range;
     }
 
-    // what: all | format | text
-    copyPaste(srcCellRange, dstCellRange, what, autofill = false, cb = () => {
-    }) {
-        const {
-            sri, sci, eri, eci,
-        } = srcCellRange;
+    compile() {
+        const {pasteProxy} = this;
+        let number = true, nA = true, nD = true, sarr = [];
+        let {fackSRange} = pasteProxy.getRangeByWay();
 
-        const dsri = dstCellRange.sri;
-        const dsci = dstCellRange.sci;
-        const deri = dstCellRange.eri;
-        const deci = dstCellRange.eci;
+        fackSRange.each((i, j) => {
+            let und = false, cell = this.getCell(i, j);
+            if (cell) {
+                nA, nD, number = pasteProxy.calcType(cell, sarr);
+            } else {
+                und = true;
+            }
 
+            if (und) {
+                sarr.push({
+                    text: 0,
+                    formulas: 0
+                });
+            }
+        });
 
-        const [rn, cn] = srcCellRange.size();
-        const [drn, dcn] = dstCellRange.size();
+        return {
+            nA, nD, number, sarr
+        }
+    }
 
-        let level = false;
-        if (sri == dsri && deri == eri) {
-            level = true;
+    rangeDArr() {
+        const {pasteProxy} = this;
+        let {fackDRange} = pasteProxy.getRangeByWay();
+
+        let darr = [];
+        fackDRange.each((i, j) => {
+            darr.push({ri: i, ci: j});
+        });
+
+        return darr;
+    }
+
+    calcCellByTopCell(ncell, diffValue, darr, what, cb) {
+        let {text} = ncell;
+        let cell = {};
+        if (this.isFormula(text)) {
+            let last1 = text.replace("=", "") * 1;
+
+            let value = last1 + diffValue;
+            cell = {
+                "text": "=" + value + "",
+                "formulas": "=" + value + "",
+            };
+        } else if (text !== '') {
+            let last1 = text * 1;
+            if (text.indexOf(",") != -1) {
+                last1 = last1.replace(/,/g, '');
+                let value = parseFloat(last1) + diffValue;
+                last1 = this.formatMoney(value, 0);
+            } else {
+                last1 = last1 + diffValue;
+            }
+
+            cell = {
+                "text": last1 + "",
+                "formulas": last1 + "",
+            };
         }
 
-        let len = level ? rn : cn;
+        this.copyRender(darr, d.ri, d.ci, cell, what, cb);
+    }
+
+    getCellByTopCell(d, direction) {
+        let {ri, ci} = d;
+        let ncell = "";
+        if (!direction) {
+            ncell = this.getCell(ri - 1, ci);
+
+            if (!ncell) {
+                ncell = {
+                    text: 0,
+                    formulas: 0,
+                }
+            }
+        } else {
+            ncell = this.getCell(ri, ci - 1);
+
+            if (!ncell) {
+                ncell = {
+                    text: 0,
+                    formulas: 0,
+                }
+            }
+        }
+
+        return helper.cloneDeep(ncell);
+    }
+
+    // what: all | format | text
+    copyPaste(srcCellRange, dstCellRange, what, autofill = false, cb = () => { // todo 用面向对象的思想来重构
+    }) {
+        const {pasteProxy} = this;
+        pasteProxy.setSrcAndDstCellRange(srcCellRange, dstCellRange);
+        let {sri, sci, eri, eci, dsri, dsci, deri, deci, rn, cn} = pasteProxy.use();
+        let direction = pasteProxy.autoFilterDirection();
+
+        let len = direction ? rn : cn;
         for (let i = 0; i < len; i++) {
-            let isAdd = true;       // 往上是false, 往下是true
-            let isCopy = false;
-            let dn = 0;
-            if (deri < sri || deci < sci) {
-                isAdd = false;
-                if (deri < sri) dn = drn;
-                else dn = dcn;
-            }
+            let {isAdd, dn} = pasteProxy.upOrDown();
+            pasteProxy.rangeByWay(direction, i);
+            let diffValue = 0;
+            let {number, nA, nD, sarr} = this.compile();
+            let isCopy = pasteProxy.isCopy(sarr, i);
 
-            let fackSRange = "";
-            let fackDRange = "";
-            if (!level) {
-                fackSRange = new CellRange(sri, sci + i, eri, sci + i);
-                fackDRange = new CellRange(dsri, dsci + i, deri, dsci + i);
-            } else if (level) {
-                fackSRange = new CellRange(sri + i, sci, sri + i, eci);
-                fackDRange = new CellRange(dsri + i, dsci, dsri + i, deci);
-            }
-
-            let sarr = [];
-
-            let number = true, diffValue = 0, nA = true, nD = true;
-            fackSRange.each((i, j) => {
-                let und = false;
-                if (this._[i]) {
-                    if (this._[i].cells && this._[i].cells[j]) {
-                        const ncell = helper.cloneDeep(this._[i].cells[j]);
-                        let enter = false;
-                        for (let k = 0; enter == false && k < sarr.length; k++) {
-                            if (sarr[k].text === ncell.text) {
-                                enter = true;
-                            }
-                        }
-                        if (enter == false) {
-                            sarr.push(ncell);
-                        }
-
-                        let value = ncell.formulas !== "" ? ncell.formulas + "" : ncell.text + "";
-                        value = value.replace(/,/g, "");
-                        let ns = value.replace("=", "") * 1;
-                        if ((ns || ns == 0) && typeof ns === 'number' && number == true) {
-                            number = true;
-                            nA = false;
-                            nD = false;
-                            // nF = false;
-                        } else if (value && nA == true && value[0] === '=') {
-                            nA = true;
-                            number = false;
-                            nD = false;
-                            // nF = false;
-                        } else if (value && nD == true && value.search(/((^((1[8-9]\d{2})|([2-9]\d{3}))([-\/\._])(10|12|0?[13578])([-\/\._])(3[01]|[12][0-9]|0?[1-9])$)|(^((1[8-9]\d{2})|([2-9]\d{3}))([-\/\._])(11|0?[469])([-\/\._])(30|[12][0-9]|0?[1-9])$)|(^((1[8-9]\d{2})|([2-9]\d{3}))([-\/\._])(0?2)([-\/\._])(2[0-8]|1[0-9]|0?[1-9])$)|(^([2468][048]00)([-\/\._])(0?2)([-\/\._])(29)$)|(^([3579][26]00)([-\/\._])(0?2)([-\/\._])(29)$)|(^([1][89][0][48])([-\/\._])(0?2)([-\/\._])(29)$)|(^([2-9][0-9][0][48])([-\/\._])(0?2)([-\/\._])(29)$)|(^([1][89][2468][048])([-\/\._])(0?2)([-\/\._])(29)$)|(^([2-9][0-9][2468][048])([-\/\._])(0?2)([-\/\._])(29)$)|(^([1][89][13579][26])([-\/\._])(0?2)([-\/\._])(29)$)|(^([2-9][0-9][13579][26])([-\/\._])(0?2)([-\/\._])(29)$))/ig, '') != -1) {
-                            nA = false;
-                            number = false;
-                            nD = true;
-                            // nF = false;
-                        } else {
-                            nA = false;
-                            number = false;
-                            nD = false;
-                            // nF = false;
-                        }
-                    } else {
-                        und = true;
-                    }
-                } else {
-                    und = true;
-                }
-
-                if (und) {
-                    sarr.push({
-                        text: 0,
-                        formulas: 0
-                    });
-                }
-            });
-
-            if (sarr.length > 1) {
-                isCopy = true;
-            }
-            if (sri == eri && sci + i == sci + i) {
-                isCopy = true;
-            }
-
-            let darr = [];
-            fackDRange.each((i, j) => {
-                darr.push({
-                    ri: i,
-                    ci: j
-                });
-            });
-
-            let line = 1;       // 往左往右
-            if (fackDRange.sri === fackDRange.eri && fackSRange.eci > fackDRange.eci) {
-                line = 2;       // 往右
-            } else if (fackDRange.sri === fackDRange.eri && fackSRange.eci < fackDRange.eci) {
-                line = 3;       // 往左
-            }
-
+            let darr = this.rangeDArr();
+            let line = pasteProxy.leftOrRight(); // 向左或者向右
 
             if (number && isCopy) {
                 if (isAdd) {
-                    if (number && sarr.length > 1) {
-                        let last2 = sarr[sarr.length - 2];
-                        let last1 = sarr[sarr.length - 1];
-                        diffValue = last1.text * 1 - last2.text * 1;
-                    } else {
-                        diffValue = 1;
-                    }
+                    let diffValue = pasteProxy.calcDiff(sarr, isAdd);
 
                     for (let i = 0; i < darr.length; i++) {
                         let d = darr[i];
-                        let ncell = "";
-                        if (!level) {
-                            if (!this._ || !this._[d.ri - 1] || !this._[d.ri - 1].cells[d.ci]) {
-                                ncell = {
-                                    text: 0,
-                                    formulas: 0,
-                                }
-                            } else {
-                                ncell = helper.cloneDeep(this._[d.ri - 1].cells[d.ci]);
-                            }
-                        } else {
-                            if (!this._ || !this._[d.ri] || !this._[d.ri].cells[d.ci - 1]) {
-                                ncell = {
-                                    text: 0,
-                                    formulas: 0,
-                                }
-                            } else {
-                                ncell = helper.cloneDeep(this._[d.ri].cells[d.ci - 1]);
-                            }
-                        }
-
-                        if (ncell.text[0] == "=") {
-                            let last1 = ncell.text.replace("=", "") * 1;
-
-                            let value = last1 + diffValue;
-                            ncell.text = "=" + value + "";
-                            ncell.formulas = "=" + value + "";
-                            this.copyRender(darr, d.ri, d.ci, ncell, what, cb);
-                        } else if (ncell.text != '') {
-                            if (ncell.text.indexOf(",") != -1) {
-                                let last1 = ncell.text;
-                                last1 = last1.replace(/,/g, '');
-                                let value = parseFloat(last1) + diffValue;
-                                last1 = this.formatMoney(value, 0);
-
-                                ncell.text = last1 + "";
-                                ncell.formulas = last1 + "";
-                                this.copyRender(darr, d.ri, d.ci, ncell, what, cb);
-                            } else {
-                                let last1 = ncell.text * 1;
-
-                                let value = last1 + diffValue;
-                                ncell.text = value + "";
-                                ncell.formulas = value + "";
-                                this.copyRender(darr, d.ri, d.ci, ncell, what, cb);
-                            }
-                        }
+                        let ncell = this.calcCellByTopCell(d, direction);
+                        this.calcCellByTopCell(ncell, diffValue, darr, what, cb);
                     }
                 } else {
-                    if (number && sarr.length > 1) {
-                        let last2 = sarr[1];
-                        let last1 = sarr[0];
-                        diffValue = last1.text * 1 - last2.text * 1;
-                    } else {
-                        diffValue = -1;
-                    }
+                    let diffValue = pasteProxy.calcDiff(sarr, isAdd);
 
                     for (let i = darr.length - 1; i >= 0; i--) {
                         let d = darr[i];
                         let ncell = "";
-                        if (!level) {
+                        if (!direction) {
                             if (!this._ || !this._[d.ri + 1] || !this._[d.ri + 1].cells[d.ci]) {
                                 ncell = {
                                     text: 0,
@@ -722,7 +861,7 @@ class Rows {
                     nci = dstCellRange.sci + (nci - srcCellRange.sci);
                 }
 
-                if(ri * 1 !== nri || ci * 1 !== nci) {
+                if (ri * 1 !== nri || ci * 1 !== nci) {
                     ncellmm[nri] = ncellmm[nri] || {cells: {}};
                     if (this._[ri].cells[ci].text != '' && this._[ri].cells[ci].formulas != '') {
                         this.setCell(nri, nci, this._[ri].cells[ci], 'all');
@@ -877,10 +1016,10 @@ class Rows {
             this._ = d;
 
             // 为什么要判断sheet = '' ?
-            if(out) {
+            if (out) {
                 const {table, data} = sheet;
                 const {proxy} = table;
-                let workbook = proxy.outCalc(this._, this.workbook.getWorkbook(2),  data.name);
+                let workbook = proxy.outCalc(this._, this.workbook.getWorkbook(2), data.name);
                 this.workbook.setWorkBook(2, workbook);
                 proxy.setOldData(workbook);
             } else if (sheet !== '') {

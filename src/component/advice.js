@@ -29,19 +29,19 @@ export default class Advice {
         this.save.on('mousedown.stop', (evt) => {
             this.saveCheck.show('visibility', 'initial');
             this.textCheck.hide('visibility', 'hidden');
-            this.data.rows._ = this.new_rows;
+            this.sheet.setCellRange(this.reference, this.tableProxy, true);
             sheetReset.call(this.sheet);
         });
 
         this.text.on('mousedown.stop', (evt) => {
-            this.data.rows._ = this.old_rows;
+            this.sheet.setCellRange(this.reference, this.tableProxy, false);
             this.saveCheck.show('visibility', 'hidden');
             this.textCheck.hide('visibility', 'initial');
             sheetReset.call(this.sheet);
         });
     }
 
-    show(left, top, type = 1, old_rows, new_rows) {
+    show(left, top, type = 1, reference, tableProxy ) {
         this.el.css('left', `${left}px`);
         this.el.css('top', `${top}px`);
         if (type == 1) {
@@ -50,8 +50,8 @@ export default class Advice {
         }
         this.left = parseInt(left);
         this.top = parseInt(top);
+        this.tableProxy = tableProxy;
+        this.reference = reference;
         this.el.show();
-        this.old_rows = old_rows;
-        this.new_rows = new_rows;
     }
 }

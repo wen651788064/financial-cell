@@ -381,10 +381,10 @@ function renderCell(rindex, cindex, sheetbook) {
     }
     draw.rect2(dbox, () => {
         // render text
-        if (style.format) {
-            // console.log(data.formatm, '>>', cell.format);
-            cellText = formatm[style.format].render(cellText);
-        }
+        // if (style.format) {
+        //     // console.log(data.formatm, '>>', cell.format);
+        //     cellText = formatm[style.format].render(cellText);
+        // }
         const font = Object.assign({}, style.font);
 
         font.size = getFontSizePxByPt(font.size);

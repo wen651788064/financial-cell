@@ -1,12 +1,13 @@
-import {selectorCellText, selectorSet, sheetReset} from "../component/sheet";
+import {sheetReset} from "../component/sheet";
 import {h} from "../component/element";
 import Drag from "../external/drag";
 import Resize from "../external/resize";
 import {cssPrefix} from "../config";
 import {getChooseImg} from "../event/copy";
-import {expr2xy, xy2expr} from "../core/alphabet";
+import {xy2expr} from "../core/alphabet";
 import CellRange from "../core/cell_range";
-import {deepCopy, isAbsoluteValue} from "../core/operator";
+import {deepCopy} from "../core/operator";
+import TableProxy from "./table_proxy";
 
 export let resizeOption = {
     onBegin(data) {
@@ -443,7 +444,7 @@ function equals(x, y) {
     return true;
 }
 
-function isHaveStyle(styles, style) {
+export function isHaveStyle(styles, style) {
     for (let i = 0; i < styles.length; i++) {
         if (equals(styles[i], style)) {
             return i;
@@ -453,285 +454,27 @@ function isHaveStyle(styles, style) {
 }
 
 
-function GetInfoFromTable(tableObj) {
+function GetInfoFromTable(tableObj) { // class ClipboardTableProxy; .tableDom 属性  .dealColSpan() [477~483], dealStyle(), dealReferrence()， 最终得到row2； sheet层面上：（1）增加行与列。（2）setCellRange变更值。（3）给出黏贴选项
     let {data} = this;
     let {ri, ci} = data.selector;
-    let rows = data.rows._;
     let styles = data.styles;
-    let rows2 = JSON.parse(JSON.stringify(data.rows._));
-    let lastRi = 0, lastCi = 0;
+    let tableProxy = new TableProxy(data);
 
-    if (tableObj.rows.length >= data.rows.len - ri + 1) {
-        data.insert('row', tableObj.rows.length + 5);
-    }
-
-    for (let i = 0; i < tableObj.rows.length; i++) {
-        let cells = {};
-        let cells2 = {};
-        if (rows && rows[i + ri] && rows[i + ri].cells) {
-            cells = rows[i + ri].cells;
-            cells2 = JSON.parse(JSON.stringify(rows[i + ri].cells));
-        }
-        for (let j = 0; j < tableObj.rows[i].cells.length; j++) {
-            let len = tableObj.rows[i].cells[j].getAttribute("colspan");
-            if (len && len > 1) {
-                for (let c = 0; c < len - 1; c++) {
-                    tableObj.rows[i].insertBefore(document.createElement("td"), tableObj.rows[i].cells[j + 1]);
-                }
-            }
-            let bold = false;
-            if (document.defaultView.getComputedStyle(tableObj.rows[i].cells[j], false).fontWeight > 400) {
-                bold = true;
-            }
-            let args = {
-                color: document.defaultView.getComputedStyle(tableObj.rows[i].cells[j], false).color,
-                bgcolor: document.defaultView.getComputedStyle(tableObj.rows[i].cells[j], false).background.substring(0,
-                    document.defaultView.getComputedStyle(tableObj.rows[i].cells[j], false).background.indexOf(")") + 1),
-                font: {
-                    bold: bold,
-                },
-            };
-            let index = isHaveStyle(styles, args);
-
-            if (tableObj.rows[i].cells[j] && tableObj.rows[i].cells[j].querySelector("tt")) {
-                let eri = tableObj.rows[i].cells[j].childNodes[0].getAttribute('ri');
-                let eci = tableObj.rows[i].cells[j].childNodes[0].getAttribute('ci');
-
-                let arr = tableObj.rows[i].cells[j].innerText.split(/([(-\/,+，*\s=^&])/);
-                let dci = i + ri - eri;
-                let dei = j + ci - eci;
-                console.log(tableObj.rows[i].cells[j].innerText, j, i, dei, dci);
-
-                let newStr = "";
-                let bad = false;
-                for (let i = 0; i < arr.length; i++) {
-                    if (arr[i].search(/^[A-Z]+\d+$/) != -1) {
-                        let ds = expr2xy(arr[i]);
-                        if (ds[0] + dei < 0 || ds[1] + dci < 0) {
-                            bad = true;
-                        }
-                        arr[i] = xy2expr(ds[0] + dei, ds[1] + dci);
-                    } else if (arr[i].search(/^[A-Za-z]+\d+:[A-Za-z]+\d+$/) != -1) {
-                        let a1 = arr[i].split(":")[0];
-                        let a2 = arr[i].split(":")[1];
-                        let ds1 = expr2xy(a1);
-                        let ds2 = expr2xy(a2);
-
-                        if (ds1[0] + dei < 0 || ds1[1] + dci < 0) {
-                            bad = true;
-                        }
-                        if (ds2[0] + dei < 0 || ds2[1] + dci < 0) {
-                            bad = true;
-                        }
-
-                        let s = xy2expr(ds1[0] + dei, ds1[1] + dci) + ":";
-                        s += xy2expr(ds2[0] + dei, ds2[1] + dci)
-                        arr[i] = s;
-                    } else {
-                        let value = isAbsoluteValue(arr[i], 5);
-
-                        if (value === 2) {
-                            let ds = expr2xy(arr[i].replace(/\$/g, ''));
-                            if (ds[0] + dei < 0 || ds[1] + dci < 0) {
-                                bad = true;
-                            }
-
-                            arr[i] = xy2expr(ds[0] + dei, ds[1], 2);
-                        } else if (value === 1) {
-                            let ds = expr2xy(arr[i].replace(/\$/g, ''));
-                            if (ds[0] + dei < 0 || ds[1] + dci < 0) {
-                                bad = true;
-                            }
-
-                            arr[i] = xy2expr(ds[0], ds[1] + dci, 1);
-                        } else if (value === 4) {
-                            let sp = arr[i].split(":");
-                            console.log(arr[i], sp);
-                            for (let item = 0; item < sp.length; item++) {
-                                let ds = expr2xy(sp[item].replace(/\$/g, ''));
-                                if (ds[0] + dei < 0 || ds[1] + dci < 0) {
-                                    bad = true;
-                                }
-
-                                sp[item] = xy2expr(ds[0] + dei, ds[1], 2);
-                            }
-                            arr[i] = sp.join(':');
-                        } else if (value === 5) {
-                            let sp = arr[i].split(":");
-                            for (let item = 0; item < sp.length; item++) {
-                                let ds = expr2xy(sp[item].replace(/\$/g, ''));
-                                if (ds[0] + dei < 0 || ds[1] + dci < 0) {
-                                    bad = true;
-                                }
-                                if (item === 1) {
-                                    sp[item] = xy2expr(ds[0], ds[1] + dci, 1);
-                                } else {
-                                    sp[item] = xy2expr(ds[0] + dei, ds[1], 2);
-                                }
-                            }
-                            arr[i] = sp.join(':');
-                        } else if (value === 7) {
-                            let sp = arr[i].split(':');
-                            console.log(arr[i], sp);
-                            for (let item = 0; item < sp.length; item++) {
-                                let ds = expr2xy(sp[item].replace(/\$/g, ''));
-                                if (ds[0] + dei < 0 || ds[1] + dci < 0) {
-                                    bad = true;
-                                }
-                                sp[item] = xy2expr(ds[0], ds[1] + dci, 1);
-                            }
-                            arr[i] = sp.join(':');
-                        } else if (value === 6) {
-                            let sp = arr[i].split(":");
-                            for (let item = 0; item < sp.length; item++) {
-                                let ds = expr2xy(sp[item].replace(/\$/g, ''));
-                                if (ds[0] + dei < 0 || ds[1] + dci < 0) {
-                                    bad = true;
-                                }
-                                if (item === 0) {
-                                    sp[item] = xy2expr(ds[0], ds[1] + dci, 1);
-                                } else {
-                                    sp[item] = xy2expr(ds[0] + dei, ds[1], 2);
-                                }
-                            }
-                            arr[i] = sp.join(':');
-                        } else if (value === 8) {
-                            let sp = arr[i].split(":");
-                            for (let item = 0; item < sp.length; item++) {
-                                let ds = expr2xy(sp[item].replace(/\$/g, ''));
-                                if (ds[0] + dei < 0 || ds[1] + dci < 0) {
-                                    bad = true;
-                                }
-
-                                if (item === 0) {
-                                    sp[item] = xy2expr(ds[0] + dei, ds[1] + dci, 0);
-                                } else {
-                                    sp[item] = xy2expr(ds[0] + dei, ds[1], 1);
-                                }
-                            }
-                            arr[i] = sp.join(':');
-                        } else if (value === 9) {
-                            let sp = arr[i].split(":");
-                            for (let item = 0; item < sp.length; item++) {
-                                let ds = expr2xy(sp[item].replace(/\$/g, ''));
-                                if (ds[0] + dei < 0 || ds[1] + dci < 0) {
-                                    bad = true;
-                                }
-
-                                if (item === 0) {
-                                    sp[item] = xy2expr(ds[0] + dei, ds[1] + dci, 0);
-                                } else {
-                                    sp[item] = xy2expr(ds[0] + dei, ds[1], 2);
-                                }
-                            }
-                            arr[i] = sp.join(':');
-                        } else if (value === 10) {
-                            let sp = arr[i].split(":");
-                            for (let item = 0; item < sp.length; item++) {
-                                let ds = expr2xy(sp[item].replace(/\$/g, ''));
-                                if (ds[0] + dei < 0 || ds[1] + dci < 0) {
-                                    bad = true;
-                                }
-
-                                if (item === 1) {
-                                    sp[item] = xy2expr(ds[0] + dei, ds[1] + dci, 0);
-                                } else {
-                                    sp[item] = xy2expr(ds[0] + dei, ds[1], 2);
-                                }
-                            }
-                            arr[i] = sp.join(':');
-                        } else if (value === 11) {
-                            let sp = arr[i].split(":");
-                            for (let item = 0; item < sp.length; item++) {
-                                let ds = expr2xy(sp[item].replace(/\$/g, ''));
-                                if (ds[0] + dei < 0 || ds[1] + dci < 0) {
-                                    bad = true;
-                                }
-
-                                if (item === 1) {
-                                    sp[item] = xy2expr(ds[0] + dei, ds[1] + dci, 0);
-                                } else {
-                                    sp[item] = xy2expr(ds[0] + dei, ds[1], 1);
-                                }
-                            }
-                            arr[i] = sp.join(':');
-                        }
-                    }
-                    newStr += arr[i];
-                }
-
-                if (bad) {
-                    selectorCellText.call(this, i + ri, j + ci, {text: "=#REF!", style: index}, 'style', this.table.proxy);
-                    // cells[j + ci] = {
-                    //     text: "=#REF!",
-                    //     style: index,
-                    // };
-                    cells2[j + ci] = {
-                        text: "=#REF!",
-                    };
-                } else {
-                    selectorCellText.call(this, i + ri, j + ci,
-                        {text: newStr != "" ? newStr : tableObj.rows[i].cells[j].innerText, style: index},
-                        'style', this.table.proxy);
-                    // cells[j + ci] = {
-                    //     text: newStr != "" ? newStr : tableObj.rows[i].cells[j].innerText,
-                    //     formulas: newStr != "" ? newStr : tableObj.rows[i].cells[j].innerText,
-                    //     style: index,
-                    // };
-                    cells2[j + ci] = {
-                        text: newStr != "" ? newStr : tableObj.rows[i].cells[j].innerText,
-                        formulas: newStr != "" ? newStr : tableObj.rows[i].cells[j].innerText,
-                    };
-
-                }
-            } else if (index !== -1) {
-                selectorCellText.call(this, i + ri, j + ci, {
-                    text: tableObj.rows[i].cells[j].innerText,
-                    style: index
-                }, 'style', this.table.proxy);
-                // cells[j + ci] = {
-                //     text: tableObj.rows[i].cells[j].innerText,
-                //     style: index,
-                // };
-                cells2[j + ci] = {
-                    text: tableObj.rows[i].cells[j].innerText,
-                };
-            } else {
-                styles.push(args);
-                selectorCellText.call(this, i + ri, j + ci, {
-                    text: tableObj.rows[i].cells[j].innerText,
-                    style: styles.length - 1
-                }, 'style', this.table.proxy);
-                // cells[j + ci] = {
-                //     text: tableObj.rows[i].cells[j].innerText,
-                //     style: styles.length - 1,
-                // };
-                cells2[j + ci] = {
-                    text: tableObj.rows[i].cells[j].innerText,
-                };
-            }
-            lastRi = i + ri;
-            lastCi = j + ci;
-            selectorSet.call(this, true, i + ri, j + ci, true, true);
-        }
-        // rows[i + ri] = {
-        //     "cells": cells
-        // };
-        rows2[i + ri] = {
-            "cells": cells2
-        };
-    }
+    tableProxy.extend(tableObj, {ri, ci});
+    tableProxy.dealColSpan(tableObj);
+    tableProxy.dealStyle(tableObj, {ri, ci});
+    let {reference} = tableProxy.dealReference(tableObj, {ri, ci});
+    this.setCellRange(reference, tableProxy, true);
 
     const rect = data.getSelectedRect();
     let left = rect.left + rect.width + 60;
     let top = rect.top + rect.height + 31;
     let {advice, editor} = this;
     editor.clear();
-    advice.show(left, top, 1, rows2, rows, rect);
-    data.rows._ = rows;
+    advice.show(left, top, 1, reference, tableProxy);
 
     return {
-        rows: rows,
+        rows: data.rows._,
         styles: styles
     };
 }

@@ -1,24 +1,69 @@
 import dayjs from 'dayjs'
 import {datePattern, str2Re} from "../core/re";
+import {formatNumberRender} from "../core/format";
+import {isHave} from "../core/helper";
+
+function fract(num) {
+    return num - Math.trunc(num);
+}
 
 export function formatDate(diff) {
-    let date = dayjs('1900-01-01').add(diff, 'day').subtract(2, 'day').format('YYYY-MM-DD');
+    let str = calcDecimals(diff, (i) => {
+        return i * 24 * 60;
+    });
+    str = formatNumberRender(str, 5);
+    let beginDate = dayjs('1900-01-01');
+    let beginDate2 = dayjs('1900-01-01');
+    let enter = false;
 
-    return {
-        "state": date === 'Invalid Date' ? false : true,
-        "date": date,
+    if (isHave(str) && str * 1 > 0) {
+        let second = calcDecimals(str, (i) => {
+            return i * 60;
+        });
+        enter = true;
+        second = formatNumberRender(second, 5);
+        beginDate2 = dayjs('1900-01-01  00:00:00').set('minute', str).set('second', second);
     }
+
+    let date = "";
+    if(enter) {
+        date = beginDate.add(diff, 'day').subtract(2, 'day').format('YYYY-MM-DD');
+
+        let formula = beginDate2.add(diff, 'day').subtract(2, 'day').format('YYYY-MM-DD  h:mm:ss');
+        return {
+            "state": date === 'Invalid Date' ? false : true,
+            "date": date,
+            "date_formula": formula,
+            "minute": true
+        }
+    } else {
+         date = beginDate.add(diff, 'day').subtract(2, 'day').format('YYYY-MM-DD');
+        return {
+            "state": date === 'Invalid Date' ? false : true,
+            "date": date,
+            "date_formula": "",
+            "minute": false
+        }
+    }
+}
+
+function calcDecimals(diff, cb = () => {
+}) {
+    let fix = diff.toString().split('.')[1] + "";
+    let newData = fix;
+    for (let i = 0; i < fix.length; i++) {
+        newData = newData * 0.1;
+    }
+    let str = cb(newData);
+    return str;
 }
 
 export function cellDate() {
 
 }
 
+// 已写test
 export function dateDiff(date) {
-    // console.log(dayjs('2019-01').format('YYYY-MM-DD'));
-    // console.log(dayjs('2019/01').format('YYYY-MM-DD'));
-    // console.log(dayjs('2019').format('YYYY-MM-DD'));
-    // console.log(dayjs('2019sa').format('YYYY-MM-DD'));
     let valid = false;
 
     for (let i = 0; valid === false && i < datePattern.length; i++) {

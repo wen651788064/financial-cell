@@ -16,12 +16,11 @@ import {formulas} from '../core/formula';
 import {getFontSizePxByPt} from "../core/font";
 // import {baseFormats, multiply} from "../core/format";
 import Advice from "../component/advice";
-import {formatm} from "../core/format";
 import {clearSelectors, editingSelectors, lockCells, makeSelector} from "../component/formula_editor";
 import {deleteImg, hideDirectionArr, mountPaste} from "../event/paste";
 import {getChooseImg, mountCopy} from "../event/copy";
 import Website from "../component/website";
-import {cutStr, cuttingByPos, positionAngle} from "../core/operator";
+import {cutStr, cuttingByPos, deepCopy, positionAngle} from "../core/operator";
 import {moveCell} from "../event/move";
 import CellRange from "../core/cell_range";
 import {orientation} from "../core/helper";
@@ -468,9 +467,9 @@ function loadFormula(load = false) {
     // clearTimeout(this.formulaTime);
     // let {data, table} = this;
     // this.formulaTime = setTimeout(() => {
-    //     let {formula} = data.settings;
-    //     if (formula && typeof formula.wland == "function") {
-    //         formula.wland(formula, data, table, load);
+    //     let {date_formula} = data.settings;
+    //     if (date_formula && typeof date_formula.wland == "function") {
+    //         date_formula.wland(date_formula, data, table, load);
     //     }
     // }, 1500);
 }
@@ -613,7 +612,7 @@ function renderAutoAdapt() {
                 // 得到当前文字最宽的width
                 let txtWidth = null;
                 if (style.format != undefined) {
-                    txtWidth = table.draw.selfAdaptionTxtWidth(formatm[style.format].render(txt), font, dbox);
+                    // txtWidth = table.draw.selfAdaptionTxtWidth(formatm[style.format].render(txt), font, dbox);
 
                 } else {
                     txtWidth = table.draw.selfAdaptionTxtWidth(txt, font, dbox);
@@ -754,10 +753,10 @@ function errorPop(enter, msg) {
 
 export function selectorCellText(ri, ci, {text, style}, state, proxy = "") {
     const {data, editor,} = this;
-    let args = data.selectorCellText(ri, ci, text, state);
+    let args = data.selectorCellText(ri, ci, text + "", state);
     if (args.state) {
         args = errorPop.call(this, true, args.msg);
-        if(args.state) {
+        if (args.state) {
             return true;
         }
     }
@@ -1501,6 +1500,19 @@ export default class Sheet {
             this.selector.arange = args.dstCellRange;
             data.clickAutofill(args.srcCellRange, args.dstCellRange, "all", msg => xtoast('Tip', msg), this.table.proxy);
             autofillNext.call(this);
+        }
+    }
+
+    setCellRange(reference, tableProxy, styleBool) {
+        let {table,  } = this;
+        for (let i = 0; i < reference.length; i++) {
+            let {ri, ci} = reference[i];
+            let cell = deepCopy(tableProxy.rows.getCellOrNew(ri, ci));
+            if (styleBool === false) {
+                delete cell['style'];
+            }
+            selectorCellText.call(this, ri, ci, cell, 'style', table.proxy);
+            selectorSet.call(this, true, ri, ci, true, true);
         }
     }
 

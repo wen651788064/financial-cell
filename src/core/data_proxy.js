@@ -7,7 +7,7 @@ import History from './history';
 import Clipboard from './clipboard';
 import AutoFilter from './auto_filter';
 import {Merges} from './merge';
-import helper from './helper';
+import helper, {useOne} from './helper';
 import {Rows} from './row';
 import {Cols} from './col';
 import {Validations} from './validation';
@@ -22,6 +22,7 @@ import {RefRow} from "./ref_row";
 import {isLegal} from "./operator";
 import Recast from "./recast";
 import {dateDiff, formatDate} from "../component/date";
+import {formatNumberRender} from "./format";
 // private methods
 /*
  * {
@@ -472,45 +473,94 @@ function tryParseToNum(what = 'input', cell, ri, ci) {
 
 function getType(ri, ci, cell) {
     let data = this;
+    let {rows} = this;
     let cellStyle = data.getCellStyle(ri, ci);
-    let {isValid, diff} = dateDiff(cell.text);
+    let {isValid, diff,} = dateDiff(rows.useOne(cell.value, cell.text));
 
-    if ((isValid && cellStyle && cellStyle.format !== 'normal') || cellStyle && cellStyle.format && cellStyle.format === 'date') {
-        let text = cell.text, formula = cell.formulas;
+    let format = rows.getCellStyleConvert(cellStyle, isValid);
+    if (format === 'number') {
+        let text = rows.useOne(cell.value, cell.text), formula = cell.formulas;
+        let _cell = {};
+        if (isValid) {
+            _cell = {
+                "text": diff.toFixed(2),
+                "value": text,
+                "formulas": formula,
+            };
+            data.dateInput(_cell, ri, ci, 'number');
+        } else {
+            text = formatNumberRender(text, 2);
+            _cell = {
+                "text": text,
+                "value": rows.useOne(cell.value, cell.text, false),
+                "formulas": formula,
+            };
+            data.dateInput(_cell, ri, ci, 'number');
+        }
+
+        return {
+            "state": true,
+            "text": _cell.text,
+        }
+    } else if (format === 'date') {
+        let text = rows.useOne(cell.value, cell.text), formula = cell.formulas, minute = false;
+        let _cell = {};
+
         if (!isValid) {
-            let {state, date} = formatDate(cell.text);
+            let args = formatDate(text);
+            let {state, date, date_formula} = args;
+            minute = args.minute;
             isValid = state;
+            formula = rows.isFormula(formula) ? formula : minute ? date_formula : formula;
             diff = cell.text;
             text = date;
         }
 
         if (isValid) {
-            let _cell = {
+            _cell = {
                 "formulas": formula,
                 "text": text,
+                "value": rows.useOne(cell.value, cell.text, false),
                 "to_calc_num": diff,
+                "minute": minute,
             };
             data.dateInput(_cell, ri, ci, 'date');
         }
 
         return {
             "state": true,
-            "text": isValid ? cell.to_calc_num : cell.text,
-
+            "text": isValid ? _cell.to_calc_num : cell.text,
         };
-    } else if (isValid && cellStyle && cellStyle.format && cellStyle.format === 'normal') {
-        let text = diff, formula = cell.formulas;
-        let _cell = {
-            "formulas": formula,
-            "text": text,
-        };
-        data.dateInput(_cell, ri, ci, 'normal');
+    } else if (format === 'normal') {
+        if (isValid) {
+            let text = diff, formula = cell.formulas;
+            let _cell = {
+                "formulas": rows.toString(formula),
+                "value": rows.toString(rows.useOne(cell.value, cell.text, false)),
+                "text": rows.toString(text),
+            };
+            data.dateInput(_cell, ri, ci, 'normal');
 
-        return {
-            "state": true,
-            "text": cell.text,
+            return {
+                "state": true,
+                "text": _cell.text,
+            }
+        } else {
+            let text = rows.useOne(cell.value, cell.text), formula = cell.formulas;
+            let _cell = {
+                "formulas": formula,
+                "value": rows.useOne(cell.value, cell.text),
+                "text": text,
+            };
+            data.dateInput(_cell, ri, ci, 'normal');
+
+            return {
+                "state": true,
+                "text": _cell.text,
+            }
         }
     }
+
 
     return {
         "state": false,
@@ -536,7 +586,6 @@ export default class DataProxy {
         this.showEquation = false;
         this.calc = formulaCalc();
         this.refRow = new RefRow(this.settings.row, this);
-
         this.pasteDirectionsArr = [];
         // save data end
 
@@ -965,7 +1014,7 @@ export default class DataProxy {
     }
 
     dateInput(cell, ri, ci, type) {
-        let cstyle = {};
+        let cstyle = this.getCellStyle(ri, ci) || {};
         cstyle.format = type;
         cell.style = this.addStyle(cstyle);
         this.rows.setCell(ri, ci, cell, type);
@@ -1080,17 +1129,18 @@ export default class DataProxy {
     }
 
     // type: row | column
-    insert(type, n = 1) {
+    insert(type, n = 1, begin = -1) {
         this.changeData(() => {
             const {sri, sci} = this.selector.range;
             const {rows, merges, cols} = this;
-            let si = sri;
+            begin = begin != -1 ? begin : sri;
+            let si = begin;
             if (type === 'row') {
-                rows.insert(sri, n);
+                rows.insert(begin, n);
             } else if (type === 'column') {
-                rows.insertColumn(sci, n);
-                si = sci;
-                cols.len += 1;
+                rows.insertColumn(begin, n);
+                si = begin;
+                cols.len += n;
             }
             merges.shift(type, si, n, (ri, ci, rn, cn) => {
                 const cell = rows.getCell(ri, ci);

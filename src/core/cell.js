@@ -199,8 +199,8 @@ const cellRender = (data, sheetbook, y, x, src, formulaMap, getCellText, cellLis
         // console.log("156", sheetbook.Sheets.Sheet1[xy2expr(x, y)], xy2expr(x, y))
         if (evalFormula(src.substring(1), "wland") || evalFormula(src.substring(1), "wfr") || evalFormula(src.substring(1), "rtd")
             || evalFormula(src.substring(1), "city")) {
-            // let {formula} = data.settings;=MD.RTD("sina", "162411", "now")
-            // formula.wland(formula, data);
+            // let {date_formula} = data.settings;=MD.RTD("sina", "162411", "now")
+            // date_formula.wland(date_formula, data);
             return src.toUpperCase();
         } else if (src.substring(1) && sheetbook && sheetbook.Sheets && sheetbook.Sheets[data.name] && sheetbook.Sheets[data.name][xy2expr(x, y)]) {
             // sheetbook.Sheets.Sheet1[xy2expr(x, y)].f = src.substring(1).toUpperCase();

@@ -142,6 +142,7 @@ export default class CellProxy {
         });
         deepArr.push(arr);
 
+
         for (let i = 0; i < deepArr.length; i++) {
             let targetArr = deepArr[i];
             arr = [];

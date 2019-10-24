@@ -54,7 +54,7 @@ export default {
         datetime: 'Date time',
         duration: 'Duration',
     },
-    formula: {
+    date_formula: {
         sum: 'Sum',
         average: 'Average',
         max: 'Max',

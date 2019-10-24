@@ -90,8 +90,16 @@ export default class WorkBook {
 
         if (data.isEmpty(cell) === false) {
             let {state, text} = data.tryParseToNum(what, cell, ri, ci);
-            cell.text = text;
-            cell.text = data.toString(cell.text);
+            if (!state) {
+                cell.text = text;
+                cell.text = data.toString(cell.text);
+                cell = deepCopy(cell);
+            } else {
+                cell = deepCopy(cell);
+                cell.text = text;
+                cell.text = data.toString(cell.text);
+            }
+
 
             if (data.isBackEndFunc(cell.text)) {
                 this.workbook.Sheets[data.name][expr] = {v: "", f: ""};
@@ -129,9 +137,6 @@ export default class WorkBook {
                         };
                     }
                 }
-            }
-            if (state) {
-                data.setCellWithFormulas(ri, ci, deep_cell.text, cell.formulas, 'date');
             }
         } else {
             delete this.workbook_no_formula.Sheets[data.name][expr];

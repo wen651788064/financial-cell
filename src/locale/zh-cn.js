@@ -47,7 +47,7 @@ export default {
         recover: '恢复此版本',
     },
     format: {
-        normal: '正常',
+        normal: '常规',
         text: '文本',
         number: '数值',
         percent: '百分比',
@@ -58,7 +58,7 @@ export default {
         datetime: '长日期',
         duration: '持续时间',
     },
-    formula: {
+    date_formula: {
         sum: '求和',
         average: '求平均值',
         max: '求最大值',

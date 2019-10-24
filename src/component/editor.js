@@ -463,7 +463,7 @@ export default class Editor {
                         }
                         console.log(key_num);
                         if(key_num === 115) {       // F4
-                            let {inputText, pos} = this.editorText.f4ShortcutKey(this.pos);
+                            let {inputText, pos} = this.editorText.f4ShortcutKey(getCursortPosition.call(this));
                             inputEventHandler.call(this, null, inputText, inputText);
                             setTimeout(() => {
                                 this.pos = pos;

@@ -45,7 +45,7 @@ function mountCopy(event) {
 
                 let text = rows._[i].cells[j].formulas != "" ? rows._[i].cells[j].formulas : rows._[i].cells[j].text;
                 if(rows._[i].cells[j].formulas && cutStr(rows._[i].cells[j].formulas, false, true).length > 0) {
-                    let hidden = h('tt', '');
+                    let hidden = h('reference', '');
                     hidden.html(text);
                     hidden.attr('ri', i);
                     hidden.attr('ci', j);

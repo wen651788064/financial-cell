@@ -25,7 +25,6 @@
   },
   "scripts": {
     "dev": "webpack-dev-server --config build/webpack.dev.js",
-    "dev_test": "webpack-dev-server --config test/test/webpack.dev.js",
     "build": "webpack --config build/webpack.prod.js",
     "build-locale": "webpack --config build/webpack.locale.js",
     "lint": "./node_modules/eslint/bin/eslint.js src",
@@ -33,6 +32,7 @@
     "format_test": "nyc ./node_modules/mocha/bin/mocha --require @babel/register test/core/format_test.js",
     "selectors_test": "nyc ./node_modules/mocha/bin/mocha --require @babel/register test/core/selectors_test.js",
     "errorPop_test": "nyc  ./node_modules/mocha/bin/mocha   --require @babel/register --require css-loader test/core/errorPop_test.js",
+    "cell_proxy_test": "nyc  ./node_modules/mocha/bin/mocha   --require @babel/register --require css-loader test/core/cell_proxy_test.js",
     "coverage": "nyc report --reporter=text-lcov > coverage.lcov && codecov -t 31ecdb12-8ecb-46f7-a486-65c2516307dd"
   },
   "keywords": [

@@ -12,7 +12,7 @@
 <script>
     function load() {
         let options = {
-            // formula: {
+            // date_formula: {
             //     wland: () => {
             //         console.log("17wland")
             //
@@ -80,7 +80,7 @@
                 cells: {
                     0: { text: '常熟万科公望花园',  },
                     1: { text: '常熟' },
-                    3: { text: 44048,  },
+                    3: { text: 44048, formulas: 44048, style: 1 },
                 }
             }
         };
@@ -114,6 +114,7 @@
                         bgcolor: 'rgb(146, 208, 80)',
                         textwrap: true,
                         color: '#900b09',
+                        format: "date",
                         font: {name: "Arial", size: 10, bold: true, italic: false},
                         border: {
                             top: ['thin', '#0366d6'],
@@ -125,6 +126,7 @@
                     {
                         font: {name: "Arial", size: 10, bold: true, italic: false},
                         bgcolor: '#5CACEE',
+                        format: "date",
                         align: "center"
                     },
                     {

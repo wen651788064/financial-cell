@@ -47,7 +47,7 @@ export default {
     datetime: 'Datum Termin',
     duration: 'Dauer',
   },
-  formula: {
+  date_formula: {
     sum: 'Summe',
     average: 'Durchschnittliche',
     max: 'Max',
