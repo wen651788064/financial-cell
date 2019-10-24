@@ -183,6 +183,7 @@ class Rows {
         const cell = this.getCellOrNew(ri, ci);
         if (what === 'style') {
             cell.style = style;
+            cell.formulas = text;
         } else {
             cell.formulas = text;
             cell.value = text;
