@@ -97,15 +97,7 @@ export default class TableProxy {
                 let dei = j + ci - eci;
 
                 let {bad, result} = rows.getCellTextByShift(strList, dei, dci);
-                let _cell = {};
-                if (bad) {
-                    _cell.text = "#REF!";
-                    _cell.formulas = "#REF!";
-                } else {
-                    _cell.text = result != "" ? result : innerText;
-                    _cell.formulas = result != "" ? result : innerText;
-                }
-                rows.setCell(ri + i, ci + j, _cell, 'all');
+                rows.updateCellReferenceByShift(bad, result, ri + i, ci + j);
             } else {
                 let _cell = {};
                 _cell.text = innerText;

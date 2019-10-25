@@ -311,15 +311,51 @@ function toolbarChangePaintformatPaste() {
     }
 }
 
-function dropDown(e, isAutofillEl, selector, data, verticalScrollbar, rows, evt) {
+function dropDown(e, isAutofillEl, selector, data, verticalScrollbar, rows, evt, pos = 0) {
     this.selector.setBoxinner("none");
 
     this.container.css('pointer-events', 'none');
-    let {ri, ci} = data.getCellRectByXY(e.layerX, e.layerY);
+    let dstRect = data.getCellRectByXY(e.layerX, e.layerY);
+    let {ri, ci} = dstRect;
+
     if (isAutofillEl) {
-        let pos = positionAngle(evt.clientX, e.clientX, evt.clientY, e.clientY);
-        console.log(pos);
+        let rect = data.getRect(selector.range);
+        let clientX = rect.width + rect.left;
+        let clientY = rect.height + rect.top + 70;
+
+
+         if (e.clientX < rect.width + rect.left && e.clientX > rect.left && e.clientY - 70 > rect.top && e.clientY - 70 < rect.top + rect.height) {
+            pos = -1;
+            selector.arange = null;
+        } else if (e.clientX < rect.width + rect.left && e.clientX > rect.left) {
+            console.log("上下")
+            if (e.clientY > rect.top + rect.height + 70) {
+                pos = 1;
+            } else if (e.clientY - 70 < rect.top) {
+                pos = 4;
+            }
+
+            if (pos === 1 && e.clientY < 0) {
+                pos = 4;
+            } else if (document.body.clientHeight < e.clientY && pos === 4) {
+                pos = 1;
+            }
+        } else if (e.clientY - (rect.height - rect.top - 70) > 0 && (rect.height + rect.top + 70) > e.clientY) {
+            console.log("左右")
+            if (e.clientX > rect.width + rect.left) {
+                pos = 3;
+            } else if (e.clientX < rect.left) {
+                pos = 2;
+            }
+        }
+
+         if (pos === 0) {
+            pos = positionAngle(clientX, e.clientX, clientY, e.clientY);
+        }
+
         let orien = selector.showAutofill(ri, ci, pos);
+
+
         let o = orientation(this.data.settings.view.height(), this.data.settings.view.width(), e.layerY, e.layerX, orien);
 
         if (o && orien == 44) {
@@ -1504,7 +1540,7 @@ export default class Sheet {
     }
 
     setCellRange(reference, tableProxy, styleBool) {
-        let {table,  } = this;
+        let {table,} = this;
         for (let i = 0; i < reference.length; i++) {
             let {ri, ci} = reference[i];
             let cell = deepCopy(tableProxy.rows.getCellOrNew(ri, ci));

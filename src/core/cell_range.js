@@ -249,6 +249,15 @@ class CellRange {
         return new CellRange(sri, sci, eri, eci, w, h);
     }
 
+    getLocationArray() {
+        let darr = [];
+        this.each((i, j) => {
+            darr.push({ri: i, ci: j});
+        });
+
+        return darr;
+    }
+
     /*
     toJSON() {
       return this.toString();

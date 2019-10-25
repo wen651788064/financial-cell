@@ -8,6 +8,7 @@ import {RefRow} from "../../src/core/ref_row";
 import EditorText from "../../src/component/editor_text";
 import {dateDiff, formatDate} from "../../src/component/date";
 import {isHave} from "../../src/core/helper";
+import {copyPasteTemplate} from "../template/templates";
 
 let assert = require('assert');
 
@@ -128,15 +129,11 @@ describe('qq', () => {
     describe(' autofilter  ', () => {
         it(' number autofilter ', () => {
             let cell = {"text": "1", "formulas": "1"};
-            data.rows.setCell(3, 4, cell, 'all_with_no_workbook');
-            const srcCellRange = new CellRange(3, 4, 3, 4, 0, 0);
-            const dstCellRange = new CellRange(4, 4, 12, 4, 0, 0);
-            data.rows.copyPaste(srcCellRange, dstCellRange, 'all', true);
+            copyPasteTemplate(cell, data);
 
             let cell1 = data.rows.getCell(4, 4);
             let cell2 = data.rows.getCell(9, 4);
             let cell3 = data.rows.getCell(12, 4);
-
             assert.equal(cell1.text, '2');
             assert.equal(cell1.formulas, '2');
 
@@ -147,12 +144,62 @@ describe('qq', () => {
             assert.equal(cell3.formulas, '10');
         });
 
+        it('  2019-01-01 1 autofilter  ', function () {
+            let cell = {"text": "2019-01-01 1", "formulas": "2019-01-01 1"};
+            copyPasteTemplate(cell, data);
+
+            let cell1 = data.rows.getCell(4, 4);
+            let cell2 = data.rows.getCell(9, 4);
+            let cell3 = data.rows.getCell(12, 4);
+
+            assert.equal(cell1.text, '2019-01-01 2');
+            assert.equal(cell1.formulas, '2019-01-01 2');
+
+            assert.equal(cell2.text, '2019-01-01 7');
+            assert.equal(cell2.formulas, '2019-01-01 7');
+
+            assert.equal(cell3.text, '2019-01-01 10');
+            assert.equal(cell3.formulas, '2019-01-01 10');
+        });
+
+        it(' 12as212a autofilter', function () {
+            let cell = {"text": "12as212a", "formulas": "12as212a"};
+            copyPasteTemplate(cell, data);
+
+            let cell1 = data.rows.getCell(4, 4);
+            let cell2 = data.rows.getCell(9, 4);
+            let cell3 = data.rows.getCell(12, 4);
+
+            assert.equal(cell1.text, '12as213a');
+            assert.equal(cell1.formulas, '12as213a');
+
+            assert.equal(cell2.text, '12as218a');
+            assert.equal(cell2.formulas, '12as218a');
+
+            assert.equal(cell3.text, '12as221a');
+            assert.equal(cell3.formulas, '12as221a');
+        });
+
+        it(' null autofilter', function () {
+            let cell = { };
+            copyPasteTemplate(cell, data);
+            let cell1 = data.rows.getCell(4, 4);
+            let cell2 = data.rows.getCell(9, 4);
+            let cell3 = data.rows.getCell(12, 4);
+
+            assert.equal(cell1.text, '');
+            assert.equal(cell1.formulas, '');
+
+            assert.equal(cell2.text, '');
+            assert.equal(cell2.formulas, '');
+
+            assert.equal(cell3.text, '');
+            assert.equal(cell3.formulas, '');
+        });
+
         it(' letter autofilter ', () => {
             let cell = {"text": "a", "formulas": "a"};
-            data.rows.setCell(3, 4, cell, 'all_with_no_workbook');
-            const srcCellRange = new CellRange(3, 4, 3, 4, 0, 0);
-            const dstCellRange = new CellRange(4, 4, 12, 4, 0, 0);
-            data.rows.copyPaste(srcCellRange, dstCellRange, 'all', true);
+            copyPasteTemplate(cell, data);
 
             let cell1 = data.rows.getCell(4, 4);
             let cell2 = data.rows.getCell(9, 4);
@@ -167,6 +214,8 @@ describe('qq', () => {
             assert.equal(cell3.text, 'a');
             assert.equal(cell3.formulas, 'a');
         });
+
+
     });
 
     describe('  set cell  ', () => {

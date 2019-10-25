@@ -10,7 +10,7 @@ import PlugIn from "./plug-in/plug_in";
 
 class Spreadsheet {
     constructor(selectors, options = {}, methods = {}, alias = 'sheet1') {
-        let targetEl = selectors;
+         let targetEl = selectors;
           if (typeof selectors === 'string') {
             targetEl = document.querySelector(selectors);
         }
@@ -116,6 +116,7 @@ class Spreadsheet {
 const spreadsheet = (el, options = {}) => new Spreadsheet(el, options);
 
 if (window) {
+    window.jsSpreadsheet = require('js-spreadsheet');
     window.x = window.x || {};
     window.x.spreadsheet = spreadsheet;
     window.x.spreadsheet.locale = (lang, message) => locale(lang, message);

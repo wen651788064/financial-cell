@@ -1318,7 +1318,6 @@ export default class DataProxy {
     setCellText(ri, ci, {text, style}, state, proxy = "") {
         // text = text.replace(/\"/g)
         const {rows, history, validations} = this;
-        console.log(ri, ci);
         if (state === 'finished') {
             rows.setCellText(ri, ci, {text: ''});
             history.add(this.getData());

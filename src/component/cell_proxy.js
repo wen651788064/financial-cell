@@ -391,62 +391,13 @@ export default class CellProxy {
                 data[ri]['cells'][ci].formulas = cells[i].f + "";
             }
         }
-        // Object.keys(cells).forEach(i => {
-        //     let [ci, ri] = expr2xy(i);
-        //     if (!data[ri]) {
-        //         data[ri] = {}
-        //     }
-        //     if (!data[ri]['cells']) {
-        //         data[ri]['cells'] = {}
-        //     }
-        //
-        //     if (!data[ri]['cells'][ci]) {
-        //         data[ri]['cells'][ci] = {}
-        //     }
-        //
-        //     if (typeof cells[i].v === 'undefined') {
-        //         cells[i].v = "#ERROR!"
-        //     }
-        //
-        //     if (this.isNaN(cells[i].v)) {
-        //         cells[i].v = "#ERROR!"
-        //     }
-        //
-        //     if (typeof cells[i].f === 'undefined') {
-        //         cells[i].f = "";
-        //     }
-        //     if (isNaN(cells[i].f) && cells[i].f.search(/\((\*|\/)/) != -1) {
-        //         cells[i].v = '#ERROR!';
-        //     }
-        //
-        //     if (cells[i].w) {
-        //         cells[i].v = cells[i].w;
-        //     }
-        //
-        //     let args = specialWebsiteValue(cells[i].v + "", cells[i].f + "");
-        //     if(args.state) {
-        //         cells[i].v =  args.text;
-        //     }
-        //     let {state} = this.table.specialHandle('date', this.deepCopy(data[ri]['cells'][ci]), ri, ci);
-        //     cells[i].v = state ? data[ri]['cells'][ci].text : cells[i].v;
-        //     cells[i].f = state ? data[ri]['cells'][ci].text : cells[i].f;
-        //
-        //     if (cells[i].v + "" === '0' && cells[i].f && cells[i].f[0] && cells[i].f[0] === '=') {
-        //         data[ri]['cells'][ci].text = cells[i].v + "";
-        //         data[ri]['cells'][ci].formulas = cells[i].f + "";
-        //     } else if (typeof cells[i].v === 'boolean') {
-        //         data[ri]['cells'][ci].text = cells[i].v + "";
-        //         data[ri]['cells'][ci].formulas = cells[i].f + "";
-        //     } else {
-        //         data[ri]['cells'][ci].text = cells[i].v;
-        //         data[ri]['cells'][ci].formulas = cells[i].f;
-        //     }
-        // });
 
         return data;
     }
 
     isEqual(v1, v2) {
+        v1 = v1 + "";
+        v2 = v2 + "";
         v1 = v1.toUpperCase();
         v2 = v2.toUpperCase();
         if (v1 === v2) {

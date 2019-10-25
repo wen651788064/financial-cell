@@ -1,6 +1,7 @@
 import {filterFormula} from "../config";
 import {expr2xy, xy2expr} from "./alphabet";
 import CellRange from "./cell_range";
+import {h} from "../component/element";
 import {
     blankOperator,
     letterAndLetterOperator,
@@ -23476,6 +23477,13 @@ const positionAngle = (x1, x2, y1, y2) => {
         return angle;
     }
 
+    // if (angle === 2) {
+    //     let s1 = h('div', '').css('border', '1px solid').css('height', '1px').css('width', '1px');
+    //     let s2 = h('div', '').css('border', '1px solid').css('height', '1px').css('width', '1px');
+    //     document.body.appendChild(s1.el);
+    //     document.body.appendChild(s2.el);
+    //     debugger
+    // }
     return angle;
 };
 

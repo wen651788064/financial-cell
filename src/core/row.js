@@ -1,12 +1,13 @@
 import helper, {isHave} from './helper';
-import {expr2expr, xy2expr} from './alphabet';
-import {absoluteType, changeFormula, cutStr, isAbsoluteValue, value2absolute} from "../core/operator";
+import {xy2expr} from './alphabet';
+import {changeFormula, cutStr, isAbsoluteValue, value2absolute} from "../core/operator";
 import {expr2xy} from "../core/alphabet";
 import dayjs from 'dayjs'
-import {deepCopy, isSheetVale} from "./operator";
+import {deepCopy, isSheetVale, splitStr} from "./operator";
 import Recast from "./recast";
 import WorkBook from "./workbook_cacl_proxy";
 import PasteProxy from "./paste_proxy";
+import CellProxy from "./cell_proxy";
 
 export function isFormula(text) {
     if (text && text[0] === "=") {
@@ -14,6 +15,28 @@ export function isFormula(text) {
     }
 
     return false;
+}
+
+function otherAutoFilter(d, darr, direction, isAdd, what, cb) {
+    let ncell = this.getCellByTopCell(d, direction, isAdd, 'other');
+    let {text, formulas} = ncell;
+    let iText = formulas != "" ? formulas : text;
+
+    if (this.isFormula(iText)) {
+        this.calcFormulaCellByTopCell(iText, darr, d, direction, isAdd);
+    } else {
+        this.calcCellByTopCell(cb, what, ncell, darr, isAdd, iText, d, text);
+    }
+}
+
+function numberAutoFilter(d, darr, direction, isAdd, diffValue, what, cb) {
+    let ncell = this.getCellByTopCell(d, direction, isAdd);
+    this.calcNumberCellByTopCell(ncell, diffValue, darr, d, what, cb);
+}
+
+function dateAutoFilter(d, direction, isAdd, darr, what, cb) {
+    let ncell = this.getCellByTopCell(d, direction, isAdd);
+    this.calcDateCellByTopCell(ncell, darr, d, isAdd, what, cb);
 }
 
 class Rows {
@@ -66,7 +89,8 @@ class Rows {
 
     getCell(ri, ci) {
         const row = this.get(ri);
-        if (row !== undefined && row.cells !== undefined && row.cells[ci] !== undefined) {
+        if (row !== undefined && row.cells !== undefined && row.cells[ci] !== undefined
+            && (isHave(row.cells[ci].text) || isHave(row.cells[ci].formulas))) {
             return row.cells[ci];
         }
         return null;
@@ -219,6 +243,10 @@ class Rows {
                 for (let i = 0; i < arr.length; i++) {
                     let cell = this.getCell(ri, ci);
                     let s1 = arr[i];
+                    if(!isHave(cell.formulas)) {
+                        cell.formulas = "";
+                    }
+
                     let formulas = changeFormula(cutStr(cell.formulas));
 
                     if (formulas.indexOf(s1) != -1) {
@@ -468,17 +496,23 @@ class Rows {
         return range;
     }
 
-    compile() {
+    // getAllDataType(cellRange)
+    getAllDataType(cellRange) {
         const {pasteProxy} = this;
-        let number = true, nA = true, nD = true, sarr = [];
-        let {fackSRange} = pasteProxy.getRangeByWay();
+        let isNumber = true, isDate = true, sarr = [];
 
-        fackSRange.each((i, j) => {
+        cellRange.each((i, j) => {
             let und = false, cell = this.getCell(i, j);
             if (cell) {
-                nA, nD, number = pasteProxy.calcType(cell, sarr);
+                cell = deepCopy(cell);
+                let args = new CellProxy(cell).getCellDataType(sarr, {isDate, isNumber});
+                // pasteProxy.getCellDataType(cell, sarr, {isDate, isNumber}); // let args = CellProxy(cell).getCellDataType()
+                isDate = args.isDate;
+                isNumber = args.isNumber;
             } else {
                 und = true;
+                isNumber = false;
+                isDate = false;
             }
 
             if (und) {
@@ -490,24 +524,13 @@ class Rows {
         });
 
         return {
-            nA, nD, number, sarr
+            nD: isDate, number: isNumber, sarr
         }
     }
 
-    rangeDArr() {
-        const {pasteProxy} = this;
-        let {fackDRange} = pasteProxy.getRangeByWay();
-
-        let darr = [];
-        fackDRange.each((i, j) => {
-            darr.push({ri: i, ci: j});
-        });
-
-        return darr;
-    }
-
-    calcCellByTopCell(ncell, diffValue, darr, what, cb) {
+    calcNumberCellByTopCell(ncell, diffValue, darr, d, what, cb) {
         let {text} = ncell;
+        text = this.toString(text);
         let cell = {};
         if (this.isFormula(text)) {
             let last1 = text.replace("=", "") * 1;
@@ -536,281 +559,150 @@ class Rows {
         this.copyRender(darr, d.ri, d.ci, cell, what, cb);
     }
 
-    getCellByTopCell(d, direction) {
-        let {ri, ci} = d;
-        let ncell = "";
-        if (!direction) {
-            ncell = this.getCell(ri - 1, ci);
+    calcFormulaCellByTopCell(iText, darr, d, direction, isAdd) {
+        let strList = splitStr(iText);
+        let args = this.getRangeByTopCell({ri: d.ri, ci: d.ci}, direction, isAdd);
+        let dci = d.ri - args.ri;
+        let dri = d.ci - args.ci;
+        let {bad, result} = this.getCellTextByShift(strList, dri, dci);
+        this.updateCellReferenceByShift(bad, result, d.ri, d.ci);
+    }
 
-            if (!ncell) {
-                ncell = {
-                    text: 0,
-                    formulas: 0,
-                }
+    calcCellByTopCell(cb, what, ncell, darr, isAdd, iText, d, text) {
+        if (!isHave(iText)) {
+            iText = "";
+        }
+        iText = this.toString(iText);
+        let arr = this.toString(text).split(/\d+/g);
+        if (arr) {
+            let count = 0;
+            if (isAdd) {
+                ncell.text = iText.replace(/\d+/g, (word) => {
+                    count = count + 1;
+                    if (arr.length - 1 === count) {
+                        return word * 1 + 1;
+                    } else {
+                        return word;
+                    }
+                });
+            } else {
+                ncell.text = iText.replace(/\d+/g, (word) => {
+                    count = count + 1;
+                    if (arr.length - 1 === count) {
+                        return word * 1 - 1;
+                    } else {
+                        return word;
+                    }
+                });
             }
-        } else {
-            ncell = this.getCell(ri, ci - 1);
+            ncell.formulas = ncell.text;
+        }
+        this.copyRender(darr, d.ri, d.ci, ncell, what, cb);
+    }
 
-            if (!ncell) {
-                ncell = {
-                    text: 0,
-                    formulas: 0,
-                }
+    calcDateCellByTopCell(ncell, darr, d, isAdd, what, cb) {
+        if (ncell.text != '') {
+            let last1 = ncell.text;
+
+            let value = "";
+            if (isAdd) {
+                value = dayjs(last1).add(1, 'day').format('YYYY-MM-DD');
+            } else {
+                value = dayjs(last1).add(-1, 'day').format('YYYY-MM-DD');
+            }
+            ncell.text = this.toString(value);
+            ncell.formulas = this.toString(value);
+            this.copyRender(darr, d.ri, d.ci, ncell, what, cb);
+        }
+    }
+
+    getRangeByTopCell({ri, ci}, direction, isAdd) {
+        if (isAdd) {
+            ri = !direction ? ri - 1 : ri;
+            ci = !direction ? ci : ci - 1;
+        } else {
+            ri = !direction ? ri + 1 : ri;
+            ci = !direction ? ci : ci + 1;
+        }
+
+        return {ri, ci};
+    }
+
+    getCellByTopCell(d, direction, isAdd, what = 'all') {
+        let {ri, ci} = this.getRangeByTopCell({ri: d.ri, ci: d.ci}, direction, isAdd);
+
+        let ncell = this.getCell(ri, ci);
+        if (!ncell) {
+            ncell = {
+                text: '',
+                formulas: '',
             }
         }
 
         return helper.cloneDeep(ncell);
     }
 
+    updateCellReferenceByShift(bad, result, ri, ci) {
+        let _cell = {};
+        if (bad) {
+            _cell.text = "#REF!";
+            _cell.formulas = "#REF!";
+        } else {
+            _cell.text = result != "" ? result : innerText;
+            _cell.formulas = result != "" ? result : innerText;
+        }
+        this.setCell(ri, ci, _cell, 'all');
+    }
+
     // what: all | format | text
+    // 填充
     copyPaste(srcCellRange, dstCellRange, what, autofill = false, cb = () => { // todo 用面向对象的思想来重构
     }) {
         const {pasteProxy} = this;
         pasteProxy.setSrcAndDstCellRange(srcCellRange, dstCellRange);
-        let {sri, sci, eri, eci, dsri, dsci, deri, deci, rn, cn} = pasteProxy.use();
-        let direction = pasteProxy.autoFilterDirection();
+        let {rn, cn} = pasteProxy.use();
+        let isLeftRight = pasteProxy.autoFilterDirection(); // todo: upOrDownOrLeftOrRight = pateProxy.getUpDownLeftRight() 去掉482
 
-        let len = direction ? rn : cn;
+        let len = isLeftRight ? rn : cn;
         for (let i = 0; i < len; i++) {
-            let {isAdd, dn} = pasteProxy.upOrDown();
-            pasteProxy.rangeByWay(direction, i);
-            let diffValue = 0;
-            let {number, nA, nD, sarr} = this.compile();
+            let isDown = pasteProxy.upOrDown();
+            let {srcOneDRange, dstOneDRange} = pasteProxy.getOneDRangeObj(isLeftRight, i);
+            let {number, nD, sarr} = this.getAllDataType(srcOneDRange); // todo: 改成与Excel一样的逻辑 let {number, nD, sarr} = this.getRangeDataType(srcOneDRange);
             let isCopy = pasteProxy.isCopy(sarr, i);
 
-            let darr = this.rangeDArr();
+            let darr = dstOneDRange.getLocationArray(); //let dstOneDLocationAarray = dstOneDRange.getLocationArray()
             let line = pasteProxy.leftOrRight(); // 向左或者向右
 
             if (number && isCopy) {
-                if (isAdd) {
-                    let diffValue = pasteProxy.calcDiff(sarr, isAdd);
+                let diffValue = pasteProxy.calcDiff(sarr, isDown);
 
+                if (isDown) {
                     for (let i = 0; i < darr.length; i++) {
-                        let d = darr[i];
-                        let ncell = this.calcCellByTopCell(d, direction);
-                        this.calcCellByTopCell(ncell, diffValue, darr, what, cb);
+                        numberAutoFilter.call(this, darr[i], darr, isLeftRight, isDown, diffValue, what, cb);
                     }
                 } else {
-                    let diffValue = pasteProxy.calcDiff(sarr, isAdd);
-
                     for (let i = darr.length - 1; i >= 0; i--) {
-                        let d = darr[i];
-                        let ncell = "";
-                        if (!direction) {
-                            if (!this._ || !this._[d.ri + 1] || !this._[d.ri + 1].cells[d.ci]) {
-                                ncell = {
-                                    text: 0,
-                                    formulas: 0,
-                                }
-                            } else {
-                                ncell = helper.cloneDeep(this._[d.ri + 1].cells[d.ci]);
-                            }
-                        } else {
-                            if (!this._ || !this._[d.ri] || !this._[d.ri].cells[d.ci + 1]) {
-                                ncell = {
-                                    text: 0,
-                                    formulas: 0,
-                                }
-                            } else {
-                                ncell = helper.cloneDeep(this._[d.ri].cells[d.ci + 1]);
-                            }
-                        }
-                        if (ncell.text[0] == "=") {
-                            let last1 = ncell.text.replace("=", "") * 1;
-
-                            let value = last1 + diffValue;
-                            ncell.text = "=" + value + "";
-                            ncell.formulas = "=" + value + "";
-                            this.copyRender(darr, d.ri, d.ci, ncell, what, cb);
-                        } else if (ncell.text != '') {
-                            if (ncell.text.indexOf(",") != -1) {
-                                let last1 = ncell.text;
-                                last1 = last1.replace(/,/g, '');
-                                let value = parseFloat(last1) + diffValue;
-                                last1 = this.formatMoney(value, 0);
-
-                                ncell.text = last1 + "";
-                                ncell.formulas = last1 + "";
-                                this.copyRender(darr, d.ri, d.ci, ncell, what, cb);
-                            } else {
-                                let last1 = ncell.text * 1;
-
-                                let value = last1 + diffValue;
-                                ncell.text = value + "";
-                                ncell.formulas = value + "";
-                                this.copyRender(darr, d.ri, d.ci, ncell, what, cb);
-                            }
-                        }
+                        numberAutoFilter.call(this, darr[i], darr, isLeftRight, isDown, diffValue, what, cb);
                     }
                 }
             } else if (nD && isCopy) {
-                if (isAdd) {
+                if (isDown) {
                     for (let i = 0; i < darr.length; i++) {
-                        let d = darr[i];
-                        let ncell = "";
-                        if (line === 1) {
-                            if (!this._ || !this._[d.ri - 1] || !this._[d.ri - 1].cells[d.ci]) {
-                                ncell = {
-                                    text: 0,
-                                    formulas: 0,
-                                }
-                            } else {
-                                ncell = helper.cloneDeep(this._[d.ri - 1].cells[d.ci]);
-                            }
-                        } else {
-                            if (line == 3) {
-                                if (!this._ || !this._[d.ri] || !this._[d.ri].cells[d.ci - 1]) {
-                                    ncell = {
-                                        text: 0,
-                                        formulas: 0,
-                                    }
-                                } else {
-                                    ncell = helper.cloneDeep(this._[d.ri].cells[d.ci - 1]);
-                                }
-                            }
-                        }
-                        if (ncell.text != '') {
-                            let last1 = ncell.text;
-
-                            let value = dayjs(last1).add(1, 'day').format('YYYY-MM-DD');
-                            ncell.text = value + "";
-                            ncell.formulas = value + "";
-                            this.copyRender(darr, d.ri, d.ci, ncell, what, cb);
-                        }
+                        dateAutoFilter.call(this, darr[i], line === 3 ? true : false, isDown, darr, what, cb);
                     }
                 } else {
                     for (let i = darr.length - 1; i >= 0; i--) {
-                        let d = darr[i];
-                        let ncell = "";
-                        if (line === 1) {
-                            if (!this._ || !this._[d.ri + 1] || !this._[d.ri + 1].cells[d.ci]) {
-                                ncell = {
-                                    text: 0,
-                                    formulas: 0,
-                                }
-                            } else {
-                                ncell = helper.cloneDeep(this._[d.ri + 1].cells[d.ci]);
-                            }
-                        }
-                        else if (line == 2) {
-                            if (!this._ || !this._[d.ri] || !this._[d.ri].cells[d.ci + 1]) {
-                                ncell = {
-                                    text: 0,
-                                    formulas: 0,
-                                }
-                            } else {
-                                ncell = helper.cloneDeep(this._[d.ri].cells[d.ci + 1]);
-                            }
-                        }
-
-                        if (ncell.text != '') {
-                            let last1 = ncell.text;
-
-                            let value = dayjs(last1).add(-1, 'day').format('YYYY-MM-DD');
-                            ncell.text = value + "";
-                            ncell.formulas = value + "";
-                            this.copyRender(darr, d.ri, d.ci, ncell, what, cb);
-                        }
+                        dateAutoFilter.call(this, darr[i], line === 2 ? true : false, isDown, darr, what, cb);
                     }
                 }
             } else {
-                for (let i = sri; i <= eri; i += 1) {
-                    if (this._[i]) {
-                        for (let j = sci; j <= eci; j += 1) {
-                            if (this._[i].cells && this._[i].cells[j]) {
-                                let added = 1;
-                                for (let ii = dsri; ii <= deri; ii += rn) {
-                                    for (let jj = dsci; jj <= deci; jj += cn) {
-                                        const nri = ii + (i - sri);
-                                        const nci = jj + (j - sci);
-                                        const ncell = helper.cloneDeep(this._[i].cells[j]);
-                                        // ncell.text
-                                        if (autofill && ncell && ncell.text && ncell.text.length > 0 && isCopy) {
-                                            let {text, formulas} = ncell;
-                                            if (formulas != "") {
-                                                text = formulas;
-                                            }
-                                            let n = (jj - dsci) + (ii - dsri) + 2;
-                                            if (!isAdd) {
-                                                n -= dn + 1;
-                                            }
-                                            if (text[0] === '=') {
-                                                ncell.text = text.replace(/\w{1,5}\d|\w{1,5}\$\d|\$\w{1,5}\d/g, (word) => {
-                                                    word = word.toUpperCase();
-                                                    if (isAbsoluteValue(word, 3) == false) {
-                                                        return word;
-                                                    }
-                                                    let type = absoluteType(word);
-                                                    let [xn, yn] = [0, 0];
-                                                    if (sri === dsri && type != 1) {
-                                                        xn = n - 1;
-                                                        // if (isAdd) xn -= 1;
-                                                    } else if (type != 2) {
-                                                        if (type == 1 && sri === dsri) {
-
-                                                        } else {
-                                                            yn = n - 1;
-                                                        }
-                                                    }
-
-                                                    // 往下是true  往上是false
-                                                    yn += 1;
-                                                    let a = expr2xy(word.replace("$", ""), '');
-                                                    if ((a[0] - Math.abs(xn) < 0 && xn < 0) || (a[1] - Math.abs(yn) < 0 && yn <= 0)) {
-                                                        return "#REF!";
-                                                    }
-
-
-                                                    if (text.toUpperCase().indexOf(word + "!") != -1) {
-                                                        return word;
-                                                    }
-                                                    let txt = expr2expr(word.replace("$", ""), xn, yn);
-                                                    if (type == 1) {
-                                                        // txt = "$" + word.replace("$", "");
-                                                        txt = "$" + txt;
-                                                    } else if (type == 2) {
-                                                        let str = "", enter = 1;
-                                                        for (let i = 0; i < txt.length; i++) {
-                                                            if (parseInt(txt[i]) >= 0 && parseInt(txt[i]) <= 9 && enter == 1) {
-                                                                str += "$";
-                                                                enter = 2;
-                                                            }
-                                                            str += txt[i];
-                                                        }
-                                                        txt = str;
-                                                    }
-
-                                                    // console.log('xn:', xn, ', yn:', yn, word, expr2expr(word, xn, yn));
-                                                    if (txt.replace(/[^-(0-9)]/ig, "") <= 0) {
-                                                        return "#REF!";
-                                                    }
-                                                    return txt;
-                                                });
-
-                                                if (ncell.text.indexOf("#REF!") != -1) {
-                                                    ncell.text = "#REF!";
-                                                }
-
-                                                // if(text.indexOf("CITY(") == -1) {
-                                                ncell.formulas = ncell.text;
-                                                // }
-
-                                            } else {
-                                                const result = /[\\.\d]+$/.exec(text);
-                                                // console.log('result:', result);
-                                                if (result !== null) {
-                                                    const index = Number(result[0]) + added;
-                                                    added += 1;
-                                                    ncell.text = text.substring(0, result.index) + index;
-                                                    ncell.formulas = ncell.text;
-                                                }
-                                            }
-                                        }
-                                        this.copyRender(darr, nri, nci, ncell, what, cb);
-                                    }
-                                }
-                            }
-                        }
+                if (isDown) {
+                    for (let i = 0; i < darr.length; i++) {
+                        otherAutoFilter.call(this, darr[i], darr, isLeftRight, isDown, what, cb);
+                    }
+                } else {
+                    for (let i = darr.length - 1; i >= 0; i--) {
+                        otherAutoFilter.call(this, darr[i], darr, isLeftRight, isDown, what, cb);
                     }
                 }
             }
