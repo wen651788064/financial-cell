@@ -312,6 +312,26 @@ function toolbarChangePaintformatPaste() {
     }
 }
 
+function scroll() {
+    if(window.pageYOffset != null) {  // ie9+ 高版本浏览器
+        // 因为 window.pageYOffset 默认的是  0  所以这里需要判断
+        return {
+            left: window.pageXOffset,
+            top: window.pageYOffset
+        }
+    }
+    else if(document.compatMode === "CSS1Compat") {    // 标准浏览器   来判断有没有声明DTD
+        return {
+            left: document.documentElement.scrollLeft,
+            top: document.documentElement.scrollTop
+        }
+    }
+    return {   // 未声明 DTD
+        left: document.body.scrollLeft,
+        top: document.body.scrollTop
+    }
+}
+
 function dropDown(e, isAutofillEl, selector, data, verticalScrollbar, rows, evt, pos = 0) {
     this.selector.setBoxinner("none");
     this.container.css('pointer-events', 'none');
@@ -319,6 +339,16 @@ function dropDown(e, isAutofillEl, selector, data, verticalScrollbar, rows, evt,
     let {ri, ci} = dstRect;
 
     if (isAutofillEl) {
+        var pagex = e.pageX || scroll().left + e.clientX;
+        var pagey = e.pageY || scroll().top + e.clientY;
+        //3.获取盒子在整个页面的位置
+        var xx = this.el.el.offsetLeft;
+        var yy = this.el.el.offsetTop;
+        //4.用鼠标的位置减去盒子的位置赋值给盒子的内容。
+        var targetx = pagex - xx;
+        var targety = pagey - yy;
+        console.log("鼠标在盒子中的X坐标为："+targetx+"px;<br>鼠标在盒子中的Y坐标为："+targety+"px;");
+
         let rect = data.getRect(selector.range);
         let rectProxy = new RectProxy(rect);
         let clientX = rect.width + rect.left;
