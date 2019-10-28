@@ -336,14 +336,16 @@ function dropDown(e, isAutofillEl, selector, data, verticalScrollbar, rows, evt,
     if (isAutofillEl) {
         let rect = data.getRect(selector.range);
         let rectProxy = new RectProxy(rect);
-        let clientX = rect.width + rect.left + offset.l;
+        let clientX = rect.width + rect.left;
         let clientY = rect.height + rect.top + offsetTop;
+        let ex = e.clientX - offset.l;
+        let ey = e.clientY - offset.t;
 
-        if (rectProxy.isLocInside(e.clientX, e.clientY)) {
+        if (rectProxy.isLocInside(ex, ey)) {
             pos = -1;
             selector.arange = null;
         } else {
-            pos = rectProxy.getUpDownLeftRight(e, clientX, clientY)
+            pos = rectProxy.getUpDownLeftRight(ex, ey, clientX, clientY)
         }
 
         let orien = selector.showAutofill(ri, ci, pos);
