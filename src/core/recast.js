@@ -19,13 +19,13 @@ export default class Recast {
         this.formula = this.formula.replace(/{/g, braceLeft);
         this.formula = this.formula.replace(/}/g, braceRight);
         this.formula = this.formula.replace(/#/g, '');
-        this.formula = this.formula.replace(/#/g, '');
         this.formula = this.formula.replace(/\./g, 'a');
         this.formula = this.formula.replace(/[0-9][0-9]*/g, 'a');
         this.formula = this.formula.replace(/\“/g, '"');
         this.formula = this.formula.replace(/\（/g, '(');
         this.formula = this.formula.replace(/\）/g, ')');
         this.formula = this.formula.replace(/\”/g, '"');
+        this.formula = this.formula.replace(/\%/g, '');
     }
 
     parse() {

@@ -573,7 +573,6 @@ class Rows {
     }
 
     calcCellByTopCell(cb, what, ncell, darr, isAdd, iText, d, text) {
-        iText = d.v;
         if (!isHave(iText)) {
             iText = "";
         }

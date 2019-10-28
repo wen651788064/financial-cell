@@ -37,8 +37,8 @@ function find(arr, str) {
 function isOusideViewRange(y, x, dy, dx, orien) {
     if (orien == 44 && dy - y + 100 > 0) {
         return true;
-    } else if (orien == 11) {
-
+    } else if (orien == 11 && dx - 100 < 0) {
+        return true;
     } else if (orien == 33 && dx - x + 100 > 0) {
         return true;
     } else if (orien == 22 && dy - 100 < 0) {

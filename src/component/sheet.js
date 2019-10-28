@@ -11,7 +11,7 @@ import Toolbar from './toolbar';
 import ModalValidation from './modal_validation';
 import SortFilter from './sort_filter';
 import {xtoast} from './message';
-import {cssPrefix, offsetTop} from '../config';
+import {cssPrefix, offsetLeft, offsetTop} from '../config';
 import {formulas} from '../core/formula';
 import {getFontSizePxByPt} from "../core/font";
 // import {baseFormats, multiply} from "../core/format";
@@ -327,7 +327,7 @@ function getPoint(obj) { //获取某元素以浏览器左上角为原点的坐�
     }
 }
 
-function dropDown(e, isAutofillEl, selector, data, verticalScrollbar, rows, evt, pos = 0, offset) {
+function dropDown(e, isAutofillEl, selector, data, verticalScrollbar, rows, evt, pos = 0, offset, horizontalScrollbar, cols) {
     this.selector.setBoxinner("none");
     this.container.css('pointer-events', 'none');
     let dstRect = data.getCellRectByXY(e.layerX, e.layerY);
@@ -338,8 +338,8 @@ function dropDown(e, isAutofillEl, selector, data, verticalScrollbar, rows, evt,
         let rectProxy = new RectProxy(rect);
         let clientX = rect.width + rect.left;
         let clientY = rect.height + rect.top + offsetTop;
-        let ex = e.clientX - offset.l;
-        let ey = e.clientY - offset.t;
+        let ex = e.clientX - offset.l - offsetLeft;
+        let ey = e.clientY;
 
         if (rectProxy.isLocInside(ex, ey)) {
             pos = -1;
@@ -350,22 +350,41 @@ function dropDown(e, isAutofillEl, selector, data, verticalScrollbar, rows, evt,
 
         let orien = selector.showAutofill(ri, ci, pos);
 
-        if (isOusideViewRange(this.data.settings.view.height(), this.data.settings.view.width(), e.layerY, e.layerX, orien)) {
-            if (orien == 44) {
-                const {top} = verticalScrollbar.scroll();  // 可见视图上边缘距离toolbar的像素
-                ri = data.scroll.ri + 1;
-                verticalScrollbar.move({top: top + rows.getHeight(ri) - 1});
-            } else if (orien == 22) {
-                const {top} = verticalScrollbar.scroll();
-                ri = data.scroll.ri - 1;
-                if (ri >= 0) {
-                    verticalScrollbar.move({top: ri === 0 ? 0 : top - rows.getHeight(ri)});
-                }
-            }
+        if (isOusideViewRange(this.data.settings.view.height(), this.data.settings.view.width(), ey, ex, orien)) {
+            // if (Math.round(Math.random()) === 1) {
+                continueMove.call(this, orien, verticalScrollbar, horizontalScrollbar, cols, rows, data);
+            // }
         }
     } else if (e.buttons === 1 && !e.shiftKey) {
         selectorSet.call(this, true, ri, ci, true, true);
     }
+}
+
+function continueMove(orien, verticalScrollbar, horizontalScrollbar, cols, rows, data) {
+    let ri = 0, ci = 0;
+    if (orien === 44) {
+        const {top} = verticalScrollbar.scroll();  // 可见视图上边缘距离toolbar的像素
+        ri = data.scroll.ri + 1;
+        verticalScrollbar.move({top: top + rows.getHeight(ri) - 1});
+    } else if (orien === 22) {
+        const {top} = verticalScrollbar.scroll();
+        ri = data.scroll.ri - 1;
+        if (ri >= 0) {
+            verticalScrollbar.move({top: ri === 0 ? 0 : top - rows.getHeight(ri)});
+        }
+    } else if (orien === 33) {
+        const {left} = horizontalScrollbar.scroll();
+        ci = data.scroll.ci + 1;
+        horizontalScrollbar.move({left: left + cols.getWidth(ci)});
+    } else if (orien === 11) {
+        const {left} = horizontalScrollbar.scroll();
+        ci = data.scroll.ci - 1;
+        horizontalScrollbar.move({left: left - cols.getWidth(ci)});
+    }
+    // return {
+    //     "moveRi": ri,
+    //     "moveCi"
+    // }
 }
 
 
@@ -415,8 +434,8 @@ function overlayerMousedown(evt) {
 
         let dateBegin;
         // let {pageX, pageY} = evt;
-        let {verticalScrollbar} = this;
-        const {rows} = data;
+        let {verticalScrollbar, horizontalScrollbar} = this;
+        const {rows, cols} = data;
         const {top} = verticalScrollbar.scroll();
         ri = data.scroll.ri + 1;
         let ttop = top + rows.getHeight(ri) - 1;
@@ -432,13 +451,13 @@ function overlayerMousedown(evt) {
                     if (!dateBegin) {
                         dateBegin = new Date();
                     }
-                    dropDown.call(this, e, isAutofillEl, selector, data, verticalScrollbar, rows, evt, 0, point);
+                    dropDown.call(this, e, isAutofillEl, selector, data, verticalScrollbar, rows, evt, 0, point, horizontalScrollbar, cols,);
                 }, 100);
             }, 200);
             if (!dateBegin) {
                 dateBegin = new Date();
             }
-            dropDown.call(this, e, isAutofillEl, selector, data, verticalScrollbar, rows, evt,0,  point);
+            dropDown.call(this, e, isAutofillEl, selector, data, verticalScrollbar, rows, evt, 0, point, horizontalScrollbar, cols);
         }, (e) => {
             clearTimeout(stopTimer);
             clearInterval(stopTimer2);
