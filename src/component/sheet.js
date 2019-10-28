@@ -336,10 +336,8 @@ function dropDown(e, isAutofillEl, selector, data, verticalScrollbar, rows, evt,
     if (isAutofillEl) {
         let rect = data.getRect(selector.range);
         let rectProxy = new RectProxy(rect);
-        console.log(offset);
-
-        let clientX = rect.width + rect.left;
-        let clientY = rect.height + rect.top + offsetTop;
+        let clientX = rect.width + rect.left + offset.l;
+        let clientY = rect.height + rect.top + offsetTop + offset.t;
 
         if (rectProxy.isLocInside(e.clientX, e.clientY)) {
             pos = -1;
@@ -432,13 +430,13 @@ function overlayerMousedown(evt) {
                     if (!dateBegin) {
                         dateBegin = new Date();
                     }
-                    dropDown.call(this, e, isAutofillEl, selector, data, verticalScrollbar, rows, evt, point);
+                    dropDown.call(this, e, isAutofillEl, selector, data, verticalScrollbar, rows, evt, 0, point);
                 }, 100);
             }, 200);
             if (!dateBegin) {
                 dateBegin = new Date();
             }
-            dropDown.call(this, e, isAutofillEl, selector, data, verticalScrollbar, rows, evt, point);
+            dropDown.call(this, e, isAutofillEl, selector, data, verticalScrollbar, rows, evt,0,  point);
         }, (e) => {
             clearTimeout(stopTimer);
             clearInterval(stopTimer2);
