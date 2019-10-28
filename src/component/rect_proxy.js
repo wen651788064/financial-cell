@@ -15,32 +15,32 @@ export default class RectProxy {
         return false;
     }
 
-    getUpDownLeftRight(e, clientX, clientY) {
+    getUpDownLeftRight(targetx, targety, clientX, clientY) {
         let {rect} = this;
 
         let pos = 0;
-        if (e.clientX < rect.width + rect.left && e.clientX > rect.left) {
-            if (e.clientY > rect.top + rect.height + offsetTop) {
+        if (targetx < rect.width + rect.left && targetx > rect.left) {
+            if (targety > rect.top + rect.height + offsetTop) {
                 pos = 1;
-            } else if (e.clientY - offsetTop < rect.top) {
+            } else if (targety - offsetTop < rect.top) {
                 pos = 4;
             }
 
-            if (pos === 1 && e.clientY < 0) {
+            if (pos === 1 && targety < 0) {
                 pos = 4;
-            } else if (document.body.clientHeight < e.clientY && pos === 4) {
+            } else if (document.body.clientHeight < targety && pos === 4) {
                 pos = 1;
             }
-        } else if (e.clientY - (rect.height - rect.top - offsetTop) > 0 && (rect.height + rect.top + offsetTop) > e.clientY) {
-            if (e.clientX > rect.width + rect.left) {
+        } else if (targety - (rect.height - rect.top - offsetTop) > 0 && (rect.height + rect.top + offsetTop) > targety) {
+            if (targetx > rect.width + rect.left) {
                 pos = 3;
-            } else if (e.clientX < rect.left) {
+            } else if (targetx < rect.left) {
                 pos = 2;
             }
         }
 
         if (pos === 0) {
-            pos = positionAngle(clientX, e.clientX, clientY, e.clientY);
+            pos = positionAngle(clientX, targetx, clientY, targety);
         }
 
         return pos;

@@ -339,31 +339,30 @@ function dropDown(e, isAutofillEl, selector, data, verticalScrollbar, rows, evt,
     let {ri, ci} = dstRect;
 
     if (isAutofillEl) {
-        var pagex = e.pageX || scroll().left + e.clientX;
-        var pagey = e.pageY || scroll().top + e.clientY;
+        let pagex = e.pageX || scroll().left + e.clientX;
+        let pagey = e.pageY || scroll().top + e.clientY;
         //3.获取盒子在整个页面的位置
-        var xx = this.el.el.offsetLeft;
-        var yy = this.el.el.offsetTop;
+        let xx = this.el.el.offsetLeft;
+        let yy = this.el.el.offsetTop;
         //4.用鼠标的位置减去盒子的位置赋值给盒子的内容。
-        var targetx = pagex - xx;
-        var targety = pagey - yy;
-        console.log("鼠标在盒子中的X坐标为："+targetx+"px;<br>鼠标在盒子中的Y坐标为："+targety+"px;");
+        let targetx = pagex - xx;
+        let targety = pagey - yy;
 
         let rect = data.getRect(selector.range);
         let rectProxy = new RectProxy(rect);
         let clientX = rect.width + rect.left;
         let clientY = rect.height + rect.top + offsetTop;
 
-        if (rectProxy.isLocInside(e.clientX, e.clientY)) {
+        if (rectProxy.isLocInside(targetx, targety)) {
             pos = -1;
             selector.arange = null;
         } else {
-            pos = rectProxy.getUpDownLeftRight(e, clientX, clientY)
+            pos = rectProxy.getUpDownLeftRight(targetx, targety, clientX, clientY)
         }
 
         let orien = selector.showAutofill(ri, ci, pos);
 
-        if (isOusideViewRange(this.data.settings.view.height(), this.data.settings.view.width(), e.layerY, e.layerX, orien)) {
+        if (isOusideViewRange(this.data.settings.view.height(), this.data.settings.view.width(), targety, targetx, orien)) {
             if (orien == 44) {
                 const {top} = verticalScrollbar.scroll();  // 可见视图上边缘距离toolbar的像素
                 ri = data.scroll.ri + 1;
