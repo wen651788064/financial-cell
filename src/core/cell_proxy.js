@@ -8,16 +8,16 @@ export default class CellProxy {
 
     getCellDataType(sarr, {isDate, isNumber}) {
         let ncell = this.cell;
-        let enter = false;
+        // let enter = false;
         let nA = true;
-        for (let k = 0; enter == false && k < sarr.length; k++) {
-            if (sarr[k].text === ncell.text) {
-                enter = true;
-            }
-        }
-        if (enter == false) {
-            sarr.push(ncell);
-        }
+        // for (let k = 0; enter == false && k < sarr.length; k++) {
+        //     if (sarr[k].text === ncell.text) {
+        //         enter = true;
+        //     }
+        // }
+        // if (enter == false) {
+        //     sarr.push(ncell);
+        // }
 
         if (!isHave(ncell.formulas)) {
             ncell.formulas = "";
@@ -42,11 +42,13 @@ export default class CellProxy {
             nA = false;
             isNumber = false;
             isDate = true;
-        } else {
+        } else {//
             nA = false;
             isNumber = false;
             isDate = false;
         }
+        ncell.tmp = value;
+        sarr.push(ncell);
 
         return {
             nA, isDate: isDate, isNumber: isNumber

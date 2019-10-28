@@ -1,9 +1,8 @@
 import {describe, it} from 'mocha';
 import DataProxy from "../../src/core/data_proxy";
 import Recast from "../../src/core/recast";
-import {CellRange} from "../../src/core/cell_range";
 import CellProxy from "../../src/component/cell_proxy";
-import {deepCopy} from "../../src/core/operator";
+import {cutStr, deepCopy} from "../../src/core/operator";
 import {RefRow} from "../../src/core/ref_row";
 import EditorText from "../../src/component/editor_text";
 import {dateDiff, formatDate} from "../../src/component/date";
@@ -65,6 +64,15 @@ describe('qq', () => {
         it(' =INDEX({1,2;3,4},0,2) ', () => {
             let {state, msg} = data.selectorCellText(1, 1, '=INDEX({1,2;3,4},0,2)', "input");
             assert.equal(state, false);
+        });
+    });
+
+    describe('  cutStr  ', () => {
+        it(' =A1(1, 2)', function () {
+            let arr = cutStr('=A1(1, 2)')
+            assert.equal(arr.length, 0);
+            arr = cutStr('=A1+A2');
+            assert.equal(arr.length, 2);
         });
     });
 
@@ -181,7 +189,7 @@ describe('qq', () => {
         });
 
         it(' null autofilter', function () {
-            let cell = { };
+            let cell = {};
             copyPasteTemplate(cell, data);
             let cell1 = data.rows.getCell(4, 4);
             let cell2 = data.rows.getCell(9, 4);

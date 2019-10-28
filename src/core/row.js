@@ -243,7 +243,10 @@ class Rows {
                 for (let i = 0; i < arr.length; i++) {
                     let cell = this.getCell(ri, ci);
                     let s1 = arr[i];
-                    if(!isHave(cell.formulas)) {
+                    if (!cell) {
+                        cell = {};
+                    }
+                    if (!isHave(cell.formulas)) {
                         cell.formulas = "";
                     }
 
@@ -518,13 +521,14 @@ class Rows {
             if (und) {
                 sarr.push({
                     text: 0,
-                    formulas: 0
+                    formulas: 0,
+                    tmp: "",
                 });
             }
         });
 
         return {
-            nD: isDate, number: isNumber, sarr
+            isDate: isDate, isNumber: isNumber, sarr
         }
     }
 
@@ -569,33 +573,38 @@ class Rows {
     }
 
     calcCellByTopCell(cb, what, ncell, darr, isAdd, iText, d, text) {
+        iText = d.v;
         if (!isHave(iText)) {
             iText = "";
         }
-        iText = this.toString(iText);
-        let arr = this.toString(text).split(/\d+/g);
-        if (arr) {
-            let count = 0;
-            if (isAdd) {
-                ncell.text = iText.replace(/\d+/g, (word) => {
-                    count = count + 1;
-                    if (arr.length - 1 === count) {
-                        return word * 1 + 1;
-                    } else {
-                        return word;
-                    }
-                });
-            } else {
-                ncell.text = iText.replace(/\d+/g, (word) => {
-                    count = count + 1;
-                    if (arr.length - 1 === count) {
-                        return word * 1 - 1;
-                    } else {
-                        return word;
-                    }
-                });
-            }
+        if (!isNaN(iText)) {
+            ncell.text = iText;
             ncell.formulas = ncell.text;
+        } else {
+            let arr = this.toString(iText).split(/\d+/g);
+            if (arr) {
+                let count = 0;
+                if (isAdd) {
+                    ncell.text = iText.replace(/\d+/g, (word) => {
+                        count = count + 1;
+                        if (arr.length - 1 === count) {
+                            return word * 1 + 1;
+                        } else {
+                            return word;
+                        }
+                    });
+                } else {
+                    ncell.text = iText.replace(/\d+/g, (word) => {
+                        count = count + 1;
+                        if (arr.length - 1 === count) {
+                            return word * 1 - 1;
+                        } else {
+                            return word;
+                        }
+                    });
+                }
+                ncell.formulas = ncell.text;
+            }
         }
         this.copyRender(darr, d.ri, d.ci, ncell, what, cb);
     }
@@ -667,13 +676,29 @@ class Rows {
         for (let i = 0; i < len; i++) {
             let isDown = pasteProxy.upOrDown();
             let {srcOneDRange, dstOneDRange} = pasteProxy.getOneDRangeObj(isLeftRight, i);
-            let {number, nD, sarr} = this.getAllDataType(srcOneDRange); // todo: 改成与Excel一样的逻辑 let {number, nD, sarr} = this.getRangeDataType(srcOneDRange);
-            let isCopy = pasteProxy.isCopy(sarr, i);
+            let {isNumber, isDate, sarr} = this.getAllDataType(srcOneDRange); // todo: 改成与Excel一样的逻辑 let {isNumber, isDate, sarr} = this.getRangeDataType(srcOneDRange);
+            // let isCopy = pasteProxy.isCopy(sarr, i);
 
-            let darr = dstOneDRange.getLocationArray(); //let dstOneDLocationAarray = dstOneDRange.getLocationArray()
+            let darr = dstOneDRange.getLocationArray(sarr); //let dstOneDLocationAarray = dstOneDRange.getLocationArray()
             let line = pasteProxy.leftOrRight(); // 向左或者向右
 
-            if (number && isCopy) {
+            // if (isDown) {
+            //     for (let i = 0; i < darr.length; i++) {
+            //         if (isNumber ) {
+            //
+            //         }else if (isDate ) {
+            //
+            //         }else {
+            //
+            //         }
+            //     }
+            // } else {
+            //     for (let i = darr.length - 1; i >= 0; i--) {
+            //         numberAutoFilter.call(this, darr[i], darr, isLeftRight, isDown, diffValue, what, cb);
+            //     }
+            // }
+
+            if (isNumber) {
                 let diffValue = pasteProxy.calcDiff(sarr, isDown);
 
                 if (isDown) {
@@ -685,7 +710,7 @@ class Rows {
                         numberAutoFilter.call(this, darr[i], darr, isLeftRight, isDown, diffValue, what, cb);
                     }
                 }
-            } else if (nD && isCopy) {
+            } else if (isDate) {
                 if (isDown) {
                     for (let i = 0; i < darr.length; i++) {
                         dateAutoFilter.call(this, darr[i], line === 3 ? true : false, isDown, darr, what, cb);
@@ -744,7 +769,8 @@ class Rows {
     }
 
     cutPaste(srcCellRange, dstCellRange) {
-        const ncellmm = {};
+        let srcCell = [];
+        // const ncellmm = {};
         this.each((ri) => {
             this.eachCells(ri, (ci) => {
                 let nri = parseInt(ri, 10);
@@ -755,28 +781,34 @@ class Rows {
                 }
 
                 if (ri * 1 !== nri || ci * 1 !== nci) {
-                    ncellmm[nri] = ncellmm[nri] || {cells: {}};
+                    // ncellmm[nri] = ncellmm[nri] || {cells: {}};
                     if (this._[ri].cells[ci].text != '' && this._[ri].cells[ci].formulas != '') {
-                        this.setCell(nri, nci, this._[ri].cells[ci], 'all');
+                        srcCell.push({
+                            nri: nri,
+                            nci: nci,
+                            ri: ri,
+                            ci: ci,
+                            cell: deepCopy(this._[ri].cells[ci]),
+                        })
+                        // this.setCell(nri, nci, this._[ri].cells[ci], 'all');
                     }
 
-                    if (this._[ri].cells[ci].style) {
-                        // if (!ncellmm[nri].cells[nci]) {
-                        //     ncellmm[nri].cells[nci] = {
-                        //         "style": this._[ri].cells[ci].style,
-                        //     }
-                        //     this.setCell(ri, ci, this._[ri].cells[ci], 'all');
-                        // } else {
-                        //     this.setCell(ri, ci, this._[ri].cells[ci], 'all');
-                        //     ncellmm[nri].cells[nci]['style'] = this._[ri].cells[ci].style;
-                        // }
-                        this.setCell(nri, nci, this._[ri].cells[ci], 'all');
-                    }
-
-                    this.setCell(ri, ci, {}, 'all');
+                    // if (this._[ri].cells[ci].style) {
+                    //     this.setCell(nri, nci, this._[ri].cells[ci], 'all');
+                    // }
                 }
             });
         });
+        for(let i = 0; i < srcCell.length; i++) {
+            let {  ri, ci, cell} = srcCell[i];
+            this.setCell(ri, ci, {}, 'all');
+        }
+
+        for(let i = 0; i < srcCell.length; i++) {
+            let {nri, nci, cell} = srcCell[i];
+            this.setCell(nri, nci, cell, 'all');
+        }
+
         // this._ = ncellmm;
     }
 

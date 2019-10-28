@@ -34,7 +34,7 @@ function find(arr, str) {
 }
 
 
-function orientation(y, x, dy, dx, orien) {
+function isOusideViewRange(y, x, dy, dx, orien) {
     if (orien == 44 && dy - y + 100 > 0) {
         return true;
     } else if (orien == 11) {
@@ -149,7 +149,7 @@ export default {
 };
 
 export {
-    orientation,
+    isOusideViewRange,
     find,
     isHave,
 }

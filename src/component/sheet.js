@@ -11,7 +11,7 @@ import Toolbar from './toolbar';
 import ModalValidation from './modal_validation';
 import SortFilter from './sort_filter';
 import {xtoast} from './message';
-import {cssPrefix} from '../config';
+import {cssPrefix, offsetTop} from '../config';
 import {formulas} from '../core/formula';
 import {getFontSizePxByPt} from "../core/font";
 // import {baseFormats, multiply} from "../core/format";
@@ -20,13 +20,14 @@ import {clearSelectors, editingSelectors, lockCells, makeSelector} from "../comp
 import {deleteImg, hideDirectionArr, mountPaste} from "../event/paste";
 import {getChooseImg, mountCopy} from "../event/copy";
 import Website from "../component/website";
-import {cutStr, cuttingByPos, deepCopy, positionAngle} from "../core/operator";
+import {cutStr, cuttingByPos, deepCopy} from "../core/operator";
 import {moveCell} from "../event/move";
 import CellRange from "../core/cell_range";
-import {orientation} from "../core/helper";
+import {isOusideViewRange} from "../core/helper";
 import {expr2xy} from "../core/alphabet";
 import ErrorPopUp from "./error_pop_up";
 import EditorProxy from "./editor_proxy";
+import RectProxy from "./rect_proxy";
 
 function scrollbarMove() {
     const {
@@ -313,60 +314,36 @@ function toolbarChangePaintformatPaste() {
 
 function dropDown(e, isAutofillEl, selector, data, verticalScrollbar, rows, evt, pos = 0) {
     this.selector.setBoxinner("none");
-
     this.container.css('pointer-events', 'none');
     let dstRect = data.getCellRectByXY(e.layerX, e.layerY);
     let {ri, ci} = dstRect;
 
     if (isAutofillEl) {
         let rect = data.getRect(selector.range);
+        let rectProxy = new RectProxy(rect);
         let clientX = rect.width + rect.left;
-        let clientY = rect.height + rect.top + 70;
+        let clientY = rect.height + rect.top + offsetTop;
 
-
-         if (e.clientX < rect.width + rect.left && e.clientX > rect.left && e.clientY - 70 > rect.top && e.clientY - 70 < rect.top + rect.height) {
+        if (rectProxy.isLocInside(e.clientX, e.clientY)) {
             pos = -1;
             selector.arange = null;
-        } else if (e.clientX < rect.width + rect.left && e.clientX > rect.left) {
-            console.log("上下")
-            if (e.clientY > rect.top + rect.height + 70) {
-                pos = 1;
-            } else if (e.clientY - 70 < rect.top) {
-                pos = 4;
-            }
-
-            if (pos === 1 && e.clientY < 0) {
-                pos = 4;
-            } else if (document.body.clientHeight < e.clientY && pos === 4) {
-                pos = 1;
-            }
-        } else if (e.clientY - (rect.height - rect.top - 70) > 0 && (rect.height + rect.top + 70) > e.clientY) {
-            console.log("左右")
-            if (e.clientX > rect.width + rect.left) {
-                pos = 3;
-            } else if (e.clientX < rect.left) {
-                pos = 2;
-            }
-        }
-
-         if (pos === 0) {
-            pos = positionAngle(clientX, e.clientX, clientY, e.clientY);
+        } else {
+            pos = rectProxy.getUpDownLeftRight(e, clientX, clientY)
         }
 
         let orien = selector.showAutofill(ri, ci, pos);
 
-
-        let o = orientation(this.data.settings.view.height(), this.data.settings.view.width(), e.layerY, e.layerX, orien);
-
-        if (o && orien == 44) {
-            const {top} = verticalScrollbar.scroll();
-            ri = data.scroll.ri + 1;
-            verticalScrollbar.move({top: top + rows.getHeight(ri) - 1});
-        } else if (o && orien == 22) {
-            const {top} = verticalScrollbar.scroll();
-            ri = data.scroll.ri - 1;
-            if (ri >= 0) {
-                verticalScrollbar.move({top: ri === 0 ? 0 : top - rows.getHeight(ri)});
+        if (isOusideViewRange(this.data.settings.view.height(), this.data.settings.view.width(), e.layerY, e.layerX, orien)) {
+            if (orien == 44) {
+                const {top} = verticalScrollbar.scroll();  // 可见视图上边缘距离toolbar的像素
+                ri = data.scroll.ri + 1;
+                verticalScrollbar.move({top: top + rows.getHeight(ri) - 1});
+            } else if (orien == 22) {
+                const {top} = verticalScrollbar.scroll();
+                ri = data.scroll.ri - 1;
+                if (ri >= 0) {
+                    verticalScrollbar.move({top: ri === 0 ? 0 : top - rows.getHeight(ri)});
+                }
             }
         }
     } else if (e.buttons === 1 && !e.shiftKey) {
@@ -438,7 +415,7 @@ function overlayerMousedown(evt) {
                         dateBegin = new Date();
                     }
                     dropDown.call(this, e, isAutofillEl, selector, data, verticalScrollbar, rows, evt);
-                }, 50);
+                }, 100);
             }, 200);
             if (!dateBegin) {
                 dateBegin = new Date();

@@ -1,7 +1,6 @@
 import {filterFormula} from "../config";
 import {expr2xy, xy2expr} from "./alphabet";
 import CellRange from "./cell_range";
-import {h} from "../component/element";
 import {
     blankOperator,
     letterAndLetterOperator,
@@ -82,12 +81,16 @@ const cutStr = (str, filter = false, f = false) => {
     // 把空格去除的原因是因为 => A   1 这种情况不应该被包含在内
     // str = str.replace(/\s/g, "");
     let arr = str.split(str2Re(logicOperator));
+
     // 去除字符串两端的空格
     for (let i = 0; i < arr.length; i++) {
         arr[i] = arr[i].replace(str2Re(blankOperator), "");
     }
     let express = [];
     arr.filter(i => {
+        let ri = i.replace(/\$/g, '');
+        // console.log(ri.search(str2Re(letterOperatorIgnoreBracket)), ri)
+        // if(ri.search(str2Re(letterOperatorIgnoreBracket)) === -1) {
         if (f) {
             i = i.replace(/\$/g, '');
             if (i.search(str2Re(letterOperator)) != -1
@@ -105,8 +108,10 @@ const cutStr = (str, filter = false, f = false) => {
                     express.push(i);
                 }
             }
+            // }
         }
     });
+
 
     return express;
 };
@@ -292,7 +297,7 @@ const division = (str, ff = filterFormula, other = true, other2 = false) => {
         }
     }
 
-    let arr = str.split(/([(-\/,+*，><=^&])/);
+    let arr = str.split(/([-\/,+*，><=^&])/);
     let na = [];
     // // 去除字符串两端的空格
     for (let i = 0; i < arr.length; i++) {
@@ -23572,12 +23577,12 @@ const contain = (c, d) => {
 };
 
 const splitStr = (str) => {
-    let arr = str.split(/([(-\/,+，*\s=^&])/);
+    let arr = str.split(/([-\/,+，*\s=^&])/);
     return arr;
 };
 
 const cutting2 = (str, s) => {
-    let arr = str.split(/([(-\/,+，*\s=^&])/);
+    let arr = str.split(/([-\/,+，*\s=^&])/);
 
     let color = 0;
     let express = [];

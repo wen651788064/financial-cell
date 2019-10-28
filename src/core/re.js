@@ -1,11 +1,11 @@
-export const logicOperator = "([(-\\/,+*，=^&])";
+export const logicOperator = "([-\\/,+*，=^&])";
 export const blankOperator = "(^\\s*)|(\\s*$)";
 export const letterOperator = "^[A-Z]+\\d+$";
+export const letterOperatorIgnoreBracket = "^[A-Z]+\\d+$";
 export const letterOperatorWithDollor = "^\\$[A-Z]+\\$\\d+$";
 export const letterAndLetterOperator = "^[A-Za-z]+\\d+:[A-Za-z]+\\d+$";
 export const letterOperatorWithDollorEnd = "^[A-Z]+\\$\\d+$";
 export const letterOperatorWithDollorPrex = "^\\$[A-Z]+\\d+$";
-
 
 export const datePattern = ["^(\\d{4})[-/](\\d{1,2})[-\/](\\d{1,2})$" ];
 

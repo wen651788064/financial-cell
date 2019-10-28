@@ -659,7 +659,7 @@ export default class Editor {
         if (spanArr.length > 0) {
             this.textEl.html('');
             this.tmp = h('span', 'span_tmp').children(...spanArr)
-                .css('top', '0px').css('color', 'black');
+                .css('top', '0px').css('color', 'black').css('font-size', '14px').css('font-family', 'm-inconsolata,monospace,arial,sans,sans-serif');
             this.textEl.el.insertBefore(this.tmp.el, this.textEl.el.childNodes[0]);
             // this.textEl.el.removeChild(this.textEl.el.childNodes[this.textEl.el.childNodes.length - 1]);
             set_focus.call(this, this.textEl.el, -1);

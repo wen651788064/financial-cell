@@ -249,10 +249,12 @@ class CellRange {
         return new CellRange(sri, sci, eri, eci, w, h);
     }
 
-    getLocationArray() {
+    getLocationArray(sarr) {
         let darr = [];
+        let index = 0;
         this.each((i, j) => {
-            darr.push({ri: i, ci: j});
+            darr.push({ri: i, ci: j, v: sarr[index % sarr.length ].tmp});
+            index = index + 1;
         });
 
         return darr;

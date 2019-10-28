@@ -104,7 +104,7 @@ class SelectorElement {
             _selector.moveIndexes = [cellRange.sri, cellRange.sci];
             _selector.range = cellRange;
             _selector.setMove(rect);
-            sheet.selectorMoveReset();
+            // sheet.selectorMoveReset();
 
             // 如果移动的内容被单元格包含，则需要变化
             let {rows} = data;
@@ -513,6 +513,7 @@ export default class Selector {
         setAllAreaOffset.call(this, rect);
     }
 
+    //
     showAutofill(ri, ci, pos) {
         if (ri === -1 && ci === -1) return;
         // console.log('ri:', ri, ', ci:', ci);
