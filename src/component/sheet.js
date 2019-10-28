@@ -312,7 +312,22 @@ function toolbarChangePaintformatPaste() {
     }
 }
 
-function dropDown(e, isAutofillEl, selector, data, verticalScrollbar, rows, evt, pos = 0) {
+function getPoint(obj) { //获取某元素以浏览器左上角为原点的坐标
+    var t = obj.offsetTop; //获取该元素对应父容器的上边距
+    var l = obj.offsetLeft; //对应父容器的上边距
+    //判断是否有父容器，如果存在则累加其边距
+    while (obj = obj.offsetParent) {//等效 obj = obj.offsetParent;while (obj != undefined)
+        t += obj.offsetTop; //叠加父容器的上边距
+        l += obj.offsetLeft; //叠加父容器的左边距
+    }
+
+    return {
+        t: t,
+        l: l
+    }
+}
+
+function dropDown(e, isAutofillEl, selector, data, verticalScrollbar, rows, evt, pos = 0, offset) {
     this.selector.setBoxinner("none");
     this.container.css('pointer-events', 'none');
     let dstRect = data.getCellRectByXY(e.layerX, e.layerY);
@@ -321,6 +336,8 @@ function dropDown(e, isAutofillEl, selector, data, verticalScrollbar, rows, evt,
     if (isAutofillEl) {
         let rect = data.getRect(selector.range);
         let rectProxy = new RectProxy(rect);
+        console.log(offset);
+
         let clientX = rect.width + rect.left;
         let clientY = rect.height + rect.top + offsetTop;
 
@@ -405,6 +422,7 @@ function overlayerMousedown(evt) {
         let ttop = top + rows.getHeight(ri) - 1;
         let stopTimer = null;
         let stopTimer2 = null;
+        let point = getPoint(this.el.el);
         // mouse move up
         mouseMoveUp(window, (e) => {
             clearTimeout(stopTimer);
@@ -414,13 +432,13 @@ function overlayerMousedown(evt) {
                     if (!dateBegin) {
                         dateBegin = new Date();
                     }
-                    dropDown.call(this, e, isAutofillEl, selector, data, verticalScrollbar, rows, evt);
+                    dropDown.call(this, e, isAutofillEl, selector, data, verticalScrollbar, rows, evt, point);
                 }, 100);
             }, 200);
             if (!dateBegin) {
                 dateBegin = new Date();
             }
-            dropDown.call(this, e, isAutofillEl, selector, data, verticalScrollbar, rows, evt);
+            dropDown.call(this, e, isAutofillEl, selector, data, verticalScrollbar, rows, evt, point);
         }, (e) => {
             clearTimeout(stopTimer);
             clearInterval(stopTimer2);
