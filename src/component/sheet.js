@@ -337,7 +337,7 @@ function dropDown(e, isAutofillEl, selector, data, verticalScrollbar, rows, evt,
         let rect = data.getRect(selector.range);
         let rectProxy = new RectProxy(rect);
         let clientX = rect.width + rect.left + offset.l;
-        let clientY = rect.height + rect.top + offsetTop + offset.t;
+        let clientY = rect.height + rect.top + offsetTop;
 
         if (rectProxy.isLocInside(e.clientX, e.clientY)) {
             pos = -1;
