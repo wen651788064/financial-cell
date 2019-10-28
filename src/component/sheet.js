@@ -406,7 +406,7 @@ function overlayerMousedown(evt) {
         let stopTimer = null;
         let stopTimer2 = null;
         // mouse move up
-        mouseMoveUp(window, (e) => {
+        mouseMoveUp(this.el.el, (e) => {
             clearTimeout(stopTimer);
             clearInterval(stopTimer2);
             stopTimer = setTimeout(() => {
