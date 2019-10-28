@@ -312,26 +312,6 @@ function toolbarChangePaintformatPaste() {
     }
 }
 
-function scroll() {
-    if(window.pageYOffset != null) {  // ie9+ 高版本浏览器
-        // 因为 window.pageYOffset 默认的是  0  所以这里需要判断
-        return {
-            left: window.pageXOffset,
-            top: window.pageYOffset
-        }
-    }
-    else if(document.compatMode === "CSS1Compat") {    // 标准浏览器   来判断有没有声明DTD
-        return {
-            left: document.documentElement.scrollLeft,
-            top: document.documentElement.scrollTop
-        }
-    }
-    return {   // 未声明 DTD
-        left: document.body.scrollLeft,
-        top: document.body.scrollTop
-    }
-}
-
 function dropDown(e, isAutofillEl, selector, data, verticalScrollbar, rows, evt, pos = 0) {
     this.selector.setBoxinner("none");
     this.container.css('pointer-events', 'none');
@@ -339,30 +319,21 @@ function dropDown(e, isAutofillEl, selector, data, verticalScrollbar, rows, evt,
     let {ri, ci} = dstRect;
 
     if (isAutofillEl) {
-        let pagex = e.pageX || scroll().left + e.clientX;
-        let pagey = e.pageY || scroll().top + e.clientY;
-        //3.获取盒子在整个页面的位置
-        let xx = this.el.el.offsetLeft;
-        let yy = this.el.el.offsetTop;
-        //4.用鼠标的位置减去盒子的位置赋值给盒子的内容。
-        let targetx = pagex - xx;
-        let targety = pagey - yy;
-
         let rect = data.getRect(selector.range);
         let rectProxy = new RectProxy(rect);
         let clientX = rect.width + rect.left;
         let clientY = rect.height + rect.top + offsetTop;
 
-        if (rectProxy.isLocInside(targetx, targety)) {
+        if (rectProxy.isLocInside(e.clientX, e.clientY)) {
             pos = -1;
             selector.arange = null;
         } else {
-            pos = rectProxy.getUpDownLeftRight(targetx, targety, clientX, clientY)
+            pos = rectProxy.getUpDownLeftRight(e, clientX, clientY)
         }
 
         let orien = selector.showAutofill(ri, ci, pos);
 
-        if (isOusideViewRange(this.data.settings.view.height(), this.data.settings.view.width(), targety, targetx, orien)) {
+        if (isOusideViewRange(this.data.settings.view.height(), this.data.settings.view.width(), e.layerY, e.layerX, orien)) {
             if (orien == 44) {
                 const {top} = verticalScrollbar.scroll();  // 可见视图上边缘距离toolbar的像素
                 ri = data.scroll.ri + 1;
@@ -435,7 +406,7 @@ function overlayerMousedown(evt) {
         let stopTimer = null;
         let stopTimer2 = null;
         // mouse move up
-        mouseMoveUp(this.el.el, (e) => {
+        mouseMoveUp(window, (e) => {
             clearTimeout(stopTimer);
             clearInterval(stopTimer2);
             stopTimer = setTimeout(() => {
