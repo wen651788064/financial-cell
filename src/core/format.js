@@ -4,7 +4,7 @@ const formatStringRender = v => v;
 
 const formatNumberRender = (v, fixed = 2) => {
     if (/^(-?\d*.?\d*)$/.test(v)) {
-        const v1 = Number(v).toFixed(fixed).toString();
+        const v1 = fixed === -1 ? v.toString() : Number(v).toFixed(fixed).toString();
         const [first, ...parts] = v1.split('\\.');
         let value = first.replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1');
         return value === 'NaN' ? v : value;
@@ -20,12 +20,12 @@ const baseFormats = [
         type: 'string',
         render: formatStringRender,
     },
-    {
-        key: 'text',
-        title: tf('format.text'),
-        type: 'string',
-        render: formatStringRender,
-    },
+    // {
+    //     key: 'text',
+    //     title: tf('format.text'),
+    //     type: 'string',
+    //     render: formatStringRender,
+    // },
     {
         key: 'number',
         title: tf('format.number'),
@@ -51,13 +51,13 @@ const baseFormats = [
         label: '￥10.00',
         render: v => `￥${formatNumberRender(v)}`,
     },
-    {
-        key: 'usd',
-        title: tf('format.usd'),
-        type: 'number',
-        label: '$10.00',
-        render: v => `$${formatNumberRender(v)}`,
-    },
+    // {
+    //     key: 'usd',
+    //     title: tf('format.usd'),
+    //     type: 'number',
+    //     label: '$10.00',
+    //     render: v => `$${formatNumberRender(v)}`,
+    // },
     {
         key: 'date',
         title: tf('format.date'),
@@ -65,27 +65,27 @@ const baseFormats = [
         label: '2009-01-01',
         render: formatStringRender,
     },
-    {
-        key: 'time',
-        title: tf('format.time'),
-        type: 'date',
-        label: '15:59:00',
-        render: formatStringRender,
-    },
-    {
-        key: 'datetime',
-        title: tf('format.datetime'),
-        type: 'date',
-        label: '26/09/2008 15:59:00',
-        render: formatStringRender,
-    },
-    {
-        key: 'duration',
-        title: tf('format.duration'),
-        type: 'date',
-        label: '24:01:00',
-        render: formatStringRender,
-    },
+    // {
+    //     key: 'time',
+    //     title: tf('format.time'),
+    //     type: 'date',
+    //     label: '15:59:00',
+    //     render: formatStringRender,
+    // },
+    // {
+    //     key: 'datetime',
+    //     title: tf('format.datetime'),
+    //     type: 'date',
+    //     label: '26/09/2008 15:59:00',
+    //     render: formatStringRender,
+    // },
+    // {
+    //     key: 'duration',
+    //     title: tf('format.duration'),
+    //     type: 'date',
+    //     label: '24:01:00',
+    //     render: formatStringRender,
+    // },
 ];
 
 function isInteger(obj) {

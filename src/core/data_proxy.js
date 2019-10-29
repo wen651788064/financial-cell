@@ -8,7 +8,7 @@ import Clipboard from './clipboard';
 import AutoFilter from './auto_filter';
 import {Merges} from './merge';
 import helper, {useOne} from './helper';
-import {Rows} from './row';
+import {isFormula, Rows} from './row';
 import {Cols} from './col';
 import {Validations} from './validation';
 import {CellRange} from './cell_range';
@@ -21,8 +21,9 @@ import {parseCell2} from "../component/table";
 import {RefRow} from "./ref_row";
 import {isLegal} from "./operator";
 import Recast from "./recast";
-import {dateDiff, formatDate} from "../component/date";
+import {calcDecimals, dateDiff, formatDate} from "../component/date";
 import {formatNumberRender} from "./format";
+import FormatProxy from "./format_proxy";
 // private methods
 /*
  * {
@@ -475,7 +476,7 @@ function getType(ri, ci, cell) {
     let data = this;
     let {rows} = this;
     let cellStyle = data.getCellStyle(ri, ci);
-    let {isValid, diff,} = dateDiff(rows.useOne(cell.value, cell.text));
+    let {isValid, diff} = dateDiff(rows.useOne(cell.value, cell.text));
 
     let format = rows.getCellStyleConvert(cellStyle, isValid);
     if (format === 'number') {
@@ -560,24 +561,47 @@ function getType(ri, ci, cell) {
             }
         }
     } else if (format === 'rmb') {
-        let text = rows.useOne(cell.value, cell.text), formula = cell.formulas;
-        text = formatNumberRender(text, 0);
-        if (!isNaN(text)) {
-            let _cell = {
-                "text": "￥" + text,
-                "value": text,
-                "formulas": formula,
-            };
+        let text = "", formula = "";
+        if(isValid) {
+            text = diff;
+            formula = isFormula(cell.formulas) ? cell.formulas : diff;
+        } else {
+            text = rows.useOne(cell.value, cell.text);
+            formula = cell.formulas;
+        }
+
+        let formatProxy = new FormatProxy();
+        let _cell = formatProxy.makeFormatCell({text, formula}, {symbol: "￥", position: "begin"}, (s) => { return s;});
+        if(_cell) {
             data.dateInput(_cell, ri, ci, 'rmb');
 
             return {
                 "state": true,
                 "text":  text,
-            }
+            };
         }
-        console.log(text, formula);
-    }
+    } else if(format === 'percent') {
+        let text = "", formula = "";
 
+        if(isValid) {
+            text = diff;
+            formula = isFormula(cell.formulas) ? cell.formulas : diff;
+        } else {
+            text = rows.useOne(cell.value, cell.text);
+            formula = cell.formulas;
+        }
+        let formatProxy = new FormatProxy();
+        let _cell = formatProxy.makeFormatCell({text, formula }, {symbol: "%", position: "end"},  (s) => {
+            return Number(s  * 100).toFixed(2);});
+        if(_cell) {
+            data.dateInput(_cell, ri, ci, 'percent');
+
+            return {
+                "state": true,
+                "text":  text,
+            };
+        }
+    }
 
     return {
         "state": false,

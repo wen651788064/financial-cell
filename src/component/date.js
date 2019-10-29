@@ -26,7 +26,7 @@ export function formatDate(diff) {
     }
 
     let date = "";
-    if(enter) {
+    if (enter) {
         date = beginDate.add(diff, 'day').subtract(2, 'day').format('YYYY-MM-DD');
 
         let formula = beginDate2.add(diff, 'day').subtract(2, 'day').format('YYYY-MM-DD  h:mm:ss');
@@ -37,7 +37,7 @@ export function formatDate(diff) {
             "minute": true
         }
     } else {
-         date = beginDate.add(diff, 'day').subtract(2, 'day').format('YYYY-MM-DD');
+        date = beginDate.add(diff, 'day').subtract(2, 'day').format('YYYY-MM-DD');
         return {
             "state": date === 'Invalid Date' ? false : true,
             "date": date,
@@ -47,14 +47,19 @@ export function formatDate(diff) {
     }
 }
 
-function calcDecimals(diff, cb = () => {
+export function calcDecimals(diff, cb = () => {
 }) {
-    let fix = diff.toString().split('.')[1] + "";
+    let arr = diff.toString().split('.');
+    if (arr.length > 2) {
+        return diff;
+    }
+    let fix = arr[1] + "";
     let newData = fix;
     for (let i = 0; i < fix.length; i++) {
         newData = newData * 0.1;
     }
     let str = cb(newData);
+
     return str;
 }
 

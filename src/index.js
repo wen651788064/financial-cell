@@ -7,10 +7,11 @@ import {locale} from './locale/locale';
 import './index.less';
 import zhCN from './locale/zh-cn';
 import PlugIn from "./plug-in/plug_in";
+import {bugout} from "./log/log_proxy";
 
 class Spreadsheet {
     constructor(selectors, options = {}, methods = {}, alias = 'sheet1') {
-         let targetEl = selectors;
+        let targetEl = selectors;
           if (typeof selectors === 'string') {
             targetEl = document.querySelector(selectors);
         }
@@ -118,6 +119,7 @@ const spreadsheet = (el, options = {}) => new Spreadsheet(el, options);
 if (window) {
     window.jsSpreadsheet = require('js-spreadsheet');
     window.x = window.x || {};
+    window.bugout = bugout;
     window.x.spreadsheet = spreadsheet;
     window.x.spreadsheet.locale = (lang, message) => locale(lang, message);
 }

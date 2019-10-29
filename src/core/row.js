@@ -219,10 +219,11 @@ class Rows {
             row.cells[ci].value = cell.value;
             row.cells[ci].text = cell.text;
             row.cells[ci].style = cell.style;
-        } else if (what === 'rmb') {
+        } else if (what === 'rmb' || what === 'percent') {        // rmb 单独拿出来是因为 text是￥123, 而formalus不能是 ￥123,应该是123
             if (!row.cells[ci]) {
                 row.cells[ci] = {}
             }
+
             row.cells[ci].value = cell.value;
             row.cells[ci].text = cell.text;
             row.cells[ci].formulas = cell.formulas;
@@ -248,7 +249,7 @@ class Rows {
         const cell = this.getCellOrNew(ri, ci);
         if (what === 'style') {
             cell.style = style;
-            cell.formulas = text;
+            cell.formulas = cell.formulas;
         } else {
             cell.formulas = text;
             cell.value = text;
@@ -350,15 +351,17 @@ class Rows {
     getCellStyleConvert(cellStyle, isValid) {
         if (cellStyle && cellStyle.format && cellStyle.format === 'number') {
             return "number";
-        } else if (
+        } else if (cellStyle && cellStyle.format && cellStyle.format === 'rmb') {
+            return 'rmb';
+        } else if ((cellStyle && cellStyle.format && cellStyle.format === 'normal')) {
+            return "normal";
+        } else if(cellStyle && cellStyle.format && cellStyle.format === 'percent') {
+            return "percent";
+        }else if (
             (isValid && cellStyle === null)
             || (isValid && cellStyle && cellStyle.format !== 'normal')
             || cellStyle && cellStyle.format && cellStyle.format === 'date') {
             return "date";
-        } else if ((cellStyle && cellStyle.format && cellStyle.format === 'normal')) {
-            return "normal";
-        } else if (cellStyle && cellStyle.format && cellStyle.format === 'rmb') {
-            return 'rmb';
         }
 
         return "";

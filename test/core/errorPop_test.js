@@ -5,9 +5,11 @@ import CellProxy from "../../src/component/cell_proxy";
 import {cutStr, deepCopy} from "../../src/core/operator";
 import {RefRow} from "../../src/core/ref_row";
 import EditorText from "../../src/component/editor_text";
-import {dateDiff, formatDate} from "../../src/component/date";
+import {calcDecimals, dateDiff, formatDate} from "../../src/component/date";
 import {isHave} from "../../src/core/helper";
 import {copyPasteTemplate} from "../template/templates";
+import {formatNumberRender} from "../../src/core/format";
+import FormatProxy from "../../src/core/format_proxy";
 
 let assert = require('assert');
 
@@ -96,6 +98,44 @@ describe('qq', () => {
             //     ci: 5
             // }];
 
+        });
+    });
+
+    describe('  formatProxy  ', () => {
+        it('  1.23/1/123  ', function () {
+            let formatProxy = new FormatProxy();
+            let _cell = formatProxy.makeFormatCell({text: "1.23", formula: "1.23"}, {symbol: "%", position: "end"},  (s) => {
+                return Number(s  * 100).toFixed(2);});
+
+            assert.equal(_cell.text, '123.00%');
+            assert.equal(_cell.formulas, '123.00');
+            assert.equal(_cell.value, '1.23');
+
+            _cell = formatProxy.makeFormatCell({text: "1", formula: "1"}, {symbol: "%", position: "end"},  (s) => {
+                return Number(s  * 100).toFixed(2);});
+            assert.equal(_cell.text, '100.00%');
+            assert.equal(_cell.formulas, '100.00');
+            assert.equal(_cell.value, '1');
+
+            _cell = formatProxy.makeFormatCell({text: "123", formula: "123"}, {symbol: "%", position: "end"},  (s) => {
+                return Number(s  * 100).toFixed(2);});
+            assert.equal(_cell.text, '12300.00%');
+            assert.equal(_cell.formulas, '12300.00');
+            assert.equal(_cell.value, '123');
+        });
+
+        it('  1.23.23  ', function () {
+            let formatProxy = new FormatProxy();
+            let _cell = formatProxy.makeFormatCell({text: "1.23.23", formula: "1.23.23"}, {symbol: "%", position: "end"}, (s) => {
+                return calcDecimals(s, (s2) => { return s2 * 100; });
+            });
+            assert.equal(_cell, null);
+        });
+    });
+
+    describe('  formatNumberRender  ', () => {
+        it('  1.23.23  ', function () {
+             assert.equal(formatNumberRender("1.23.23", -1), "1.23.23");
         });
     });
 
@@ -226,6 +266,8 @@ describe('qq', () => {
 
     });
 
+
+
     describe('  set cell  ', () => {
         it(' setCellAll - value not empty ', function () {
             let cell = {"text": "2019-01-01", "formulas": "2019-01-01", "value": "322.121"};
@@ -344,6 +386,29 @@ describe('qq', () => {
             assert.equal(cell.text, '￥44048');
             assert.equal(cell.formulas, '44048');
             assert.equal(cell.value, '44048');
+
+            cell = {"text": "2019-01-01", "formulas": "2019-01-01", "style": style};
+            data.rows.setCell(1, 1, cell, 'rmb');
+            let args = data.tryParseToNum('input', cell, 1, 1);
+            cell = data.rows.getCell(1, 1);
+            assert.equal(args.text, '43466');
+            assert.equal(cell.text, '￥43466');
+            assert.equal(cell.formulas, '43466');
+            assert.equal(cell.value, '43466');
+        });
+
+        it('  44048 -> % ', function () {
+            let cstyle = {};
+            cstyle.format = 'percent';
+            let style = data.addStyle(cstyle);
+            let cell = {"text": "44048", "formulas": "44048", "style": style};
+            data.rows.setCell(1, 1, cell, 'percent');
+            let {state, text} = data.tryParseToNum('input', cell, 1, 1);
+
+            cell = data.rows.getCell(1, 1);
+            assert.equal(text, '44048');
+            assert.equal(cell.text, '4404800.00%');
+            assert.equal(cell.formulas, '4404800.00');
         });
 
         it(' 2019-01-01 to number', function () {
@@ -482,11 +547,13 @@ describe('qq', () => {
             let {state, text} = data.tryParseToNum('input', cell, 1, 1);
             cell = data.rows.getCell(1, 1);
 
-            assert.equal(state, true);
+             assert.equal(state, true);
             assert.equal(text, '123.00');
             assert.equal(cell.formulas, '=average(A1:A2)');
             assert.equal(cell.text, '123.00');
         });
+
+
 
         it('  =average(A1:A2) 1992-01-01 to number  ', function () {
             let cstyle = {};

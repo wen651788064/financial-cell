@@ -6,8 +6,8 @@ import {cssPrefix} from '../config';
 export default class DropdownFormat extends Dropdown {
     constructor() {
         let nformats = baseFormats.slice(0);
-        nformats.splice(2, 0, {key: 'divider'});
-        nformats.splice(7, 0, {key: 'divider'});
+        nformats.splice(1, 0, {key: 'divider'});
+        nformats.splice(5, 0, {key: 'divider'});
         nformats = nformats.map((it) => {
             const item = h('div', `${cssPrefix}-item`);
             if (it.key === 'divider') {
