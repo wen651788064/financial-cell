@@ -126,8 +126,7 @@ function mouseDownEventHandler(evt) {
 }
 
 function inputEventHandler(evt, txt = '', formulas = '', state = "input") {
-    console.time("dbclick time x"  );
-    console.time("dbclick time 4");
+    console.time("dbclick time x");
 
     if (evt) {
         const {
@@ -143,6 +142,8 @@ function inputEventHandler(evt, txt = '', formulas = '', state = "input") {
             return;
         }
     }
+    console.timeEnd("dbclick time x");
+    console.time("dbclick time 4");
 
     let {editorText} = this;
     let inputText = editorText.getText();
@@ -155,8 +156,6 @@ function inputEventHandler(evt, txt = '', formulas = '', state = "input") {
     console.timeEnd("dbclick time 4");
 
     setTimeout(() => {
-        console.time("dbclick time");
-
         if (this.chinese == false) return;
         let v = '';
         if (this.data.settings.showEditor) {
@@ -226,8 +225,7 @@ function inputEventHandler(evt, txt = '', formulas = '', state = "input") {
                 suggest.hide();
             }
         }
-        console.timeEnd("dbclick time");
-        console.time("dbclick time2");
+
 
         textlineEl.html(formulas || v);
         editorText.setText(formulas || v);
@@ -241,15 +239,11 @@ function inputEventHandler(evt, txt = '', formulas = '', state = "input") {
             v = formulas;
         }
         this.change(state, v);
-        console.timeEnd("dbclick time2");
 
         setTimeout(() => {
-            console.time("dbclick time3");
             this.show();
-            console.timeEnd("dbclick time3");
         });
     });
-    console.timeEnd("dbclick time x");
 
 }
 
