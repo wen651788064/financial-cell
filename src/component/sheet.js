@@ -352,7 +352,7 @@ function dropDown(e, isAutofillEl, selector, data, verticalScrollbar, rows, evt,
 
         if (isOusideViewRange(this.data.settings.view.height(), this.data.settings.view.width(), ey, ex, orien)) {
             // if (Math.round(Math.random()) === 1) {
-                continueMove.call(this, orien, verticalScrollbar, horizontalScrollbar, cols, rows, data);
+            continueMove.call(this, orien, verticalScrollbar, horizontalScrollbar, cols, rows, data);
             // }
         }
     } else if (e.buttons === 1 && !e.shiftKey) {
@@ -973,9 +973,11 @@ function sheetInitEvents() {
                     setTimeout(() => {
                         contextMenu.setPosition(evt.offsetX, evt.offsetY);
                         evt.stopPropagation();
-                    }, 100)
+                    }, 100);
                 }
             } else if (evt.detail === 2) {
+                console.time("dbclick time");
+
                 clearTimeout(this.render_timer);
                 editor.setMouseDownIndex([]);
 
@@ -983,6 +985,7 @@ function sheetInitEvents() {
                     return;
                 }
                 editorSet.call(this, 2);
+                console.timeEnd("dbclick time");
             } else {
                 console.time("white time");
                 if (editor.getLock() || editor.isCors) {
