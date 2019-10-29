@@ -600,20 +600,24 @@ export default class Editor {
     }
 
     clear(c = false) {
-        console.time("dbclick time3");
 
         let {editorText} = this;
         let inputText = editorText.getText();
-        console.timeEnd("dbclick time3");
-        console.time("dbclick time4");
 
         this.display = isDisplay.call(this);
+
         if (inputText !== '' && isNaN(inputText) && inputText.replace(/\s/g, "").lastIndexOf('¥') === 0) {
+            console.time("dbclick time4");
             this.change('format', inputText);
+            console.timeEnd("dbclick time4");
+
         } else if (this.changed) {
+            console.time("dbclick time5");
+
             this.change('finish', inputText);
+            console.timeEnd("dbclick time5");
+
         }
-        console.timeEnd("dbclick time4");
 
         this.changed = false;
         this.cell = null;
