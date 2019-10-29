@@ -87,17 +87,26 @@ const cutStr = (str, filter = false, f = false) => {
         arr[i] = arr[i].replace(str2Re(blankOperator), "");
     }
     let express = [];
+    let index = 0;
     arr.filter(i => {
         let ri = i.replace(/\$/g, '');
+        let enter = true;
+        if (arr.length  > index + 1) {
+            let s2 = arr[index + 1];
+            if (s2.indexOf("(") !== -1) {
+                enter = false;
+            }
+        }
+
         // console.log(ri.search(str2Re(letterOperatorIgnoreBracket)), ri)
         // if(ri.search(str2Re(letterOperatorIgnoreBracket)) === -1) {
-        if (f) {
+        if (f && enter) {
             i = i.replace(/\$/g, '');
             if (i.search(str2Re(letterOperator)) != -1
                 || i.search(str2Re(letterAndLetterOperator)) != -1)
                 if (express.indexOf(i) == -1)
                     express.push(i);
-        } else {
+        } else if (enter) {
             if (i.search(str2Re(letterOperator)) != -1 || i.search(str2Re(letterOperatorWithDollor)) != -1
                 || i.search(str2Re(letterOperatorWithDollorEnd)) != -1 || i.search(str2Re(letterOperatorWithDollorPrex)) != -1) {
                 if (express.indexOf(i) == -1 || filter == true)
@@ -108,10 +117,10 @@ const cutStr = (str, filter = false, f = false) => {
                     express.push(i);
                 }
             }
-            // }
         }
+        // }
+        index = index + 1;
     });
-
 
     return express;
 };
@@ -297,7 +306,7 @@ const division = (str, ff = filterFormula, other = true, other2 = false) => {
         }
     }
 
-    let arr = str.split(/([-\/,+*，><=^&])/);
+    let arr = str.split(/([(-\/,+*，><=^&])/);
     let na = [];
     // // 去除字符串两端的空格
     for (let i = 0; i < arr.length; i++) {
@@ -23577,12 +23586,34 @@ const contain = (c, d) => {
 };
 
 const splitStr = (str) => {
-    let arr = str.split(/([-\/,+，*\s=^&])/);
-    return arr;
+    let arr = str.split(/([(-\/,+，*\s=^&])/);
+    let arr2 = [];
+    for(let i = 0; i < arr.length; i++) {
+        let enter = 1;
+        if (arr.length >  i + 1) {
+            let s2 = arr[i + 1];
+            if(arr[i] === "(") {
+                enter = 3;
+            } else if (s2.indexOf("(") !== -1) {
+                enter = 2;
+            }
+        }
+
+        if(enter !== 3) {
+            if(enter === 2) {
+                arr2.push(arr[i] + "(");
+            } else {
+                arr2.push(arr[i]);
+            }
+        }
+    }
+
+
+    return arr2;
 };
 
 const cutting2 = (str, s) => {
-    let arr = str.split(/([-\/,+，*\s=^&])/);
+    let arr = str.split(/([(-\/,+，*\s=^&])/);
 
     let color = 0;
     let express = [];
@@ -23595,10 +23626,18 @@ const cutting2 = (str, s) => {
     let colors = [];
     for (let i = 0; i < express.length; i++) {
         let s = express[i].toUpperCase();
-        if (s.search(/^[A-Z]+\d+$/) != -1
-            || s.search(/^\$[A-Z]+\$\d+$/) != -1
-            || s.search(/^[A-Z]+\$\d+$/) != -1 || s.search(/^\$[A-Z]+\d+$/) != -1
-            || s.search(/^[A-Za-z]+\d+:[A-Za-z]+\d+$/) != -1) {
+        let enter = true;
+        if (express.length >  i + 1) {
+            let s2 = express[i + 1];
+            if (s2.indexOf("(") !== -1) {
+                enter = false;
+            }
+        }
+
+        if ((s.search(/^[A-Z]+\d+$/) != -1
+                || s.search(/^\$[A-Z]+\$\d+$/) != -1
+                || s.search(/^[A-Z]+\$\d+$/) != -1 || s.search(/^\$[A-Z]+\d+$/) != -1
+                || s.search(/^[A-Za-z]+\d+:[A-Za-z]+\d+$/) != -1) && enter) {
             for (let i2 = 0; i2 < express[i].length; i2++)
                 colors.push({
                     "code": color,
@@ -23607,7 +23646,7 @@ const cutting2 = (str, s) => {
             color = color + 1;
         } else {
             let sc = s.replace(/\$/g, "");
-            if (sc.search(/^[A-Za-z]+\d+:[A-Za-z]+\d+$/) != -1) {
+            if (sc.search(/^[A-Za-z]+\d+:[A-Za-z]+\d+$/) != -1 && enter) {
                 for (let i2 = 0; i2 < express[i].length; i2++)
                     colors.push({
                         "code": color,
@@ -23622,6 +23661,7 @@ const cutting2 = (str, s) => {
                     });
             }
         }
+
     }
 
     return colors;

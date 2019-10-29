@@ -253,7 +253,7 @@ class CellRange {
         let darr = [];
         let index = 0;
         this.each((i, j) => {
-            darr.push({ri: i, ci: j, v: sarr[index % sarr.length ].tmp});
+            darr.push({ri: i, ci: j, v: sarr[index % sarr.length ].tmp, type: sarr[index % sarr.length].type});
             index = index + 1;
         });
 

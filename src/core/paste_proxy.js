@@ -119,6 +119,10 @@ export default class PasteProxy {
             diffValue = last1.text * 1 - last2.text * 1;
         }
 
+        if(isNaN(diffValue)) {
+            diffValue = 1;
+        }
+
         return diffValue;
     }
 }

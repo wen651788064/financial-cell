@@ -26,6 +26,8 @@ export default class Recast {
         this.formula = this.formula.replace(/\）/g, ')');
         this.formula = this.formula.replace(/\”/g, '"');
         this.formula = this.formula.replace(/\%/g, '');
+        this.formula = this.formula.replace(/\,/g, '');
+        this.formula = this.formula.replace(/\，/g, '');
     }
 
     parse() {

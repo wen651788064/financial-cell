@@ -79,7 +79,6 @@ function lockCells(evt, _selector, isAb = false, p = -1) {
             }
         }
     } else if (mousedownIndex.length > 0) {
-        console.log(mousedownIndex);
         if (operation(mousedownIndex[1][0]) && isAbsoluteValue(cuttingByPos(mousedownIndex[1], mousedownIndex[1].length), 2)) {
             editor.setLock(false);
             return;

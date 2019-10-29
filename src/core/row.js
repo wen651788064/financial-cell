@@ -17,26 +17,59 @@ export function isFormula(text) {
     return false;
 }
 
-function otherAutoFilter(d, darr, direction, isAdd, what, cb) {
-    let ncell = this.getCellByTopCell(d, direction, isAdd, 'other');
+function otherAutoFilter(d, darr, direction, isAdd, what, cb, other) {
+    let ncell = other ? {
+        "text": d.v,
+        "formulas": d.v,
+    } : this.getCellByTopCell(d, direction, isAdd, 'other');
     let {text, formulas} = ncell;
     let iText = formulas != "" ? formulas : text;
 
-    if (this.isFormula(iText)) {
+    if(other) {
+        this.copyRender(darr, d.ri, d.ci, ncell, what, cb);
+    } else if (this.isFormula(iText)) {
         this.calcFormulaCellByTopCell(iText, darr, d, direction, isAdd);
     } else {
         this.calcCellByTopCell(cb, what, ncell, darr, isAdd, iText, d, text);
     }
 }
 
-function numberAutoFilter(d, darr, direction, isAdd, diffValue, what, cb) {
-    let ncell = this.getCellByTopCell(d, direction, isAdd);
+function numberAutoFilter(d, darr, direction, isAdd, diffValue, what, cb, isNumber) {
+    let ncell = "";
+
+    if (isAdd) {
+        diffValue = Math.abs(diffValue);
+    } else {
+        diffValue = diffValue * -1;
+    }
+
+    if (!isNumber) {
+        ncell = {
+            "text": d.v,
+            "formulas": d.v,
+        }
+        diffValue = 0;
+    } else {
+        ncell = this.getCellByTopCell(d, direction, isAdd);
+    }
+
     this.calcNumberCellByTopCell(ncell, diffValue, darr, d, what, cb);
 }
 
-function dateAutoFilter(d, direction, isAdd, darr, what, cb) {
-    let ncell = this.getCellByTopCell(d, direction, isAdd);
-    this.calcDateCellByTopCell(ncell, darr, d, isAdd, what, cb);
+function dateAutoFilter(d, line, isDown, darr, what, cb, isDate) {
+    let direction = line;
+    let ncell = "";
+    let diff = isDown ? 1 : -1;
+    if (!isDate) {
+        ncell = {
+            "text": d.v,
+            "formulas": d.v,
+        };
+        diff = 0;
+    } else {
+        ncell = this.getCellByTopCell(d, direction, isDown, 'date');
+    }
+    this.calcDateCellByTopCell(ncell, darr, d, isDown, what, cb, diff);
 }
 
 class Rows {
@@ -523,6 +556,7 @@ class Rows {
                     text: 0,
                     formulas: 0,
                     tmp: "",
+                    type: "other",
                 });
             }
         });
@@ -573,6 +607,7 @@ class Rows {
     }
 
     calcCellByTopCell(cb, what, ncell, darr, isAdd, iText, d, text) {
+
         if (!isHave(iText)) {
             iText = "";
         }
@@ -608,15 +643,15 @@ class Rows {
         this.copyRender(darr, d.ri, d.ci, ncell, what, cb);
     }
 
-    calcDateCellByTopCell(ncell, darr, d, isAdd, what, cb) {
+    calcDateCellByTopCell(ncell, darr, d, isAdd, what, cb, diff) {
         if (ncell.text != '') {
             let last1 = ncell.text;
 
             let value = "";
             if (isAdd) {
-                value = dayjs(last1).add(1, 'day').format('YYYY-MM-DD');
+                value = dayjs(last1).add(diff, 'day').format('YYYY-MM-DD');
             } else {
-                value = dayjs(last1).add(-1, 'day').format('YYYY-MM-DD');
+                value = dayjs(last1).add(diff, 'day').format('YYYY-MM-DD');
             }
             ncell.text = this.toString(value);
             ncell.formulas = this.toString(value);
@@ -637,8 +672,22 @@ class Rows {
     }
 
     getCellByTopCell(d, direction, isAdd, what = 'all') {
-        let {ri, ci} = this.getRangeByTopCell({ri: d.ri, ci: d.ci}, direction, isAdd);
+        if (what === 'date') {
+            if (direction === 1) {
+                let {ri, ci} = this.getRangeByTopCell({ri: d.ri, ci: d.ci}, false, isAdd);
+                return this.getCellByCell(ri, ci);
+            } else if (direction === 2) {
+                return this.getCellByCell(d.ri, d.ci - 1);
+            } else if (direction === 3) {
+                return this.getCellByCell(d.ri, d.ci + 1);
+            }
+        } else {
+            let {ri, ci} = this.getRangeByTopCell({ri: d.ri, ci: d.ci}, direction, isAdd);
+            return this.getCellByCell(ri, ci);
+        }
+    }
 
+    getCellByCell(ri, ci) {
         let ncell = this.getCell(ri, ci);
         if (!ncell) {
             ncell = {
@@ -680,56 +729,74 @@ class Rows {
 
             let darr = dstOneDRange.getLocationArray(sarr); //let dstOneDLocationAarray = dstOneDRange.getLocationArray()
             let line = pasteProxy.leftOrRight(); // 向左或者向右
+            let other = false;
 
-            // if (isDown) {
-            //     for (let i = 0; i < darr.length; i++) {
-            //         if (isNumber ) {
-            //
-            //         }else if (isDate ) {
-            //
-            //         }else {
-            //
-            //         }
-            //     }
-            // } else {
-            //     for (let i = darr.length - 1; i >= 0; i--) {
-            //         numberAutoFilter.call(this, darr[i], darr, isLeftRight, isDown, diffValue, what, cb);
-            //     }
-            // }
-
-            if (isNumber) {
-                let diffValue = pasteProxy.calcDiff(sarr, isDown);
-
-                if (isDown) {
-                    for (let i = 0; i < darr.length; i++) {
-                        numberAutoFilter.call(this, darr[i], darr, isLeftRight, isDown, diffValue, what, cb);
-                    }
-                } else {
-                    for (let i = darr.length - 1; i >= 0; i--) {
-                        numberAutoFilter.call(this, darr[i], darr, isLeftRight, isDown, diffValue, what, cb);
-                    }
+            for (let i = 0; i < darr.length; i++) {
+                let d = darr[i];
+                if (isNumber || d.type === 'number' || isDate || d.type === 'date') {
+                    other = true;
                 }
-            } else if (isDate) {
-                if (isDown) {
-                    for (let i = 0; i < darr.length; i++) {
-                        dateAutoFilter.call(this, darr[i], line === 3 ? true : false, isDown, darr, what, cb);
-                    }
-                } else {
-                    for (let i = darr.length - 1; i >= 0; i--) {
-                        dateAutoFilter.call(this, darr[i], line === 2 ? true : false, isDown, darr, what, cb);
+            }
+
+            if (isDown) {
+                for (let i = 0; i < darr.length; i++) {
+                    let d = darr[i];
+                    if (isNumber || d.type === 'number') {
+                        let diffValue = pasteProxy.calcDiff(sarr, isDown);
+                        numberAutoFilter.call(this, darr[i], darr, isLeftRight, isDown, diffValue, what, cb, isNumber);
+                    } else if (isDate || d.type === 'date') {
+                        dateAutoFilter.call(this, darr[i], line, isDown, darr, what, cb, isDate);
+                    } else {
+                        otherAutoFilter.call(this, darr[i], darr, isLeftRight, isDown, what, cb, other);
                     }
                 }
             } else {
-                if (isDown) {
-                    for (let i = 0; i < darr.length; i++) {
-                        otherAutoFilter.call(this, darr[i], darr, isLeftRight, isDown, what, cb);
-                    }
-                } else {
-                    for (let i = darr.length - 1; i >= 0; i--) {
-                        otherAutoFilter.call(this, darr[i], darr, isLeftRight, isDown, what, cb);
+                for (let i = darr.length - 1; i >= 0; i--) {
+                    let d = darr[i];
+                    if (isNumber || d.type === 'number') {
+                        let diffValue = pasteProxy.calcDiff(sarr, isDown);
+                        numberAutoFilter.call(this, darr[i], darr, isLeftRight, isDown, diffValue, what, cb, isNumber);
+                    } else if (isDate || d.type === 'date') {
+                        dateAutoFilter.call(this, darr[i], line, isDown, darr, what, cb, isDate);
+                    } else {
+                        otherAutoFilter.call(this, darr[i], darr, isLeftRight, isDown, what, cb, other);
                     }
                 }
             }
+
+            // if (isNumber) {
+            //     let diffValue = pasteProxy.calcDiff(sarr, isDown);
+            //
+            //     if (isDown) {
+            //         for (let i = 0; i < darr.length; i++) {
+            //             numberAutoFilter.call(this, darr[i], darr, isLeftRight, isDown, diffValue, what, cb);
+            //         }
+            //     } else {
+            //         for (let i = darr.length - 1; i >= 0; i--) {
+            //             numberAutoFilter.call(this, darr[i], darr, isLeftRight, isDown, diffValue, what, cb);
+            //         }
+            //     }
+            // } else if (isDate) {
+            //     if (isDown) {
+            //         for (let i = 0; i < darr.length; i++) {
+            //             dateAutoFilter.call(this, darr[i], line === 3 ? true : false, isDown, darr, what, cb);
+            //         }
+            //     } else {
+            //         for (let i = darr.length - 1; i >= 0; i--) {
+            //             dateAutoFilter.call(this, darr[i], line === 2 ? true : false, isDown, darr, what, cb);
+            //         }
+            //     }
+            // } else {
+            //     if (isDown) {
+            //         for (let i = 0; i < darr.length; i++) {
+            //             otherAutoFilter.call(this, darr[i], darr, isLeftRight, isDown, what, cb);
+            //         }
+            //     } else {
+            //         for (let i = darr.length - 1; i >= 0; i--) {
+            //             otherAutoFilter.call(this, darr[i], darr, isLeftRight, isDown, what, cb);
+            //         }
+            //     }
+            // }
         }
     }
 
@@ -798,12 +865,12 @@ class Rows {
                 }
             });
         });
-        for(let i = 0; i < srcCell.length; i++) {
-            let {  ri, ci, cell} = srcCell[i];
+        for (let i = 0; i < srcCell.length; i++) {
+            let {ri, ci, cell} = srcCell[i];
             this.setCell(ri, ci, {}, 'all');
         }
 
-        for(let i = 0; i < srcCell.length; i++) {
+        for (let i = 0; i < srcCell.length; i++) {
             let {nri, nci, cell} = srcCell[i];
             this.setCell(nri, nci, cell, 'all');
         }
