@@ -1087,6 +1087,8 @@ function sheetInitEvents() {
                             return;
                         }
                     }
+                    console.timeEnd("dbclick time2");
+                    console.time("dbclick time3");
 
                     let state = editor.clear();
                     if (state) {
@@ -1096,7 +1098,7 @@ function sheetInitEvents() {
                         }
                         loadFormula.call(this);
                     }
-                    console.timeEnd("dbclick time2");
+                    console.timeEnd("dbclick time3");
 
 
                     this.selector.longTimeBefore();
