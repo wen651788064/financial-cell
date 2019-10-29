@@ -604,6 +604,8 @@ export default class Editor {
 
         let {editorText} = this;
         let inputText = editorText.getText();
+        console.timeEnd("dbclick time3");
+        console.time("dbclick time4");
 
         this.display = isDisplay.call(this);
         if (inputText !== '' && isNaN(inputText) && inputText.replace(/\s/g, "").lastIndexOf('¥') === 0) {
@@ -611,8 +613,7 @@ export default class Editor {
         } else if (this.changed) {
             this.change('finish', inputText);
         }
-        console.timeEnd("dbclick time3");
-        console.time("dbclick time4");
+        console.timeEnd("dbclick time4");
 
         this.changed = false;
         this.cell = null;
@@ -629,18 +630,14 @@ export default class Editor {
         resetSuggestContentItems.call(this);
         resetSuggestItems.call(this);
         this.datepicker.hide();
-        console.timeEnd("dbclick time4");
 
         if (c) {
             return false;
         }
 
         setTimeout(() => {
-            console.time("dbclick time5");
-
             const {ri, ci} = this.data.selector;
             this.setRiCi(ri, ci);
-            console.timeEnd("dbclick time5");
         });
 
         return this.display;
