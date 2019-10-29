@@ -141,6 +141,7 @@ export default class CellProxy {
             tileArr.push(n);
         });
         deepArr.push(arr);
+        console.time("xx3");
 
 
         for (let i = 0; i < deepArr.length; i++) {
@@ -174,6 +175,7 @@ export default class CellProxy {
                 deepArr.push(arr);
             }
         }
+        console.time("xx3");
 
         if (d) {
             // setTimeout(() => {
