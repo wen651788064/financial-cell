@@ -606,18 +606,19 @@ function editorSet(type = 1) {
     console.time("dbclick time");
     const {editor, data, selector} = this;
     editorSetOffset.call(this);
+    console.timeEnd("dbclick time");
+    console.time("dbclick time");
+
     editor.setCellEnd(data.getSelectedCell());
     // editor.setCell(data.getSelectedCell(), data.getSelectedValidator(), type);
     if (this.data.settings.showEditor) {
         selector.el.hide();
     }
     clearClipboard.call(this);
-    console.timeEnd("dbclick time");
+    console.timeEnd("dbclick time2");
 
     setTimeout(() => {
-        console.time("dbclick time2");
         editor.setCursorPos(editor.editorText.getText().length);
-        console.timeEnd("dbclick time2");
     });
 }
 
