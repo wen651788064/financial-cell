@@ -223,7 +223,11 @@ async function parseCell(viewRange, state = false, src = '', state2 = true) {
     console.time("x3");
     let tileArr = [];
     if (ca.state) {
+        console.time("xx3");
+
         let assoc = proxy.associated(data.name, workbook);
+        console.timeEnd("xx3");
+
         ca.state = ca.state === false ? assoc.enter : ca.state;
         workbook = assoc.enter === true ? assoc.nd : workbook;
         tileArr = assoc.changeArr;
