@@ -1088,20 +1088,18 @@ function sheetInitEvents() {
                         }
                     }
                     console.timeEnd("dbclick time2");
+                    console.time("dbclick time3");
 
                     let state = editor.clear();
+                    console.timeEnd("dbclick time3");
+
                     if (state) {
-                        console.time("dbclick time3");
 
                         let cell = data.rows.getCell(ri, ci);
                         if (cell && cell.formulas) {
                             this.editorProxy.change(ri, ci, cell.formulas, data.rows, data);
                         }
-                        console.timeEnd("dbclick time3");
-                        console.time("dbclick time4");
-
                         loadFormula.call(this);
-                        console.timeEnd("dbclick time4");
 
                     }
 
