@@ -175,7 +175,7 @@ export default class CellProxy {
                 deepArr.push(arr);
             }
         }
-        console.time("xx3");
+        console.timeEnd("xx3");
 
         if (d) {
             // setTimeout(() => {
