@@ -976,7 +976,6 @@ function sheetInitEvents() {
                     }, 100);
                 }
             } else if (evt.detail === 2) {
-                console.time("dbclick time");
 
                 clearTimeout(this.render_timer);
                 editor.setMouseDownIndex([]);
@@ -984,6 +983,8 @@ function sheetInitEvents() {
                 if (editor.getLock()) {
                     return;
                 }
+                console.time("dbclick time");
+
                 editorSet.call(this, 2);
                 console.timeEnd("dbclick time");
             } else {
