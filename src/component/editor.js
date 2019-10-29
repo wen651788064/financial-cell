@@ -145,11 +145,11 @@ function inputEventHandler(evt, txt = '', formulas = '', state = "input") {
     let {editorText} = this;
     let inputText = editorText.getText();
 
-    if (inputText === '') {
-        const {data} = this;
-        const {history} = data;
-        history.add(data.getData());
-    }
+    // if (inputText === '') {
+    //     const {data} = this;
+    //     const {history} = data;
+    //     history.add(data.getData());
+    // }
 
     setTimeout(() => {
         if (this.chinese == false) return;
