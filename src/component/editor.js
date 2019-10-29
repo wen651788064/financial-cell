@@ -725,20 +725,30 @@ export default class Editor {
     }
 
     setCellEnd(cell) {
+        console.time("dbclick time2");
+
         let text = (cell && cell.formulas) || '';
         text = text == '' ? (cell && cell.text) || '' : text;
 
         this.textEl.child(text + "");
         this.pos = text.length;
         set_focus.call(this, this.textEl.el, -1);
+        console.timeEnd("dbclick time2");
+        console.time("dbclick time");
+
         this.oldCell = {
             text: (cell && cell.text) || '',
             formulas: (cell && cell.formulas) || '',
         };
 
         inputEventHandler.call(this, null, (cell && cell.text) || text, (cell && cell.formulas) || '', "end");
+        console.timeEnd("dbclick time");
+
         setTimeout(() => {
+            console.time("dbclick time3");
             set_focus.call(this, this.textEl.el, -1);
+            console.timeEnd("dbclick time3");
+
         })
     }
 

@@ -603,12 +603,10 @@ function hasEditor(showEditor = true) {
 }
 
 function editorSet(type = 1) {
-     const {editor, data, selector} = this;
+    const {editor, data, selector} = this;
     editorSetOffset.call(this);
-     console.time("dbclick time2");
 
     editor.setCellEnd(data.getSelectedCell());
-    console.timeEnd("dbclick time2");
 
     // editor.setCell(data.getSelectedCell(), data.getSelectedValidator(), type);
     if (this.data.settings.showEditor) {
