@@ -10,11 +10,14 @@ export default class History {
     }
 
     add(data) {
+        console.time("dbclick time 4");
         if(!this.data.settings.showEditor) {
             return;
         }
         this.undoItems.push(JSON.stringify(data));
         this.redoItems = [];
+        console.timeEnd("dbclick time 4");
+
     }
 
     addPic(data, operation) {

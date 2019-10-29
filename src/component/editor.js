@@ -148,10 +148,7 @@ function inputEventHandler(evt, txt = '', formulas = '', state = "input") {
     if (inputText === '') {
         const {data} = this;
         const {history} = data;
-        console.time("dbclick time 4");
         history.add(data.getData());
-        console.timeEnd("dbclick time 4");
-
     }
 
     setTimeout(() => {
