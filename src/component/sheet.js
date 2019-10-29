@@ -988,7 +988,6 @@ function sheetInitEvents() {
                 editorSet.call(this, 2);
                 console.timeEnd("dbclick time");
             } else {
-                console.time("white time");
                 if (editor.getLock() || editor.isCors) {
                     let _selector = null;
                     let change = 0;
@@ -1101,7 +1100,6 @@ function sheetInitEvents() {
                     clearSelectors.call(this);
                     editorSetOffset.call(this);
                 }
-                console.timeEnd("white time");
             }
         }).on('mousewheel.stop', (evt) => {
         overlayerMousescroll.call(this, evt);
