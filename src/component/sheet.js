@@ -1074,6 +1074,9 @@ function sheetInitEvents() {
                         this.mergeSelector = false;
                     });
                 }
+                console.timeEnd("dbclick time");
+
+                console.time("dbclick time1");
 
                 if (!editor.getLock() && !editor.isCors) {
                     let {ri, ci} = editor;
@@ -1100,7 +1103,7 @@ function sheetInitEvents() {
                     editorSetOffset.call(this);
                 }
 
-                console.timeEnd("dbclick time");
+                console.timeEnd("dbclick time1");
 
             }
         }).on('mousewheel.stop', (evt) => {
