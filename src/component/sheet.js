@@ -615,9 +615,9 @@ function editorSet(type = 1) {
     console.timeEnd("dbclick time");
 
     setTimeout(() => {
-        console.time("dbclick time");
+        console.time("dbclick time2");
         editor.setCursorPos(editor.editorText.getText().length);
-        console.timeEnd("dbclick time");
+        console.timeEnd("dbclick time2");
     });
 }
 
