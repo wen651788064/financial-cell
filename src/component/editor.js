@@ -607,15 +607,11 @@ export default class Editor {
         this.display = isDisplay.call(this);
 
         if (inputText !== '' && isNaN(inputText) && inputText.replace(/\s/g, "").lastIndexOf('¥') === 0) {
-            console.time("dbclick time4");
             this.change('format', inputText);
-            console.timeEnd("dbclick time4");
 
         } else if (this.changed) {
-            console.time("dbclick time5");
 
             this.change('finish', inputText);
-            console.timeEnd("dbclick time5");
 
         }
 

@@ -1144,6 +1144,8 @@ function sheetInitEvents() {
     };
     // editor
     editor.change = (state, itext) => {
+        console.time("dbclick timex");
+
         if (state === 'finish') {
             this.table.render();
             setTimeout(() => {
@@ -1192,6 +1194,8 @@ function sheetInitEvents() {
         }
 
         dataSetCellText.call(this, itext, state);
+        console.timeEnd("dbclick timex");
+
     };
     // modal validation
     modalValidation.change = (action, ...args) => {
