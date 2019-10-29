@@ -983,11 +983,10 @@ function sheetInitEvents() {
                 if (editor.getLock()) {
                     return;
                 }
+                editorSet.call(this, 2);
+            } else {
                 console.time("dbclick time");
 
-                editorSet.call(this, 2);
-                console.timeEnd("dbclick time");
-            } else {
                 if (editor.getLock() || editor.isCors) {
                     let _selector = null;
                     let change = 0;
@@ -1100,6 +1099,9 @@ function sheetInitEvents() {
                     clearSelectors.call(this);
                     editorSetOffset.call(this);
                 }
+
+                console.timeEnd("dbclick time");
+
             }
         }).on('mousewheel.stop', (evt) => {
         overlayerMousescroll.call(this, evt);
