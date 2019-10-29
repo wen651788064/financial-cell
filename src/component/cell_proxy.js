@@ -129,6 +129,8 @@ export default class CellProxy {
     }
 
     associated(name, workbook, oldData = this.oldData, d = true) {
+        console.time("xx5");
+
         let enter = false;
         let data = this.deepCopy(oldData);
         data = this.filter(data);
@@ -141,6 +143,8 @@ export default class CellProxy {
             tileArr.push(n);
         });
         deepArr.push(arr);
+        console.timeEnd("xx5");
+
         console.time("xx3");
 
 
@@ -176,12 +180,14 @@ export default class CellProxy {
             }
         }
         console.timeEnd("xx3");
+        console.time("xx4");
 
         if (d) {
             // setTimeout(() => {
             this.refCell(tileArr, name);
             // });
         }
+        console.timeEnd("xx4");
 
         return {
             enter: enter,
