@@ -115,10 +115,8 @@ export function loadData(viewRange, load = false, read = false) {
     // let {mri, mci} = this.data.rows.getMax();
     let wb = data.rows.workbook.getWorkbook(1);
     let wnf = data.rows.workbook.getWorkbook(2);
-    console.time('copy time');
-    workbook = wb === "" ? workbook : deepCopy(wb);
-    workbook_no_formula = wnf === "" ? workbook : deepCopy(wnf);
-    console.timeEnd('copy time');
+     workbook = wb === "" ? workbook : wb;
+    workbook_no_formula = wnf === "" ? workbook : wnf;
 
     // viewRange.eachGivenRange((ri, ci, eri, eci,) => {
     //     let cell2 = this.proxy.deepCopy(data.getCell(ri, ci));
