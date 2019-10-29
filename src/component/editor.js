@@ -611,7 +611,7 @@ export default class Editor {
 
         } else if (this.changed) {
 
-            this.change('finish', inputText);
+            // this.change('finish', inputText);
 
         }
 
