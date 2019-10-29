@@ -600,6 +600,8 @@ export default class Editor {
     }
 
     clear(c = false) {
+        console.time("dbclick time3");
+
         let {editorText} = this;
         let inputText = editorText.getText();
 
@@ -609,6 +611,8 @@ export default class Editor {
         } else if (this.changed) {
             this.change('finish', inputText);
         }
+        console.timeEnd("dbclick time3");
+        console.time("dbclick time4");
 
         this.changed = false;
         this.cell = null;
@@ -625,14 +629,18 @@ export default class Editor {
         resetSuggestContentItems.call(this);
         resetSuggestItems.call(this);
         this.datepicker.hide();
+        console.timeEnd("dbclick time4");
 
         if (c) {
             return false;
         }
 
         setTimeout(() => {
+            console.time("dbclick time5");
+
             const {ri, ci} = this.data.selector;
             this.setRiCi(ri, ci);
+            console.timeEnd("dbclick time5");
         });
 
         return this.display;

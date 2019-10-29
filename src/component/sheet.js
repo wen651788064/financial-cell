@@ -1088,10 +1088,8 @@ function sheetInitEvents() {
                         }
                     }
                     console.timeEnd("dbclick time2");
-                    console.time("dbclick time3");
 
                     let state = editor.clear();
-                    console.timeEnd("dbclick time3");
 
                     if (state) {
 
