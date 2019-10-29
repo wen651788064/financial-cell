@@ -127,6 +127,7 @@ function mouseDownEventHandler(evt) {
 
 function inputEventHandler(evt, txt = '', formulas = '', state = "input") {
     console.time("dbclick time x"  );
+    console.time("dbclick time 4");
 
     if (evt) {
         const {
@@ -151,6 +152,7 @@ function inputEventHandler(evt, txt = '', formulas = '', state = "input") {
         const {history} = data;
         history.add(data.getData());
     }
+    console.timeEnd("dbclick time 4");
 
     setTimeout(() => {
         console.time("dbclick time");
@@ -242,7 +244,9 @@ function inputEventHandler(evt, txt = '', formulas = '', state = "input") {
         console.timeEnd("dbclick time2");
 
         setTimeout(() => {
+            console.time("dbclick time3");
             this.show();
+            console.timeEnd("dbclick time3");
         });
     });
     console.timeEnd("dbclick time x");
