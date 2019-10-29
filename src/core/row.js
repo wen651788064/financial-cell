@@ -25,7 +25,7 @@ function otherAutoFilter(d, darr, direction, isAdd, what, cb, other) {
     let {text, formulas} = ncell;
     let iText = formulas != "" ? formulas : text;
 
-    if(other) {
+    if (other) {
         this.copyRender(darr, d.ri, d.ci, ncell, what, cb);
     } else if (this.isFormula(iText)) {
         this.calcFormulaCellByTopCell(iText, darr, d, direction, isAdd);
@@ -219,6 +219,14 @@ class Rows {
             row.cells[ci].value = cell.value;
             row.cells[ci].text = cell.text;
             row.cells[ci].style = cell.style;
+        } else if (what === 'rmb') {
+            if (!row.cells[ci]) {
+                row.cells[ci] = {}
+            }
+            row.cells[ci].value = cell.value;
+            row.cells[ci].text = cell.text;
+            row.cells[ci].formulas = cell.formulas;
+            row.cells[ci].style = cell.style;
         } else if (what === 'all_with_no_workbook') {
             row.cells[ci] = cell;
             row.cells[ci].value = cell.text;
@@ -349,6 +357,8 @@ class Rows {
             return "date";
         } else if ((cellStyle && cellStyle.format && cellStyle.format === 'normal')) {
             return "normal";
+        } else if (cellStyle && cellStyle.format && cellStyle.format === 'rmb') {
+            return 'rmb';
         }
 
         return "";
@@ -671,6 +681,7 @@ class Rows {
         return {ri, ci};
     }
 
+    // logProxy.log({"msg":"12312"})  console.log --> logProxy.log
     getCellByTopCell(d, direction, isAdd, what = 'all') {
         if (what === 'date') {
             if (direction === 1) {

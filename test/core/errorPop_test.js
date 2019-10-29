@@ -331,6 +331,21 @@ describe('qq', () => {
             assert.equal(cell.value, '43466.22');
         });
 
+        it(' 44048 -> ￥', function () {
+            let cstyle = {};
+            cstyle.format = 'rmb';
+            let style = data.addStyle(cstyle);
+            let cell = {"text": "44048", "formulas": "44048", "style": style};
+            data.rows.setCell(1, 1, cell, 'rmb');
+            let {state, text} = data.tryParseToNum('input', cell, 1, 1);
+
+            cell = data.rows.getCell(1, 1);
+            assert.equal(text, '44048');
+            assert.equal(cell.text, '￥44048');
+            assert.equal(cell.formulas, '44048');
+            assert.equal(cell.value, '44048');
+        });
+
         it(' 2019-01-01 to number', function () {
             let cstyle = {};
             cstyle.format = 'number';

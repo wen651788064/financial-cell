@@ -559,6 +559,23 @@ function getType(ri, ci, cell) {
                 "text": _cell.text,
             }
         }
+    } else if (format === 'rmb') {
+        let text = rows.useOne(cell.value, cell.text), formula = cell.formulas;
+        text = formatNumberRender(text, 0);
+        if (!isNaN(text)) {
+            let _cell = {
+                "text": "￥" + text,
+                "value": text,
+                "formulas": formula,
+            };
+            data.dateInput(_cell, ri, ci, 'rmb');
+
+            return {
+                "state": true,
+                "text":  text,
+            }
+        }
+        console.log(text, formula);
     }
 
 
