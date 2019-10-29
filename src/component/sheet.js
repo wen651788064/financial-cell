@@ -603,19 +603,18 @@ function hasEditor(showEditor = true) {
 }
 
 function editorSet(type = 1) {
-    console.time("dbclick time");
-    const {editor, data, selector} = this;
+     const {editor, data, selector} = this;
     editorSetOffset.call(this);
-    console.timeEnd("dbclick time");
-    console.time("dbclick time2");
+     console.time("dbclick time2");
 
     editor.setCellEnd(data.getSelectedCell());
+    console.timeEnd("dbclick time2");
+
     // editor.setCell(data.getSelectedCell(), data.getSelectedValidator(), type);
     if (this.data.settings.showEditor) {
         selector.el.hide();
     }
     clearClipboard.call(this);
-    console.timeEnd("dbclick time2");
 
     setTimeout(() => {
         editor.setCursorPos(editor.editorText.getText().length);
