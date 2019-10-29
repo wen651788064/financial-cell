@@ -985,8 +985,6 @@ function sheetInitEvents() {
                 }
                 editorSet.call(this, 2);
             } else {
-                console.time("dbclick time");
-
                 if (editor.getLock() || editor.isCors) {
                     let _selector = null;
                     let change = 0;
@@ -1074,7 +1072,6 @@ function sheetInitEvents() {
                         this.mergeSelector = false;
                     });
                 }
-                console.timeEnd("dbclick time");
 
                 console.time("dbclick time1");
 
@@ -1097,10 +1094,14 @@ function sheetInitEvents() {
                         }
                         loadFormula.call(this);
                     }
+                    console.time("dbclick time2");
+
                     this.selector.longTimeBefore();
                     overlayerMousedown.call(this, evt);
                     clearSelectors.call(this);
                     editorSetOffset.call(this);
+                    console.timeEnd("dbclick time2");
+
                 }
 
                 console.timeEnd("dbclick time1");
