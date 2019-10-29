@@ -151,6 +151,8 @@ function inputEventHandler(evt, txt = '', formulas = '', state = "input") {
     }
 
     setTimeout(() => {
+        console.time("dbclick time");
+
         if (this.chinese == false) return;
         let v = '';
         if (this.data.settings.showEditor) {
@@ -220,14 +222,14 @@ function inputEventHandler(evt, txt = '', formulas = '', state = "input") {
                 suggest.hide();
             }
         }
+        console.timeEnd("dbclick time");
+        console.time("dbclick time2");
 
         textlineEl.html(formulas || v);
         editorText.setText(formulas || v);
-        // this.inputText = formulas || v;
         this.suggest.itemIndex = -1;
         resetTextareaSize.call(this);
         if (v && v[0] !== '=') {
-            // textEl.html(v);
             set_focus.call(this, textEl.el, -1);
         }
 
@@ -235,6 +237,7 @@ function inputEventHandler(evt, txt = '', formulas = '', state = "input") {
             v = formulas;
         }
         this.change(state, v);
+        console.timeEnd("dbclick time2");
 
         setTimeout(() => {
             this.show();
@@ -328,7 +331,7 @@ function setText(text, position) {
 
 
 function suggestItemClick(it) {
-    const { validator, editorText } = this;
+    const {validator, editorText} = this;
     let inputText = editorText.getText();
     let position = 0;
     if (validator && validator.type === 'list') {
@@ -462,7 +465,7 @@ export default class Editor {
                             evt.preventDefault();
                         }
                         console.log(key_num);
-                        if(key_num === 115) {       // F4
+                        if (key_num === 115) {       // F4
                             let {inputText, pos} = this.editorText.f4ShortcutKey(getCursortPosition.call(this));
                             inputEventHandler.call(this, null, inputText, inputText);
                             setTimeout(() => {
@@ -592,7 +595,7 @@ export default class Editor {
         let inputText = editorText.getText();
         if (pos != -1) {
             this.pos = getCursortPosition.call(this);
-            parse2.call(this,  inputText, this.pos);
+            parse2.call(this, inputText, this.pos);
         } else {
             parse.call(this, inputText);
         }
@@ -606,7 +609,7 @@ export default class Editor {
         if (inputText !== '' && isNaN(inputText) && inputText.replace(/\s/g, "").lastIndexOf('¥') === 0) {
             this.change('format', inputText);
         } else if (this.changed) {
-            this.change('finish',inputText);
+            this.change('finish', inputText);
         }
 
         this.changed = false;
@@ -725,16 +728,13 @@ export default class Editor {
     }
 
     setCellEnd(cell) {
-        console.time("dbclick time2");
-
         let text = (cell && cell.formulas) || '';
         text = text == '' ? (cell && cell.text) || '' : text;
 
         this.textEl.child(text + "");
         this.pos = text.length;
         set_focus.call(this, this.textEl.el, -1);
-        console.timeEnd("dbclick time2");
-        console.time("dbclick time");
+
 
         this.oldCell = {
             text: (cell && cell.text) || '',
@@ -742,13 +742,9 @@ export default class Editor {
         };
 
         inputEventHandler.call(this, null, (cell && cell.text) || text, (cell && cell.formulas) || '', "end");
-        console.timeEnd("dbclick time");
 
         setTimeout(() => {
-            console.time("dbclick time3");
             set_focus.call(this, this.textEl.el, -1);
-            console.timeEnd("dbclick time3");
-
         })
     }
 
@@ -813,7 +809,7 @@ export default class Editor {
         let {editorText} = this;
         let inputText = editorText.getText();
 
-        if (isDisplay.call(this) &&  editorText.isFormula())
+        if (isDisplay.call(this) && editorText.isFormula())
             return true;
         else
             return false
