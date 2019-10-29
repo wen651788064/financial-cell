@@ -126,8 +126,6 @@ function mouseDownEventHandler(evt) {
 }
 
 function inputEventHandler(evt, txt = '', formulas = '', state = "input") {
-    console.time("dbclick time x");
-
     if (evt) {
         const {
             inputType,
@@ -142,8 +140,7 @@ function inputEventHandler(evt, txt = '', formulas = '', state = "input") {
             return;
         }
     }
-    console.timeEnd("dbclick time x");
-    console.time("dbclick time 4");
+
 
     let {editorText} = this;
     let inputText = editorText.getText();
@@ -151,9 +148,11 @@ function inputEventHandler(evt, txt = '', formulas = '', state = "input") {
     if (inputText === '') {
         const {data} = this;
         const {history} = data;
+        console.time("dbclick time 4");
         history.add(data.getData());
+        console.timeEnd("dbclick time 4");
+
     }
-    console.timeEnd("dbclick time 4");
 
     setTimeout(() => {
         if (this.chinese == false) return;
