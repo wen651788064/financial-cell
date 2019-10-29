@@ -1076,6 +1076,8 @@ function sheetInitEvents() {
                 console.time("dbclick time1");
 
                 if (!editor.getLock() && !editor.isCors) {
+                    console.time("dbclick time2");
+
                     let {ri, ci} = editor;
                     let inputText = editor.editorText.getText();
                     if (ri !== -1 && ci !== -1 && inputText[0] === "=") {
@@ -1094,14 +1096,13 @@ function sheetInitEvents() {
                         }
                         loadFormula.call(this);
                     }
-                    console.time("dbclick time2");
+                    console.timeEnd("dbclick time2");
+
 
                     this.selector.longTimeBefore();
                     overlayerMousedown.call(this, evt);
                     clearSelectors.call(this);
                     editorSetOffset.call(this);
-                    console.timeEnd("dbclick time2");
-
                 }
 
                 console.timeEnd("dbclick time1");
