@@ -603,6 +603,7 @@ function hasEditor(showEditor = true) {
 }
 
 function editorSet(type = 1) {
+    console.time("dbclick time");
     const {editor, data, selector} = this;
     editorSetOffset.call(this);
     editor.setCellEnd(data.getSelectedCell());
@@ -611,9 +612,12 @@ function editorSet(type = 1) {
         selector.el.hide();
     }
     clearClipboard.call(this);
+    console.timeEnd("dbclick time");
 
     setTimeout(() => {
+        console.time("dbclick time");
         editor.setCursorPos(editor.editorText.getText().length);
+        console.timeEnd("dbclick time");
     });
 }
 
@@ -983,10 +987,9 @@ function sheetInitEvents() {
                 if (editor.getLock()) {
                     return;
                 }
-                console.time("dbclick time");
+
 
                 editorSet.call(this, 2);
-                console.timeEnd("dbclick time");
             } else {
                 console.time("white time");
                 if (editor.getLock() || editor.isCors) {
