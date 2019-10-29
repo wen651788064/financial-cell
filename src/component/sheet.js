@@ -605,9 +605,7 @@ function hasEditor(showEditor = true) {
 function editorSet(type = 1) {
     const {editor, data, selector} = this;
     editorSetOffset.call(this);
-
     editor.setCellEnd(data.getSelectedCell());
-
     // editor.setCell(data.getSelectedCell(), data.getSelectedValidator(), type);
     if (this.data.settings.showEditor) {
         selector.el.hide();
@@ -985,9 +983,10 @@ function sheetInitEvents() {
                 if (editor.getLock()) {
                     return;
                 }
-
+                console.time("dbclick time");
 
                 editorSet.call(this, 2);
+                console.timeEnd("dbclick time");
             } else {
                 console.time("white time");
                 if (editor.getLock() || editor.isCors) {
