@@ -126,6 +126,8 @@ function mouseDownEventHandler(evt) {
 }
 
 function inputEventHandler(evt, txt = '', formulas = '', state = "input") {
+    console.time("dbclick time x"  );
+
     if (evt) {
         const {
             inputType,
@@ -243,6 +245,8 @@ function inputEventHandler(evt, txt = '', formulas = '', state = "input") {
             this.show();
         });
     });
+    console.timeEnd("dbclick time x");
+
 }
 
 function keyDownEventHandler(evt) {
