@@ -607,7 +607,7 @@ function editorSet(type = 1) {
     const {editor, data, selector} = this;
     editorSetOffset.call(this);
     console.timeEnd("dbclick time");
-    console.time("dbclick time");
+    console.time("dbclick time2");
 
     editor.setCellEnd(data.getSelectedCell());
     // editor.setCell(data.getSelectedCell(), data.getSelectedValidator(), type);
