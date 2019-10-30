@@ -276,6 +276,19 @@ describe('qq', () => {
             assert.equal(cell.text, '2019-01-01');
             assert.equal(cell.formulas, '2019-01-01');
         });
+
+        it('  setCellText  ', function () {
+            data.rows.setCellText(1, 1, {text: "=add(1, 3)", style: 1}, '', '', 'style');
+            let cell = data.rows.getCell(1, 1);
+
+            assert.equal(cell.text, '=add(1, 3)');
+            assert.equal(cell.formulas, '=add(1, 3)');
+
+            data.rows.setCellText(1, 1, {text: "1", style: 1}, '', '', 'format');
+            cell = data.rows.getCell(1, 1);
+            assert.equal(cell.text, '1');
+            assert.equal(cell.formulas, '=add(1, 3)');
+        });
     });
 
     describe('  get cell  ', () => {

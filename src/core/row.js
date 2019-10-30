@@ -28,7 +28,7 @@ function otherAutoFilter(d, darr, direction, isAdd, what, cb, other) {
     if (other) {
         this.copyRender(darr, d.ri, d.ci, ncell, what, cb);
     } else if (this.isFormula(iText)) {
-        this.calcFormulaCellByTopCell(iText, darr, d, direction, isAdd);
+        this.calcFormulaCellByTopCell(iText, darr, d, direction, isAdd, cb);
     } else {
         this.calcCellByTopCell(cb, what, ncell, darr, isAdd, iText, d, text);
     }
@@ -251,8 +251,11 @@ class Rows {
         const cell = this.getCellOrNew(ri, ci);
         if (what === 'style') {
             cell.style = style;
+            cell.formulas = text;   //    cell.formulas = cell.formulas;
+        } else if(what === 'format') {
             cell.formulas = cell.formulas;
-        } else {
+            cell.style = style;
+        }else {
             cell.formulas = text;
             cell.value = text;
         }
@@ -612,13 +615,13 @@ class Rows {
         this.copyRender(darr, d.ri, d.ci, cell, what, cb);
     }
 
-    calcFormulaCellByTopCell(iText, darr, d, direction, isAdd) {
+    calcFormulaCellByTopCell(iText, darr, d, direction, isAdd, cb) {
         let strList = splitStr(iText);
         let args = this.getRangeByTopCell({ri: d.ri, ci: d.ci}, direction, isAdd);
         let dci = d.ri - args.ri;
         let dri = d.ci - args.ci;
         let {bad, result} = this.getCellTextByShift(strList, dri, dci);
-        this.updateCellReferenceByShift(bad, result, d.ri, d.ci);
+        this.updateCellReferenceByShift(bad, result, d.ri, d.ci, cb);
     }
 
     calcCellByTopCell(cb, what, ncell, darr, isAdd, iText, d, text) {
@@ -715,7 +718,7 @@ class Rows {
         return helper.cloneDeep(ncell);
     }
 
-    updateCellReferenceByShift(bad, result, ri, ci) {
+    updateCellReferenceByShift(bad, result, ri, ci, cb = () => {}) {
         let _cell = {};
         if (bad) {
             _cell.text = "#REF!";
@@ -724,7 +727,9 @@ class Rows {
             _cell.text = result != "" ? result : innerText;
             _cell.formulas = result != "" ? result : innerText;
         }
+        // rows.setCellText(ri, ci, {text, style}, proxy, this.name, 'style');
         this.setCell(ri, ci, _cell, 'all');
+        cb(ri, ci, _cell);
     }
 
     // what: all | format | text
@@ -779,7 +784,6 @@ class Rows {
                     }
                 }
             }
-
             // if (isNumber) {
             //     let diffValue = pasteProxy.calcDiff(sarr, isDown);
             //

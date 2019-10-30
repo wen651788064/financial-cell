@@ -27,10 +27,10 @@ export default class CellProxy {
         }
 
         let value = ncell.formulas !== "" ? ncell.formulas + "" : ncell.text + "";
-        value = value.replace(/,/g, "");
-        let ns = value.replace("=", "") * 1;
+        value = value.replace(/,/g, "").replace("=", "");
+        let ns = value * 1;
 
-        if ((ns || ns == 0) && typeof ns === 'number' && !isNaN(ns)) {
+        if ((ns || ns == 0) && typeof ns === 'number' && !isNaN(ns) && /^\d+$/.test(value) === true) {
             if(isNumber == true) {
                 isNumber = true;
                 nA = false;

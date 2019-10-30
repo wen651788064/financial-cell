@@ -1,11 +1,12 @@
 import {isHaveStyle} from "./paste";
 import {Rows} from "../core/row";
 import {splitStr} from "../core/operator";
+import {xy2expr} from "../core/alphabet";
 
 export default class TableProxy {
-    constructor(data) {
+    constructor(data ) {
         this.data = data;
-        this.rows = new Rows({len: 0, height: 0});
+         this.rows = new Rows({len: 0, height: 0});
     }
 
     getComputedStyle(computedStyle) {
@@ -83,7 +84,7 @@ export default class TableProxy {
 
     dealReference(tableDom, {ri, ci}) {
         let {rows} = this;
-        let reference = [];
+         let reference = [];
 
         this.each(tableDom, (i, j, cell) => { // 处理reference函数提取一下，填充也用引用这个函数。 updateCEllReferenceByShift， 跟填充的逻辑共享
             let node = cell.querySelector("reference");
@@ -105,6 +106,7 @@ export default class TableProxy {
 
                 rows.setCell(ri + i, ci + j, _cell, 'all');
             }
+            // proxy.setCell(data.name, xy2expr(ci + j, ri + i));
 
             reference.push({
                 ri: ri + i,

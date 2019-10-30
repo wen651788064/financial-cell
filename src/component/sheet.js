@@ -495,12 +495,12 @@ function autofillNext() {
     let enter = false;
     this.selector.arange.each((ri, ci) => {
         let cell = data.rows.getCell(ri, ci);
-        if (cell && cell.formulas) {
-            let enter2 = this.editorProxy.change(ri, ci, cell.formulas, data.rows, data, true);
-            if (enter2 === true) {
-                enter = true;
-            }
-        }
+        // if (cell && cell.formulas) {
+        //     let enter2 = this.editorProxy.change(ri, ci, cell.formulas, data.rows, data, true);
+        //     if (enter2 === true) {
+        //         enter = true;
+        //     }
+        // }
     });
     if (enter) {
         data.change(data.getData());
@@ -1094,9 +1094,9 @@ function sheetInitEvents() {
                     if (state) {
 
                         let cell = data.rows.getCell(ri, ci);
-                        if (cell && cell.formulas) {
-                            this.editorProxy.change(ri, ci, cell.formulas, data.rows, data);
-                        }
+                        // if (cell && cell.formulas) {
+                        //     this.editorProxy.change(ri, ci, cell.formulas, data.rows, data);
+                        // }
                         loadFormula.call(this);
 
                     }
@@ -1388,7 +1388,7 @@ function sheetInitEvents() {
                     break;
                 case 9: // tab
                     // lockCells
-                    this.editorProxy.change(editor.ri, editor.ci, editor.editorText.getText(), data.rows, data);
+                    // this.editorProxy.change(editor.ri, editor.ci, editor.editorText.getText(), data.rows, data);
                     let error = afterSelector.call(this, editor);
                     if (error) {
                         return;
@@ -1404,7 +1404,7 @@ function sheetInitEvents() {
                     break;
                 case 13: // enter
                     // lockCells
-                    this.editorProxy.change(editor.ri, editor.ci, editor.editorText.getText(), data.rows, data);
+                    // this.editorProxy.change(editor.ri, editor.ci, editor.editorText.getText(), data.rows, data);
                     let error2 = afterSelector.call(this, editor);
                     if (error2) {
                         return;
@@ -1490,7 +1490,7 @@ export default class Sheet {
         // selector
         this.selector = new Selector(data, this);
         this.selectorMoveEl = new Selector(data, this);
-        this.editorProxy = new EditorProxy();
+        // this.editorProxy = new EditorProxy();
 
         this.advice = new Advice(data, this);
 
@@ -1591,7 +1591,7 @@ export default class Sheet {
     loadData(data) {
         this.data.setData(data, this);
         // 把所有后端计算的公式过滤出来
-        this.editorProxy.associatedArr(this.data.rows);
+        // this.editorProxy.associatedArr(this.data.rows);
         sheetReset.call(this);
         return this;
     }

@@ -869,7 +869,7 @@ export default class DataProxy {
                         rows.setCellText(ri, ci, {
                             text: cell.text,
                             style: this.addStyle(cstyle)
-                        }, this.sheet.table.proxy, this.name, 'style');
+                        }, this.sheet.table.proxy, this.name, 'format');
                         // this.rows.workbook.change(ri, ci, cell, deepCopy(cell), 'change');
                     } else if (property === 'font-bold' || property === 'font-italic'
                         || property === 'font-name' || property === 'font-size') {

@@ -685,7 +685,10 @@ class Table {
         let viewRange = data.viewRange();
 
         let workbook = "";
-        if (!temp && data.rows.workbook.getNeedCalc()) {
+        let s = data.rows.workbook.getNeedCalc();
+        console.log(s);
+
+        if (!temp && s) {
             let args = await parseCell.call(this, viewRange, false, '', state);
 
             // if(args.redo === false && redo == false) {
