@@ -197,12 +197,16 @@ export function loadData(viewRange, load = false, read = false) {
 async function parseCell(viewRange, state = false, src = '', state2 = true) {
     console.time("parse cell need time");
     let {data, proxy} = this;
+    console.time(" xx1 ");
+
     let {workbook, workbook2, enter} = loadData.call(this, viewRange, false, true);
 
 
     let {factory} = this;
     let s = await factory.getSamples(workbook.Sheets);
+    console.timeEnd(" xx1 ");
 
+    console.time(" xx2 ");
 
     let sall = workbook2;
     Object.keys(s).forEach(i => {
@@ -213,6 +217,7 @@ async function parseCell(viewRange, state = false, src = '', state2 = true) {
     });
 
     let ca = proxy.calc(sall, data.name);
+    console.timeEnd(" xx2 ");
 
     if (ca.state) {
         workbook.Sheets[data.name] = ca.data;
