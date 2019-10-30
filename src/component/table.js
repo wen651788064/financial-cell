@@ -73,32 +73,9 @@ function getStr(str) {
 
 
 export function toUpperCase(text) {
-    let enter = 1;
-    // let k = 1;
-    let newText = "";
-    for (let i = 0; i < text.length; i++) {
-        if (text[i] === '\"' && enter === 1)
-            enter = 3;
-        else if (text[i] === '\"' && enter === 3) {
-            enter = 1;
-        }
+    text = text.toString().toUpperCase();
 
-        if (text[i] === ')' && enter !== 1) {
-            newText = newText + "\"";
-            enter = 1;
-        }
-
-        if (enter !== 3) {
-            newText = newText + (text[i] + "").toUpperCase();
-        } else {
-            newText = newText + text[i] + "";
-        }
-    }
-    // if (enter === 3) {
-    //     newText = newText + "\"";
-    // }
-
-    return newText;
+    return text;
 }
 
 export function loadData(viewRange, load = false, read = false) {
@@ -263,7 +240,7 @@ async function parseCell(viewRange, state = false, src = '', state2 = true) {
 
             console.time("calc need time");
             window.bugout.log('------------------------开始计算公式');
-            data.calc(workbook);
+            data.calc(workbook); // todo: 给个数据结构。 {(1,3):{v:1} , (3,4):{v:2314}} ; 相互之间的message要记录log
             window.bugout.log('------------------------计算公式结束');
 
             console.timeEnd("calc need time");

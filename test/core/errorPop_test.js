@@ -262,11 +262,7 @@ describe('qq', () => {
             assert.equal(cell3.text, 'a');
             assert.equal(cell3.formulas, 'a');
         });
-
-
     });
-
-
 
     describe('  set cell  ', () => {
         it(' setCellAll - value not empty ', function () {
@@ -279,6 +275,20 @@ describe('qq', () => {
             assert.equal(cell.value, '322.121');
             assert.equal(cell.text, '2019-01-01');
             assert.equal(cell.formulas, '2019-01-01');
+        });
+    });
+
+    describe('  get cell  ', () => {
+        it(' getCell ', function () {
+            let cell = {"style": 1};
+            data.rows.setCell(1, 1, cell, 'all');
+            cell = data.rows.getCell(1, 1);
+            assert.equal(cell.style, '1');
+
+            cell = {"text": 1};
+            data.rows.setCell(1, 1, cell, 'all');
+            cell = data.rows.getCell(1, 1);
+            assert.equal(cell.text, '1');
         });
     });
 

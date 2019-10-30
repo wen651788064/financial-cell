@@ -44,12 +44,12 @@ export default class WorkBook {
         }
     }
 
-    getWorkbook(type) {
+    getWorkbook(type) {// todo
         if (type === 1) {
             if (this.workbook === "") {
                 return "";
             }
-            return deepCopy(this.workbook);
+            return deepCopy(this.workbook); //todo: return this.workbook.getCopy()
         }
         if (type === 2) {
             if (this.workbook_no_formula === "") {

@@ -462,7 +462,6 @@ export default class Editor {
                         if (key_num === 38 || key_num === 40) {
                             evt.preventDefault();
                         }
-                        console.log(key_num);
                         if (key_num === 115) {       // F4
                             let {inputText, pos} = this.editorText.f4ShortcutKey(getCursortPosition.call(this));
                             inputEventHandler.call(this, null, inputText, inputText);

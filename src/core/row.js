@@ -123,7 +123,7 @@ class Rows {
     getCell(ri, ci) {
         const row = this.get(ri);
         if (row !== undefined && row.cells !== undefined && row.cells[ci] !== undefined
-            && (isHave(row.cells[ci].text) || isHave(row.cells[ci].formulas))) {
+            && (isHave(row.cells[ci].text) || isHave(row.cells[ci].formulas) || isHave(row.cells[ci].style || typeof row.cells[ci] === 'object'))) {
             return row.cells[ci];
         }
         return null;
@@ -180,7 +180,9 @@ class Rows {
         const row = this.getOrNew(ri);
         if (what === 'all') {
             row.cells[ci] = cell;
-            row.cells[ci].value = cell.text;
+            if(isHave(cell.text)) {
+                row.cells[ci].value = cell.text;
+            }
             this.workbook.change(ri, ci, row.cells[ci], deepCopy(row.cells[ci]));
         } else if (what === 'text') {
             row.cells[ci] = row.cells[ci] || {};
