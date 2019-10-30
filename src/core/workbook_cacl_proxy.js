@@ -9,6 +9,7 @@ export default class WorkBook {
         this.workbook_no_formula = "";
         this.name = "";
 
+        this.need_calc = false;
         this.data = "";
         this.proxy = "";
         this.table = "";
@@ -44,12 +45,13 @@ export default class WorkBook {
         }
     }
 
-    getWorkbook(type) {// todo
+    getWorkbook(type) {
         if (type === 1) {
             if (this.workbook === "") {
                 return "";
             }
-            return deepCopy(this.workbook); //todo: return this.workbook.getCopy()
+
+            return deepCopy(this.workbook);
         }
         if (type === 2) {
             if (this.workbook_no_formula === "") {
@@ -57,6 +59,20 @@ export default class WorkBook {
             }
             return deepCopy(this.workbook_no_formula);
         }
+    }
+
+    calcNeedCalcBool(v) {
+        if(v === false) {
+            this.need_calc =  this.need_calc ?  this.need_calc : v;
+        } else {
+            this.need_calc = v;
+        }
+    }
+
+    getNeedCalc() {
+        let value = this.need_calc;
+        this.need_calc = false;
+        return value;
     }
 
     deleteWorkbook(ri, ci, what = 'all') {
@@ -124,7 +140,9 @@ export default class WorkBook {
                         f: cell.text,
                         z: true,
                     };
+                    this.calcNeedCalcBool(true);
                 } else {
+                    this.calcNeedCalcBool(false);
                     if (!isNaN(textReplaceAndToUpperCase(cell.text))) {
                         this.workbook.Sheets[data.name][expr] = {
                             v: textReplaceQM(cell.text, true),

@@ -174,8 +174,8 @@ export function loadData(viewRange, load = false, read = false) {
 async function parseCell(viewRange, state = false, src = '', state2 = true) {
     console.time("parse cell need time");
     let {data, proxy} = this;
-    console.time(" xx1 ");
 
+    console.time(" xx1 ");
     let {workbook, workbook2, enter} = loadData.call(this, viewRange, false, true);
 
 
@@ -685,7 +685,7 @@ class Table {
         let viewRange = data.viewRange();
 
         let workbook = "";
-        if (!temp) {
+        if (!temp && data.rows.workbook.getNeedCalc()) {
             let args = await parseCell.call(this, viewRange, false, '', state);
 
             // if(args.redo === false && redo == false) {

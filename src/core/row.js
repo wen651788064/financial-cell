@@ -1033,8 +1033,6 @@ class Rows {
                 const {table, data} = sheet;
                 const {proxy} = table;
                 this.workbook.init(this._, data, proxy, table);
-                let viewRange = data.viewRange();
-
                 let workbook_no_formula = this.workbook.getWorkbook(2);
                 proxy.setOldData(workbook_no_formula);
             }
