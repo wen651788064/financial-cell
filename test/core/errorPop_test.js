@@ -10,6 +10,7 @@ import {isHave} from "../../src/core/helper";
 import {copyPasteTemplate} from "../template/templates";
 import {formatNumberRender} from "../../src/core/format";
 import FormatProxy from "../../src/core/format_proxy";
+import {multipleCellsRender, specialWebsiteValue} from "../../src/component/special_formula_process";
 
 let assert = require('assert');
 
@@ -130,6 +131,34 @@ describe('qq', () => {
                 return calcDecimals(s, (s2) => { return s2 * 100; });
             });
             assert.equal(_cell, null);
+        });
+    });
+
+    describe('  special_formula_process  ', () => {
+        it('  *HYPERLINK*/*MULTIPLECELLS*  ', function () {
+            let args = specialWebsiteValue('*HYPERLINK*!{"text":"www.baidu.com","url":"www.baidu.com"} ', "=ADD()");
+            assert.equal(args.state, true);
+            assert.equal(args.text, "www.baidu.com");
+            assert.equal(args.type, 2);
+
+            let wb = {
+                "A1": {
+                    "v":"1",
+                    "f":"1"
+                },
+                "B1": {
+                    "v":"2",
+                    "f":"2"
+                }
+            }
+            args = specialWebsiteValue('*MULTIPLECELLS*!'+JSON.stringify(wb), "=ADD()");
+            console.log('*MULTIPLECELLS*!'+JSON.stringify(wb));
+            assert.equal(args.state, true);
+            assert.equal(args.type, 1);
+            let wb2  = {};
+            multipleCellsRender(wb2, args.text);
+            assert.equal(wb2['A1'].v, 1);
+            assert.equal(wb2['B1'].f, 2);
         });
     });
 

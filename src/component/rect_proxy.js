@@ -34,6 +34,7 @@ export default class RectProxy {
             }
         }
 
+        console.log(pos);
         if (pos === 0) {
             pos = positionAngle(clientX, ex, clientY, ey);
         }

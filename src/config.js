@@ -1,6 +1,6 @@
 /* global window */
 export const cssPrefix = 'x-spreadsheet';
-export const look = ['*悬浮查看*', '*HYPERLINK*'];
+export const look = ['*悬浮查看*', '*HYPERLINK*', '*MULTIPLECELLS*'];
 export const look2 = '#CHECK！';
 export const filterFormula = ['CITY'];
 export const offsetLeft = 60;

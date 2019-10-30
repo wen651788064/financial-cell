@@ -4,8 +4,9 @@ import {expr2xy, xy2expr} from "../core/alphabet";
 import {filterFormula} from "../config";
 import {toUpperCase} from "./table";
 import {find} from "../core/helper";
-import {specialWebsiteValue} from "./special_formula_process";
+import {multipleCellsRender, specialWebsiteValue} from "./special_formula_process";
 import {textReplace} from "./context_process";
+import CalcWorker from "../core/calc_worker";
 
 
 export default class CellProxy {
@@ -128,7 +129,7 @@ export default class CellProxy {
         return fd;
     }
 
-    associated(name, workbook, oldData = this.oldData, d = true) {
+    associated(name, workbook, oldData = this.oldData, d = false) {
         let enter = false;
         let data = this.deepCopy(oldData);
         data = this.filter(data);
@@ -177,12 +178,14 @@ export default class CellProxy {
             }
         }
         console.timeEnd("xx3");
+        console.time("xxx3");
 
         if (d) {
             // setTimeout(() => {
             this.refCell(tileArr, name);
             // });
         }
+        console.timeEnd("xxx3");
 
         return {
             enter: enter,
@@ -370,7 +373,9 @@ export default class CellProxy {
             }
 
             let args = specialWebsiteValue(cells[i].v + "", cells[i].f + "");
-            if (args.state) {
+            if(args.type === 1 && args.state) {
+                tileArr.push(...multipleCellsRender(cells, args.text));
+            } else if (args.state && args.type === 2) {
                 cells[i].v = args.text;
             }
 

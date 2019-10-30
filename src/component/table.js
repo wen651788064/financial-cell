@@ -10,7 +10,9 @@ import CellProxy from "./cell_proxy";
 import {look} from "../config";
 import {dateDiff, formatDate} from "./date";
 import {deepCopy} from "../core/operator";
+
 import {bugout} from "../log/log_proxy";
+import CalcWorker from "../core/calc_worker";
 // import Worker from 'worker-loader!../external/Worker.js';
 var formulajs = require('formulajs');
 // gobal var
@@ -685,10 +687,8 @@ class Table {
         let viewRange = data.viewRange();
 
         let workbook = "";
-        let s = data.rows.workbook.getNeedCalc();
-        console.log(s);
 
-        if (!temp && s) {
+        if (!temp && data.rows.workbook.getNeedCalc()) {
             let args = await parseCell.call(this, viewRange, false, '', state);
 
             // if(args.redo === false && redo == false) {

@@ -532,20 +532,18 @@ export default class Selector {
         const scn = sci - ci;
         const ern = eri - ri;
         const ecn = eci - ci;
-        console.log(srn, scn, ern, ecn, ri, ci);
+        // console.log(srn, scn, ern, ecn, ri, ci);
         if (pos == 2) {
-            console.log("11")
-            drisc = 11;
+             drisc = 11;
             // left
             // console.log('left');
             this.arange = new CellRange(sri, nci, eri, sci - 1);
-            console.log(this.arange);
+            // console.log(this.arange);
             // this.saIndexes = [sri, nci];
             // this.eaIndexes = [eri, sci - 1];
             // data.calRangeIndexes2(
         } else if (pos == 4) {
-            console.log("22")
-            drisc = 22;
+             drisc = 22;
 
             // top
             // console.log('top');
@@ -554,8 +552,7 @@ export default class Selector {
             // this.saIndexes = [nri, sci];
             // this.eaIndexes = [sri - 1, eci];
         } else if (pos == 3) {
-            console.log("33")
-            drisc = 33;
+             drisc = 33;
             // right
             // console.log('right');
             // nci = eci;
@@ -563,8 +560,7 @@ export default class Selector {
             // this.saIndexes = [sri, eci + 1];
             // this.eaIndexes = [eri, nci];
         } else if (pos == 1) {
-            console.log("44")
-            drisc = 44;
+             drisc = 44;
             // bottom
             // console.log('bottom');
             // nri = eri;

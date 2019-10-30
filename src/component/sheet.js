@@ -26,7 +26,6 @@ import CellRange from "../core/cell_range";
 import {isOusideViewRange} from "../core/helper";
 import {expr2xy} from "../core/alphabet";
 import ErrorPopUp from "./error_pop_up";
-import EditorProxy from "./editor_proxy";
 import RectProxy from "./rect_proxy";
 
 function scrollbarMove() {
@@ -372,11 +371,11 @@ function continueMove(orien, verticalScrollbar, horizontalScrollbar, cols, rows,
         if (ri >= 0) {
             verticalScrollbar.move({top: ri === 0 ? 0 : top - rows.getHeight(ri)});
         }
-    } else if (orien === 33) {
+    } else if (orien === 33 && Math.round(Math.random()) === 1 && Math.round(Math.random()) === 1) {
         const {left} = horizontalScrollbar.scroll();
         ci = data.scroll.ci + 1;
         horizontalScrollbar.move({left: left + cols.getWidth(ci)});
-    } else if (orien === 11) {
+    } else if (orien === 11 && Math.round(Math.random()) === 1 && Math.round(Math.random()) === 1) {
         const {left} = horizontalScrollbar.scroll();
         ci = data.scroll.ci - 1;
         horizontalScrollbar.move({left: left - cols.getWidth(ci)});
@@ -452,7 +451,7 @@ function overlayerMousedown(evt) {
                         dateBegin = new Date();
                     }
                     dropDown.call(this, e, isAutofillEl, selector, data, verticalScrollbar, rows, evt, 0, point, horizontalScrollbar, cols,);
-                }, 100);
+                }, 50);
             }, 200);
             if (!dateBegin) {
                 dateBegin = new Date();
@@ -493,15 +492,15 @@ function autofillNext() {
     } = this;
     editor.display = true;
     let enter = false;
-    this.selector.arange.each((ri, ci) => {
-        let cell = data.rows.getCell(ri, ci);
-        // if (cell && cell.formulas) {
-        //     let enter2 = this.editorProxy.change(ri, ci, cell.formulas, data.rows, data, true);
-        //     if (enter2 === true) {
-        //         enter = true;
-        //     }
-        // }
-    });
+    // this.selector.arange.each((ri, ci) => {
+    //     // let cell = data.rows.getCell(ri, ci);
+    //     // if (cell && cell.formulas) {
+    //     //     let enter2 = this.editorProxy.change(ri, ci, cell.formulas, data.rows, data, true);
+    //     //     if (enter2 === true) {
+    //     //         enter = true;
+    //     //     }
+    //     // }
+    // });
     if (enter) {
         data.change(data.getData());
     }
