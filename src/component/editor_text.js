@@ -4,15 +4,26 @@ import {toUpperCase} from "./table";
 export default class EditorText {
     constructor() {
         this.inputText = "";
+        this.oldCell = "";
     }
 
     setText(text) {
         this.inputText = text;
-        return this.inputText;
+        return this.getText();
     }
 
     getText() {
         return this.inputText;
+    }
+
+    setOldCell(oldCell) {
+        this.oldCell = oldCell;
+
+        return this.getOldCell();
+    }
+
+    getOldCell() {
+        return this.oldCell;
     }
 
     changeText(type) {

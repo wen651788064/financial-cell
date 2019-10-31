@@ -21,9 +21,10 @@ import {parseCell2} from "../component/table";
 import {RefRow} from "./ref_row";
 import {isLegal} from "./operator";
 import Recast from "./recast";
-import {calcDecimals, dateDiff, formatDate} from "../component/date";
+import {dateDiff, formatDate} from "../component/date";
 import {formatNumberRender} from "./format";
 import FormatProxy from "./format_proxy";
+import HistoryStep from "./history_step";
 // private methods
 /*
  * {
@@ -562,7 +563,7 @@ function getType(ri, ci, cell) {
         }
     } else if (format === 'rmb') {
         let text = "", formula = "";
-        if(isValid) {
+        if (isValid) {
             text = diff;
             formula = isFormula(cell.formulas) ? cell.formulas : diff;
         } else {
@@ -571,19 +572,21 @@ function getType(ri, ci, cell) {
         }
 
         let formatProxy = new FormatProxy();
-        let _cell = formatProxy.makeFormatCell({text, formula}, {symbol: "￥", position: "begin"}, (s) => { return s;});
-        if(_cell) {
+        let _cell = formatProxy.makeFormatCell({text, formula}, {symbol: "￥", position: "begin"}, (s) => {
+            return s;
+        });
+        if (_cell) {
             data.dateInput(_cell, ri, ci, 'rmb');
 
             return {
                 "state": true,
-                "text":  text,
+                "text": text,
             };
         }
-    } else if(format === 'percent') {
+    } else if (format === 'percent') {
         let text = "", formula = "";
 
-        if(isValid) {
+        if (isValid) {
             text = diff;
             formula = isFormula(cell.formulas) ? cell.formulas : diff;
         } else {
@@ -591,14 +594,15 @@ function getType(ri, ci, cell) {
             formula = cell.formulas;
         }
         let formatProxy = new FormatProxy();
-        let _cell = formatProxy.makeFormatCell({text, formula }, {symbol: "%", position: "end"},  (s) => {
-            return Number(s  * 100).toFixed(2);});
-        if(_cell) {
+        let _cell = formatProxy.makeFormatCell({text, formula}, {symbol: "%", position: "end"}, (s) => {
+            return Number(s * 100).toFixed(2);
+        });
+        if (_cell) {
             data.dateInput(_cell, ri, ci, 'percent');
 
             return {
                 "state": true,
-                "text":  text,
+                "text": text,
             };
         }
     }
@@ -631,6 +635,7 @@ export default class DataProxy {
         // save data end
 
         // don't save object
+        this.historyStep = new HistoryStep(this);
         this.selector = new Selector();
         this.scroll = new Scroll();
         this.history = new History(this);
@@ -718,7 +723,8 @@ export default class DataProxy {
     }
 
     canUndo() {
-        return this.history.canUndo();
+        return this.historyStep.getItems(1).length > 0;
+        // return this.history.canUndo();
     }
 
     canRedo() {
@@ -726,9 +732,14 @@ export default class DataProxy {
     }
 
     undo(sheet) {
-        this.history.undo(this.getData(), (d) => {
-            this.setData(d);
-        }, sheet);
+        this.historyStep.undo();
+        // this.history.undo(this.getData(), (d) => {
+        //     this.setData(d);
+        // }, sheet);
+    }
+
+    historyList(item) {
+        return this.historyStep.getItems(item);
     }
 
     redo() {
@@ -925,6 +936,24 @@ export default class DataProxy {
             nri = this.unsortedRowMap.get(ri);
         }
         return this.rows.getCell(nri, ci);
+    }
+
+    editorChangeToHistory(oldCell, newCell, {ri, ci}) {
+        if (oldCell.text === newCell.text || oldCell.formulas === newCell.text) {
+            return {
+                "state": false,
+            };
+        }
+
+        let {historyStep} = this;
+        let expr = xy2expr(ci, ri);
+        let step = historyStep.getStepType(1, {ri, ci, expr, text: newCell.text});
+
+        historyStep.addStep(step, oldCell);
+
+        return {
+            "state": true
+        }
     }
 
     getSelectedCellRiCi(ri, ci) {

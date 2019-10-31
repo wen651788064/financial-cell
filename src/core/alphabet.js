@@ -43,7 +43,7 @@ export function expr2expr(src, xn, yn) {
   return stringAt(x + xn) + (y + yn);
 }
 
-// x,y => B10
+// x,y => B10  x ci y ri
 export function xy2expr(x, y, ab = 0) {
   x = x * 1;
   y = y * 1;

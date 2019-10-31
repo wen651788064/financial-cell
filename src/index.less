@@ -82,11 +82,25 @@ body {
 .@{css-prefix}-sheet {
   position: relative;
   overflow: hidden;
-}
+ }
 
 .@{css-prefix}-table {
   // html5 bottom margin bug
   vertical-align: bottom;
+}
+
+.@{css-prefix}-history-border {
+  width: 175px;
+  max-height: 350px;
+  overflow-y: auto;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  box-shadow: 0 2px 6px 2px rgba(60,64,67,.15);
+}
+
+.@{css-prefix}-history-content {
+  //margin-top: 125px;
+  //display: inline-block;
 }
 
 .@{css-prefix}-tooltip {
@@ -236,6 +250,12 @@ body {
         left: -130px;
       }
     }
+  }
+}
+
+.@{css-prefix}-icon.arrow-right_d {
+  &:hover, &.active {
+    background: rgba(0, 0, 0, .5);
   }
 }
 
@@ -571,6 +591,11 @@ body {
   list-style: none;
   cursor: text;
   text-align: left;
+}
+
+.disabled {
+  pointer-events: none;
+  opacity: 0.5;
 }
 
 .@{css-prefix}-help-span2-title {
@@ -1390,6 +1415,7 @@ body {
   opacity: 0;
   outline: none;
   font-size: 15px;
+  margin-left: 2px;
   font-family: Inconsolata,monospace,arial,sans,sans-serif
 }
 

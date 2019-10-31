@@ -3,11 +3,12 @@ import {xy2expr} from './alphabet';
 import {changeFormula, cutStr, isAbsoluteValue, value2absolute} from "../core/operator";
 import {expr2xy} from "../core/alphabet";
 import dayjs from 'dayjs'
-import {deepCopy, isSheetVale, splitStr} from "./operator";
+import {deepCopy, distinct, isSheetVale, splitStr} from "./operator";
 import Recast from "./recast";
 import WorkBook from "./workbook_cacl_proxy";
 import PasteProxy from "./paste_proxy";
 import CellProxy from "./cell_proxy";
+import CellRange from "./cell_range";
 
 export function isFormula(text) {
     if (text && text[0] === "=") {
@@ -180,7 +181,7 @@ class Rows {
         const row = this.getOrNew(ri);
         if (what === 'all') {
             row.cells[ci] = cell;
-            if(isHave(cell.text)) {
+            if (isHave(cell.text)) {
                 row.cells[ci].value = cell.text;
             }
             this.workbook.change(ri, ci, row.cells[ci], deepCopy(row.cells[ci]));
@@ -232,8 +233,70 @@ class Rows {
             row.cells[ci].style = cell.style;
         } else if (what === 'all_with_no_workbook') {
             row.cells[ci] = cell;
-            row.cells[ci].value = cell.text;
+            if(isHave(cell.text)) {
+                row.cells[ci].value = cell.text;
+            }
         }
+        // cell
+        this.getDependCell(xy2expr(ci, ri), this.getCell(ri, ci));
+    }
+
+    getDependCell(expr, cell) {
+        let {formulas} = cell;
+        if (isFormula(formulas)) {
+            let arr = cutStr(formulas, true, true);
+
+            for(let i = 0; i < arr.length; i++) {
+
+            }
+
+            if (isHave(cell.depend) === false) {
+                cell.depend = [];
+            }
+            for (let i = 0; i < arr.length; i++) {
+                let ref = arr[i];
+                let [ci, ri] = expr2xy(ref);
+                let refCell = this.getCell(ri, ci);
+                if (isHave(refCell) === false) {
+                    refCell = {};
+                }
+
+                if (isHave(refCell.depend) === false) {
+                    refCell.depend = [];
+                }
+                refCell.depend.push(expr);
+                refCell.depend = distinct(refCell.depend);
+                this.setCell(ri, ci, refCell, 'all_with_no_workbook');
+            }
+        }
+    }
+
+    mergeCellExpr(d) {
+        if(!isAbsoluteValue(d, 6)) {
+            return {
+                "state": false,
+            }
+        }
+        d = d.split(":");
+        let e1 = expr2xy(d[0]);
+        let e2 = expr2xy(d[1]);
+        if(e1.ri < e2.ri) {
+            let t = e2.ri;
+            e2.ri = e1.ri;
+            e1.ri = t;
+        }
+        if(e1.ci < e2.ci) {
+            let t = e2.ci;
+            e2.ci = e1.ci;
+            e1.ci = t;
+        }
+        let cellRange = new CellRange(e1.ri, e1.ci, e2.ri, e2.ci);
+        let arr = [];
+        cellRange.each((i, j) => {
+            arr.push(xy2expr(j, i));
+        });
+
+        return arr;
     }
 
     useOne(param, other, value = true) {
@@ -247,20 +310,25 @@ class Rows {
         return param;
     }
 
-    setCellText(ri, ci, {text, style}, proxy = "", name = "", what = 'all') {
+    setCellText(ri, ci, {text, style, formulas}, proxy = "", name = "", what = 'all') {
         const cell = this.getCellOrNew(ri, ci);
         if (what === 'style') {
             cell.style = style;
             cell.formulas = text;   //    cell.formulas = cell.formulas;
-        } else if(what === 'format') {
+        } else if (what === 'format') {
             cell.formulas = cell.formulas;
             cell.style = style;
-        }else {
+        } else if (what === 'cell') {
+            cell.style = style;
+            cell.formulas = formulas;
+        } else {
             cell.formulas = text;
             cell.value = text;
         }
         cell.text = text;  // todo 自定义公式： text 为公式计算结果, formulas 为公式
         // this.recast(cell);
+        // cell
+        this.getDependCell(xy2expr(ci, ri), this.getCell(ri, ci));
         if (typeof proxy != "string") {
             proxy.setCell(name, xy2expr(ci, ri));
         }
@@ -273,6 +341,8 @@ class Rows {
         const cell = this.getCellOrNew(ri, ci);
         cell.formulas = formulas == "" ? cell.formulas : formulas;
         cell.text = text;
+        // cell
+        this.getDependCell(xy2expr(ci, ri), this.getCell(ri, ci));
         if (isHave(cell.value) === false) {
             cell.value = cell.text;
         }
@@ -360,9 +430,9 @@ class Rows {
             return 'rmb';
         } else if ((cellStyle && cellStyle.format && cellStyle.format === 'normal')) {
             return "normal";
-        } else if(cellStyle && cellStyle.format && cellStyle.format === 'percent') {
+        } else if (cellStyle && cellStyle.format && cellStyle.format === 'percent') {
             return "percent";
-        }else if (
+        } else if (
             (isValid && cellStyle === null)
             || (isValid && cellStyle && cellStyle.format !== 'normal')
             || cellStyle && cellStyle.format && cellStyle.format === 'date') {
@@ -718,7 +788,8 @@ class Rows {
         return helper.cloneDeep(ncell);
     }
 
-    updateCellReferenceByShift(bad, result, ri, ci, cb = () => {}) {
+    updateCellReferenceByShift(bad, result, ri, ci, cb = () => {
+    }) {
         let _cell = {};
         if (bad) {
             _cell.text = "#REF!";

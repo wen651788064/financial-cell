@@ -207,10 +207,10 @@ async function parseCell(viewRange, state = false, src = '', state2 = true) {
     console.time("x3");
     let tileArr = [];
     if (ca.state) {
-        let assoc = proxy.associated(data.name, workbook);
-        ca.state = ca.state === false ? assoc.enter : ca.state;
-        workbook = assoc.enter === true ? assoc.nd : workbook;
-        tileArr = assoc.changeArr;
+        // let assoc = proxy.associated(data.name, workbook);
+        // ca.state = ca.state === false ? assoc.enter : ca.state;
+        // workbook = assoc.enter === true ? assoc.nd : workbook;
+        // tileArr = assoc.changeArr;
     }
     console.timeEnd("x3");
 
@@ -241,10 +241,9 @@ async function parseCell(viewRange, state = false, src = '', state2 = true) {
             workbook = proxy.pack(data.name, workbook);
 
             console.time("calc need time");
-            window.bugout.log('------------------------开始计算公式');
+            window.bugout.log('开始计算公式');
             data.calc(workbook); // todo: 给个数据结构。 {(1,3):{v:1} , (3,4):{v:2314}} ; 相互之间的message要记录log
-            window.bugout.log('------------------------计算公式结束');
-
+            window.bugout.log('计算公式结束');
             console.timeEnd("calc need time");
 
             // proxy.isDone();   // 如果有问题再取消注释，看看是否有问题

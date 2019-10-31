@@ -13,6 +13,7 @@ import Dropdown from './dropdown';
 import Icon from './icon';
 import {cssPrefix} from '../config';
 import {t} from '../locale/locale';
+import DropdownAction from "./dropdown_action";
 
 function buildIcon(name) {
     return new Icon(name);
@@ -47,6 +48,7 @@ function bindDropdownChange() {
     this.ddAlign.change = it => this.change('align', it);
     this.ddVAlign.change = it => this.change('valign', it);
     this.ddBorder.change = it => this.change('border', it);
+    this.undoEl.change = it => this.change('undo', it);
 }
 
 
@@ -68,7 +70,7 @@ class DropdownMore extends Dropdown {
     constructor() {
         const icon = new Icon('ellipsis');
         const moreBtns = h('div', `${cssPrefix}-toolbar-more`);
-        super(icon, 'auto', false, 'bottom-right', moreBtns);
+        super(icon, 'auto', false, 'bottom-right', false,  moreBtns);
         this.moreBtns = moreBtns;
         this.contentEl.css('max-width', '420px');
     }
@@ -130,10 +132,14 @@ export default class Toolbar {
         this.ddVAlign = new DropdownAlign(['top', 'middle', 'bottom'], style.valign);
         this.ddBorder = new DropdownBorder();
         this.ddMore = new DropdownMore();
+        this.undoEl = new DropdownAction('undo',  () => this.change('undo'), (v) => this.change('undoList', v));
+        this.redoEl = new DropdownAction('redo', data.historyStep.getItems(2));
         this.btnChildren = [
-            this.undoEl = buildButtonWithIcon(`${t('toolbar.undo')} (Ctrl+Z)`, 'undo', () => this.change('undo')),
-            this.redoEl = buildButtonWithIcon(`${t('toolbar.undo')} (Ctrl+Y)`, 'redo', () => this.change('redo')),
+            // this.undoEl = buildButtonWithIcon(`${t('toolbar.undo')} (Ctrl+Z)`, 'undo', () => this.change('undo')),
+
             // this.printEl = buildButtonWithIcon('Print (Ctrl+P)', 'print', () => this.change('print')),
+            buildButton(`${t('toolbar.undo')}`).child(this.undoEl.el),
+            buildButton(`${t('toolbar.redo')}`).child(this.redoEl.el),
             this.paintformatEl = buildButtonWithIcon(`${t('toolbar.paintformat')}`, 'paintformat', () => toggleChange.call(this, 'paintformat')),
             this.clearformatEl = buildButtonWithIcon(`${t('toolbar.clearformat')}`, 'clearformat', () => this.change('clearformat')),
             buildDivider(),
@@ -199,7 +205,7 @@ export default class Toolbar {
         const {data} = this;
         const style = data.getSelectedCellStyle();
         const cell = data.getSelectedCell();
-        // console.log('canUndo:', data.canUndo());
+        console.log('canUndo:', data.canUndo());
         this.undoEl.disabled(!data.canUndo());
         this.redoEl.disabled(!data.canRedo());
         this.mergeEl.active(data.canUnmerge())

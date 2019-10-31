@@ -72,10 +72,15 @@ describe('qq', () => {
 
     describe('  cutStr  ', () => {
         it(' =A1(1, 2)', function () {
-            let arr = cutStr('=A1(1, 2)')
+            let arr = cutStr('=A1(1, 2)');
             assert.equal(arr.length, 0);
             arr = cutStr('=A1+A2');
             assert.equal(arr.length, 2);
+        });
+
+        it(' =A1(A2, A3, $A$2, 1, 2, add(1, A5)) ', function () {
+            let arr = cutStr('=A1(A2, A3, $A$2, 1, 2, add(1, A5))', false, true);
+            console.log(arr);
         });
     });
 
@@ -99,6 +104,43 @@ describe('qq', () => {
             //     ci: 5
             // }];
 
+        });
+    });
+
+    describe('  depend cell  ', () => {
+        it(' =A1(A2, A3, $A$2, 1, 2, add(1, A5:B5)) ', function () {
+            data.rows.getDependCell('A10', {text: "", formulas: "=A1(A2, A3, $A$2, 1, 2, add(1, A5:B5))"});
+            let {depend} = data.rows.getCell(1, 0);
+            assert.equal(depend[0], 'A10');
+            let args  = data.rows.getCell(4, 0);
+            assert.equal(args.depend[0], 'A10');
+        });
+
+        it(' mergeCell ', function () {
+            let arr = data.rows.mergeCellExpr("A1:A6");
+            console.log(arr);
+        });
+    });
+
+    describe('  cell change action  ', () => {
+        it(' editorChangeToHistory ', function () {
+            let {state} = data.editorChangeToHistory({text: "1", }, {"text": "2"}, {ri: 1, ci: 1});
+            let args = data.historyStep.getItems(1);
+            assert.equal(state, true);
+            assert.equal(args[0].ri, '1');
+            assert.equal(args[0].ci, '1');
+            assert.equal(args[0].action, '在B2中键入"2"');
+            assert.equal(args[0].expr, 'B2');
+            assert.equal(args[0].oldCell.text, '1');
+
+            args = data.editorChangeToHistory({text: "1", formulas: "=add(1, 0)" }, {"text": "=add(1, 0)"}, {ri: 2, ci: 2});
+            assert.equal(args.state, false);
+        });
+
+        describe('  history  ', () => {
+            it(' undo ', function () {
+                data.historyStep.undo();
+            });
         });
     });
 

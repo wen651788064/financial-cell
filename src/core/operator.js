@@ -288,8 +288,8 @@ const cuttingByPosEnd2 = (str, pos) => {
     return value;
 };
 
-function distinct(a, b) {
-    return Array.from(new Set([...a, ...b]))
+export function distinct(arr) {
+    return  [...new Set(arr)];
 }
 
 const division = (str, ff = filterFormula, other = true, other2 = false) => {
@@ -23501,6 +23501,7 @@ const positionAngle = (x1, x2, y1, y2) => {
     return angle;
 };
 
+
 const isAbsoluteValue = (str, rule = 1) => {
     str = str.toUpperCase();
     if (rule == 1) {
@@ -23560,7 +23561,13 @@ const isAbsoluteValue = (str, rule = 1) => {
             return 7;
         }
         return false
-    } else {
+    } else if(rule == 6) {
+        str = str.replace(/\$/g, '');
+        if (str.search(/^[A-Za-z]+\d+:[A-Za-z]+\d+$/) != -1)
+            return true;
+
+        return false;
+    }else {
         if (str.search(/^[A-Za-z]+\d+$/) != -1)
             return true;
         if (str.search(/^[A-Za-z]+\d+:[A-Za-z]+\d+$/) != -1)

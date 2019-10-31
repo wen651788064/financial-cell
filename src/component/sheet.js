@@ -333,30 +333,42 @@ function dropDown(e, isAutofillEl, selector, data, verticalScrollbar, rows, evt,
     let {ri, ci} = dstRect;
 
     if (isAutofillEl) {
-        let rect = data.getRect(selector.range);
-        let rectProxy = new RectProxy(rect);
-        let clientX = rect.width + rect.left;
-        let clientY = rect.height + rect.top + offsetTop;
-        let ex = e.clientX - offset.l - offsetLeft;
-        let ey = e.clientY;
+        let {rpos, ey, ex, } = dropGetPos.call(this, data, selector, verticalScrollbar, horizontalScrollbar, offset, e, rows, cols, ri, ci, pos);
 
-        if (rectProxy.isLocInside(ex, ey)) {
-            pos = -1;
-            selector.arange = null;
-        } else {
-            pos = rectProxy.getUpDownLeftRight(ex, ey, clientX, clientY)
-        }
-
-        let orien = selector.showAutofill(ri, ci, pos);
-
+        let orien = selector.showAutofill(ri, ci, rpos);
         if (isOusideViewRange(this.data.settings.view.height(), this.data.settings.view.width(), ey, ex, orien)) {
             // if (Math.round(Math.random()) === 1) {
             continueMove.call(this, orien, verticalScrollbar, horizontalScrollbar, cols, rows, data);
             // }
         }
+
     } else if (e.buttons === 1 && !e.shiftKey) {
+        // let {rpos, ey, ex, } = dropGetPos.call(this, data, selector, verticalScrollbar, horizontalScrollbar, offset, e, rows, cols, ri, ci, pos);
+        // console.log(rpos, ey, ex);
         selectorSet.call(this, true, ri, ci, true, true);
     }
+}
+
+function dropGetPos(data, selector, verticalScrollbar, horizontalScrollbar, offset, e, rows, cols, ri, ci, pos) {
+    let rect = data.getRect(selector.range);
+    let rectProxy = new RectProxy(rect);
+    let clientX = rect.width + rect.left;
+    let clientY = rect.height + rect.top + offsetTop;
+    let ex = e.clientX - offset.l - offsetLeft;
+    let ey = e.clientY;
+
+    if (rectProxy.isLocInside(ex, ey)) {
+        pos = -1;
+        selector.arange = null;
+    } else {
+        pos = rectProxy.getUpDownLeftRight(ex, ey, clientX, clientY)
+    }
+
+    return {
+        rpos: pos,
+        ex,
+        ey
+    };
 }
 
 function continueMove(orien, verticalScrollbar, horizontalScrollbar, cols, rows, data) {
@@ -380,10 +392,6 @@ function continueMove(orien, verticalScrollbar, horizontalScrollbar, cols, rows,
         ci = data.scroll.ci - 1;
         horizontalScrollbar.move({left: left - cols.getWidth(ci)});
     }
-    // return {
-    //     "moveRi": ri,
-    //     "moveCi"
-    // }
 }
 
 
@@ -859,7 +867,9 @@ function toolbarChange(type, value) {
     const {data} = this;
     if (type === 'undo') {
         this.undo();
-    } else if (type === 'redo') {
+    } else if(type === 'undoList') {
+        value.setContent(data.historyList(1));
+    }else if (type === 'redo') {
         this.redo();
     } else if (type === 'print') {
         // print
@@ -878,6 +888,7 @@ function toolbarChange(type, value) {
     } else if (type === 'throwFormula') {
         throwFormula.call(this);
     } else if (type === 'close') {
+        this.data.rows.workbook.calcNeedCalcBool(true);
         this.table.proxy.diff = 305;
         this.table.proxy.oldData = "";
         sheetReset.call(this);
@@ -1144,20 +1155,18 @@ function sheetInitEvents() {
     // editor
     editor.change = (state, itext) => {
         if (state === 'finish') {
-            this.table.render();
-            setTimeout(() => {
-                clearTimeout(this.render_timer);
-            });
+            let {text, formulas} = editor.editorText.getOldCell();
+            data.editorChangeToHistory(editor.editorText.getOldCell(), {text: itext}, data.selector);
             return;
         }
 
         // 如果是 esc
         if (itext == "@~esc") {
-            let {text, formulas} = editor.oldCell;
-            editor.oldCell = {
+            let {text, formulas} = editor.editorText.getOldCell();
+            editor.editorText.setOldCell({
                 text: '',
                 formulas: '',
-            };
+            })
             let {ri, ci} = editor;
             data.setSelectedCell(text, 'input', formulas, ri, ci);
             editor.setText("");

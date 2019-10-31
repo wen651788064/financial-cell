@@ -2,6 +2,7 @@ import {xy2expr} from "./alphabet";
 import {textReplaceAndToUpperCase, textReplaceQM} from "../component/context_process";
 import {toUpperCase} from "../component/table";
 import {deepCopy} from "./operator";
+import {isHave} from "./helper";
 
 export default class WorkBook {
     constructor() {
@@ -100,11 +101,13 @@ export default class WorkBook {
         let expr = xy2expr(ci, ri);
         let {data, proxy, table} = this;
 
+
         if(typeof data === 'string') {
             return;
         }
 
-        if (data.isEmpty(cell) === false) {
+        let empty = data.isEmpty(cell);
+        if (empty === false) {
             let {state, text} = data.tryParseToNum(what, cell, ri, ci);
             if (!state) {
                 cell.text = text;
@@ -159,6 +162,12 @@ export default class WorkBook {
         } else {
             delete this.workbook_no_formula.Sheets[data.name][expr];
             this.workbook.Sheets[data.name][expr] = {v: 0, f: 0, z: false};
+        }
+
+        if(empty === false) {
+            if (isHave(cell.depend) && cell.depend.length > 0) {
+                this.calcNeedCalcBool(true);
+            }
         }
     }
 }

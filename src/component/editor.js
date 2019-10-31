@@ -547,12 +547,12 @@ export default class Editor {
     setRiCi(ri, ci) {
         this.ri = ri;
         this.ci = ci;
-        const cell = this.data.rows.getCellOrNew(ri, ci);
+        // const cell = this.data.rows.getCellOrNew(ri, ci);
 
-        this.oldCell = {
-            text: (cell && cell.text) || '',
-            formulas: (cell && cell.formulas) || '',
-        };
+        // this.editorText.setOldCell({
+        //     text: (cell && cell.text) || '',
+        //     formulas: (cell && cell.formulas) || '',
+        // });
     }
 
     setLock(lock) {
@@ -610,7 +610,7 @@ export default class Editor {
 
         } else if (this.changed) {
 
-            // this.change('finish', inputText);
+            this.change('finish', inputText);
 
         }
 
@@ -737,12 +737,10 @@ export default class Editor {
         this.pos = text.length;
         set_focus.call(this, this.textEl.el, -1);
 
-
-        this.oldCell = {
+        this.editorText.setOldCell({
             text: (cell && cell.text) || '',
             formulas: (cell && cell.formulas) || '',
-        };
-
+        });
         inputEventHandler.call(this, null, (cell && cell.text) || text, (cell && cell.formulas) || '', "end");
 
         setTimeout(() => {
@@ -757,10 +755,10 @@ export default class Editor {
         let text = (cell && cell.formulas) || '';
         text = text == '' ? (cell && cell.text) || '' : text;
 
-        this.oldCell = {
+        this.editorText.setOldCell({
             text: (cell && cell.text) || '',
             formulas: (cell && cell.formulas) || '',
-        };
+        });
         const {el, datepicker, suggest} = this;
         el.show();
         this.textEl.show();
