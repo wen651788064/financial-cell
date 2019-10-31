@@ -9,7 +9,7 @@ import ApplicationFactory from "./application";
 import CellProxy from "./cell_proxy";
 import {look} from "../config";
 import {dateDiff, formatDate} from "./date";
-import {deepCopy} from "../core/operator";
+import {deepCopy, distinct} from "../core/operator";
 
 import {bugout} from "../log/log_proxy";
 import CalcWorker from "../core/calc_worker";
@@ -173,7 +173,7 @@ export function loadData(viewRange, load = false, read = false) {
     };
 }
 
-async function parseCell(viewRange, state = false, src = '', state2 = true) {
+async function parseCell(viewRange, state = false, src = '', state2 = true, contextualArr) {
     console.time("parse cell need time");
     let {data, proxy} = this;
 
@@ -195,7 +195,8 @@ async function parseCell(viewRange, state = false, src = '', state2 = true) {
         }
     });
 
-    let ca = proxy.calc(sall, data.name);
+    let tileArr = [];
+    let ca = proxy.calc(sall, tileArr, data.name);
     console.timeEnd(" xx2 ");
 
     if (ca.state) {
@@ -205,12 +206,14 @@ async function parseCell(viewRange, state = false, src = '', state2 = true) {
         workbook.Sheets[data.name]['A1'] = {v: '', f: `=${src}`};
     }
     console.time("x3");
-    let tileArr = [];
     if (ca.state) {
-        // let assoc = proxy.associated(data.name, workbook);
-        // ca.state = ca.state === false ? assoc.enter : ca.state;
-        // workbook = assoc.enter === true ? assoc.nd : workbook;
-        // tileArr = assoc.changeArr;
+        let assoc = proxy.associated(data.name,contextualArr, workbook);
+        ca.state = ca.state === false ? assoc.enter : ca.state;
+        workbook = assoc.enter === true ? assoc.nd : workbook;
+        if (assoc.changeArr.length > 0) {
+            tileArr.push(...assoc.changeArr);
+            tileArr = distinct(tileArr);
+        }
     }
     console.timeEnd("x3");
 
@@ -687,9 +690,9 @@ class Table {
 
         let workbook = "";
 
-        if (!temp && data.rows.workbook.getNeedCalc()) {
-            let args = await parseCell.call(this, viewRange, false, '', state);
-
+        let nc = data.rows.workbook.getNeedCalc();
+        if (!temp && nc.value) {
+            let args = await parseCell.call(this, viewRange, false, '', state, nc.contextualArr);
             // if(args.redo === false && redo == false) {
             //     return;
             // }

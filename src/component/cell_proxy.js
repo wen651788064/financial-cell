@@ -129,68 +129,29 @@ export default class CellProxy {
         return fd;
     }
 
-    associated(name, workbook, oldData = this.oldData, d = false) {
+    associated(name,deepArr, workbook, oldData = this.oldData, d = false) {
         let enter = false;
         let data = this.deepCopy(oldData);
         data = this.filter(data);
-        let deepArr = [];
-        let arr = [];
-        let tileArr = [];
-
-        Object.keys(workbook.Sheets[name]).forEach(n => {
-            arr.push(n);
-            tileArr.push(n);
-        });
-        deepArr.push(arr);
-
-        console.time("xx3");
 
 
         for (let i = 0; i < deepArr.length; i++) {
-            let targetArr = deepArr[i];
-            arr = [];
-
-            Object.keys(data).forEach(i => {
-                Object.keys(data[i]).forEach(j => {
-                    Object.keys(data[i][j]).forEach(k => {
-                        let value = data[i][j][k].f + "";
-                        value = value.replace(/\$/g, "");
-
-                        for (let f = 0; f < targetArr.length; f++) {
-                            let n = targetArr[f];
-                            if (contain(division(value, filterFormula, true), n)) {
-                                workbook.Sheets[name][k] = data[i][j][k];
-                                enter = true;
-
-                                if (tileArr.indexOf(k) == -1) {
-                                    arr.push(k);
-                                    tileArr.push(k);
-                                }
-                            }
-                        }
-                    })
-                })
-            });
-
-
-            if (arr.length > 0) {
-                deepArr.push(arr);
-            }
+            let k = deepArr[i];
+            workbook.Sheets[name][k] = data['Sheets'][name][k];
         }
-        console.timeEnd("xx3");
-        console.time("xxx3");
+
 
         if (d) {
             // setTimeout(() => {
-            this.refCell(tileArr, name);
+            this.refCell(deepArr, name);
             // });
         }
-        console.timeEnd("xxx3");
+
 
         return {
             enter: enter,
             nd: workbook,
-            changeArr: tileArr
+            changeArr: deepArr
         };
     }
 
@@ -493,7 +454,7 @@ export default class CellProxy {
         return workbook;
     }
 
-    calc(newData, name, initd = false) {
+    calc(newData,tileArr, name, initd = false) {
         if (this.diff === 306 && this.lastResult !== "") {
             this.diff = 402;
             Object.keys(this.lastResult).forEach(i => {
@@ -545,6 +506,7 @@ export default class CellProxy {
                                     v: '',
                                     f: textReplace(d)
                                 };
+                                tileArr.push(expr);
                             }
                         } else if (newCell.z == true) {
                             let oldCell = oldData[i][j][k];
@@ -572,6 +534,7 @@ export default class CellProxy {
                                         v: '',
                                         f: textReplace(d)
                                     };
+                                    tileArr.push(expr);
                                 } else if (newCell) {
                                     let p = newCell.v;
                                     let expr = k;
@@ -579,6 +542,7 @@ export default class CellProxy {
                                         v: p,
                                         f: ''
                                     };
+                                    tileArr.push(expr);
                                 }
                             }
                         }

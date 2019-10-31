@@ -289,6 +289,7 @@ const cuttingByPosEnd2 = (str, pos) => {
 };
 
 export function distinct(arr) {
+
     return  [...new Set(arr)];
 }
 

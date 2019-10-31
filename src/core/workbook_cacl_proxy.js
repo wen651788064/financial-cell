@@ -1,7 +1,7 @@
 import {xy2expr} from "./alphabet";
 import {textReplaceAndToUpperCase, textReplaceQM} from "../component/context_process";
 import {toUpperCase} from "../component/table";
-import {deepCopy} from "./operator";
+import {deepCopy, distinct} from "./operator";
 import {isHave} from "./helper";
 
 export default class WorkBook {
@@ -11,6 +11,7 @@ export default class WorkBook {
         this.name = "";
 
         this.need_calc = false;
+        this.contextualArr = [];
         this.data = "";
         this.proxy = "";
         this.table = "";
@@ -63,17 +64,26 @@ export default class WorkBook {
     }
 
     calcNeedCalcBool(v) {
-        if(v === false) {
-            this.need_calc =  this.need_calc ?  this.need_calc : v;
+        if (v === false) {
+            this.need_calc = this.need_calc ? this.need_calc : v;
         } else {
             this.need_calc = v;
         }
     }
 
+    setContextualArr() {
+        this.contextualArr = [];
+    }
+
     getNeedCalc() {
         let value = this.need_calc;
         this.need_calc = false;
-        return value;
+        let ca = distinct(deepCopy(this.contextualArr));
+        this.setContextualArr(ca);
+        return {
+            value,
+            contextualArr: ca
+        };
     }
 
     deleteWorkbook(ri, ci, what = 'all') {
@@ -102,7 +112,7 @@ export default class WorkBook {
         let {data, proxy, table} = this;
 
 
-        if(typeof data === 'string') {
+        if (typeof data === 'string') {
             return;
         }
 
@@ -130,7 +140,13 @@ export default class WorkBook {
                 this.workbook_no_formula.Sheets[data.name][expr] = {
                     v: cell.text,
                     f: !cell.formulas ? cell.text : cell.formulas,
-                    z: true
+                    z: true,
+                    id: expr,
+                    rawFormulaText: cell.text,
+                    typedValue: textReplaceQM(cell.text, true),
+                    row: ri,
+                    col: ci,
+                    error: null,
                 };
 
                 if (data.isFormula(cell.text)) {
@@ -142,6 +158,11 @@ export default class WorkBook {
                         v: '',
                         f: cell.text,
                         z: true,
+                        id: expr,
+                        rawFormulaText: cell.text,
+                        row: ri,
+                        col: ci,
+                        error: null,
                     };
                     this.calcNeedCalcBool(true);
                 } else {
@@ -149,23 +170,41 @@ export default class WorkBook {
                     if (!isNaN(textReplaceAndToUpperCase(cell.text))) {
                         this.workbook.Sheets[data.name][expr] = {
                             v: textReplaceQM(cell.text, true),
-                            z: true
+                            z: true,
+                            id: expr,
+                            typedValue: textReplaceQM(cell.text, true),
+                            row: ri,
+                            col: ci,
+                            error: null,
                         };
                     } else {
                         this.workbook.Sheets[data.name][expr] = {
                             v: textReplaceQM(cell.text),
-                            z: true
+                            z: true,
+                            id: expr,
+                            typedValue: textReplaceQM(cell.text, true),
+                            row: ri,
+                            col: ci,
+                            error: null,
                         };
                     }
                 }
             }
         } else {
             delete this.workbook_no_formula.Sheets[data.name][expr];
-            this.workbook.Sheets[data.name][expr] = {v: 0, f: 0, z: false};
+            this.workbook.Sheets[data.name][expr] = {
+                v: 0, f: 0, z: false,
+                id: expr,
+                typedValue: 0,
+                row: ri,
+                col: ci,
+                error: null,
+            };
         }
 
-        if(empty === false) {
+        if (empty === false) {
             if (isHave(cell.depend) && cell.depend.length > 0) {
+                this.contextualArr.push(...cell.depend);
                 this.calcNeedCalcBool(true);
             }
         }
