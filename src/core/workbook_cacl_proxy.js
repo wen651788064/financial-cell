@@ -182,7 +182,7 @@ export default class WorkBook {
                             v: textReplaceQM(cell.text),
                             z: true,
                             id: expr,
-                            typedValue: textReplaceQM(cell.text, true),
+                            typedValue: textReplaceQM(cell.text),
                             row: ri,
                             col: ci,
                             error: null,
