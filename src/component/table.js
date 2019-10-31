@@ -245,7 +245,7 @@ async function parseCell(viewRange, state = false, src = '', state2 = true, cont
 
             console.time("calc need time");
             window.bugout.log('开始计算公式');
-            data.calc(workbook); // todo: 给个数据结构。 {(1,3):{v:1} , (3,4):{v:2314}} ; 相互之间的message要记录log
+            data.calc(workbook); 
             window.bugout.log('计算公式结束');
             console.timeEnd("calc need time");
 
