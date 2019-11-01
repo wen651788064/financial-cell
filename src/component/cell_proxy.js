@@ -6,7 +6,6 @@ import {toUpperCase} from "./table";
 import {find} from "../core/helper";
 import {multipleCellsRender, specialWebsiteValue} from "./special_formula_process";
 import {textReplace} from "./context_process";
-import CalcWorker from "../core/calc_worker";
 
 
 export default class CellProxy {
@@ -129,8 +128,7 @@ export default class CellProxy {
         return fd;
     }
 
-    associated(name,deepArr, workbook, oldData = this.oldData, d = false) {
-        let enter = false;
+    associated(name, deepArr, workbook, oldData = this.oldData, d = false) {
         let data = this.deepCopy(oldData);
         data = this.filter(data);
 
@@ -149,8 +147,6 @@ export default class CellProxy {
 
 
         return {
-            enter: enter,
-            nd: workbook,
             changeArr: deepArr
         };
     }
@@ -334,7 +330,7 @@ export default class CellProxy {
             }
 
             let args = specialWebsiteValue(cells[i].v + "", cells[i].f + "");
-            if(args.type === 1 && args.state) {
+            if (args.type === 1 && args.state) {
                 tileArr.push(...multipleCellsRender(cells, args.text));
             } else if (args.state && args.type === 2) {
                 cells[i].v = args.text;
@@ -344,7 +340,7 @@ export default class CellProxy {
             copyCell.text = cells[i].v;
             copyCell.formulas = cells[i].f;
 
-            let {state } = this.data.tryParseToNum('change', copyCell, ri, ci);
+            let {state} = this.data.tryParseToNum('change', copyCell, ri, ci);
             cells[i].v = state ? data[ri]['cells'][ci].text : cells[i].v;
             cells[i].f = state ? data[ri]['cells'][ci].formulas : cells[i].f;
 
@@ -454,7 +450,7 @@ export default class CellProxy {
         return workbook;
     }
 
-    calc(newData,tileArr, name, initd = false) {
+    calc(newData, tileArr, name, initd = false) {
         if (this.diff === 306 && this.lastResult !== "") {
             this.diff = 402;
             Object.keys(this.lastResult).forEach(i => {

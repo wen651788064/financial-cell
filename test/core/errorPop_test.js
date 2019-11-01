@@ -114,6 +114,8 @@ describe('qq', () => {
             assert.equal(depend[0], 'A10');
             let args  = data.rows.getCell(4, 0);
             assert.equal(args.depend[0], 'A10');
+            args  = data.rows.getCell(4, 1);
+            assert.equal(args.depend[0], 'A10');
         });
 
         it(' mergeCell ', function () {

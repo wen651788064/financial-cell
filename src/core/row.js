@@ -233,7 +233,7 @@ class Rows {
             row.cells[ci].style = cell.style;
         } else if (what === 'all_with_no_workbook') {
             row.cells[ci] = cell;
-            if(isHave(cell.text)) {
+            if (isHave(cell.text)) {
                 row.cells[ci].value = cell.text;
             }
         }
@@ -246,11 +246,13 @@ class Rows {
         if (isFormula(formulas)) {
             let arr = cutStr(formulas, true, true);
 
-            for(let i = 0; i < arr.length; i++) {
-                console.log(this.mergeCellExpr(arr[i]))
+            for (let i = 0; i < arr.length; i++) {
                 let args = this.mergeCellExpr(arr[i]);
-                // arr.push(...);
+                if(args.state) {
+                    arr.push(...args.mergeArr);
+                }
             }
+            arr = distinct(arr);
 
             if (isHave(cell.depend) === false) {
                 cell.depend = [];
@@ -274,7 +276,7 @@ class Rows {
     }
 
     mergeCellExpr(d) {
-        if(!isAbsoluteValue(d, 6)) {
+        if (!isAbsoluteValue(d, 6)) {
             return {
                 "state": false,
             }
@@ -284,12 +286,12 @@ class Rows {
         let e1 = expr2xy(d[0]);
         let e2 = expr2xy(d[1]);
 
-        if(e1[0] > e2[0]) {
+        if (e1[0] > e2[0]) {
             let t = e2[0];
             e2[0] = e1[0];
             e1[0] = t;
         }
-        if(e1[1] > e2[1]) {
+        if (e1[1] > e2[1]) {
             let t = e2[1];
             e2[1] = e1[1];
             e1[1] = t;
@@ -1108,15 +1110,15 @@ class Rows {
             if (out) {
                 const {table, data} = sheet;
                 const {proxy} = table;
-                let workbook = proxy.outCalc(this._, this.workbook.getWorkbook(2), data.name);
-                this.workbook.setWorkBook(2, workbook);
+                let workbook = proxy.outCalc(this._, this.workbook.getWorkbook(), data.name);
+                this.workbook.setWorkBook(workbook);
                 proxy.setOldData(workbook);
             } else if (sheet !== '') {
                 const {table, data} = sheet;
                 const {proxy} = table;
                 this.workbook.init(this._, data, proxy, table);
-                let workbook_no_formula = this.workbook.getWorkbook(2);
-                proxy.setOldData(workbook_no_formula);
+                let workbook = this.workbook.getWorkbook();
+                proxy.setOldData(workbook);
             }
 
             // this.each((ri, row) => {

@@ -2,17 +2,12 @@ import {stringAt, xy2expr} from '../core/alphabet';
 import {getFontSizePxByPt} from '../core/font';
 import _cell from '../core/cell';
 import {formulam} from '../core/formula';
-import {formatm} from '../core/format';
 import {isMinus} from "../utils/number_util";
 import {Draw, DrawBox, npx, thinLineWidth,} from '../canvas/draw';
 import ApplicationFactory from "./application";
 import CellProxy from "./cell_proxy";
 import {look} from "../config";
-import {dateDiff, formatDate} from "./date";
 import {deepCopy, distinct} from "../core/operator";
-
-import {bugout} from "../log/log_proxy";
-import CalcWorker from "../core/calc_worker";
 // import Worker from 'worker-loader!../external/Worker.js';
 var formulajs = require('formulajs');
 // gobal var
@@ -80,96 +75,19 @@ export function toUpperCase(text) {
     return text;
 }
 
-export function loadData(viewRange, load = false, read = false) {
+export function loadData() {
     let {data} = this;
     let workbook = [];
     workbook.Sheets = {};
     workbook.Sheets[data.name] = {};
-    let workbook_no_formula = [];
-    workbook_no_formula.Sheets = {};
-    workbook_no_formula.Sheets[data.name] = {};
-    let enter = 0;
 
     console.time("loadData need time");
-    // let {mri, mci} = this.data.rows.getMax();
     let wb = data.rows.workbook.getWorkbook(1);
-    let wnf = data.rows.workbook.getWorkbook(2);
-     workbook = wb === "" ? workbook : wb;
-    workbook_no_formula = wnf === "" ? workbook : wnf;
-
-    // viewRange.eachGivenRange((ri, ci, eri, eci,) => {
-    //     let cell2 = this.proxy.deepCopy(data.getCell(ri, ci));
-    //     // cb(ri, ci, cell2.text, data);
-    //     let cell = data.getCell(ri, ci);
-    //     let expr = xy2expr(ci, ri);
-    //     if (data.isEmpty(cell) === false) {
-    //         let {state, text} = tryParseToNum.call(this, 'date', cell, ri, ci);
-    //         cell.text = text;
-    //         cell.text = data.toString(cell.text);
-    //
-    //         if (data.isBackEndFunc(cell.text)) {
-    //             workbook.Sheets[data.name][expr] = {v: "", f: ""};
-    //         } else {
-    //             if (data.isReferOtherSheet(cell)) {
-    //                 let {factory} = this;
-    //                 factory.push(cell.formulas);
-    //                 enter = factory.lock;
-    //                 enter = enter ? 1 : 0;
-    //             }
-    //
-    //             workbook_no_formula.Sheets[data.name][expr] = {
-    //                 v: cell.text,
-    //                 f: !cell.formulas ? cell.text : cell.formulas,
-    //                 z: true
-    //             };
-    //
-    //             if (data.isFormula(cell.text)) {
-    //                 if (isNaN(cell.text)) {
-    //                     cell.text = toUpperCase(cell.text); // 为什么要.toUpperCase() 呢？ => =a1 需要变成=A1
-    //                 }
-    //
-    //                 if (load) {
-    //                     workbook.Sheets[data.name][expr] = {
-    //                         v: '-',
-    //                         f: '',
-    //                         z: true
-    //                     };
-    //                 } else {
-    //                     workbook.Sheets[data.name][expr] = {
-    //                         v: '',
-    //                         f: cell.text,
-    //                         z: true,
-    //                     };
-    //                 }
-    //             } else {
-    //                 if (!isNaN(textReplaceAndToUpperCase(cell.text))) {
-    //                     workbook.Sheets[data.name][expr] = {
-    //                         v: textReplaceQM(cell.text, true),
-    //                         z: true
-    //                     };
-    //                 } else {
-    //                     workbook.Sheets[data.name][expr] = {
-    //                         v: textReplaceQM(cell.text),
-    //                         z: true
-    //                     };
-    //                 }
-    //             }
-    //         }
-    //         if(state) {
-    //             data.setCellWithFormulas(ri, ci, cell2.text, cell.formulas);
-    //         }
-    //
-    //     }
-    //     else {
-    //         workbook.Sheets[data.name][expr] = {v: 0, f: 0, z: false};
-    //     }
-    // }, mri, mci);
+    workbook = wb === "" ? workbook : wb;
     console.timeEnd("loadData need time");
 
     return {
         workbook,
-        enter,
-        workbook2: workbook_no_formula
     };
 }
 
@@ -177,47 +95,36 @@ async function parseCell(viewRange, state = false, src = '', state2 = true, cont
     console.time("parse cell need time");
     let {data, proxy} = this;
 
-    console.time(" xx1 ");
-    let {workbook, workbook2, enter} = loadData.call(this, viewRange, false, true);
 
+    let {workbook} = loadData.call(this);        // 得到 workbook对象
+
+    console.time(" xx1 ");
     let {factory} = this;
-    let s = await factory.getSamples(workbook.Sheets);
+    let s = await factory.getSamples(workbook.Sheets);      // 得到跨sheet的数据
+    factory.mergeWorkbook(s, workbook, data.name);          // 合并
     console.timeEnd(" xx1 ");
 
     console.time(" xx2 ");
-
-    let sall = workbook2;
-    Object.keys(s).forEach(i => {
-        if (i !== data.name) {
-            workbook.Sheets[i] = s[i];
-            sall.Sheets[i] = s[i];
-        }
-    });
-// setCell
-    let tileArr = [];
-    let ca = proxy.calc(sall, tileArr, data.name);
+    let tileArr = [];       // 被其他单元格引用的数据
+    let ca = proxy.calc(workbook, tileArr, data.name);      // 得到workbook的差异的地方
     console.timeEnd(" xx2 ");
 
     if (ca.state) {
         workbook.Sheets[data.name] = ca.data;
-    }
-    if (state) {
-        workbook.Sheets[data.name]['A1'] = {v: '', f: `=${src}`};
-    }
-    console.time("x3");
-    if (ca.state) {
-        let assoc = proxy.associated(data.name,contextualArr, workbook);
-        ca.state = ca.state === false ? assoc.enter : ca.state;
-        workbook = assoc.enter === true ? assoc.nd : workbook;
+
+        let assoc = proxy.associated(data.name, contextualArr, workbook);
         if (assoc.changeArr.length > 0) {
             tileArr.push(...assoc.changeArr);
             tileArr = distinct(tileArr);
         }
     }
-    console.timeEnd("x3");
+
+    if (state) {
+        workbook.Sheets[data.name]['A1'] = {v: '', f: `=${src}`};
+    }
 
     let redo = false;
-    // this.editor.display
+
     if (ca.state) {
         try {
             redo = true;
@@ -244,7 +151,7 @@ async function parseCell(viewRange, state = false, src = '', state2 = true, cont
 
             console.time("calc need time");
             window.bugout.log('开始计算公式');
-            data.calc(workbook); 
+            data.calc(workbook);
             window.bugout.log('计算公式结束');
             console.timeEnd("calc need time");
 
@@ -255,7 +162,7 @@ async function parseCell(viewRange, state = false, src = '', state2 = true, cont
             workbook = proxy.concat(data.name, workbook);
             console.timeEnd("x4");
 
-            data.rows.setWorkBook(2, deepCopy(workbook));
+            data.rows.setWorkBook(deepCopy(workbook));
             console.log(tileArr);
             console.time("x5");
             let cells = proxy.unpack(workbook.Sheets[data.name], data.rows._, tileArr);
@@ -269,16 +176,13 @@ async function parseCell(viewRange, state = false, src = '', state2 = true, cont
         }
     } else {
         if (state2 != false) {
-            factory.data = sall;
-            proxy.setOldData(sall);
-            workbook = factory.data;
+            proxy.setOldData(workbook);
             redo = false;
         }
     }
 
     console.timeEnd("parse cell need time");
     return {
-        "state": enter,
         "redo": redo,
         "data": workbook
     };
@@ -692,25 +596,14 @@ class Table {
         let nc = data.rows.workbook.getNeedCalc();
         if (!temp && nc.value) {
             let args = await parseCell.call(this, viewRange, false, '', state, nc.contextualArr);
-            // if(args.redo === false && redo == false) {
-            //     return;
-            // }
 
-            if (args.state == 1) {
-                this.render();
-                return;
-            } else if (args.state == 2) {
-                return;
-            } else {
-                this.clear();
-            }
+            this.clear();
             workbook = args.data;
-        } else {
+        } else if (!nc.value) {
             workbook = tempData;
         }
 
         this.draw.resize(data.viewWidth(), data.viewHeight());
-
 
         const tx = data.freezeTotalWidth();
         const ty = data.freezeTotalHeight();

@@ -25,6 +25,14 @@ export default class ApplicationFactory {
         this.factory.push(sample);
     }
 
+    mergeWorkbook(s, workbook,  name) {
+        Object.keys(s).forEach(i => {
+            if (i !== name) {
+                workbook.Sheets[i] = s[i];
+            }
+        });
+    }
+
     async getSamples(sheet) {
         if( this.lock) {
             this.lock = false;

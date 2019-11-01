@@ -4,8 +4,7 @@ import {isHave} from "./helper";
 
 export default class WorkBook {
     constructor() {
-        this.workbook = "";
-        this.workbook_no_formula = "";
+         this.workbook = "";
         this.name = "";
 
         this.need_calc = false;
@@ -17,11 +16,9 @@ export default class WorkBook {
 
     init(_, data, proxy, table) {
         this.workbook = [];
-        this.workbook_no_formula = [];
-        this.workbook.Sheets = {};
+         this.workbook.Sheets = {};
         this.workbook.Sheets[data.name] = {};
-        this.workbook_no_formula.Sheets = {};
-        this.workbook_no_formula.Sheets[data.name] = {};
+
         this.name = data.name;
         this.data = data;
         this.proxy = proxy;
@@ -37,28 +34,16 @@ export default class WorkBook {
         }, mri, mci);
     }
 
-    setWorkBook(type, workbook) {
-        if (type === 1) {
-            this.workbook = workbook;
-        } else if (type === 2) {
-            this.workbook_no_formula = workbook;
-        }
+    setWorkBook(  workbook) {
+        this.workbook = workbook;
     }
 
-    getWorkbook(type) {
-        if (type === 1) {
-            if (this.workbook === "") {
-                return "";
-            }
+    getWorkbook() {
+        if (this.workbook === "") {
+            return "";
+        }
 
-            return deepCopy(this.workbook);
-        }
-        if (type === 2) {
-            if (this.workbook_no_formula === "") {
-                return "";
-            }
-            return deepCopy(this.workbook_no_formula);
-        }
+        return deepCopy(this.workbook);
     }
 
     calcNeedCalcBool(v) {
@@ -95,10 +80,10 @@ export default class WorkBook {
     deleteWorkbook(ri, ci, what = 'all') {
         let expr = xy2expr(ci, ri);
         delete this.workbook.Sheets[this.name][expr];
-        delete this.workbook_no_formula.Sheets[this.name][expr];
+        delete this.workbook.Sheets[this.name][expr];
         // if (what === 'all') {
         //     delete this.workbook.Sheets[this.name][expr];
-        //     delete this.workbook_no_formula.Sheets[this.name][expr];
+        //     delete this.workbook.Sheets[this.name][expr];
         // } else if (what === 'text') {
         //     let cell = this.workbook.Sheets[this.name][expr];
         //     let cell2 = this.workbook.Sheets[this.name][expr];
@@ -115,23 +100,16 @@ export default class WorkBook {
 
     change(ri, ci, cell, deep_cell, what = 'input') {
         let expr = xy2expr(ci, ri);
-        let {data, proxy, table} = this;
+        let {data,  table} = this;
 
-        if (this.isDataEmpty() === false) { // todo: if this.isDataEmpty():{ return}
+        if (this.isDataEmpty() === false) {
             return;
         }
 
-        let empty = data.isEmpty(cell); // todo: isCurCellEmpty = data.isEmpty(cell)
+        let empty = data.isEmpty(cell);
         if (empty === true) {
-            delete this.workbook_no_formula.Sheets[data.name][expr];
-            // this.workbook.Sheets[data.name][expr] = {
-            //     v: 0, f: 0, z: false,
-            //     id: expr,
-            //     typedValue: 0,
-            //     row: ri,
-            //     col: ci,
-            //     error: null,
-            // };
+            delete this.workbook.Sheets[data.name][expr];
+
         } else {
             let {state, text} = data.tryParseToNum(what, cell, ri, ci);
             if (!state) {
@@ -151,7 +129,7 @@ export default class WorkBook {
                 }
 
                 let cell_f = !cell.formulas ? cell.text : cell.formulas;
-                this.workbook_no_formula.Sheets[data.name][expr] = {
+                this.workbook.Sheets[data.name][expr] = {
                     v: cell.text,
                     f: cell_f,
                     z: true,
@@ -164,48 +142,12 @@ export default class WorkBook {
                 };
 
                 if (data.isFormula(cell.text)) {
-                    // if (isNaN(cell.text)) {
-                    //     cell.text = toUpperCase(cell.text); // 为什么要.toUpperCase() 呢？ => =a1 需要变成=A1
-                    // }
-                    //
-                    // this.workbook.Sheets[data.name][expr] = {
-                    //     v: '',
-                    //     f: cell.text,
-                    //     z: true,
-                    //     id: expr,
-                    //     rawFormulaText: cell.text,
-                    //     row: ri,
-                    //     col: ci,
-                    //     error: null,
-                    // };
                     this.calcNeedCalcBool(true);
                 } else {
                     this.calcNeedCalcBool(false);
-                    // if (!isNaN(textReplaceAndToUpperCase(cell.text))) {
-                    //     this.workbook.Sheets[data.name][expr] = {
-                    //         v: textReplaceQM(cell.text, true),
-                    //         z: true,
-                    //         id: expr,
-                    //         typedValue: textReplaceQM(cell.text, true),
-                    //         row: ri,
-                    //         col: ci,
-                    //         error: null,
-                    //     };
-                    // } else {
-                    //     this.workbook.Sheets[data.name][expr] = {
-                    //         v: textReplaceQM(cell.text),
-                    //         z: true,
-                    //         id: expr,
-                    //         typedValue: textReplaceQM(cell.text),
-                    //         row: ri,
-                    //         col: ci,
-                    //         error: null,
-                    //     };
-                    // }
                 }
             }
         }
-        this.workbook = deepCopy(this.workbook_no_formula);
 
         if (empty === false) {
             if (isHave(cell.depend) && cell.depend.length > 0) {
