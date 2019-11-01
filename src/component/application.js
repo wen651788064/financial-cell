@@ -1,4 +1,4 @@
-import {splitStr} from "../core/operator";
+import {deepCopy, splitStr} from "../core/operator";
 import helper from "../core/helper";
 
 class ApplicationSample {
@@ -31,7 +31,7 @@ export default class ApplicationFactory {
             let res = await this.setData();
             this._calc = res.data.calc;
         }
-        let _calc2 = helper.cloneDeep(this._calc);
+        let _calc2 = deepCopy(this._calc);
 
         _calc2.push(sheet);
         let data = {};

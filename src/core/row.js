@@ -247,7 +247,9 @@ class Rows {
             let arr = cutStr(formulas, true, true);
 
             for(let i = 0; i < arr.length; i++) {
-
+                console.log(this.mergeCellExpr(arr[i]))
+                let args = this.mergeCellExpr(arr[i]);
+                // arr.push(...);
             }
 
             if (isHave(cell.depend) === false) {
@@ -277,26 +279,31 @@ class Rows {
                 "state": false,
             }
         }
+        d = d.replace(/\$/g, '');
         d = d.split(":");
         let e1 = expr2xy(d[0]);
         let e2 = expr2xy(d[1]);
-        if(e1.ri < e2.ri) {
-            let t = e2.ri;
-            e2.ri = e1.ri;
-            e1.ri = t;
+
+        if(e1[0] > e2[0]) {
+            let t = e2[0];
+            e2[0] = e1[0];
+            e1[0] = t;
         }
-        if(e1.ci < e2.ci) {
-            let t = e2.ci;
-            e2.ci = e1.ci;
-            e1.ci = t;
+        if(e1[1] > e2[1]) {
+            let t = e2[1];
+            e2[1] = e1[1];
+            e1[1] = t;
         }
-        let cellRange = new CellRange(e1.ri, e1.ci, e2.ri, e2.ci);
+        let cellRange = new CellRange(e1[1], e1[0], e2[1], e2[0]);
         let arr = [];
         cellRange.each((i, j) => {
             arr.push(xy2expr(j, i));
         });
 
-        return arr;
+        return {
+            "state": true,
+            "mergeArr": arr,
+        };
     }
 
     useOne(param, other, value = true) {

@@ -118,7 +118,17 @@ describe('qq', () => {
 
         it(' mergeCell ', function () {
             let arr = data.rows.mergeCellExpr("A1:A6");
-            console.log(arr);
+
+            assert.equal(arr[0], 'A1');
+            assert.equal(arr[1], 'A2');
+            assert.equal(arr[2], 'A3');
+            assert.equal(arr[3], 'A4');
+            assert.equal(arr[4], 'A5');
+
+            arr = data.rows.mergeCellExpr("A3:A1");
+            assert.equal(arr[0], 'A1');
+            assert.equal(arr[1], 'A2');
+            assert.equal(arr[2], 'A3');
         });
     });
 

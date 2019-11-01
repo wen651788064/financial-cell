@@ -111,38 +111,41 @@ export default class WorkBook {
         let expr = xy2expr(ci, ri);
         let {data, proxy, table} = this;
 
-
-        if (typeof data === 'string') {
+        if (typeof data === 'string') { // todo: if this.isDataEmpty():{ return}
             return;
         }
 
-        let empty = data.isEmpty(cell);
+        let empty = data.isEmpty(cell); // todo: isCurCellEmpty = data.isEmpty(cell)
         if (empty === false) {
             let {state, text} = data.tryParseToNum(what, cell, ri, ci);
             if (!state) {
-                cell.text = text;
-                cell.text = data.toString(cell.text);
+                // cell.text = text;
+                cell.text = data.toString(text);
                 cell = deepCopy(cell);
             } else {
                 cell = deepCopy(cell);
-                cell.text = text;
-                cell.text = data.toString(cell.text);
+                // cell.text = text;
+                cell.text = data.toString(text);
             }
 
 
             if (data.isBackEndFunc(cell.text)) {
                 this.workbook.Sheets[data.name][expr] = {v: "", f: ""};
             } else {
+                // =sheet1!A1
                 if (data.isReferOtherSheet(cell)) {
                     let {factory} = table;
                     factory.push(cell.formulas);
                 }
+
+                // text =add(1, 2) formulas = "=1+1"
+                let cell_f = !cell.formulas ? cell.text : cell.formulas;
                 this.workbook_no_formula.Sheets[data.name][expr] = {
                     v: cell.text,
-                    f: !cell.formulas ? cell.text : cell.formulas,
+                    f: cell_f,
                     z: true,
                     id: expr,
-                    rawFormulaText: !cell.formulas ? cell.text : cell.formulas,
+                    rawFormulaText: cell_f,
                     typedValue:cell.text,
                     row: ri,
                     col: ci,
@@ -190,7 +193,7 @@ export default class WorkBook {
                     }
                 }
             }
-        } else {
+        } else { // todo: if else 短的放上面，长的放下面
             delete this.workbook_no_formula.Sheets[data.name][expr];
             this.workbook.Sheets[data.name][expr] = {
                 v: 0, f: 0, z: false,
