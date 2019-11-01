@@ -152,46 +152,46 @@ export default class WorkBook {
                     error: null,
                 };
 
-                // if (data.isFormula(cell.text)) {
-                //     if (isNaN(cell.text)) {
-                //         cell.text = toUpperCase(cell.text); // 为什么要.toUpperCase() 呢？ => =a1 需要变成=A1
-                //     }
-                //
-                //     this.workbook.Sheets[data.name][expr] = {
-                //         v: '',
-                //         f: cell.text,
-                //         z: true,
-                //         id: expr,
-                //         rawFormulaText: cell.text,
-                //         row: ri,
-                //         col: ci,
-                //         error: null,
-                //     };
-                //     this.calcNeedCalcBool(true);
-                // } else {
-                //     this.calcNeedCalcBool(false);
-                //     if (!isNaN(textReplaceAndToUpperCase(cell.text))) {
-                //         this.workbook.Sheets[data.name][expr] = {
-                //             v: textReplaceQM(cell.text, true),
-                //             z: true,
-                //             id: expr,
-                //             typedValue: textReplaceQM(cell.text, true),
-                //             row: ri,
-                //             col: ci,
-                //             error: null,
-                //         };
-                //     } else {
-                //         this.workbook.Sheets[data.name][expr] = {
-                //             v: textReplaceQM(cell.text),
-                //             z: true,
-                //             id: expr,
-                //             typedValue: textReplaceQM(cell.text),
-                //             row: ri,
-                //             col: ci,
-                //             error: null,
-                //         };
-                //     }
-                // }
+                if (data.isFormula(cell.text)) {
+                    // if (isNaN(cell.text)) {
+                    //     cell.text = toUpperCase(cell.text); // 为什么要.toUpperCase() 呢？ => =a1 需要变成=A1
+                    // }
+                    //
+                    // this.workbook.Sheets[data.name][expr] = {
+                    //     v: '',
+                    //     f: cell.text,
+                    //     z: true,
+                    //     id: expr,
+                    //     rawFormulaText: cell.text,
+                    //     row: ri,
+                    //     col: ci,
+                    //     error: null,
+                    // };
+                    this.calcNeedCalcBool(true);
+                } else {
+                    this.calcNeedCalcBool(false);
+                    // if (!isNaN(textReplaceAndToUpperCase(cell.text))) {
+                    //     this.workbook.Sheets[data.name][expr] = {
+                    //         v: textReplaceQM(cell.text, true),
+                    //         z: true,
+                    //         id: expr,
+                    //         typedValue: textReplaceQM(cell.text, true),
+                    //         row: ri,
+                    //         col: ci,
+                    //         error: null,
+                    //     };
+                    // } else {
+                    //     this.workbook.Sheets[data.name][expr] = {
+                    //         v: textReplaceQM(cell.text),
+                    //         z: true,
+                    //         id: expr,
+                    //         typedValue: textReplaceQM(cell.text),
+                    //         row: ri,
+                    //         col: ci,
+                    //         error: null,
+                    //     };
+                    // }
+                }
             }
         } else { // todo: if else 短的放上面，长的放下面
             // delete this.workbook_no_formula.Sheets[data.name][expr];
