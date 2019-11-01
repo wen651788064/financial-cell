@@ -141,7 +141,7 @@ export default class CellProxy {
 
         if (d) {
             // setTimeout(() => {
-            this.refCell(deepArr, name);
+            // this.refCell(deepArr, name);
             // });
         }
 
