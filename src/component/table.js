@@ -95,10 +95,8 @@ async function parseCell(viewRange, state = false, src = '', state2 = true, cont
     console.time("parse cell need time");
     let {data, proxy} = this;
 
-
-    let {workbook} = loadData.call(this);        // 得到 workbook对象
-
     console.time(" xx1 ");
+    let {workbook} = loadData.call(this);        // 得到 workbook对象
     let {factory} = this;
     let s = await factory.getSamples(workbook.Sheets);      // 得到跨sheet的数据
     factory.mergeWorkbook(s, workbook, data.name);          // 合并
@@ -109,6 +107,7 @@ async function parseCell(viewRange, state = false, src = '', state2 = true, cont
     let ca = proxy.calc(workbook, tileArr, data.name);      // 得到workbook的差异的地方
     console.timeEnd(" xx2 ");
 
+    console.time(" xx3 ");
     if (ca.state) {
         workbook.Sheets[data.name] = ca.data;
 
@@ -118,7 +117,7 @@ async function parseCell(viewRange, state = false, src = '', state2 = true, cont
             tileArr = distinct(tileArr);
         }
     }
-
+    console.timeEnd(" xx3 ");
     if (state) {
         workbook.Sheets[data.name]['A1'] = {v: '', f: `=${src}`};
     }

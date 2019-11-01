@@ -119,15 +119,17 @@ describe('qq', () => {
         });
 
         it(' mergeCell ', function () {
-            let arr = data.rows.mergeCellExpr("A1:A6");
+            let args = data.rows.mergeCellExpr("A1:A6");
 
-            assert.equal(arr[0], 'A1');
-            assert.equal(arr[1], 'A2');
-            assert.equal(arr[2], 'A3');
-            assert.equal(arr[3], 'A4');
-            assert.equal(arr[4], 'A5');
+            let {state, mergeArr} = args;
 
-            arr = data.rows.mergeCellExpr("A3:A1");
+            assert.equal(mergeArr[0], 'A1');
+            assert.equal(mergeArr[1], 'A2');
+            assert.equal(mergeArr[2], 'A3');
+            assert.equal(mergeArr[3], 'A4');
+            assert.equal(mergeArr[4], 'A5');
+
+            let arr = data.rows.mergeCellExpr("A3:A1").mergeArr;
             assert.equal(arr[0], 'A1');
             assert.equal(arr[1], 'A2');
             assert.equal(arr[2], 'A3');
@@ -898,7 +900,7 @@ describe('qq', () => {
                 z: true
             };
             cellProxy.diff = 402;
-            let args = cellProxy.calc(this.workbook, data.name);
+            let args = cellProxy.calc(this.workbook, [], data.name);
 
             assert.equal(args.state, true);
 
@@ -922,16 +924,16 @@ describe('qq', () => {
                 z: true
             };
 
-            let args = cellProxy.calc(this.workbook, data.name);
+            let da = ['A3'];
+            let args = cellProxy.calc(this.workbook, da, data.name);
             assert.equal(args.state, true);
             assert.equal(args.data["A1"].v, "3");
 
             this.workbook.Sheets[data.name] = args.data;
-            let assoc = cellProxy.associated(data.name, this.workbook);
-            args.state = args.state === false ? assoc.enter : args.state;
-            let tileArr = assoc.changeArr;
-            assert.equal(tileArr[0], 'A1');
-            assert.equal(tileArr[1], 'A3');
+            let assoc = cellProxy.associated(data.name, da, this.workbook);
+             let tileArr = assoc.changeArr;
+            assert.equal(tileArr[1], 'A1');
+            assert.equal(tileArr[0], 'A3');
         });
     });
 
