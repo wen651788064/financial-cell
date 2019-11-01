@@ -180,7 +180,6 @@ async function parseCell(viewRange, state = false, src = '', state2 = true, cont
     console.time(" xx1 ");
     let {workbook, workbook2, enter} = loadData.call(this, viewRange, false, true);
 
-
     let {factory} = this;
     let s = await factory.getSamples(workbook.Sheets);
     console.timeEnd(" xx1 ");
@@ -194,7 +193,7 @@ async function parseCell(viewRange, state = false, src = '', state2 = true, cont
             sall.Sheets[i] = s[i];
         }
     });
-
+// setCell
     let tileArr = [];
     let ca = proxy.calc(sall, tileArr, data.name);
     console.timeEnd(" xx2 ");
