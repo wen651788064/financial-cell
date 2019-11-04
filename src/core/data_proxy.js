@@ -1335,6 +1335,16 @@ export default class DataProxy {
         return this.rows.getCell(ri, ci);
     }
 
+    getMax() {
+      let mci = this.cols.len;
+      let mri = this.rows.len;
+
+         return {
+            mri,
+            mci
+        }
+    }
+
     isEmpty(cell) {
         return this.rows.isEmpty(cell);
     }

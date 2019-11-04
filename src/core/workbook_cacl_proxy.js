@@ -25,7 +25,7 @@ export default class WorkBook {
         this.table = table;
 
         let viewRange = data.viewRange();
-        let {mri, mci} = data.rows.getMax();
+        let {mri, mci} = data.getMax();
         viewRange.eachGivenRange((ri, ci, eri, eci,) => {
             let cell2 = proxy.deepCopy(data.getCell(ri, ci));
             let cell = data.getCell(ri, ci);

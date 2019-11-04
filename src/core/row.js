@@ -904,26 +904,6 @@ class Rows {
         }
     }
 
-    getMax() {
-        let mri = 0, mci = 0;
-        this.each((ri) => {
-            ri = ri * 1;
-            if (mri < ri) {
-                mri = ri;
-            }
-
-            this.eachCells(ri, (ci) => {
-                ci = ci * 1;
-                if (mci < ci) {
-                    mci = ci;
-                }
-            });
-        });
-        return {
-            mri,
-            mci
-        }
-    }
 
     copyRender(darr, nri, nci, ncell, what, cb) {
         let as = false;
