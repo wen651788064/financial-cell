@@ -91,7 +91,7 @@ const cutStr = (str, filter = false, f = false) => {
     arr.filter(i => {
         let ri = i.replace(/\$/g, '');
         let enter = true;
-        if (arr.length  > index + 1) {
+        if (arr.length > index + 1) {
             let s2 = arr[index + 1];
             if (s2.indexOf("(") !== -1) {
                 enter = false;
@@ -290,7 +290,7 @@ const cuttingByPosEnd2 = (str, pos) => {
 
 export function distinct(arr) {
 
-    return  [...new Set(arr)];
+    return [...new Set(arr)];
 }
 
 const division = (str, ff = filterFormula, other = true, other2 = false) => {
@@ -23562,13 +23562,13 @@ const isAbsoluteValue = (str, rule = 1) => {
             return 7;
         }
         return false
-    } else if(rule == 6) {
+    } else if (rule == 6) {
         str = str.replace(/\$/g, '');
         if (str.search(/^[A-Za-z]+\d+:[A-Za-z]+\d+$/) != -1)
             return true;
 
         return false;
-    }else {
+    } else {
         if (str.search(/^[A-Za-z]+\d+$/) != -1)
             return true;
         if (str.search(/^[A-Za-z]+\d+:[A-Za-z]+\d+$/) != -1)
@@ -23596,19 +23596,19 @@ const contain = (c, d) => {
 const splitStr = (str) => {
     let arr = str.split(/([(-\/,+，*\s=^&])/);
     let arr2 = [];
-    for(let i = 0; i < arr.length; i++) {
+    for (let i = 0; i < arr.length; i++) {
         let enter = 1;
-        if (arr.length >  i + 1) {
+        if (arr.length > i + 1) {
             let s2 = arr[i + 1];
-            if(arr[i] === "(") {
+            if (arr[i] === "(") {
                 enter = 3;
             } else if (s2.indexOf("(") !== -1) {
                 enter = 2;
             }
         }
 
-        if(enter !== 3) {
-            if(enter === 2) {
+        if (enter !== 3) {
+            if (enter === 2) {
                 arr2.push(arr[i] + "(");
             } else {
                 arr2.push(arr[i]);
@@ -23635,7 +23635,7 @@ const cutting2 = (str, s) => {
     for (let i = 0; i < express.length; i++) {
         let s = express[i].toUpperCase();
         let enter = true;
-        if (express.length >  i + 1) {
+        if (express.length > i + 1) {
             let s2 = express[i + 1];
             if (s2.indexOf("(") !== -1) {
                 enter = false;

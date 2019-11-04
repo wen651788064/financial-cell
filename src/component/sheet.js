@@ -333,7 +333,7 @@ function dropDown(e, isAutofillEl, selector, data, verticalScrollbar, rows, evt,
     let {ri, ci} = dstRect;
 
     if (isAutofillEl) {
-        let {rpos, ey, ex, } = dropGetPos.call(this, data, selector, verticalScrollbar, horizontalScrollbar, offset, e, rows, cols, ri, ci, pos);
+        let {rpos, ey, ex,} = dropGetPos.call(this, data, selector, verticalScrollbar, horizontalScrollbar, offset, e, rows, cols, ri, ci, pos);
 
         let orien = selector.showAutofill(ri, ci, rpos);
         if (isOusideViewRange(this.data.settings.view.height(), this.data.settings.view.width(), ey, ex, orien)) {
@@ -869,11 +869,11 @@ function toolbarChange(type, value) {
     const {data} = this;
     if (type === 'undo') {
         this.undo();
-    } else if(type === 'undoList') {
+    } else if (type === 'undoList') {
         value.setContent(data.historyList(1));
-    } else if(type === 'redoList') {
+    } else if (type === 'redoList') {
         value.setContent(data.historyList(2));
-    }else if (type === 'redo') {
+    } else if (type === 'redo') {
         this.redo();
     } else if (type === 'print') {
         // print
@@ -1158,7 +1158,7 @@ function sheetInitEvents() {
     };
     // editor
     editor.change = (state, itext) => {
-        if (state === 'finish') {
+        if (state === 'finish') { //  用户输入
             data.editorChangeToHistory(editor.editorText.getOldCell(), {text: itext}, editor.editorText.getRICI(), 1);
             editor.editorText.setOldCell({}, {ri: -1, ci: -1});
             return;

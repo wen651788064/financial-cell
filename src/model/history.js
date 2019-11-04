@@ -1,6 +1,6 @@
 import {deepCopy} from "../core/operator";
 
-export default class History {
+export default class PreAction {
     constructor({type = -1, action = "", ri = -1, ci = -1, expr = "", cellRange = "", cells = {}, height = -1, width = -1, oldCell = {}, newCell= {}}) {
         this.type = type;
         this.action = action;
@@ -15,13 +15,14 @@ export default class History {
         this.newCell = newCell;
     }
 
-    restore(data, sheet, action) {
+    restore(data, sheet, isRedo) { // 如果是2值的参数，用is前缀命名   ，多值   xxxType
         let {type} = this;
 
-        if (type === 1) {
+        if (type === 1) { // shuru
             let {ri, ci, oldCell, newCell} = this;
             let cell = "";
-            if(action === 1) {
+            // redo 1  undo 2
+            if(isRedo === 1) {
                 cell = deepCopy(oldCell);
             } else {
                 cell = deepCopy(newCell);

@@ -3,7 +3,7 @@ import {isHave} from "./helper";
 import {deepCopy} from "./operator";
 import History from "../model/history";
 
-export default class HistoryStep {
+export default class MultiPreAction {
     constructor(data) {
         this.undoItems = [];
         this.redoItems = [];
@@ -117,21 +117,23 @@ export default class HistoryStep {
         this.does(this.getItems(2), 2);
     }
 
-    does(ui, action) {
+    // todo: actionItems,actionType
+    // todo: 所有的历史操作对应MultiPreAction, 单个历史操作 PreAction  单个叫xxx, 多个multixxx
+    does(actionItems,  actionType)  {
         if (!this.data.settings.showEditor) {
             return;
         }
 
-        if (ui.length <= 0) {
+        if (actionItems.length <= 0) {
             return;
         }
         let {data} = this;
         let {sheet} = data;
 
-        let history = ui.pop();
-        history.restore(data, sheet, action);
+        let preAction = actionItems.pop();
+        preAction.restore(data, sheet, actionType);
 
-        return history;
+        return preAction;
     }
 
     getItems(type) {
