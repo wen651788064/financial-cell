@@ -1,7 +1,7 @@
 import {xy2expr} from "./alphabet";
 import {isHave} from "./helper";
 import {deepCopy} from "./operator";
-import History from "../model/history";
+import PreAction from "x-spreadsheet-master/src/model/pre_action";
 
 export default class MultiPreAction {
     constructor(data) {
@@ -11,38 +11,38 @@ export default class MultiPreAction {
     }
 
     addStep({type, action, ri, ci, expr, cellRange, cells, height, width}, {oldCell, newCell}) {
-        let history = "";
+        let preAction = "";
         switch (type) {
             case 1:
-                history = new History({
+                preAction = new PreAction({
                     type,
                     action, ri, ci, expr, oldCell, newCell
                 });
-                this.undoItems.push(history);
+                this.undoItems.push(preAction);
                 this.redoItems = [];
                 break;
             case 2:
-                history = new History({
+                preAction = new PreAction({
                     type,
                     action, cellRange, cells
                 });
-                this.undoItems.push(history);
+                this.undoItems.push(preAction);
                 this.redoItems = [];
                 break;
             case 3:
-                history = new History({
+                preAction = new PreAction({
                     type,
                     action, height, ri
                 });
-                this.undoItems.push(history);
+                this.undoItems.push(preAction);
                 this.redoItems = [];
                 break;
             case 4:
-                history = new History({
+                preAction = new PreAction({
                     type,
                     action, width, ci
                 });
-                this.undoItems.push(history);
+                this.undoItems.push(preAction);
                 this.redoItems = [];
                 break;
         }
@@ -110,7 +110,7 @@ export default class MultiPreAction {
 
     undo() {
         let preAction = this.does(this.getItems(1), 1);
-        this.redoItems.push(history);
+        this.redoItems.push(preAction);
     }
 
     redo() {
