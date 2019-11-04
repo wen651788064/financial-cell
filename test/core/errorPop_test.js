@@ -11,6 +11,7 @@ import {copyPasteTemplate} from "../template/templates";
 import {formatNumberRender} from "../../src/core/format";
 import FormatProxy from "../../src/core/format_proxy";
 import {multipleCellsRender, specialWebsiteValue} from "../../src/component/special_formula_process";
+import CellRange from "../../src/core/cell_range";
 
 let assert = require('assert');
 
@@ -138,7 +139,7 @@ describe('qq', () => {
 
     describe('  cell change action  ', () => {
         it(' editorChangeToHistory ', function () {
-            let {state} = data.editorChangeToHistory({text: "1", }, {"text": "2"}, {ri: 1, ci: 1});
+            let {state} = data.editorChangeToHistory({text: "1", }, {"text": "2"}, {ri: 1, ci: 1}, 1);
             let args = data.historyStep.getItems(1);
             assert.equal(state, true);
             assert.equal(args[0].ri, '1');
@@ -147,8 +148,23 @@ describe('qq', () => {
             assert.equal(args[0].expr, 'B2');
             assert.equal(args[0].oldCell.text, '1');
 
-            args = data.editorChangeToHistory({text: "1", formulas: "=add(1, 0)" }, {"text": "=add(1, 0)"}, {ri: 2, ci: 2});
+            args = data.editorChangeToHistory({text: "1", formulas: "=add(1, 0)" }, {"text": "=add(1, 0)"}, {ri: 2, ci: 2}, 1);
             assert.equal(args.state, false);
+        });
+
+        it('  changeToHistory  ', function () {
+            data.selector.range = new CellRange(0, 0, 3, 3);
+            let args = data.changeToHistory({type: 2});
+            assert.equal(args.state, true);
+            assert.equal(data.historyStep.undoItems[0].action, '删除A1:D4的单元格内容');
+
+            args = data.changeToHistory({type: 3, ri: 0, });
+            assert.equal(args.state, true);
+            console.log(data.historyStep.undoItems[1]);
+            assert.equal(data.historyStep.undoItems[1].action, '行宽');
+            assert.equal(data.historyStep.undoItems[1].height, '25');
+            assert.equal(data.historyStep.undoItems[1].ri, '0');
+            assert.equal(data.historyStep.undoItems[1].type, '3');
         });
 
         describe('  history  ', () => {

@@ -35,7 +35,7 @@
             showToolbar: true,
             minus: false,
             col: {
-                len: 50,
+                len: 200,
                 width: 100,
                 indexWidth: 60,
                 minWidth: 10,
@@ -45,14 +45,25 @@
 
         // console.time("46");
         let rows1 = {};
-        for (let i = 0; i < 50; i++) {
+        for (let i = 0; i < 100; i++) {
             rows1[i] = {
                 "cells": {}
             };
             for (let j = 0; j < 50; j++) {
                 rows1[i]["cells"][j] = {
-                    "text": "=1+1",
-                    "formulas": "=1+1",
+                    "text": i + j,
+                    "formulas": '=' + i+ "+" + j,
+                }
+            }
+        }
+        for (let i = 101; i < 200; i++) {
+            rows1[i] = {
+                "cells": {}
+            };
+            for (let j = 1; j < 50; j++) {
+                rows1[i]["cells"][j] = {
+                    "text": '=A' + (i - 100) + "+A" + j,
+                    "formulas": '=A' + (i - 100) + "+A" + j,
                 }
             }
         }

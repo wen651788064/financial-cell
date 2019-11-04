@@ -5,6 +5,8 @@ export default class EditorText {
     constructor() {
         this.inputText = "";
         this.oldCell = "";
+        this.ri = -1;
+        this.ci = -1;
     }
 
     setText(text) {
@@ -16,14 +18,22 @@ export default class EditorText {
         return this.inputText;
     }
 
-    setOldCell(oldCell) {
+    setOldCell(oldCell, {ri = -1, ci = -1}) {
         this.oldCell = oldCell;
-
+        this.ri = ri;
+        this.ci = ci;
         return this.getOldCell();
     }
 
     getOldCell() {
         return this.oldCell;
+    }
+
+    getRICI() {
+        return {
+            "ri": this.ri,
+            "ci": this.ci,
+        };
     }
 
     changeText(type) {

@@ -218,7 +218,7 @@ const cellRender = (data, sheetbook, y, x, src, formulaMap, getCellText, cellLis
         // const stack = infixExprToSuffixExpr(src.substring(1));
         // if (stack.length <= 0) return src;
 
-        return "-";
+        return src;
     }
     return src;
 };

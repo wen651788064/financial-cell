@@ -765,9 +765,10 @@ function autoRowResizer() {
 
 function rowResizerFinished(cRect, distance) {
     const {ri} = cRect;
-    const {table, selector, data} = this;
-    data.rows.setHeight(ri, distance);
+    const {table, selector, data, toolbar} = this;
+    data.setRowHeight(ri, distance);
     data.change(data.getData());
+    toolbar.reset();
     table.render();
     selector.resetAreaOffset();
     verticalScrollbarSet.call(this);
@@ -776,9 +777,10 @@ function rowResizerFinished(cRect, distance) {
 
 function colResizerFinished(cRect, distance) {
     const {ci} = cRect;
-    const {table, selector, data} = this;
-    data.cols.setWidth(ci, distance);
+    const {table, selector, data, toolbar} = this;
+    data.setColWidth(ci, distance);
     data.change(data.getData());
+    toolbar.reset();
     // console.log('data:', data);
     table.render();
     selector.resetAreaOffset();
@@ -869,6 +871,8 @@ function toolbarChange(type, value) {
         this.undo();
     } else if(type === 'undoList') {
         value.setContent(data.historyList(1));
+    } else if(type === 'redoList') {
+        value.setContent(data.historyList(2));
     }else if (type === 'redo') {
         this.redo();
     } else if (type === 'print') {
@@ -1155,8 +1159,8 @@ function sheetInitEvents() {
     // editor
     editor.change = (state, itext) => {
         if (state === 'finish') {
-            let {text, formulas} = editor.editorText.getOldCell();
-            data.editorChangeToHistory(editor.editorText.getOldCell(), {text: itext}, data.selector);
+            data.editorChangeToHistory(editor.editorText.getOldCell(), {text: itext}, editor.editorText.getRICI(), 1);
+            editor.editorText.setOldCell({}, {ri: -1, ci: -1});
             return;
         }
 
@@ -1166,7 +1170,7 @@ function sheetInitEvents() {
             editor.editorText.setOldCell({
                 text: '',
                 formulas: '',
-            })
+            });
             let {ri, ci} = editor;
             data.setSelectedCell(text, 'input', formulas, ri, ci);
             editor.setText("");

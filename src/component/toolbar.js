@@ -133,7 +133,7 @@ export default class Toolbar {
         this.ddBorder = new DropdownBorder();
         this.ddMore = new DropdownMore();
         this.undoEl = new DropdownAction('undo',  () => this.change('undo'), (v) => this.change('undoList', v));
-        this.redoEl = new DropdownAction('redo', data.historyStep.getItems(2));
+        this.redoEl = new DropdownAction('redo',  () => this.change('redo'), (v) => this.change('redoList', v));
         this.btnChildren = [
             // this.undoEl = buildButtonWithIcon(`${t('toolbar.undo')} (Ctrl+Z)`, 'undo', () => this.change('undo')),
 

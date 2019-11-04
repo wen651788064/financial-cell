@@ -129,13 +129,13 @@ export default class CellProxy {
     }
 
     associated(name, deepArr, workbook, oldData = this.oldData, d = false) {
-        let data = this.deepCopy(oldData);
-        data = this.filter(data);
+        // let data = this.deepCopy(oldData);
+        // data = this.filter(data);
 
 
         for (let i = 0; i < deepArr.length; i++) {
             let k = deepArr[i];
-            workbook.Sheets[name][k] = data['Sheets'][name][k];
+            workbook.Sheets[name][k] = deepCopy(oldData['Sheets'][name][k]);
         }
 
 

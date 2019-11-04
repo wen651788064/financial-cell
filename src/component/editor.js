@@ -3,7 +3,10 @@ import {h} from './element';
 import Suggest from './suggest';
 import Datepicker from './datepicker';
 import {cssPrefix} from '../config';
-import {cutting, cuttingByPos, cuttingByPos2, cuttingByPosEnd, isAbsoluteValue, operation} from '../core/operator';
+import {
+    cutting, cuttingByPos, cuttingByPos2, cuttingByPosEnd, deepCopy, isAbsoluteValue,
+    operation
+} from '../core/operator';
 import SuggestContent from './suggest_content';
 import {findBracket, suggestContent} from './formula_editor';
 import {createEvent} from './event';
@@ -547,12 +550,12 @@ export default class Editor {
     setRiCi(ri, ci) {
         this.ri = ri;
         this.ci = ci;
-        // const cell = this.data.rows.getCellOrNew(ri, ci);
-
-        // this.editorText.setOldCell({
-        //     text: (cell && cell.text) || '',
-        //     formulas: (cell && cell.formulas) || '',
-        // });
+        if(this.ri === -1 || this.ci === -1) {
+            return;
+        }
+        // const cell = this.data.rows.getCell(ri, ci);
+        //
+        // this.editorText.setOldCell(deepCopy(cell));
     }
 
     setLock(lock) {
@@ -565,9 +568,6 @@ export default class Editor {
 
 
     show(off = true) {
-        // let d = isDisplay.call(this);
-        // console.log(d);
-
         if (off && this.data.settings.showEditor) {
             this.textEl.css('caret-color', 'black');
             this.textEl.css('cursor', 'text');
@@ -740,7 +740,7 @@ export default class Editor {
         this.editorText.setOldCell({
             text: (cell && cell.text) || '',
             formulas: (cell && cell.formulas) || '',
-        });
+        }, {ri: this.ri, ci: this.ci});
         inputEventHandler.call(this, null, (cell && cell.text) || text, (cell && cell.formulas) || '', "end");
 
         setTimeout(() => {
@@ -758,7 +758,7 @@ export default class Editor {
         this.editorText.setOldCell({
             text: (cell && cell.text) || '',
             formulas: (cell && cell.formulas) || '',
-        });
+        }, {ri: this.ri, ci: this.ci});
         const {el, datepicker, suggest} = this;
         el.show();
         this.textEl.show();

@@ -43,7 +43,7 @@ export default class WorkBook {
             return "";
         }
 
-        return deepCopy(this.workbook);
+        return this.workbook;
     }
 
     calcNeedCalcBool(v) {

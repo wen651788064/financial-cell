@@ -728,7 +728,7 @@ export default class DataProxy {
     }
 
     canRedo() {
-        return this.history.canRedo();
+        return this.historyStep.getItems(2).length > 0;
     }
 
     undo(sheet) {
@@ -743,9 +743,10 @@ export default class DataProxy {
     }
 
     redo() {
-        this.history.redo(this.getData(), (d) => {
-            this.setData(d);
-        });
+        this.historyStep.redo();
+        // this.history.redo(this.getData(), (d) => {
+        //     this.setData(d);
+        // });
     }
 
     copy() {
@@ -938,7 +939,7 @@ export default class DataProxy {
         return this.rows.getCell(nri, ci);
     }
 
-    editorChangeToHistory(oldCell, newCell, {ri, ci}) {
+    editorChangeToHistory(oldCell, newCell, {ri, ci}, type) {
         if (oldCell.text === newCell.text || oldCell.formulas === newCell.text) {
             return {
                 "state": false,
@@ -947,10 +948,25 @@ export default class DataProxy {
 
         let {historyStep} = this;
         let expr = xy2expr(ci, ri);
-        let step = historyStep.getStepType(1, {ri, ci, expr, text: newCell.text});
+        let step = historyStep.getStepType(type, {ri, ci, expr, text: newCell.text});
 
-        historyStep.addStep(step, oldCell);
+        historyStep.addStep(step, {oldCell, newCell});
 
+        return {
+            "state": true
+        }
+    }
+
+    changeToHistory({ri, type, ci}) {
+        if (type === -1) {
+            return {"state": false,}
+        }
+
+        let {historyStep} = this;
+        const {selector} = this;
+
+        let step = historyStep.getStepType(type, {expr: '', range: selector.range, ri, ci});
+        historyStep.addStep(step, {});
         return {
             "state": true
         }
@@ -1195,7 +1211,7 @@ export default class DataProxy {
             if (what === 'all' || what === 'format') {
                 this.merges.deleteWithin(selector.range);
             }
-        });
+        }, {type: 2});
     }
 
     // type: row | column
@@ -1457,13 +1473,13 @@ export default class DataProxy {
     setRowHeight(ri, height) {
         this.changeData(() => {
             this.rows.setHeight(ri, height);
-        });
+        }, {type: 3, ri: ri});
     }
 
     setColWidth(ci, width) {
         this.changeData(() => {
             this.cols.setWidth(ci, width);
-        });
+        }, {type: 4, ci: ci});
     }
 
     viewHeight() {
@@ -1591,12 +1607,12 @@ export default class DataProxy {
     //
     // }
 
-    changeData(cb) {
+    changeData(cb, {type = -1, ri = -1, ci = -1} = -1) {
         if (this.settings.showEditor === false) {
             return;
         }
-
-        this.history.add(this.getData());
+        this.changeToHistory({type, ri, ci});
+        // this.history.add(this.getData());
         cb();
         this.change(this.getData());
     }
