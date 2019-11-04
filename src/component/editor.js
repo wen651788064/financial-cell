@@ -568,6 +568,13 @@ export default class Editor {
 
 
     show(off = true) {
+      let d = isDisplay.call(this);
+      if (d === false && off) {
+
+        let cell = this.data.getCell(this.ri, this.ci);
+        this.editorText.setOldCell(deepCopy(cell), {ri: this.ri, ci: this.ci});
+      }
+
         if (off && this.data.settings.showEditor) {
             this.textEl.css('caret-color', 'black');
             this.textEl.css('cursor', 'text');

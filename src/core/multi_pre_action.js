@@ -109,7 +109,7 @@ export default class MultiPreAction {
     }
 
     undo() {
-        let history = this.does(this.getItems(1), 1);
+        let preAction = this.does(this.getItems(1), 1);
         this.redoItems.push(history);
     }
 

@@ -143,6 +143,9 @@ class Rows {
     }
 
     toString(text) {
+      if (isHave(text) === false) {
+        text = "";
+      }
         return text + "";
     }
 
@@ -162,7 +165,7 @@ class Rows {
     }
 
     isEmpty(cell) {
-        if (cell && (cell.text || cell.formulas)) {
+        if (cell && (cell.text || cell.formulas || cell.depend) ) {
             return false;
         }
         return true;
@@ -236,6 +239,7 @@ class Rows {
             if (isHave(cell.text)) {
                 row.cells[ci].value = cell.text;
             }
+            return;
         }
         // cell
         this.getDependCell(xy2expr(ci, ri), this.getCell(ri, ci));
@@ -1050,18 +1054,23 @@ class Rows {
             const cell = this.getCell(ri, ci);
             if (cell !== null) {
                 this.workbook.deleteWorkbook(ri, ci, what);
+                let {table, data} = this.workbook;
+                table.proxy.setCell(data.name, xy2expr(ci, ri));
                 if (what === 'all') {
                     delete row.cells[ci];
                 } else if (what === 'text') {
-                    if (cell.text) delete cell.text;
-                    if (cell.value) delete cell.value;
-                    if (cell.formulas) delete cell.formulas;
+                    if (isHave(cell.text)) delete cell.text;
+                    if (isHave(cell.value)) delete cell.value;
+                    if (isHave(cell.formulas)) delete cell.formulas;
+                    // if (isHave(cell.depend)) delete cell.depend;
                 } else if (what === 'format') {
                     if (cell.style !== undefined) delete cell.style;
                     if (cell.merge) delete cell.merge;
                 } else if (what === 'merge') {
                     if (cell.merge) delete cell.merge;
                 }
+
+                this.workbook.change(ri, ci, cell, deepCopy(cell));
             }
         }
     }

@@ -83,6 +83,11 @@ describe('qq', () => {
             let arr = cutStr('=A1(A2, A3, $A$2, 1, 2, add(1, A5))', false, true);
             console.log(arr);
         });
+
+         it(' =A9:B12 ', function () {
+            let arr = cutStr('=A9:B12', false, true);
+            console.log(arr);
+        });
     });
 
     describe('  paste  ', () => {
@@ -119,7 +124,7 @@ describe('qq', () => {
             assert.equal(args.depend[0], 'A10');
         });
 
-        it(' mergeCell ', function () {
+      it(' mergeCell ', function () {
             let args = data.rows.mergeCellExpr("A1:A6");
 
             let {state, mergeArr} = args;

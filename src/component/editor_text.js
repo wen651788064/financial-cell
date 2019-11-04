@@ -18,7 +18,7 @@ export default class EditorText {
         return this.inputText;
     }
 
-    setOldCell(oldCell, {ri = -1, ci = -1}) {
+    setOldCell(oldCell, {ri = -1, ci = -1} = -1) {
         this.oldCell = oldCell;
         this.ri = ri;
         this.ci = ci;

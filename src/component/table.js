@@ -109,14 +109,18 @@ async function parseCell(viewRange, state = false, src = '', state2 = true, cont
 
     console.time(" xx3 ");
     if (ca.state) {
-        workbook.Sheets[data.name] = ca.data;
-
-        let assoc = proxy.associated(data.name, contextualArr, workbook);
-        if (assoc.changeArr.length > 0) {
-            tileArr.push(...assoc.changeArr);
-            tileArr = distinct(tileArr);
-        }
+      workbook.Sheets[data.name] = ca.data;
+    } else {
+      workbook.Sheets[data.name] = {};
     }
+
+    let assoc = proxy.associated(data.name, contextualArr, workbook);
+    if (assoc.changeArr.length > 0) {
+        tileArr.push(...assoc.changeArr);
+        tileArr = distinct(tileArr);
+        ca.state = true;
+    }
+
     console.timeEnd(" xx3 ");
     if (state) {
         workbook.Sheets[data.name]['A1'] = {v: '', f: `=${src}`};

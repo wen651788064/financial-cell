@@ -24,7 +24,7 @@ import Recast from "./recast";
 import {dateDiff, formatDate} from "../component/date";
 import {formatNumberRender} from "./format";
 import FormatProxy from "./format_proxy";
-import HistoryStep from "./history_step";
+import HistoryStep from "x-spreadsheet-master/src/core/multi_pre_action";
 // private methods
 /*
  * {
