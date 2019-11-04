@@ -47,6 +47,10 @@ export function formatDate(diff) {
     }
 }
 
+export function changeFormat(date, format = 'YYYY年MM月DD日') {
+  return dayjs(date).format(format);
+}
+
 export function calcDecimals(diff, cb = () => {
 }) {
     let arr = diff.toString().split('.');
@@ -80,6 +84,9 @@ export function dateDiff(date) {
             "isValid": false,
         };
     } else {
+        date = date.replace(/[年|月]/g, "-");
+        date = date.replace(/[日]/g, "");
+
         return {
             "diff": dayjs(date).diff(dayjs('1900-01-01'), 'day') + 2,
             "isValid": true,

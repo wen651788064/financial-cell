@@ -5,7 +5,7 @@ import CellProxy from "../../src/component/cell_proxy";
 import {cutStr, deepCopy} from "../../src/core/operator";
 import {RefRow} from "../../src/core/ref_row";
 import EditorText from "../../src/component/editor_text";
-import {calcDecimals, dateDiff, formatDate} from "../../src/component/date";
+import { calcDecimals, changeFormat, dateDiff, formatDate } from '../../src/component/date';
 import {isHave} from "../../src/core/helper";
 import {copyPasteTemplate} from "../template/templates";
 import {formatNumberRender} from "../../src/core/format";
@@ -978,10 +978,19 @@ describe('qq', () => {
             assert.equal(result.diff, 43466);
 
             result = dateDiff('2019-01-01  1:11:11');
-            console.log(result)
+            assert.equal(result.isValid, false);
+
+            result = dateDiff('2019年01月01日');
+            console.log(result);
         });
     });
 
+    describe('changeFormat', () => {
+        it(' 2019-01-01 -> 2019年1月1日', function () {
+            console.log(changeFormat('2019-01-01'));
+            assert.equal(changeFormat('2019-01-01'), '2019年1月1日');
+        });
+    });
 
     describe('  formatDate  ', () => {
         it(' 123.00/123/123.1/123.1a/123.a.as/123.121 ', function () {
@@ -1026,6 +1035,11 @@ describe('qq', () => {
             assert.equal(args.date, '2012-11-28');
 
             args = formatDate('41241.a');
+            assert.equal(args.state, false);
+            assert.equal(args.date, 'Invalid Date');
+
+            args = formatDate('2019-01-01');
+            console.log(args);
             assert.equal(args.state, false);
             assert.equal(args.date, 'Invalid Date');
         });

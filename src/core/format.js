@@ -65,6 +65,13 @@ const baseFormats = [
         label: '2009-01-01',
         render: formatStringRender,
     },
+    {
+        key: 'datetime',
+        title: tf('format.datetime'),
+        type: 'datetime',
+        label: '2009年01月01日',
+        render: formatStringRender,
+    },
     // {
     //     key: 'time',
     //     title: tf('format.time'),

@@ -336,13 +336,14 @@ export default class CellProxy {
                 cells[i].v = args.text;
             }
 
-            let copyCell = this.deepCopy(data[ri]['cells'][ci]);
-            copyCell.text = cells[i].v;
-            copyCell.formulas = cells[i].f;
-
-            let {state} = this.data.tryParseToNum('change', copyCell, ri, ci);
-            cells[i].v = state ? data[ri]['cells'][ci].text : cells[i].v;
-            cells[i].f = state ? data[ri]['cells'][ci].formulas : cells[i].f;
+            // let copyCell = this.deepCopy(data[ri]['cells'][ci]);
+            // copyCell.text = cells[i].v;
+            // copyCell.formulas = cells[i].f;
+            //
+              cells[i].v = cells[i].format ? cells[i].text : cells[i].v;
+            // let {state} = this.data.tryParseToNum('change', copyCell, ri, ci);
+            // cells[i].v = state ? data[ri]['cells'][ci].text : cells[i].v;
+            // cells[i].f = state ? data[ri]['cells'][ci].formulas : cells[i].f;
 
             if (cells[i].v + "" === '' && cells[i].f && cells[i].f[0] && cells[i].f[0] === '=') {
                 data[ri]['cells'][ci].text = cells[i].v + "";
@@ -393,6 +394,9 @@ export default class CellProxy {
 
 
     setCell(name, erpx) {
+      if(typeof this.oldData === "string") {
+        return;
+      }
         this.oldData.Sheets[name][erpx] = {
             f: "",
             v: ""

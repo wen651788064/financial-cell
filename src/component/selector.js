@@ -3,6 +3,8 @@ import {cssPrefix} from '../config';
 import {CellRange} from '../core/cell_range';
 import {mouseMoveUp} from "../component/event";
 import {xy2expr} from "../core/alphabet";
+import MovedCell from 'x-spreadsheet-master/src/model/moved_cell';
+import { deepCopy } from 'x-spreadsheet-master/src/core/operator';
 
 const selectorHeightBorderWidth = 2 * 2 - 1;
 let startZIndex = 10;
@@ -91,6 +93,23 @@ class SelectorElement {
                 selectorMoveEl.el.show();
             }
         }, (e) => {
+               // 如果移动的内容被单元格包含，则需要变化
+            let {rows} = data;
+            let arr = [], arr2 = [], arr3 = [];
+
+           _cellRange.each((i, j) => {
+              console.log(rows.getCell(i, j), i, j);
+              let cell = rows.getCell(i, j);
+              let movedCell = new MovedCell(`${xy2expr(j, i)}:${xy2expr(j, i)}`, deepCopy(cell || {}), i, j);
+              let movedCell2 = new MovedCell(`${xy2expr(j, i)}`, deepCopy(cell || {}), i, j);
+                arr.push(movedCell);
+                arr3.push(movedCell2);
+            });
+            cellRange.each((i, j) => {
+              let movedCell = new MovedCell(xy2expr(j, i), deepCopy(rows.getCell(i, j) || {}), i, j);
+                arr2.push(movedCell);
+            });
+
             data.cutPaste(_cellRange, cellRange);
             sheet.container.css('pointer-events', 'auto');
             _selector.setBoxinner("auto");
@@ -106,9 +125,7 @@ class SelectorElement {
             _selector.setMove(rect);
             // sheet.selectorMoveReset();
 
-            // 如果移动的内容被单元格包含，则需要变化
-            let {rows} = data;
-            let arr = [], arr2 = [], arr3 = [];
+
             // 多个单元格
             // if (_cellRange.eri != _cellRange.sri || _cellRange.eci != _cellRange.sci) {
             //     let erpxArr = [];
@@ -151,14 +168,7 @@ class SelectorElement {
             //
             //         arr2.push(`${a2}:${a1}`);
             //     }
-            // }
-            _cellRange.each((i, j) => {
-                arr.push(`${xy2expr(j, i)}:${xy2expr(j, i)}`);
-                arr3.push(`${xy2expr(j, i)}`)
-            });
-            cellRange.each((i, j) => {
-                arr2.push(xy2expr(j, i));
-            });
+            //
 
             // let {worker} = this;
             // worker.terminate();
@@ -174,7 +184,11 @@ class SelectorElement {
             //     rows.moveChange(arr, arr2, arr3);
             //     sheet.selectorMoveReset();
             // });
+          console.time("move")
             rows.moveChange(arr, arr2, arr3);
+          console.timeEnd("move")
+
+
 
             sheet.selectorMoveReset();
         });

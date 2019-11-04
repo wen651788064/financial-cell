@@ -88,7 +88,6 @@ const cutStr = (str, filter = false, f = false) => {
     }
     let express = [];
     let index = 0;
-    console.log(arr)
     arr.filter(i => {
         let ri = i.replace(/\$/g, '');
         let enter = true;
@@ -103,7 +102,6 @@ const cutStr = (str, filter = false, f = false) => {
         // if(ri.search(str2Re(letterOperatorIgnoreBracket)) === -1) {
         if (f && enter) {
             i = i.replace(/\$/g, '');
-            console.log(i);
             if (i.search(str2Re(letterOperator)) != -1
                 || i.search(str2Re(letterAndLetterOperator)) != -1)
                 if (express.indexOf(i) == -1)

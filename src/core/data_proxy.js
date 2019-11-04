@@ -7,7 +7,7 @@ import History from './history';
 import Clipboard from './clipboard';
 import AutoFilter from './auto_filter';
 import {Merges} from './merge';
-import helper, {useOne} from './helper';
+import helper, { isHave, useOne } from './helper';
 import {isFormula, Rows} from './row';
 import {Cols} from './col';
 import {Validations} from './validation';
@@ -21,7 +21,7 @@ import {parseCell2} from "../component/table";
 import {RefRow} from "./ref_row";
 import {isLegal} from "./operator";
 import Recast from "./recast";
-import {dateDiff, formatDate} from "../component/date";
+import { changeFormat, dateDiff, formatDate } from '../component/date';
 import {formatNumberRender} from "./format";
 import FormatProxy from "./format_proxy";
 import HistoryStep from "x-spreadsheet-master/src/core/multi_pre_action";
@@ -464,6 +464,11 @@ function tryParseToNum(what = 'input', cell, ri, ci) {
     if (what === 'input') {
         return getType.call(this, ri, ci, cell);
     } else if (what === 'change') {
+      if(cell.text === '' || isHave(cell.text) === false) {
+        return {
+          "state": false,
+        }
+      }
         return getType.call(this, ri, ci, cell);
     }
 
@@ -503,8 +508,9 @@ function getType(ri, ci, cell) {
         return {
             "state": true,
             "text": _cell.text,
+          "cell": _cell,
         }
-    } else if (format === 'date') {
+    } else if (format === 'date' || format === 'datetime') {
         let text = rows.useOne(cell.value, cell.text), formula = cell.formulas, minute = false;
         let _cell = {};
 
@@ -519,6 +525,11 @@ function getType(ri, ci, cell) {
         }
 
         if (isValid) {
+            if(format === 'datetime') {
+                console.log(text)
+                text = changeFormat(formatDate( dateDiff(text).diff).date);
+
+            }
             _cell = {
                 "formulas": formula,
                 "text": text,
@@ -526,12 +537,13 @@ function getType(ri, ci, cell) {
                 "to_calc_num": diff,
                 "minute": minute,
             };
-            data.dateInput(_cell, ri, ci, 'date');
+            data.dateInput(_cell, ri, ci, format);
         }
 
         return {
             "state": true,
             "text": isValid ? _cell.to_calc_num : cell.text,
+             "cell": _cell,
         };
     } else if (format === 'normal') {
         if (isValid) {
@@ -546,6 +558,7 @@ function getType(ri, ci, cell) {
             return {
                 "state": true,
                 "text": _cell.text,
+                 "cell": _cell,
             }
         } else {
             let text = rows.useOne(cell.value, cell.text), formula = cell.formulas;
@@ -559,6 +572,7 @@ function getType(ri, ci, cell) {
             return {
                 "state": true,
                 "text": _cell.text,
+                 "cell": _cell,
             }
         }
     } else if (format === 'rmb') {
@@ -581,6 +595,7 @@ function getType(ri, ci, cell) {
             return {
                 "state": true,
                 "text": text,
+                 "cell": _cell,
             };
         }
     } else if (format === 'percent') {
@@ -603,13 +618,15 @@ function getType(ri, ci, cell) {
             return {
                 "state": true,
                 "text": text,
+                 "cell": _cell,
             };
         }
     }
 
     return {
         "state": false,
-        "text": cell.text
+        "text": cell.text,
+         "cell": {},
     };
 }
 
@@ -1100,10 +1117,10 @@ export default class DataProxy {
     }
 
     dateInput(cell, ri, ci, type) {
-        let cstyle = this.getCellStyle(ri, ci) || {};
-        cstyle.format = type;
-        cell.style = this.addStyle(cstyle);
-        this.rows.setCell(ri, ci, cell, type);
+        // let cstyle = this.getCellStyle(ri, ci) || {};
+        // cstyle.format = type;
+        // cell.style = this.addStyle(cstyle);
+        // this.rows.setCell(ri, ci, cell, type);
     }
 
     merge() {

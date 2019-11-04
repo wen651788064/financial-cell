@@ -97,6 +97,7 @@ export default class WorkBook {
 
         } else {
             let {state, text} = data.tryParseToNum(what, cell, ri, ci);
+            let cellText = cell.text;
             if (!state) {
                 cell.text = data.toString(text);
                 cell = deepCopy(cell);
@@ -118,12 +119,8 @@ export default class WorkBook {
                     v: cell.text,
                     f: cell_f,
                     z: true,
-                    id: expr,
-                    rawFormulaText: cell_f,
-                    typedValue: cell.text,
-                    row: ri,
-                    col: ci,
-                    error: null,
+                    text: cellText,
+                    format: state,
                 };
 
                 if (data.isFormula(cell.text)) {
