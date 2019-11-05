@@ -22,6 +22,8 @@ export default class MultiPreAction {
                 this.redoItems = [];
                 break;
             case 2:
+            case 5:
+            case 6:
                 preAction = new PreAction({
                     type,
                     action, cellRange, cells
@@ -48,9 +50,10 @@ export default class MultiPreAction {
         }
     }
 
-    getStepType(type, {ri, ci, expr, text, range}) {
+    getStepType(type, {ri, ci, expr, text, range, cellRange}) {
         let str = "";
         let {rows, cols} = this.data;
+        // let cells = [];
 
         switch (type) {
             case 1:
@@ -62,18 +65,6 @@ export default class MultiPreAction {
                 };
                 break;
             case 2:
-                let cells = [];
-                 range.each((i, j) => {
-                    let cell = rows.getCell(i, j);
-                    if(isHave(cell)) {
-                        cell = deepCopy(cell);
-                    } else cell = {};
-                    cells.push({
-                        ri: i,
-                        ci: j,
-                        cell: cell
-                    });
-                });
                 let expr1 = xy2expr(range.sci, range.sri);
                 let expr2 = xy2expr(range.eci, range.eri);
                 expr = expr1 === expr2 ? expr1 : `${expr1}:${expr2}`;
@@ -82,7 +73,7 @@ export default class MultiPreAction {
                     action: str,
                     type,
                     cellRange: range,
-                    cells: cells,
+                    cells: this.eachRange(range),
                 };
                 break;
             case 3:
@@ -105,6 +96,25 @@ export default class MultiPreAction {
                     ci: ci
                 };
                 break;
+              case 5:
+                str = '自动填充';
+                return {
+                    action: str,
+                    type,
+                    cellRange: range,
+                    cells: this.eachRange(cellRange),
+                };
+                break;
+                case 6:
+                    str = '粘贴';
+                return {
+                    action: str,
+                    type,
+                    cellRange: range,
+                    cells: this.eachRange(cellRange),
+                };
+                break;
+
         }
     }
 
@@ -115,6 +125,23 @@ export default class MultiPreAction {
 
     redo() {
         this.does(this.getItems(2), 2);
+    }
+
+    eachRange(range) {
+       let cells = [];
+       let {rows} = this.data;
+       range.each((i, j) => {
+          let cell = rows.getCell(i, j);
+          if(isHave(cell)) {
+              cell = deepCopy(cell);
+          } else cell = {};
+          cells.push({
+              ri: i,
+              ci: j,
+              cell: cell
+          });
+      });
+       return cells;
     }
 
     // todo: actionItems,actionType

@@ -128,7 +128,17 @@ function mouseDownEventHandler(evt) {
     parse2.call(this, inputText, this.pos);
 }
 
+function setOldCell() {
+     let d = isDisplay.call(this);
+      if (d === false) {
+        let cell = this.data.getCell(this.ri, this.ci);
+        this.editorText.setOldCell(deepCopy(cell), {ri: this.ri, ci: this.ci});
+      }
+}
+
 function inputEventHandler(evt, txt = '', formulas = '', state = "input") {
+    setOldCell.call(this);
+
     if (evt) {
         const {
             inputType,
@@ -568,12 +578,6 @@ export default class Editor {
 
 
     show(off = true) {
-      let d = isDisplay.call(this);
-      if (d === false && off) {
-
-        let cell = this.data.getCell(this.ri, this.ci);
-        this.editorText.setOldCell(deepCopy(cell), {ri: this.ri, ci: this.ci});
-      }
 
         if (off && this.data.settings.showEditor) {
             this.textEl.css('caret-color', 'black');

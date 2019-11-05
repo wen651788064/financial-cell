@@ -2,6 +2,7 @@ import {isHaveStyle} from "./paste";
 import {Rows} from "../core/row";
 import {splitStr} from "../core/operator";
 import {xy2expr} from "../core/alphabet";
+import CellRange from 'x-spreadsheet-master/src/core/cell_range';
 
 export default class TableProxy {
     constructor(data ) {
@@ -80,6 +81,22 @@ export default class TableProxy {
             }
             rows.setCell(ri + i, ci + j, {"style": index === -1 ? styles.length - 1 : index}, 'all');
         });
+    }
+
+    parseTableCellRange(tableDom, {ri, ci}) {
+      let maxRi = ri, maxCi = ci;
+      this.each(tableDom, (i, j, cell) => {
+        let rii = ri + i;
+        let cij = ci + j;
+            if(maxRi < rii) {
+              maxRi = rii;
+            }
+            if(maxCi < cij) {
+              maxCi = cij;
+            }
+        });
+        let cellRange = new CellRange(ri, ci, maxRi, maxCi);
+        return cellRange;
     }
 
     dealReference(tableDom, {ri, ci}) {

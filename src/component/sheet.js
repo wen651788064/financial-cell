@@ -899,7 +899,6 @@ function toolbarChange(type, value) {
         // loadFormula.call(this, true);
     } else if (type === 'freeze') {
         let {showFreeze} = data.settings;
-        console.log(showFreeze, 449)
         if (value && showFreeze === true) {
             const {ri, ci} = data.selector;
             this.freeze(ri, ci);
@@ -1579,8 +1578,9 @@ export default class Sheet {
         }
     }
 
-    setCellRange(reference, tableProxy, styleBool) {
-        let {table,} = this;
+    setCellRange(reference, tableProxy, styleBool, cellRange) {
+        let {table, data} = this;
+        data.paste(cellRange);
         for (let i = 0; i < reference.length; i++) {
             let {ri, ci} = reference[i];
             let cell = deepCopy(tableProxy.rows.getCellOrNew(ri, ci));

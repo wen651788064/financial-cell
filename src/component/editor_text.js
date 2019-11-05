@@ -25,6 +25,11 @@ export default class EditorText {
         return this.getOldCell();
     }
 
+    setRICI(ri, ci) {
+       this.ri = ri;
+        this.ci = ci;
+    }
+
     getOldCell() {
         return this.oldCell;
     }

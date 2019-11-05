@@ -458,13 +458,14 @@ function GetInfoFromTable(tableObj) { // class ClipboardTableProxy; .tableDom å±
     let {data} = this;
     let {ri, ci} = data.selector;
     let styles = data.styles;
+    console.time("paste");
     let tableProxy = new TableProxy(data);
 
     tableProxy.extend(tableObj, {ri, ci});
     tableProxy.dealColSpan(tableObj);
     tableProxy.dealStyle(tableObj, {ri, ci});
     let {reference} = tableProxy.dealReference(tableObj, {ri, ci});
-    this.setCellRange(reference, tableProxy, true);
+    this.setCellRange(reference, tableProxy, true, tableProxy.parseTableCellRange(tableObj, {ri, ci}));
 
     const rect = data.getSelectedRect();
     let left = rect.left + rect.width + 60;
@@ -472,7 +473,7 @@ function GetInfoFromTable(tableObj) { // class ClipboardTableProxy; .tableDom å±
     let {advice, editor} = this;
     editor.clear();
     advice.show(left, top, 1, reference, tableProxy);
-
+    console.timeEnd("paste");
     return {
         rows: data.rows._,
         styles: styles

@@ -1,4 +1,5 @@
 import {deepCopy} from "../core/operator";
+import { isHave } from 'x-spreadsheet-master/src/core/helper';
 
 export default class PreAction {
     constructor({type = -1, action = "", ri = -1, ci = -1, expr = "", cellRange = "", cells = {}, height = -1, width = -1, oldCell = {}, newCell= {}}) {
@@ -29,7 +30,7 @@ export default class PreAction {
             }
 
             data.rows.setCellText(ri, ci, cell, sheet.table.proxy, data.name, 'cell');
-        } else if (type === 2) {
+        } else if (type === 2 || type === 5 || type === 6) {
             let {cells} = this;
             for (let i = 0; i < cells.length; i++) {
                 let {cell, ri, ci} = cells[i];

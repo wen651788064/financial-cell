@@ -779,23 +779,30 @@ export default class DataProxy {
         this.clipboard.cut(this.selector.range);
     }
 
-    // what: all | text | format
-    paste(what = 'all', error = () => {
-    }) {
-        // console.log('sIndexes:', sIndexes);
-        const {clipboard, selector} = this;
-        if (clipboard.isClear()) return false;
-        if (!canPaste.call(this, clipboard.range, selector.range, error)) return false;
+    paste(cellRange) {
+      this.changeData(() => {
 
-        this.changeData(() => {
-            if (clipboard.isCopy()) {
-                copyPaste.call(this, clipboard.range, selector.range, what);
-            } else if (clipboard.isCut()) {
-                cutPaste.call(this, clipboard.range, selector.range);
-            }
-        });
-        return true;
+      }, {type: 6, cellRange: cellRange});
     }
+
+    // what: all | text | format
+    // paste(what = 'all', error = () => {
+    // }) {
+    //
+    //     // console.log('sIndexes:', sIndexes);
+    //     // const {clipboard, selector} = this;
+    //     // if (clipboard.isClear()) return false;
+    //     // if (!canPaste.call(this, clipboard.range, selector.range, error)) return false;
+    //     //
+    //     // this.changeData(() => {
+    //     //     if (clipboard.isCopy()) {
+    //     //         copyPaste.call(this, clipboard.range, selector.range, what);
+    //     //     } else if (clipboard.isCut()) {
+    //     //         cutPaste.call(this, clipboard.range, selector.range);
+    //     //     }
+    //     // });
+    //     return true;
+    // }
 
     autofill(cellRange, what, error = () => {
     }, proxy = "") {
@@ -803,9 +810,11 @@ export default class DataProxy {
         if (!canPaste.call(this, srcRange, cellRange, error)) return false;
         this.changeData(() => {
             copyPaste.call(this, srcRange, cellRange, what, true, proxy);
-        });
+        }, {type: 5, cellRange: cellRange});
         return true;
     }
+
+
 
     clickAutofill(srcRange, cellRange, what, error = () => {
     }, proxy = "") {
@@ -974,7 +983,7 @@ export default class DataProxy {
         }
     }
 
-    changeToHistory({ri, type, ci}) {
+    changeToHistory({ri, type, ci, cellRange}) {
         if (type === -1) {
             return {"state": false,}
         }
@@ -982,7 +991,7 @@ export default class DataProxy {
         let {historyStep} = this;
         const {selector} = this;
 
-        let step = historyStep.getStepType(type, {expr: '', range: selector.range, ri, ci});
+        let step = historyStep.getStepType(type, {expr: '', range: selector.range, ri, ci, cellRange: cellRange});
         historyStep.addStep(step, {});
         return {
             "state": true
@@ -1634,11 +1643,12 @@ export default class DataProxy {
     //
     // }
 
-    changeData(cb, {type = -1, ri = -1, ci = -1} = -1) {
+    changeData(cb, {type = -1, ri = -1, ci = -1, cellRange = ""} = -1) {
         if (this.settings.showEditor === false) {
             return;
         }
-        this.changeToHistory({type, ri, ci});
+
+        this.changeToHistory({type, ri, ci, cellRange});
         // this.history.add(this.getData());
         cb();
         this.change(this.getData());
