@@ -3,8 +3,8 @@ import {cssPrefix} from '../config';
 import {CellRange} from '../core/cell_range';
 import {mouseMoveUp} from "../component/event";
 import {xy2expr} from "../core/alphabet";
-import MovedCell from 'x-spreadsheet-master/src/model/moved_cell';
-import { deepCopy } from 'x-spreadsheet-master/src/core/operator';
+import MovedCell from '../model/moved_cell';
+import { deepCopy } from '../core/operator';
 
 const selectorHeightBorderWidth = 2 * 2 - 1;
 let startZIndex = 10;

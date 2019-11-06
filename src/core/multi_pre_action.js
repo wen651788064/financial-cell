@@ -1,7 +1,7 @@
 import {xy2expr} from "./alphabet";
 import {isHave} from "./helper";
 import {deepCopy} from "./operator";
-import PreAction from "x-spreadsheet-master/src/model/pre_action";
+import PreAction from "../model/pre_action";
 
 export default class MultiPreAction {
     constructor(data) {

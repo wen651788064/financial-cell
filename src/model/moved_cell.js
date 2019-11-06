@@ -1,5 +1,5 @@
-import { expr2xy } from 'x-spreadsheet-master/src/core/alphabet';
-import { isHave } from 'x-spreadsheet-master/src/core/helper';
+import { expr2xy } from '../core/alphabet';
+import { isHave } from '../core/helper';
 
 export default class MovedCell {
   constructor(expr, cell, ri, ci) {

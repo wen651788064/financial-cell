@@ -6,3 +6,7 @@ export function copyPasteTemplate(cell, data) {
     const dstCellRange = new CellRange(4, 4, 12, 4, 0, 0);
     data.rows.copyPaste(srcCellRange, dstCellRange, 'all', true);
 }
+
+// export function compareCell() {
+//
+// }

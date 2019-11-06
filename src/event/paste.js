@@ -494,5 +494,6 @@ export {
     deleteImg,
     moveArr,
     deleteAllImg,
+    GetInfoFromTable,
 }
 

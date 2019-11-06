@@ -205,7 +205,6 @@ export default class Toolbar {
         const {data} = this;
         const style = data.getSelectedCellStyle();
         const cell = data.getSelectedCell();
-        console.log('canUndo:', data.canUndo());
         this.undoEl.disabled(!data.canUndo());
         this.redoEl.disabled(!data.canRedo());
         this.mergeEl.active(data.canUnmerge())

@@ -2,7 +2,8 @@ import {isHaveStyle} from "./paste";
 import {Rows} from "../core/row";
 import {splitStr} from "../core/operator";
 import {xy2expr} from "../core/alphabet";
-import CellRange from 'x-spreadsheet-master/src/core/cell_range';
+import CellRange from '../core/cell_range';
+import {isHave} from "../core/helper";
 
 export default class TableProxy {
     constructor(data ) {
@@ -36,7 +37,7 @@ export default class TableProxy {
             }
         }
 
-        if (!tableDom.rows[0] || !tableDom.rows[0].cells) {
+        if (isHave(tableDom.rows[0]) === false || isHave(tableDom.rows[0].cells) === false) {
             return;
         }
 

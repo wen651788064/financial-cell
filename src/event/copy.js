@@ -12,6 +12,29 @@ function mountCopy(event) {
         return;
     }
 
+    let args = copy.call(this);
+    if (event.clipboardData) {
+        event.clipboardData.setData("text/html", parseDom(args.html.el));
+        event.clipboardData.setData("text/plain", args.plain);
+    }
+}
+
+function getChooseImg() {
+    let {pasteDirectionsArr} = this.data;
+
+    this.direction = false;
+    if (pasteDirectionsArr.length > 0) {
+        for (let i = 0; i < pasteDirectionsArr.length; i++) {
+            if (pasteDirectionsArr[i].state === true) {
+                this.container.css('pointer-events', 'auto');
+                return pasteDirectionsArr[i];
+            }
+        }
+    }
+    return null;
+}
+
+function copy() {
     let args = {
         plain: "",
         html: h("table", ""),
@@ -65,27 +88,7 @@ function mountCopy(event) {
     }
     args.html.child(tbody);
 
-    console.log(args.html.el, parseDom(args.html.el));
-
-    if (event.clipboardData) {
-        event.clipboardData.setData("text/html", parseDom(args.html.el));
-        event.clipboardData.setData("text/plain", args.plain);
-    }
-}
-
-function getChooseImg() {
-    let {pasteDirectionsArr} = this.data;
-
-    this.direction = false;
-    if (pasteDirectionsArr.length > 0) {
-        for (let i = 0; i < pasteDirectionsArr.length; i++) {
-            if (pasteDirectionsArr[i].state === true) {
-                this.container.css('pointer-events', 'auto');
-                return pasteDirectionsArr[i];
-            }
-        }
-    }
-    return null;
+    return args;
 }
 
 function parseDom(node) {
@@ -99,4 +102,5 @@ function parseDom(node) {
 export {
     mountCopy,
     getChooseImg,
+    copy
 }

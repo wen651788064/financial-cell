@@ -1,5 +1,5 @@
 import {deepCopy} from "../core/operator";
-import { isHave } from 'x-spreadsheet-master/src/core/helper';
+import { isHave } from '../core/helper';
 
 export default class PreAction {
     constructor({type = -1, action = "", ri = -1, ci = -1, expr = "", cellRange = "", cells = {}, height = -1, width = -1, oldCell = {}, newCell= {}}) {

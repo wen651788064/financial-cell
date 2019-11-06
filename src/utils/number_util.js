@@ -1,7 +1,7 @@
 export const isMinus = (text) => {
     if(isNaN(text)) {
         return false;
-    } else if(x == "") {
+    } else if(text == "") {
         return false;
     }
 

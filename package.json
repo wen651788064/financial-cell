@@ -30,6 +30,7 @@
     "lint": "./node_modules/eslint/bin/eslint.js src",
     "test": "nyc ./node_modules/mocha/bin/mocha --require @babel/register test/*",
     "format_test": "nyc ./node_modules/mocha/bin/mocha --require @babel/register test/core/format_test.js",
+    "chrome_test": "node /Users/wen/Downloads/karma-webpack-example/node_modules/karma/bin/karma start --single-run --browsers PhantomJS --require css-loader",
     "selectors_test": "nyc ./node_modules/mocha/bin/mocha --require @babel/register test/core/selectors_test.js",
     "errorPop_test": "nyc  ./node_modules/mocha/bin/mocha   --require @babel/register --require css-loader test/core/errorPop_test.js",
     "cell_proxy_test": "nyc  ./node_modules/mocha/bin/mocha   --require @babel/register --require css-loader test/core/cell_proxy_test.js",
