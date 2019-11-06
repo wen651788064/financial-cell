@@ -1223,7 +1223,7 @@ function sheetInitEvents() {
             cut.call(this);
         } else if (type === 'paste') {
             // paste.call(this, 'all');
-            // process.call(this, document.execCommand("copy"));
+            // process.call(this, document.execCommand("sheetCopy"));
             // createEvent(1, false, "paste");
             // console.log(  document.execCommand("paste"));
         } else if (type === 'paste-value') {

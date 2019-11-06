@@ -12,7 +12,7 @@ function mountCopy(event) {
         return;
     }
 
-    let args = copy.call(this);
+    let args = sheetCopy.call(this);
     if (event.clipboardData) {
         event.clipboardData.setData("text/html", parseDom(args.html.el));
         event.clipboardData.setData("text/plain", args.plain);
@@ -34,7 +34,7 @@ function getChooseImg() {
     return null;
 }
 
-function copy() {
+function sheetCopy() {
     let args = {
         plain: "",
         html: h("table", ""),
@@ -102,5 +102,5 @@ function parseDom(node) {
 export {
     mountCopy,
     getChooseImg,
-    copy
+    sheetCopy
 }

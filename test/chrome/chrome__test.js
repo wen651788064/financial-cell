@@ -4,7 +4,7 @@ import {h} from "../../src/component/element";
 import {cssPrefix} from "../../src/config";
 import {GetInfoFromTable} from "../../src/event/paste";
 import CellRange from "../../src/core/cell_range";
-import {copy} from "../../src/event/copy";
+import {sheetCopy} from "../../src/event/copy";
 import {copyPasteTemplate} from "../template/templates";
 
 let assert = require('assert');
@@ -23,13 +23,15 @@ describe("hexColorLuminance", function () {
         }
     }
     data.rows.setData(rows1);
+    document.createElement("div");
+
     const rootEl = h('div', `${cssPrefix}`)
         .on('contextmenu', evt => evt.preventDefault());
     let sheet = new Sheet(rootEl, data);
 
-    it("copy/paste test", function () {
+    it("sheetCopy/paste test", function () {
         data.selector.range = new CellRange(0, 0, 2, 2);
-        let args = copy.call(sheet);
+        let args = sheetCopy.call(sheet);
 
         assert.equal(args.plain, '=0+0\t=0+1\t=0+2\t\n=1+0\t=1+1\t=1+2\t\n=2+0\t=2+1\t=2+2\t\n');
         data.selector.ri = 1;
@@ -45,11 +47,12 @@ describe("hexColorLuminance", function () {
         assert.equal(cell3.text, "=0+2");
         assert.equal(cell3.formulas, "=0+2");
 
-        let cell = {"text": "=A1", "formulas": "=A1"};
+        let cell = {"text": "=a1", "formulas": "=A1"};
         copyPasteTemplate(cell, data);
 
         data.selector.range = new CellRange(3, 4, 12, 4, 0, 0);
-        args = copy.call(sheet);
+        args = sheetCopy.call(sheet);
         console.log(args);
     });
 });
+// todo: 测试用例太简单。考虑绝对引用，相对引用，大小写，多个双引号，公式错误。

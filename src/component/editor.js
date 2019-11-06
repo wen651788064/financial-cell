@@ -4,7 +4,12 @@ import Suggest from './suggest';
 import Datepicker from './datepicker';
 import {cssPrefix} from '../config';
 import {
-    cutting, cuttingByPos, cuttingByPos2, cuttingByPosEnd, deepCopy, isAbsoluteValue,
+    cutting,
+    cuttingByPos,
+    cuttingByPos2,
+    cuttingByPosEnd,
+    deepCopy,
+    isAbsoluteValue,
     operation
 } from '../core/operator';
 import SuggestContent from './suggest_content';
@@ -34,6 +39,29 @@ function resetTextareaSize() {
             }
         }
         textEl.css('width', `${twidth}px`);
+    }
+}
+
+function textFormat (e) {
+    e.preventDefault();
+    var text
+    var clp = (e.originalEvent || e).clipboardData
+    if (clp === undefined || clp === null) {
+        text = window.clipboardData.getData('text') || ''
+        if (text !== '') {
+            if (window.getSelection) {
+                var newNode = document.createElement('span')
+                newNode.innerHTML = text
+                window.getSelection().getRangeAt(0).insertNode(newNode)
+            } else {
+                document.selection.createRange().pasteHTML(text)
+            }
+        }
+    } else {
+        text = clp.getData('text/plain') || ''
+        if (text !== '') {
+            document.execCommand('insertText', false, text)
+        }
     }
 }
 
@@ -129,11 +157,11 @@ function mouseDownEventHandler(evt) {
 }
 
 function setOldCell() {
-     let d = isDisplay.call(this);
-      if (d === false) {
+    let d = isDisplay.call(this);
+    if (d === false) {
         let cell = this.data.getCell(this.ri, this.ci);
         this.editorText.setOldCell(deepCopy(cell), {ri: this.ri, ci: this.ci});
-      }
+    }
 }
 
 function inputEventHandler(evt, txt = '', formulas = '', state = "input") {
@@ -463,7 +491,7 @@ export default class Editor {
                     })
                     .on('copy', (evt) => {
                         if (this.textEl.el.style['caret-color'] == 'black') {
-                            // createEvent.call(this, 86, true, "copy");
+                            // createEvent.call(this, 86, true, "sheetCopy");
                             evt.stopPropagation();
                         }
                     })
@@ -531,6 +559,11 @@ export default class Editor {
             .children(this.areaEl);
         this.suggest.bindInputEvents(this.textEl);
 
+        this.textEl.on('paste', (evt) => {
+            if (isDisplay.call(this) === false)
+                return;
+            textFormat(evt);
+        });
         this.tmp = h('span', 'span_tmp').hide();
         this.textEl.attr('contenteditable', 'true');
         this.textEl.css('width', `${rowWidth - 3}px`);
@@ -560,7 +593,7 @@ export default class Editor {
     setRiCi(ri, ci) {
         this.ri = ri;
         this.ci = ci;
-        if(this.ri === -1 || this.ci === -1) {
+        if (this.ri === -1 || this.ci === -1) {
             return;
         }
         // const cell = this.data.rows.getCell(ri, ci);
