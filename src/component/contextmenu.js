@@ -41,8 +41,9 @@ function buildMenu() {
 
 export default class ContextMenu {
   constructor(viewFn, isHide = false) {
+    this.menus = buildMenu.call(this);
     this.el = h('div', `${cssPrefix}-contextmenu`)
-      .children(...buildMenu.call(this))
+      .children(...this.menus)
       .hide();
     this.viewFn = viewFn;
     this.itemClick = () => {};

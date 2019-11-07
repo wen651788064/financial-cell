@@ -24,7 +24,8 @@ import Recast from "./recast";
 import { changeFormat, dateDiff, formatDate } from '../component/date';
 import {formatNumberRender} from "./format";
 import FormatProxy from "./format_proxy";
-import HistoryStep from "../core/multi_pre_action";
+import MultiPreAction from "../core/multi_pre_action";
+import CellProxy from "./cell_proxy";
 // private methods
 /*
  * {
@@ -104,6 +105,7 @@ const defaultSettings = {
         indexWidth: 60,
         minWidth: 10,
     },
+    rowsInit: false,
     style: {
         bgcolor: '#ffffff',
         align: 'left',
@@ -490,13 +492,13 @@ function getType(ri, ci, cell) {
         let _cell = {};
         if (isValid) {
             _cell = {
-                "text": diff.toFixed(2),
+                "text": diff.toFixed(0),
                 "value": text,
                 "formulas": formula,
             };
             data.dateInput(_cell, ri, ci, 'number');
         } else {
-            text = formatNumberRender(text, 2);
+            text = formatNumberRender(text, 0);
             _cell = {
                 "text": text,
                 "value": rows.useOne(cell.value, cell.text, false),
@@ -543,7 +545,7 @@ function getType(ri, ci, cell) {
         return {
             "state": true,
             "text": isValid ? _cell.to_calc_num : cell.text,
-             "cell": _cell,
+             "cell": isValid ?  _cell : cell,
         };
     } else if (format === 'normal') {
         if (isValid) {
@@ -594,7 +596,7 @@ function getType(ri, ci, cell) {
 
             return {
                 "state": true,
-                "text": text,
+                "text": _cell.text,
                  "cell": _cell,
             };
         }
@@ -617,7 +619,7 @@ function getType(ri, ci, cell) {
 
             return {
                 "state": true,
-                "text": text,
+                "text": _cell.text,
                  "cell": _cell,
             };
         }
@@ -652,7 +654,7 @@ export default class DataProxy {
         // save data end
 
         // don't save object
-        this.historyStep = new HistoryStep(this);
+        this.multiPreAction = new MultiPreAction(this);
         this.selector = new Selector();
         this.scroll = new Scroll();
         this.history = new History(this);
@@ -740,27 +742,27 @@ export default class DataProxy {
     }
 
     canUndo() {
-        return this.historyStep.getItems(1).length > 0;
+        return this.multiPreAction.getItems(1).length > 0;
         // return this.history.canUndo();
     }
 
     canRedo() {
-        return this.historyStep.getItems(2).length > 0;
+        return this.multiPreAction.getItems(2).length > 0;
     }
 
     undo(sheet) {
-        this.historyStep.undo();
+        this.multiPreAction.undo();
         // this.history.undo(this.getData(), (d) => {
         //     this.setData(d);
         // }, sheet);
     }
 
     historyList(item) {
-        return this.historyStep.getItems(item);
+        return this.multiPreAction.getItems(item);
     }
 
     redo() {
-        this.historyStep.redo();
+        this.multiPreAction.redo();
         // this.history.redo(this.getData(), (d) => {
         //     this.setData(d);
         // });
@@ -972,11 +974,11 @@ export default class DataProxy {
             };
         }
 
-        let {historyStep} = this;
+        let {multiPreAction} = this;
         let expr = xy2expr(ci, ri);
-        let step = historyStep.getStepType(type, {ri, ci, expr, text: newCell.text});
+        let step = multiPreAction.getStepType(type, {ri, ci, expr, text: newCell.text});
 
-        historyStep.addStep(step, {oldCell, newCell});
+        multiPreAction.addStep(step, {oldCell, newCell});
 
         return {
             "state": true
@@ -988,11 +990,11 @@ export default class DataProxy {
             return {"state": false,}
         }
 
-        let {historyStep} = this;
+        let {multiPreAction} = this;
         const {selector} = this;
 
-        let step = historyStep.getStepType(type, {expr: '', range: selector.range, ri, ci, cellRange: cellRange});
-        historyStep.addStep(step, {});
+        let step = multiPreAction.getStepType(type, {expr: '', range: selector.range, ri, ci, cellRange: cellRange});
+        multiPreAction.addStep(step, {});
         return {
             "state": true
         }
@@ -1375,6 +1377,11 @@ export default class DataProxy {
         return this.rows.isEmpty(cell);
     }
 
+    renderFormat(style, cell, nrindex, cindex) {
+        let cellProxy = new CellProxy(cell);
+        return cellProxy.renderFormat(style, nrindex, cindex, this);
+    }
+
     isFormula(text) {
         return this.rows.isFormula(text);
     }
@@ -1669,7 +1676,7 @@ export default class DataProxy {
             } else if (property === 'flex') {
                 autoFilter.addFiexRows(d[property]);
             } else if (property === 'rows') {
-                this[property].setData(d[property], sheet, out);
+                this[property].setData(d[property], sheet, out, this.settings.rowsInit);
             } else if (property === 'freeze') {
                 const [x, y] = expr2xy(d[property]);
                 this.freeze = [y, x];

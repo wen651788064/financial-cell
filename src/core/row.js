@@ -669,10 +669,11 @@ class Rows {
     }
 
     calcNumberCellByTopCell(ncell, diffValue, darr, d, what, cb) {
-        let {text} = ncell;
+        let {text, formulas} = ncell;
         text = this.toString(text);
+        formulas = this.toString(formulas);
         let cell = {};
-        if (this.isFormula(text)) {
+        if (this.isFormula(formulas)) {
             let last1 = text.replace("=", "") * 1;
 
             let value = last1 + diffValue;
@@ -1063,7 +1064,7 @@ class Rows {
        });
     }
 
-    setData(d, sheet = "", out = false) {
+    setData(d, sheet = "", out = false, rowsInit = false) {
         try {
             if (d.len) {
                 this.len = d.len;
@@ -1071,7 +1072,11 @@ class Rows {
             }
             this._ = d;
 
-            // this.init();
+            if(rowsInit) {
+                sheet.toolbar.change('close', '');
+                this.init();
+            }
+
 
 
 

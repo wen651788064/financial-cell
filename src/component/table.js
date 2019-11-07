@@ -8,6 +8,7 @@ import ApplicationFactory from "./application";
 import CellProxy from "./cell_proxy";
 import {look} from "../config";
 import {deepCopy, distinct} from "../core/operator";
+import {testValid} from "../utils/test";
 // import Worker from 'worker-loader!../external/Worker.js';
 var formulajs = require('formulajs');
 // gobal var
@@ -281,15 +282,8 @@ function renderCell(rindex, cindex, sheetbook) {
     }
     draw.rect2(dbox, () => {
         // render text
-        if (style.format) {
-            // console.log(data.formatm, '>>', cell.format);
-          let formatInfo= data.tryParseToNum("change", cell, nrindex, cindex);
-          if(formatInfo.state) {
-           cellText = formatInfo.cell.text;
-          } else {
-            cellText = "";
-          }
-        }
+        let args = data.renderFormat(style, cell, nrindex, cindex);
+        cellText = args.state ? args.cellText : cellText;
         const font = Object.assign({}, style.font);
 
         font.size = getFontSizePxByPt(font.size);
@@ -610,7 +604,7 @@ class Table {
         } else if (!nc.value) {
             workbook = tempData;
         }
-
+        testValid.call(this);
         this.draw.resize(data.viewWidth(), data.viewHeight());
 
         const tx = data.freezeTotalWidth();

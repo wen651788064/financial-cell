@@ -776,6 +776,10 @@ export default class Editor {
     setCellEnd(cell) {
         let text = (cell && cell.formulas) || '';
         text = text == '' ? (cell && cell.text) || '' : text;
+        let {data} = this;
+        const style = data.getCellStyleOrDefault( this.ri, this.ci);
+        let args = data.renderFormat(style, cell, this.ri, this.ci);
+        text = args.state ? args.cellText : text;
 
         this.textEl.child(text + "");
         this.pos = text.length;

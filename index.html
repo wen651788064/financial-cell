@@ -10,6 +10,51 @@
 
 <div id="x-spreadsheet-demo"></div>
 <script>
+    function cellTypeRandom(type) {
+        let cell = {};
+        if (type === 'number') {
+            let num = Math.floor(Math.random() * (10000 - 1 + 1) + 1);
+            cell = {
+                "text": num,
+                "formulas": num,
+            };
+        } else if (type === 'formulaNumber') {
+            let num = Math.floor(Math.random() * (10000 - 1 + 1) + 1);
+            cell = {
+                "text": "=" + num,
+                "formulas": "=" + num,
+            };
+        } else if (type === 'abs_refs') {
+            let ranNum = Math.ceil(Math.random() * 10);
+            let ranNum2 = Math.ceil(Math.random() * 300);
+            let num = "$" + String.fromCharCode(65 + ranNum) + "$" + ranNum2;
+            cell = {
+                "text": "=" + num,
+                "formulas": "=" + num,
+            }
+        } else if (type === 'rel_refs') {
+            let ranNum = Math.ceil(Math.random() * 10);
+            let ranNum2 = Math.ceil(Math.random() * 300);
+            let num = String.fromCharCode(65 + ranNum) + "" + ranNum2;
+            cell = {
+                "text": "=" + num,
+                "formulas": "=" + num,
+            }
+        } else if(type === 'string') {
+            let str = "";
+            let ranNum2 = Math.ceil(Math.random() * 100);
+            for (let i = 0; i < ranNum2; i++) {
+                let ranNum = Math.ceil(Math.random() * 10);
+                str += String.fromCharCode(65 + ranNum).toLowerCase();
+            }
+            cell = {
+                "text": "=" + str,
+                "formulas": "=" + str,
+            }
+        }
+        return cell;
+    }
+
     function load() {
         let options = {
             // date_formula: {
@@ -20,6 +65,7 @@
             // },
             showFreeze: true,
             showEditor: true,
+            rowsInit: true,
             rowWidth: {
                 state: false,
                 width: 180
@@ -42,8 +88,8 @@
             },
         };
 
-
-        //    let rows1 = {};
+        /* 模板1 */
+        //  let rows1 = {};
         // for (let i = 0; i < 100; i++) {
         //     rows1[i] = {
         //         "cells": {}
@@ -66,32 +112,34 @@
         //         }
         //     }
         // }
-        // console.time("46");
-        let rows1 = {};
-        for (let i = 0; i < 20; i++) {
-            rows1[i] = {
-                "cells": {}
-            };
-            for (let j = 0; j < 5; j++) {
-                rows1[i]["cells"][j] = {
-                    "text": i + j,
-                    "formulas": '=' + i+ "+" + j,
-                }
-            }
-        }
-        for (let i = 21; i < 40; i++) {
-            rows1[i] = {
-                "cells": {}
-            };
-            for (let j = 1; j < 5; j++) {
-                rows1[i]["cells"][j] = {
-                    "text": '=A' + (i - 20) + "+A" + j,
-                    "formulas": '=A' + (i - 20) + "+A" + j,
-                }
-            }
-        }
-        // console.timeEnd("46");
 
+        /* 模板2 */
+        // let rows1 = {};
+        // for (let i = 0; i < 20; i++) {
+        //     rows1[i] = {
+        //         "cells": {}
+        //     };
+        //     for (let j = 0; j < 5; j++) {
+        //         rows1[i]["cells"][j] = {
+        //             "text": i + j,
+        //             "formulas": '=' + i+ "+" + j,
+        //         }
+        //     }
+        // }
+        // for (let i = 21; i < 40; i++) {
+        //     rows1[i] = {
+        //         "cells": {}
+        //     };
+        //     for (let j = 1; j < 5; j++) {
+        //         rows1[i]["cells"][j] = {
+        //             "text": '=A' + (i - 20) + "+A" + j,
+        //             "formulas": '=A' + (i - 20) + "+A" + j,
+        //         }
+        //     }
+        // }
+        //
+
+        /* 模板3 */
         // let rows1 = {
         //     0: {
         //         cells: {
@@ -134,6 +182,236 @@
         //         }
         //     }
         // };
+
+        /* 模板4 */
+        // let rows1 = {};
+        // let i = 0;
+        // for (; i < 3; i++) {
+        //     rows1[i] = {
+        //         "cells": {}
+        //     };
+        //
+        //     for (let j = 0; j < 10; j++) {
+        //         rows1[i]["cells"][j] = cellTypeRandom('number');
+        //     }
+        // }
+        // for (; i < 6; i++) {
+        //     rows1[i] = {
+        //         "cells": {}
+        //     };
+        //
+        //     for (let j = 0; j < 10; j++) {
+        //         rows1[i]["cells"][j] = cellTypeRandom('formulaNumber');
+        //     }
+        // }
+        // for (; i < 9; i++) {
+        //     rows1[i] = {
+        //         "cells": {}
+        //     };
+        //
+        //     for (let j = 0; j < 10; j++) {
+        //         rows1[i]["cells"][j] = cellTypeRandom('abs_refs');
+        //     }
+        // }
+
+        /* 模板5 */
+        // let rows1 = {
+        //     0: {
+        //         cells: {
+        //             0: {text: 80523, formulas: 80523},
+        //             1: {text: 66629, formulas: 66629},
+        //             2: {text: 94874, formulas: 94874},
+        //             3: {text: 26939, formulas: 26939},
+        //             4: {text: 90612, formulas: 90612},
+        //             5: {text: 36009, formulas: 36009},
+        //             6: {text: 92343, formulas: 92343},
+        //             7: {text: 79268, formulas: 79268},
+        //             8: {text: 88584, formulas: 88584},
+        //             9: {text: 4295, formulas: 4295},
+        //         }
+        //     },
+        //     1: {
+        //         cells: {
+        //             0: {text: 23828, formulas: 23828},
+        //             1: {text: 58404, formulas: 58404},
+        //             2: {text: 93989, formulas: 93989},
+        //             3: {text: 43875, formulas: 43875},
+        //             4: {text: 83634, formulas: 83634},
+        //             5: {text: 49846, formulas: 49846},
+        //             6: {text: 56460, formulas: 56460},
+        //             7: {text: 73191, formulas: 73191},
+        //             8: {text: 59303, formulas: 59303},
+        //             9: {text: 18474, formulas: 18474},
+        //         }
+        //     },
+        //     2: {
+        //         cells: {
+        //             0: {text: 38045, formulas: 38045},
+        //             1: {text: 83694, formulas: 83694},
+        //             2: {text: 98268, formulas: 98268},
+        //             3: {text: 85122, formulas: 85122},
+        //             4: {text: 29484, formulas: 29484},
+        //             5: {text: 82961, formulas: 82961},
+        //             6: {text: 93080, formulas: 93080},
+        //             7: {text: 25423, formulas: 25423},
+        //             8: {text: 26093, formulas: 26093},
+        //             9: {text: 15045, formulas: 15045},
+        //         }
+        //     },
+        //     3: {
+        //         cells: {
+        //             0: {text: "=42343", formulas: "=42343"},
+        //             1: {text: "=69705", formulas: "=69705"},
+        //             2: {text: "=37872", formulas: "=37872"},
+        //             3: {text: "=6233", formulas: "=6233"},
+        //             4: {text: "=add(A1:A2)", formulas: "=add(A1:A2)"},
+        //             5: {text: "=16844", formulas: "=16844"},
+        //             6: {text: "=ADD($A1:$A2) + 2 + A2", formulas: "=ADD($A1:$A2) + 2 + A2"},
+        //             7: {text: "=55026", formulas: "=55026"},
+        //             8: {text: "=95271", formulas: "=95271"},
+        //             9: {text: "=31355", formulas: "=31355"},
+        //         }
+        //     },
+        //     4: {
+        //         cells: {
+        //             0: {text: "=$K$142", formulas: "=$K$142"},
+        //             1: {text: "=$B$859", formulas: "=$B$859"},
+        //             2: {text: "=$J$928", formulas: "=$J$928"},
+        //             3: {text: "=$E$135", formulas: "=$E$135"},
+        //             4: {text: "=$H$171", formulas: "=$H$171"},
+        //             5: {text: "=$K$798", formulas: "=$K$798"},
+        //             6: {text: "=$C$739", formulas: "=$C$739"},
+        //             7: {text: "=$I$428", formulas: "=$I$428"},
+        //             8: {text: "=$H$11", formulas: "=$H$11"},
+        //             9: {text: "=$H$769", formulas: "=$H$769"},
+        //         }
+        //     },
+        //     5: {
+        //         cells: {
+        //             0: {text: "=A1+A2", formulas: "=A1+A2"},
+        //             2: {text: "=A2+A3", formulas: "=A2+A3"},
+        //             3: {text: "=A1+A3", formulas: "=A1+A3"},
+        //             4: {text: "=A8+A5", formulas: "=A8+A5"},
+        //             5: {text: "=A1+A4", formulas: "=A1+A4"},
+        //             6: {text: "=A7+A4", formulas: "=A7+A4"},
+        //             7: {text: "=A6+A2", formulas: "=A6+A2"},
+        //             8: {text: "=A1+A2", formulas: "=A1+A2"},
+        //         }
+        //     },
+        //     6: {
+        //         cells: {
+        //             0: {text: "=ADD(A1+A2, 0)", formulas: "=ADD(A1+A2, 0)"},
+        //             2: {text: "=ADD(A2+A3, 2)", formulas: "=ADD(A2+A3, 2)"},
+        //             3: {text: "=ADD(A1+A3, 3)", formulas: "=ADD(A1+A3, 3)"},
+        //             4: {text: "=ADD(A8+A5, 4)", formulas: "=ADD(A8+A5, 4)"},
+        //             5: {text: "=ADD(A1+A4, 5)", formulas: "=ADD(A1+A4, 5)"},
+        //             6: {text: "=ADD(A7+A4, 6)", formulas: "=ADD(A7+A4, 6)"},
+        //             7: {text: "=ADD(A6+A2, 7)", formulas: "=ADD(A6+A2, 7)"},
+        //             8: {text: "=ADD(A1+A2, 8)", formulas: "=ADD(A1+A2, 8)"},
+        //         }
+        //     }
+        // };
+
+        /*  模板6 */
+        let rows1 = {
+            0: {
+                cells: {
+                    0: {text: "", formulas: "=T20"},
+                    1: {text: "", formulas: "=$T20"},
+                    2: {text: "", formulas: "=$T$20"},
+                    3: {text: "", formulas: "=ADD(1, T20)"},
+                    4: {text: "", formulas: "=213"},
+                    5: {text: 36009, formulas: 36009},
+                    6: {text: "", formulas: "=T20+T$10 + $T$20"},
+                    7: {text: "", formulas: "=T20+2"},
+                    8: {text: "", formulas: "=asdasd+T20+ADD(ADD(1, T20), T20)"},
+                    9: {text: "", formulas: "=asd123+as21+12"},
+                    19: {text: "123", formulas: "123"},
+                }
+            },
+            1: {
+                cells: {
+                    0: {text: "", formulas: "=asd+A2"},
+                    1: {text: "", formulas: "=A20+$A20"},
+                    2: {text: "", formulas: "=$T$20 + ADD(1, T20)"},
+                    3: {text: "", formulas: "=ADD($T$20, T20)"},
+                    4: {text: "", formulas: "=213 + A20"},
+                    5: {text: 309, formulas: 309},
+                    6: {text: "", formulas: "=T20+T$10 + =add(A$1:$A2)"},
+                    7: {text: "", formulas: "=T20+2+ 2 + A2"},
+                    8: {text: "", formulas: "=T$10+T20+ADD(ADD(1, T20), T20)+309"},
+                    9: {text: "", formulas: "=ADD($T$20:T20)"},
+
+                }
+            },
+            2: {
+                cells: {
+                    0: {text: "asd", formulas: "asd"},
+                    1: {text: "=69705", formulas: "=69705"},
+                    2: {text: "=37872", formulas: "=37872"},
+                    3: {text: "=6233", formulas: "=6233"},
+                    4: {text: "=add(A1:A2)", formulas: "=add(A1:A2)"},
+                    5: {text: "=16844", formulas: "=16844"},
+                    6: {text: "=ADD($A1:$A2) + 2 + A2", formulas: "=ADD($A1:$A2) + 2 + A2"},
+                    7: {text: "=55026", formulas: "=55026"},
+                    8: {text: "=95271", formulas: "=95271"},
+                    9: {text: "=31355", formulas: "=31355"},
+                }
+            },
+            3: {
+                cells: {
+                    0: {text: "=42343", formulas: "=42343"},
+                    1: {text: "=69705", formulas: "=69705"},
+                    2: {text: "=37872", formulas: "=37872"},
+                    3: {text: "=6233", formulas: "=6233"},
+                    4: {text: "=add(A1:A2)", formulas: "=add(A1:A2)"},
+                    5: {text: "=16844", formulas: "=16844"},
+                    6: {text: "=ADD($A1:$A2) + 2 + A2", formulas: "=ADD($A1:$A2) + 2 + A2"},
+                    7: {text: "=55026", formulas: "=55026"},
+                    8: {text: "=95271", formulas: "=95271"},
+                    9: {text: "=31355", formulas: "=31355"},
+                }
+            },
+            4: {
+                cells: {
+                    0: {text: "=$K$142", formulas: "=$K$142"},
+                    1: {text: "=$B$859", formulas: "=$B$859"},
+                    2: {text: "=$J$928", formulas: "=$J$928"},
+                    3: {text: "=$E$135", formulas: "=$E$135"},
+                    4: {text: "=$H$171", formulas: "=$H$171"},
+                    5: {text: "=$K$798", formulas: "=$K$798"},
+                    6: {text: "=$C$739", formulas: "=$C$739"},
+                    7: {text: "=$I$428", formulas: "=$I$428"},
+                    8: {text: "=$H$11", formulas: "=$H$11"},
+                    9: {text: "=$H$769", formulas: "=$H$769"},
+                }
+            },
+            5: {
+                cells: {
+                    0: {text: "=A1+A2", formulas: "=A1+A2"},
+                    2: {text: "=A2+A3", formulas: "=A2+A3"},
+                    3: {text: "=A1+A3", formulas: "=A1+A3"},
+                    4: {text: "=A8+A5", formulas: "=A8+A5"},
+                    5: {text: "=A1+A4", formulas: "=A1+A4"},
+                    6: {text: "=A7+A4", formulas: "=A7+A4"},
+                    7: {text: "=A6+A2", formulas: "=A6+A2"},
+                    8: {text: "=A1+A2", formulas: "=A1+A2"},
+                }
+            },
+            6: {
+                cells: {
+                    0: {text: "=ADD(A1+A2, 0)", formulas: "=ADD(A1+A2, 0)"},
+                    2: {text: "=ADD(A2+A3, 2)", formulas: "=ADD(A2+A3, 2)"},
+                    3: {text: "=ADD(A1+A3, 3)", formulas: "=ADD(A1+A3, 3)"},
+                    4: {text: "=ADD(A8+A5, 4)", formulas: "=ADD(A8+A5, 4)"},
+                    5: {text: "=ADD(A1+A4, 5)", formulas: "=ADD(A1+A4, 5)"},
+                    6: {text: "=ADD(A7+A4, 6)", formulas: "=ADD(A7+A4, 6)"},
+                    7: {text: "=ADD(A6+A2, 7)", formulas: "=ADD(A6+A2, 7)"},
+                    8: {text: "=ADD(A1+A2, 8)", formulas: "=ADD(A1+A2, 8)"},
+                }
+            }
+        };
+
         let flex = [
             {
                 ri: 6,

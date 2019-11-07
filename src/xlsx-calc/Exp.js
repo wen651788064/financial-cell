@@ -127,7 +127,7 @@ module.exports = function Exp(formula) {
     }
     self.calc = function() {
         let args = self.args.concat();
-        console.log(args)
+        // console.log(args)
         //XW: 对函数参数做转换、判断
         try{
             if (typeof args[0] == 'string' && args[0][0] == '='){

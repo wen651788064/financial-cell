@@ -83,19 +83,6 @@ export function mouseMoveUp(target, movefunc, upfunc) {
     bind(target, 'mouseup', target.xEvtUp);
 }
 
-export function mouseStopUp(target, movefunc, upfunc, stopfunc) {
-    bind(target, 'mousemove', movefunc);
-    bind(target, 'mousedown', stopfunc);
-    const t = target;
-    t.xEvtUp = (evt) => {
-        bind(target, 'mousemove', movefunc);
-        unbind(target, 'mousedown', stopfunc);
-        unbind(target, 'mouseup', target.xEvtUp);
-        upfunc(evt);
-    };
-    bind(target, 'mouseup', target.xEvtUp);
-}
-
 
 function calTouchDirection(spanx, spany, evt, cb) {
     let direction = '';

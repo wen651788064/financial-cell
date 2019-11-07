@@ -6,18 +6,46 @@ export default class CellProxy {
         this.cell = cell;
     }
 
+    renderFormat(style, nrindex, cindex, data) {
+        if(isHave(style) === false || isHave(style.format) === false) {
+            return {
+                "cellText": "",
+                "state": false,
+            };
+        }
+
+        let {cell} = this;
+        let cellText = "";
+        if (style.format) {
+            // console.log(data.formatm, '>>', cell.format);
+            let formatInfo = data.tryParseToNum("change", cell, nrindex, cindex);
+            if(formatInfo.state) {
+                cellText = formatInfo.cell.text;
+                // if(data.isFormula() === false) {
+                //     cellText = formatInfo.cell.text;
+                // }
+            } else {
+                if( isHave(cell.text) === false) {
+                    cell.text = "";
+                }
+                cellText = cell.text;
+            }
+            return {
+                "cellText": cellText,
+                "state": true,
+            };
+        }
+        return {
+            "cellText": cellText,
+            "state": false,
+        };
+    }
+
     getCellDataType(sarr, {isDate, isNumber}) {
         let ncell = this.cell;
         // let enter = false;
         let nA = true;
-        // for (let k = 0; enter == false && k < sarr.length; k++) {
-        //     if (sarr[k].text === ncell.text) {
-        //         enter = true;
-        //     }
-        // }
-        // if (enter == false) {
-        //     sarr.push(ncell);
-        // }
+
 
         if (!isHave(ncell.formulas)) {
             ncell.formulas = "";
@@ -27,7 +55,8 @@ export default class CellProxy {
         }
 
         let value = ncell.formulas !== "" ? ncell.formulas + "" : ncell.text + "";
-        value = value.replace(/,/g, "").replace("=", "");
+        // value = value.replace(/,/g, "").replace("=", "");
+        value = value.replace(/,/g, "");        // =123 不要把=扔掉
         let ns = value * 1;
 
         if ((ns || ns == 0) && typeof ns === 'number' && !isNaN(ns) && /^\d+$/.test(value) === true) {

@@ -23,10 +23,11 @@ import Website from "../component/website";
 import {cutStr, cuttingByPos, deepCopy} from "../core/operator";
 import {moveCell} from "../event/move";
 import CellRange from "../core/cell_range";
-import {isOusideViewRange} from "../core/helper";
+import {isHave, isOusideViewRange} from "../core/helper";
 import {expr2xy} from "../core/alphabet";
 import ErrorPopUp from "./error_pop_up";
 import RectProxy from "./rect_proxy";
+import {testValid} from "../utils/test";
 
 function scrollbarMove() {
     const {
@@ -329,7 +330,7 @@ function getPoint(obj) { //获取某元素以浏览器左上角为原点的坐�
 function dropDown(e, isAutofillEl, selector, data, verticalScrollbar, rows, evt, pos = 0, offset, horizontalScrollbar, cols) {
     this.selector.setBoxinner("none");
     this.container.css('pointer-events', 'none');
-    let dstRect = data.getCellRectByXY(e.layerX, e.layerY);
+    let dstRect = data.getCellRectByXY(e.layerX || e.clientX , e.layerY || e.clientY);
     let {ri, ci} = dstRect;
 
     if (isAutofillEl) {
@@ -402,7 +403,7 @@ function overlayerMousedown(evt) {
         selector, data, table, sortFilter, editor, advice
     } = this;
     const {offsetX, offsetY} = evt;
-    const isAutofillEl = evt.target.className === `${cssPrefix}-selector-corner`;
+    const isAutofillEl = isHave(evt.corner) ? true : evt.target.className === `${cssPrefix}-selector-corner`;
     const cellRect = data.getCellRectByXY(offsetX, offsetY);
     const {
         left, top, width, height,
@@ -439,7 +440,7 @@ function overlayerMousedown(evt) {
             selectorSet.call(this, false, ri, ci);
         }
 
-        let dateBegin;
+
         // let {pageX, pageY} = evt;
         let {verticalScrollbar, horizontalScrollbar} = this;
         const {rows, cols} = data;
@@ -455,31 +456,24 @@ function overlayerMousedown(evt) {
             clearInterval(stopTimer2);
             stopTimer = setTimeout(() => {
                 stopTimer2 = setInterval(() => {
-                    if (!dateBegin) {
-                        dateBegin = new Date();
-                    }
+
                     dropDown.call(this, e, isAutofillEl, selector, data, verticalScrollbar, rows, evt, 0, point, horizontalScrollbar, cols,);
                 }, 50);
             }, 200);
-            if (!dateBegin) {
-                dateBegin = new Date();
-            }
+
             dropDown.call(this, e, isAutofillEl, selector, data, verticalScrollbar, rows, evt, 0, point, horizontalScrollbar, cols);
         }, (e) => {
             clearTimeout(stopTimer);
             clearInterval(stopTimer2);
 
-            let dateEnd = new Date();
-            if (dateBegin && isAutofillEl) {
-                let dateDiff = dateEnd.getTime() - dateBegin.getTime();
-                if (dateDiff > 50) {
-                    if (data.autofill(selector.arange, 'all', msg => xtoast('Tip', msg), this.table.proxy)) {
-                        autofillNext.call(this);
-                    }
+            if (isAutofillEl) {
+                if (data.autofill(selector.arange, 'all', msg => xtoast('Tip', msg), this.table.proxy)) {
+                    testValid.call(this);
+                    autofillNext.call(this);
                 }
             }
             this.selector.setBoxinner("auto");
-            dateBegin = null;
+
             selector.hideAutofill();
             toolbarChangePaintformatPaste.call(this);
             this.container.css('pointer-events', 'auto');
@@ -844,7 +838,7 @@ function throwFormula() {
     // sheetReset.call(this);
 }
 
-function insertDeleteRowColumn(type) {
+export function insertDeleteRowColumn(type) {
     const {data} = this;
     if (type === 'insert-row') {
         data.insert('row');
@@ -989,7 +983,6 @@ function sheetInitEvents() {
                     }, 100);
                 }
             } else if (evt.detail === 2) {
-
                 clearTimeout(this.render_timer);
                 editor.setMouseDownIndex([]);
 
