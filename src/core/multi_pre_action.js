@@ -2,6 +2,7 @@ import {xy2expr} from "./alphabet";
 import {isHave} from "./helper";
 import {deepCopy} from "./operator";
 import PreAction from "../model/pre_action";
+import {testValid} from "../utils/test";
 
 export default class MultiPreAction {
     constructor(data) {
@@ -48,6 +49,7 @@ export default class MultiPreAction {
                 this.redoItems = [];
                 break;
         }
+        testValid.call(this);
     }
 
     getStepType(type, {ri, ci, expr, text, range, cellRange}) {

@@ -143,9 +143,9 @@ class Rows {
     }
 
     toString(text) {
-      if (isHave(text) === false) {
-        text = "";
-      }
+        if (isHave(text) === false) {
+            text = "";
+        }
         return text + "";
     }
 
@@ -165,7 +165,7 @@ class Rows {
     }
 
     isEmpty(cell) {
-        if (cell && (cell.text || cell.formulas || cell.depend) ) {
+        if (cell && (cell.text || cell.formulas || cell.depend)) {
             return false;
         }
         return true;
@@ -247,15 +247,15 @@ class Rows {
 
     getDependCell(expr, cell) {
         let {formulas} = cell;
-        if(isHave(formulas) === false) {
-          return;
+        if (isHave(formulas) === false) {
+            return;
         }
         if (isFormula(formulas)) {
             let arr = cutStr(formulas, true, true);
 
             for (let i = 0; i < arr.length; i++) {
                 let args = this.mergeCellExpr(arr[i]);
-                if(args.state) {
+                if (args.state) {
                     arr.push(...args.mergeArr);
                 }
             }
@@ -367,51 +367,51 @@ class Rows {
         }
     }
 
-  moveChange(arr, arr2, arr3) {
-    if (arr.length != arr2.length && arr3.length != arr2.length) {
-        return;
+    moveChange(arr, arr2, arr3) {
+        if (arr.length != arr2.length && arr3.length != arr2.length) {
+            return;
+        }
+
+        for (let i = 0; i < arr.length; i++) {
+
+            let s1 = arr[i].expr;
+            arr[i].each((ri, ci) => {
+                let cell = this.getCell(ri, ci);
+                if (isHave(cell) === false) {
+                    cell = {};
+                }
+                if (!isHave(cell.formulas)) {
+                    cell.formulas = "";
+                }
+
+                let formulas = changeFormula(cutStr(cell.formulas));
+
+                if (formulas.indexOf(s1) != -1) {
+                    let ca = arr3[i].expr.replace(/\$/g, "\\$");
+
+                    this.setCellAll(ri, ci, cell.text.replace(new RegExp(ca, 'g'), arr2[i].expr), cell.formulas.replace(ca, arr2[i].expr));
+                } else {
+                    let s = value2absolute(s1);
+                    let es = value2absolute(arr2[i].expr);
+                    if (formulas.indexOf(s.s3) != -1) {
+                        s = value2absolute(arr3[i].expr);
+
+                        s.s3 = s.s3.replace(/\$/g, "\\$");
+                        this.setCellAll(ri, ci, cell.text.replace(new RegExp(s.s3, 'g'), es.s3), cell.formulas.replace(new RegExp(s.s3, 'g'), es.s3));
+                    } else if (formulas.indexOf(s.s2) != -1) {
+                        s = value2absolute(arr3[i].expr);
+                        s.s2 = s.s2.replace(/\$/g, "\\$");
+                        this.setCellAll(ri, ci, cell.text.replace(new RegExp(s.s2, 'g'), es.s2), cell.formulas.replace(new RegExp(s.s2, 'g'), es.s2));
+                    } else if (formulas.indexOf(s.s1) != -1) {
+                        s = value2absolute(arr3[i].expr);
+                        s.s1 = s.s1.replace(/\$/g, "\\$");
+
+                        this.setCellAll(ri, ci, cell.text.replace(new RegExp(s.s1, 'g'), es.s1), cell.formulas.replace(new RegExp(s.s1, 'g'), es.s1));
+                    }
+                }
+            });
+        }
     }
-
-    for (let i = 0; i < arr.length; i++) {
-
-      let s1 = arr[i].expr;
-      arr[i].each((ri, ci) => {
-        let cell = this.getCell(ri, ci);
-         if (isHave(cell) === false) {
-          cell = {};
-      }
-      if (!isHave(cell.formulas)) {
-          cell.formulas = "";
-      }
-
-      let formulas = changeFormula(cutStr(cell.formulas));
-
-      if (formulas.indexOf(s1) != -1) {
-          let ca = arr3[i].expr.replace(/\$/g, "\\$");
-
-          this.setCellAll(ri, ci, cell.text.replace(new RegExp(ca, 'g'), arr2[i].expr), cell.formulas.replace(ca, arr2[i].expr));
-      } else {
-          let s = value2absolute(s1);
-          let es = value2absolute(arr2[i].expr);
-          if (formulas.indexOf(s.s3) != -1) {
-              s = value2absolute(arr3[i].expr);
-
-              s.s3 = s.s3.replace(/\$/g, "\\$");
-              this.setCellAll(ri, ci, cell.text.replace(new RegExp(s.s3, 'g'), es.s3), cell.formulas.replace(new RegExp(s.s3, 'g'), es.s3));
-          } else if (formulas.indexOf(s.s2) != -1) {
-              s = value2absolute(arr3[i].expr);
-              s.s2 = s.s2.replace(/\$/g, "\\$");
-              this.setCellAll(ri, ci, cell.text.replace(new RegExp(s.s2, 'g'), es.s2), cell.formulas.replace(new RegExp(s.s2, 'g'), es.s2));
-          } else if (formulas.indexOf(s.s1) != -1) {
-              s = value2absolute(arr3[i].expr);
-              s.s1 = s.s1.replace(/\$/g, "\\$");
-
-              this.setCellAll(ri, ci, cell.text.replace(new RegExp(s.s1, 'g'), es.s1), cell.formulas.replace(new RegExp(s.s1, 'g'), es.s1));
-          }
-      }
-      });
-    }
-  }
 
     formatMoney(s, type) {
         if (/[^0-9\.]/.test(s))
@@ -446,7 +446,7 @@ class Rows {
             return "percent";
         } else if (cellStyle && cellStyle.format && cellStyle.format === 'datetime') {
             return "datetime";
-        }  else if (
+        } else if (
             (isValid && cellStyle === null)
             || (isValid && cellStyle && cellStyle.format !== 'normal')
             || cellStyle && cellStyle.format && cellStyle.format === 'date') {
@@ -456,8 +456,9 @@ class Rows {
         return "";
     }
 
-    getCellTextByShift(arr, dei, dci) {
+    getCellTextByShift(arr, dei, dci, d = 0) {
         let bad = false;
+        let enter = false;
         let newStr = "";
 
         for (let i = 0; i < arr.length; i++) {
@@ -466,7 +467,10 @@ class Rows {
                 if (ds[0] + dei < 0 || ds[1] + dci < 0) {
                     bad = true;
                 }
-                arr[i] = xy2expr(ds[0] + dei, ds[1] + dci);
+                if(d < ds[1]) {
+                    arr[i] = xy2expr(ds[0] + dei, ds[1] + dci);
+                    enter = true;
+                }
             } else if (arr[i].search(/^[A-Za-z]+\d+:[A-Za-z]+\d+$/) != -1) {
                 let a1 = arr[i].split(":")[0];
                 let a2 = arr[i].split(":")[1];
@@ -481,7 +485,8 @@ class Rows {
                 }
 
                 let s = xy2expr(ds1[0] + dei, ds1[1] + dci) + ":";
-                s += xy2expr(ds2[0] + dei, ds2[1] + dci)
+                s += xy2expr(ds2[0] + dei, ds2[1] + dci);
+                enter = true;
                 arr[i] = s;
             } else {
                 let value = isAbsoluteValue(arr[i], 5);
@@ -493,6 +498,7 @@ class Rows {
                     }
 
                     arr[i] = xy2expr(ds[0] + dei, ds[1], 2);
+                    enter = true;
                 } else if (value === 1) {
                     let ds = expr2xy(arr[i].replace(/\$/g, ''));
                     if (ds[0] + dei < 0 || ds[1] + dci < 0) {
@@ -500,6 +506,7 @@ class Rows {
                     }
 
                     arr[i] = xy2expr(ds[0], ds[1] + dci, 1);
+                    enter = true;
                 } else if (value === 4) {
                     let sp = arr[i].split(":");
                     console.log(arr[i], sp);
@@ -512,6 +519,7 @@ class Rows {
                         sp[item] = xy2expr(ds[0] + dei, ds[1], 2);
                     }
                     arr[i] = sp.join(':');
+                    enter = true;
                 } else if (value === 5) {
                     let sp = arr[i].split(":");
                     for (let item = 0; item < sp.length; item++) {
@@ -526,6 +534,7 @@ class Rows {
                         }
                     }
                     arr[i] = sp.join(':');
+                    enter = true;
                 } else if (value === 7) {
                     let sp = arr[i].split(':');
                     for (let item = 0; item < sp.length; item++) {
@@ -536,6 +545,7 @@ class Rows {
                         sp[item] = xy2expr(ds[0], ds[1] + dci, 1);
                     }
                     arr[i] = sp.join(':');
+                    enter = true;
                 } else if (value === 6) {
                     let sp = arr[i].split(":");
                     for (let item = 0; item < sp.length; item++) {
@@ -550,6 +560,7 @@ class Rows {
                         }
                     }
                     arr[i] = sp.join(':');
+                    enter = true;
                 } else if (value === 8) {
                     let sp = arr[i].split(":");
                     for (let item = 0; item < sp.length; item++) {
@@ -565,6 +576,7 @@ class Rows {
                         }
                     }
                     arr[i] = sp.join(':');
+                    enter = true;
                 } else if (value === 9) {
                     let sp = arr[i].split(":");
                     for (let item = 0; item < sp.length; item++) {
@@ -580,6 +592,7 @@ class Rows {
                         }
                     }
                     arr[i] = sp.join(':');
+                    enter = true;
                 } else if (value === 10) {
                     let sp = arr[i].split(":");
                     for (let item = 0; item < sp.length; item++) {
@@ -595,6 +608,7 @@ class Rows {
                         }
                     }
                     arr[i] = sp.join(':');
+                    enter = true;
                 } else if (value === 11) {
                     let sp = arr[i].split(":");
                     for (let item = 0; item < sp.length; item++) {
@@ -610,6 +624,7 @@ class Rows {
                         }
                     }
                     arr[i] = sp.join(':');
+                    enter = true;
                 }
             }
             newStr += arr[i];
@@ -617,6 +632,7 @@ class Rows {
 
         return {
             "bad": bad,
+            "enter": enter,
             "result": newStr
         };
     }
@@ -933,14 +949,29 @@ class Rows {
 
     insert(sri, n = 1) {
         const ndata = {};
+        let cells = [];
         this.each((ri, row) => {
             let nri = parseInt(ri, 10);
             if (nri >= sri) {
                 nri += n;
+                this.eachCells(ri, (ci, cell) => {
+                    if (isHave(cell) && isHave(cell.formulas) && this.isFormula(cell.formulas)) {
+                        let {bad, result, enter} = this.getCellTextByShift(splitStr(cell.formulas), 0, n,  sri);
+                        if (enter && !bad) {
+                            cells.push({ri: nri, ci: ci, cell: {text: result, formulas: result}});
+                        }
+                    }
+                });
             }
+
             ndata[nri] = row;
         });
+
         this._ = ndata;
+        for (let i = 0; i < cells.length; i++) {
+            let {ri, ci, cell} = cells[i];
+            this.setCell(ri, ci, cell, 'all');
+        }
         this.len += n;
     }
 
@@ -1057,11 +1088,11 @@ class Rows {
     }
 
     init() {
-       this.each((ri, row) => {
-          this.eachCells(ri, (ci, cell) => {
-              this.getDependCell(xy2expr(ci, ri), this.getCell(ri, ci));
-          });
-       });
+        this.each((ri, row) => {
+            this.eachCells(ri, (ci, cell) => {
+                this.getDependCell(xy2expr(ci, ri), this.getCell(ri, ci));
+            });
+        });
     }
 
     setData(d, sheet = "", out = false, rowsInit = false) {
@@ -1072,12 +1103,10 @@ class Rows {
             }
             this._ = d;
 
-            if(rowsInit) {
+            if (rowsInit) {
                 sheet.toolbar.change('close', '');
                 this.init();
             }
-
-
 
 
             // 为什么要判断sheet = '' ?

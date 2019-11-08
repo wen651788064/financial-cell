@@ -530,7 +530,6 @@ function getType(ri, ci, cell) {
             if(format === 'datetime') {
                 console.log(text)
                 text = changeFormat(formatDate( dateDiff(text).diff).date);
-
             }
             _cell = {
                 "formulas": formula,
@@ -813,6 +812,7 @@ export default class DataProxy {
         this.changeData(() => {
             copyPaste.call(this, srcRange, cellRange, what, true, proxy);
         }, {type: 5, cellRange: cellRange});
+
         return true;
     }
 

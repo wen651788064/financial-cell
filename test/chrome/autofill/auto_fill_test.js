@@ -1,18 +1,17 @@
-import Vaild from "../util/valid";
-import Sheet from "../../src/component/sheet";
-import {simulateMouseEvent} from "../util/event";
-import DataProxy from "../../src/core/data_proxy";
-import {cssPrefix} from "../../src/config";
-import {bugout} from "../../src/log/log_proxy";
-import {h} from "../../src/component/element";
-import CellRange from "../../src/core/cell_range";
-import {consoleSuccess} from "../util/utils";
+import Vaild from "../../util/valid";
+import Sheet from "../../../src/component/sheet";
+import {simulateMouseEvent} from "../../util/event";
+import DataProxy from "../../../src/core/data_proxy";
+import {cssPrefix} from "../../../src/config";
+import {bugout} from "../../../src/log/log_proxy";
+import {h} from "../../../src/component/element";
+import CellRange from "../../../src/core/cell_range";
+import {consoleSuccess} from "../../util/utils";
 
 let assert = require('assert');
 
 describe("autoFill", function () {
     window.bugout = bugout;
-    let data = new DataProxy("sheet1", {rowsInit: true}, {});
     /*  util 1 */
     // let rows1 = {};
     // let i = 0;
@@ -242,19 +241,19 @@ describe("autoFill", function () {
             }
         }
     };
-
+    let data = new DataProxy("sheet1", {rowsInit: true}, {});
     const rootEl = h('div', `${cssPrefix}`)
         .on('contextmenu', evt => evt.preventDefault());
     let sheet = new Sheet(rootEl, data);
     sheet.toolbar.change('close', '');
     data.rows.setData(rows1, sheet, false, true);
 
+
     /*
         assert
             1. arange
             2. cell
             3. action
-            4. 
      */
     it('autoFill', function () {
         sheet.table.valid = new Vaild(() => {
@@ -479,8 +478,13 @@ describe("autoFill", function () {
             assert.equal(cell63.formulas, "=T83+2");
 
             console.log(sheet);
-            consoleSuccess("success autofill_arange");
             consoleSuccess("填充1 - 计算单元格 - 对比 正确");
+        });
+
+        data.multiPreAction.valid = new Vaild(() => {
+            console.log(data.multiPreAction);
+            assert.equal(data.multiPreAction.undoItems.length, 1);
+            consoleSuccess("autofill-action 正确");
         });
 
         sheet.valid = new Vaild(() => {
@@ -527,4 +531,6 @@ describe("autoFill", function () {
         // console.log(sheet.multiPreAction);
         // todo: 数值，数字+英文， 数字+日期，2*2的区域填充奇数行，3个数字不是等差数列，
     });
+
+
 });

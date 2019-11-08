@@ -5,7 +5,8 @@ module.exports = function (config) {
         files: [
             // all files ending in "test"
 
-            'test/chrome/*.js'
+            // 'test/chrome/**'
+            'test/chrome/autofill/auto_fill_test2.js'
             // each file acts as entry point for the webpack configuration
         ],
 
