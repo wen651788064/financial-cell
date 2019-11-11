@@ -1163,7 +1163,6 @@ export default class DataProxy {
             scroll, merges, rows, cols,
         } = this;
 
-        console.log(x, y)
         let {ri, top, height} = getCellRowByY.call(this, y, scroll.y);
         let {ci, left, width} = getCellColByX.call(this, x, scroll.x);
 

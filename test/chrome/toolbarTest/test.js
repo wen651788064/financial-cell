@@ -128,87 +128,30 @@ describe("action", function () {
     data.sheet = sheet;
 
     it('test1', function () {
-        // 第二组操作
-        setTimeout(() => {
-            let count2 = 0;
-            // step 6-6 按下ctrl+z
-            setTimeout(() => {
-                sheet.table.valid = new Vaild(() => {
-                    let cell = data.rows.getCell(11, 2);
-
-                    assert.equal(cell.formulas, '=A1');
-                    consoleSuccess("step 6-6 按下ctrl+z 验证恢复, 延时2秒 成功");
-                    sheet.table.valid = null;
-                });
-
-                pressUndoByMouseDown();
-                // step 6-7 按下ctrl+y
-                setTimeout(() => {
-                    sheet.table.valid = new Vaild(() => {
-                        let cell = data.rows.getCell(11, 2);
-                        assert.equal(cell.formulas, "=A2");
-                        consoleSuccess("step 6-7 按下ctrl+y 成功");
-                        sheet.table.valid = null;
-                    });
-
-                    pressRedoByMouseDown();
-                }, 2000);
-            }, 2000);
-
-
-            sheet.table.valid = new Vaild(() => {
-                if (count2 === 0) {
-                    sheet.editor.valid = new Vaild(() => {
-                        // step 6-3 在单元格中输入
-                        inputInCell({data: "=A2", msg: "step 6-3 在单元格中输入 成功"});
-                        sheet.editor.valid = null;
-
-                        sheet.editor.valid2 = new Vaild(() => {
-                            // step 6-4 按下回车是否存入
-                            pressEnterByMouseDown({msg: "step 6-4 按下回车是否存入 成功"});
-                            sheet.editor.valid2 = null;
-                        });
-                    });
-
-                    // step 6-2  双击按下单元格
-                    pressCellByMouseDown({msg: "step 6-2  双击按下单元格 成功"});
-                } else if (count2 === 1) {
-                    // step 5 验证撤销是否存入
-                    vaildUndo("step 6-5 验证撤销是否存入数组 成功", 2);
-                    sheet.table.valid = null;
-                }
-                count2 += 1;
-            });
-
-            // step 6-1 再次按下
-            getRICIByMouseDown({msg: "step 6-1 再次按下按钮 成功"});
-        }, 3000);
-
-
-        let count = 0;
-        sheet.table.valid = new Vaild(() => {
-            if (count === 0) {
-                // step 2  双击按下单元格
-                pressCellByMouseDown({msg: "step 2  双击按下单元格 成功"});
-
-                sheet.editor.valid = new Vaild(() => {
-                    // step 3 在单元格中输入
-                    inputInCell({data: "=A1", msg: "step 3 在单元格中输入 成功"});
-                    sheet.editor.valid = null;
-
-                    sheet.editor.valid2 = new Vaild(() => {
-                        // step 4 按下回车是否存入
-                        pressEnterByMouseDown({msg: "step 4 按下回车是否存入 成功"});
-                        sheet.editor.valid2 = null;
-                    });
-                });
-            } else if (count === 1) {
-                // step 5 验证撤销是否存入
-                vaildUndo("step 5 验证撤销是否存入数组 成功");
-                sheet.table.valid = null;
-            }
-            count += 1;
-        });
+        // let count = 0;
+        // sheet.table.valid = new Vaild(() => {
+        //     if (count === 0) {
+        //         // step 2  双击按下单元格
+        //         pressCellByMouseDown({msg: "step 2  双击按下单元格 成功"});
+        //
+        //         sheet.editor.valid = new Vaild(() => {
+        //             // step 3 在单元格中输入
+        //             inputInCell({data: "=A1", msg: "step 3 在单元格中输入 成功"});
+        //             sheet.editor.valid = null;
+        //
+        //             sheet.editor.valid2 = new Vaild(() => {
+        //                 // step 4 按下回车是否存入
+        //                 pressEnterByMouseDown({msg: "step 4 按下回车是否存入 成功"});
+        //                 sheet.editor.valid2 = null;
+        //             });
+        //         });
+        //     } else if (count === 1) {
+        //         // step 5 验证撤销是否存入
+        //         vaildUndo("step 5 验证撤销是否存入数组 成功");
+        //         sheet.table.valid = null;
+        //     }
+        //     count += 1;
+        // });
 
         // step 1  先获取ri,ci 的位置
         getRICIByMouseDown({msg: 'step 1 按下鼠标 成功'});

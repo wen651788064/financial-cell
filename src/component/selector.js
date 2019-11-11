@@ -209,6 +209,8 @@ class SelectorElement {
         this.r.css("pointer-events", pointer);
         this.t.css("pointer-events", pointer);
         this.b.css("pointer-events", pointer);
+
+        this.cornerEl.css("pointer-events", pointer);
     }
 
     hide() {

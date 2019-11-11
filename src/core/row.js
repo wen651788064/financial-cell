@@ -485,7 +485,6 @@ class Rows {
             // if(isInsert && isHave(arr[i])) {
             //     arr[i] = arr[i].replace(/\$/, '');
             // }
-
             if (arr[i].search(/^[A-Z]+\d+$/) != -1) {
                 let ds = expr2xy(arr[i]);
                 if (ds[0] + dei < 0 || ds[1] + dci < 0) {
@@ -527,7 +526,7 @@ class Rows {
                 if (args.enter) {
                     s += args.data;
                 } else if (isInsert == false) {
-                    s += xy2expr(ds2[0] + dei, ds2[1] + dci) + ":";
+                    s += xy2expr(ds2[0] + dei, ds2[1] + dci);
                 } else {
                     s += a2;
                 }

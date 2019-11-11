@@ -344,13 +344,15 @@ function dropDown(e, isAutofillEl, selector, data, verticalScrollbar, rows, evt,
         }
 
     } else if (e.buttons === 1 && !e.shiftKey) {
-
+        ri = ri <= 0 ? 0 : ri;
+        ci = ci <= 0 ? 0 : ci;
         let cell = data.viewRange();
         let pos = cell.getMovePos(ri, ci);
 
         selectorBeyondMove.call(this, pos, verticalScrollbar, horizontalScrollbar, cols, rows, data);
 
-        selectorSet.call(this, true, ri <= 0 ? 0 : ri, ci <= 0 ? 0 : ci, true, true);
+        console.log("ri: ", ri, "ci: ", ci);
+        selectorSet.call(this, true, ri, ci, true, true);
     }
 }
 
