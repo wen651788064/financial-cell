@@ -1113,7 +1113,7 @@ function sheetInitEvents() {
                     clearSelectors.call(this);
                     editorSetOffset.call(this);
                 }
-
+                testValid.call(this);
                 console.timeEnd("dbclick time1");
 
             }

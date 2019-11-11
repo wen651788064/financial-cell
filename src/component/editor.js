@@ -16,6 +16,8 @@ import SuggestContent from './suggest_content';
 import {findBracket, suggestContent} from './formula_editor';
 import {createEvent} from './event';
 import EditorText from "./editor_text";
+import {testValid} from "../utils/test";
+import {isHave} from "../core/helper";
 
 function resetTextareaSize() {
     const {
@@ -66,6 +68,10 @@ function textFormat (e) {
 }
 
 const getCursortPosition = function (containerEl) {
+    let selection = window.getSelection();
+    if (selection.rangeCount <= 0) {
+        return 0;
+    }
     const range = window.getSelection().getRangeAt(0);
     const preSelectionRange = range.cloneRange();
     preSelectionRange.selectNodeContents(this.textEl.el);
@@ -201,7 +207,7 @@ function inputEventHandler(evt, txt = '', formulas = '', state = "input") {
             return;
         }
 
-        if (txt == '' && evt) {
+        if (txt == '' && evt && evt.target && evt.target.childNodes) {
             let t1 = '';
             for (let i = 0, len = evt.target.childNodes.length; i < len; i++) {
                 if (evt.target.childNodes[i].nodeType === 1) {
@@ -211,7 +217,9 @@ function inputEventHandler(evt, txt = '', formulas = '', state = "input") {
                 }
             }
             v = t1 !== '' ? t1 : v;
-        } else {
+        } else if(txt == '' && evt && isHave(evt.data)) {
+            v = evt.data !== '' ? evt.data : v;
+        } else{
             v = txt;
         }
 
@@ -276,7 +284,7 @@ function inputEventHandler(evt, txt = '', formulas = '', state = "input") {
             v = formulas;
         }
         this.change(state, v);
-
+        testValid.call(this, this.valid2);
         setTimeout(() => {
             this.show();
         });
@@ -789,6 +797,8 @@ export default class Editor {
             text: (cell && cell.text) || '',
             formulas: (cell && cell.formulas) || '',
         }, {ri: this.ri, ci: this.ci});
+
+        testValid.call(this);
         inputEventHandler.call(this, null, (cell && cell.text) || text, (cell && cell.formulas) || '', "end");
 
         setTimeout(() => {

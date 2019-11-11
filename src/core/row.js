@@ -185,13 +185,13 @@ class Rows {
         if (what === 'all') {
             row.cells[ci] = cell;
             if (isHave(cell.text)) {
-                row.cells[ci].value = cell.text;
+                // row.cells[ci].value = cell.text;
             }
             this.workbook.change(ri, ci, row.cells[ci], deepCopy(row.cells[ci]));
         } else if (what === 'text') {
             row.cells[ci] = row.cells[ci] || {};
             row.cells[ci].text = cell.text;
-            row.cells[ci].value = cell.text;
+            // row.cells[ci].value = cell.text;
             this.workbook.change(ri, ci, row.cells[ci], deepCopy(row.cells[ci]));
         } else if (what === 'format') {
             row.cells[ci] = row.cells[ci] || {};
@@ -211,7 +211,7 @@ class Rows {
             row.cells[ci].text = cell.text;
             row.cells[ci].style = cell.style;
             row.cells[ci].to_calc_num = cell.to_calc_num;
-            row.cells[ci].value = cell.value;
+            // row.cells[ci].value = cell.value;
         } else if (what === 'normal' || what === 'number') {
             // row.cells[ci] = {};
             if (!row.cells[ci]) {
@@ -222,7 +222,7 @@ class Rows {
             } else {
                 row.cells[ci].formulas = cell.formulas;
             }
-            row.cells[ci].value = cell.value;
+            // row.cells[ci].value = cell.value;
             row.cells[ci].text = cell.text;
             row.cells[ci].style = cell.style;
         } else if (what === 'rmb' || what === 'percent') {        // rmb 单独拿出来是因为 text是￥123, 而formalus不能是 ￥123,应该是123
@@ -230,15 +230,15 @@ class Rows {
                 row.cells[ci] = {}
             }
 
-            row.cells[ci].value = cell.value;
+            // row.cells[ci].value = cell.value;
             row.cells[ci].text = cell.text;
             row.cells[ci].formulas = cell.formulas;
             row.cells[ci].style = cell.style;
         } else if (what === 'all_with_no_workbook') {
             row.cells[ci] = cell;
-            if (isHave(cell.text)) {
-                row.cells[ci].value = cell.text;
-            }
+            // if (isHave(cell.text)) {
+            //     row.cells[ci].value = cell.text;
+            // }
             return;
         }
         // cell
@@ -339,7 +339,7 @@ class Rows {
             cell.formulas = formulas;
         } else {
             cell.formulas = text;
-            cell.value = text;
+            // cell.value = text;
         }
         cell.text = text;  // todo 自定义公式： text 为公式计算结果, formulas 为公式
         // this.recast(cell);
@@ -359,9 +359,7 @@ class Rows {
         cell.text = text;
         // cell
         this.getDependCell(xy2expr(ci, ri), this.getCell(ri, ci));
-        if (isHave(cell.value) === false) {
-            cell.value = cell.text;
-        }
+
         if (what !== 'date') {
             this.workbook.change(ri, ci, cell, deepCopy(cell));
         }
@@ -456,21 +454,51 @@ class Rows {
         return "";
     }
 
-    getCellTextByShift(arr, dei, dci, d = 0) {
+    getCellTextIsAdd(isInsert, sri, ds, isAdd, dei, dci, abs = 0, isRows) {
+        let enter = false;
+        let s = "";
+        if (isInsert) {
+            if (sri < ds[1] && isAdd && isRows) {
+                s = xy2expr(ds[0] + dei, ds[1] + dci, abs);
+                enter = true;
+            } else if (sri < ds[1] && !isAdd && isRows) {
+                s = xy2expr(ds[0] + dei, ds[1] + dci, abs);
+                enter = true;
+            } else if (sri <= ds[0] && isAdd && isRows === false) {
+                s = xy2expr(ds[0] + dei, ds[1] + dci, abs);
+                enter = true;
+            }
+        }
+
+        return {
+            "enter": enter,
+            "data": s,
+        }
+    }
+
+    getCellTextByShift(arr, dei, dci, isInsert = false, isAdd = false, sri = 0, isRows = false) {
         let bad = false;
         let enter = false;
         let newStr = "";
 
         for (let i = 0; i < arr.length; i++) {
+            // if(isInsert && isHave(arr[i])) {
+            //     arr[i] = arr[i].replace(/\$/, '');
+            // }
+
             if (arr[i].search(/^[A-Z]+\d+$/) != -1) {
                 let ds = expr2xy(arr[i]);
                 if (ds[0] + dei < 0 || ds[1] + dci < 0) {
                     bad = true;
                 }
-                if(d < ds[1]) {
+
+                let args = this.getCellTextIsAdd(isInsert, sri, ds, isAdd, dei, dci,0,  isRows);
+                if (args.enter) {
+                    arr[i] = args.data;
+                } else if (isInsert === false) {
                     arr[i] = xy2expr(ds[0] + dei, ds[1] + dci);
-                    enter = true;
                 }
+                enter = true;
             } else if (arr[i].search(/^[A-Za-z]+\d+:[A-Za-z]+\d+$/) != -1) {
                 let a1 = arr[i].split(":")[0];
                 let a2 = arr[i].split(":")[1];
@@ -484,8 +512,26 @@ class Rows {
                     bad = true;
                 }
 
-                let s = xy2expr(ds1[0] + dei, ds1[1] + dci) + ":";
-                s += xy2expr(ds2[0] + dei, ds2[1] + dci);
+                let s = "";
+
+                let args = this.getCellTextIsAdd(isInsert, sri, ds1, isAdd, dei, dci, 0, isRows);
+                if (args.enter) {
+                    s = args.data + ":";
+                } else if (isInsert == false) {
+                    s = xy2expr(ds1[0] + dei, ds1[1] + dci) + ":";
+                } else {
+                    s = a1 + ":";
+                }
+
+                args = this.getCellTextIsAdd(isInsert, sri, ds2, isAdd, dei, dci, 0, isRows);
+                if (args.enter) {
+                    s += args.data;
+                } else if (isInsert == false) {
+                    s += xy2expr(ds2[0] + dei, ds2[1] + dci) + ":";
+                } else {
+                    s += a2;
+                }
+
                 enter = true;
                 arr[i] = s;
             } else {
@@ -497,7 +543,12 @@ class Rows {
                         bad = true;
                     }
 
-                    arr[i] = xy2expr(ds[0] + dei, ds[1], 2);
+                    let args = this.getCellTextIsAdd(isInsert, sri, ds, isAdd, dei, dci, 2, isRows);
+                    if (args.enter) {
+                        arr[i] = args.data;
+                    } else if (isInsert === false) {
+                        arr[i] = xy2expr(ds[0] + dei, ds[1], 2);
+                    }
                     enter = true;
                 } else if (value === 1) {
                     let ds = expr2xy(arr[i].replace(/\$/g, ''));
@@ -505,7 +556,13 @@ class Rows {
                         bad = true;
                     }
 
-                    arr[i] = xy2expr(ds[0], ds[1] + dci, 1);
+                    let args = this.getCellTextIsAdd(isInsert, sri, ds, isAdd, dei, dci, 1, isRows);
+                    if (args.enter) {
+                        arr[i] = args.data;
+                    } else if (isInsert === false) {
+                        arr[i] = xy2expr(ds[0], ds[1] + dci, 1);
+                    }
+
                     enter = true;
                 } else if (value === 4) {
                     let sp = arr[i].split(":");
@@ -516,7 +573,12 @@ class Rows {
                             bad = true;
                         }
 
-                        sp[item] = xy2expr(ds[0] + dei, ds[1], 2);
+                        let args = this.getCellTextIsAdd(isInsert, sri, ds, isAdd, dei, dci, 2, isRows);
+                        if (args.enter) {
+                            sp[item] = args.data;
+                        } else if (isInsert === false) {
+                            sp[item] = xy2expr(ds[0] + dei, ds[1], 2);
+                        }
                     }
                     arr[i] = sp.join(':');
                     enter = true;
@@ -528,9 +590,19 @@ class Rows {
                             bad = true;
                         }
                         if (item === 1) {
-                            sp[item] = xy2expr(ds[0], ds[1] + dci, 1);
+                            let args = this.getCellTextIsAdd(isInsert, sri, ds, isAdd, dei, dci, 1, isRows);
+                            if (args.enter) {
+                                sp[item] = args.data;
+                            } else if (isInsert === false) {
+                                sp[item] = xy2expr(ds[0], ds[1] + dci, 1);
+                            }
                         } else {
-                            sp[item] = xy2expr(ds[0] + dei, ds[1], 2);
+                            let args = this.getCellTextIsAdd(isInsert, sri, ds, isAdd, dei, dci, 2, isRows);
+                            if (args.enter) {
+                                sp[item] = args.data;
+                            } else if (isInsert === false) {
+                                sp[item] = xy2expr(ds[0], ds[1] + dci, 2);
+                            }
                         }
                     }
                     arr[i] = sp.join(':');
@@ -542,7 +614,12 @@ class Rows {
                         if (ds[0] + dei < 0 || ds[1] + dci < 0) {
                             bad = true;
                         }
-                        sp[item] = xy2expr(ds[0], ds[1] + dci, 1);
+                        let args = this.getCellTextIsAdd(isInsert, sri, ds, isAdd, dei, dci, 1, isRows);
+                        if (args.enter) {
+                            sp[item] = args.data;
+                        } else if (isInsert === false) {
+                            sp[item] = xy2expr(ds[0], ds[1] + dci, 1);
+                        }
                     }
                     arr[i] = sp.join(':');
                     enter = true;
@@ -554,9 +631,19 @@ class Rows {
                             bad = true;
                         }
                         if (item === 0) {
-                            sp[item] = xy2expr(ds[0], ds[1] + dci, 1);
+                            let args = this.getCellTextIsAdd(isInsert, sri, ds, isAdd, dei, dci, 1, isRows);
+                            if (args.enter) {
+                                sp[item] = args.data;
+                            } else if (isInsert === false) {
+                                sp[item] = xy2expr(ds[0], ds[1] + dci, 1);
+                            }
                         } else {
-                            sp[item] = xy2expr(ds[0] + dei, ds[1], 2);
+                            let args = this.getCellTextIsAdd(isInsert, sri, ds, isAdd, dei, dci, 2, isRows);
+                            if (args.enter) {
+                                sp[item] = args.data;
+                            } else if (isInsert === false) {
+                                sp[item] = xy2expr(ds[0] + dei, ds[1], 2);
+                            }
                         }
                     }
                     arr[i] = sp.join(':');
@@ -570,9 +657,19 @@ class Rows {
                         }
 
                         if (item === 0) {
-                            sp[item] = xy2expr(ds[0] + dei, ds[1] + dci, 0);
+                            let args = this.getCellTextIsAdd(isInsert, sri, ds, isAdd, dei, dci, 0, isRows);
+                            if (args.enter) {
+                                sp[item] = args.data;
+                            } else if (isInsert === false) {
+                                sp[item] = xy2expr(ds[0] + dei, ds[1] + dci, 0);
+                            }
                         } else {
-                            sp[item] = xy2expr(ds[0] + dei, ds[1], 1);
+                            let args = this.getCellTextIsAdd(isInsert, sri, ds, isAdd, dei, dci, 1, isRows);
+                            if (args.enter) {
+                                sp[item] = args.data;
+                            } else if (isInsert === false) {
+                                sp[item] = xy2expr(ds[0] + dei, ds[1], 1);
+                            }
                         }
                     }
                     arr[i] = sp.join(':');
@@ -586,9 +683,20 @@ class Rows {
                         }
 
                         if (item === 0) {
-                            sp[item] = xy2expr(ds[0] + dei, ds[1] + dci, 0);
+                            let args = this.getCellTextIsAdd(isInsert, sri, ds, isAdd, dei, dci, 1, isRows);
+                            if (args.enter) {
+                                sp[item] = args.data;
+                            } else if (isInsert === false) {
+                                sp[item] = xy2expr(ds[0] + dei, ds[1] + dci, 0);
+                            }
+
                         } else {
-                            sp[item] = xy2expr(ds[0] + dei, ds[1], 2);
+                            let args = this.getCellTextIsAdd(isInsert, sri, ds, isAdd, dei, dci, 2, isRows);
+                            if (args.enter) {
+                                sp[item] = args.data;
+                            } else if (isInsert === false) {
+                                sp[item] = xy2expr(ds[0] + dei, ds[1], 2);
+                            }
                         }
                     }
                     arr[i] = sp.join(':');
@@ -602,9 +710,19 @@ class Rows {
                         }
 
                         if (item === 1) {
-                            sp[item] = xy2expr(ds[0] + dei, ds[1] + dci, 0);
+                            let args = this.getCellTextIsAdd(isInsert, sri, ds, isAdd, dei, dci, 0, isRows);
+                            if (args.enter) {
+                                sp[item] = args.data;
+                            } else if (isInsert === false) {
+                                sp[item] = xy2expr(ds[0] + dei, ds[1] + dci, 0);
+                            }
                         } else {
-                            sp[item] = xy2expr(ds[0] + dei, ds[1], 2);
+                            let args = this.getCellTextIsAdd(isInsert, sri, ds, isAdd, dei, dci, 2, isRows);
+                            if (args.enter) {
+                                sp[item] = args.data;
+                            } else if (isInsert === false) {
+                                sp[item] = xy2expr(ds[0] + dei, ds[1], 2);
+                            }
                         }
                     }
                     arr[i] = sp.join(':');
@@ -618,9 +736,19 @@ class Rows {
                         }
 
                         if (item === 1) {
-                            sp[item] = xy2expr(ds[0] + dei, ds[1] + dci, 0);
+                            let args = this.getCellTextIsAdd(isInsert, sri, ds, isAdd, dei, dci, 0, isRows);
+                            if (args.enter) {
+                                sp[item] = args.data;
+                            } else if (isInsert === false) {
+                                sp[item] = xy2expr(ds[0] + dei, ds[1] + dci, 0);
+                            }
                         } else {
-                            sp[item] = xy2expr(ds[0] + dei, ds[1], 1);
+                            let args = this.getCellTextIsAdd(isInsert, sri, ds, isAdd, dei, dci, 1, isRows);
+                            if (args.enter) {
+                                sp[item] = args.data;
+                            } else if (isInsert === false) {
+                                sp[item] = xy2expr(ds[0] + dei, ds[1], 1);
+                            }
                         }
                     }
                     arr[i] = sp.join(':');
@@ -956,7 +1084,7 @@ class Rows {
                 nri += n;
                 this.eachCells(ri, (ci, cell) => {
                     if (isHave(cell) && isHave(cell.formulas) && this.isFormula(cell.formulas)) {
-                        let {bad, result, enter} = this.getCellTextByShift(splitStr(cell.formulas), 0, n,  sri);
+                        let {bad, result, enter} = this.getCellTextByShift(splitStr(cell.formulas), 0, n, true, true, sri, true);
                         if (enter && !bad) {
                             cells.push({ri: nri, ci: ci, cell: {text: result, formulas: result}});
                         }
@@ -978,30 +1106,57 @@ class Rows {
     delete(sri, eri) {
         const n = eri - sri + 1;
         const ndata = {};
+        let cells = [];
         this.each((ri, row) => {
             const nri = parseInt(ri, 10);
             if (nri < sri) {
                 ndata[nri] = row;
             } else if (ri > eri) {
                 ndata[nri - n] = row;
+
+                this.eachCells(ri, (ci, cell) => {
+                    if (isHave(cell) && isHave(cell.formulas) && this.isFormula(cell.formulas)) {
+                        let {bad, result, enter} = this.getCellTextByShift(splitStr(cell.formulas), 0, n * -1, true, false, sri, true);
+                        if (enter && !bad) {
+                            cells.push({ri: nri - n, ci: ci, cell: {text: result, formulas: result}});
+                        }
+                    }
+                });
             }
         });
         this._ = ndata;
+        for (let i = 0; i < cells.length; i++) {
+            let {ri, ci, cell} = cells[i];
+            this.setCell(ri, ci, cell, 'all');
+        }
         this.len -= n;
     }
 
     insertColumn(sci, n = 1) {
+        let cells = [];
         this.each((ri, row) => {
             const rndata = {};
             this.eachCells(ri, (ci, cell) => {
                 let nci = parseInt(ci, 10);
                 if (nci >= sci) {
                     nci += n;
+
+                    if (isHave(cell) && isHave(cell.formulas) && this.isFormula(cell.formulas)) {
+                        let {bad, result, enter} = this.getCellTextByShift(splitStr(cell.formulas),  n, 0,  true, true, sci, false);
+                        if (enter && !bad) {
+                            cells.push({ri: ri, ci: nci, cell: {text: result, formulas: result}});
+                        }
+                    }
                 }
                 rndata[nci] = cell;
             });
             row.cells = rndata;
         });
+
+        for (let i = 0; i < cells.length; i++) {
+            let {ri, ci, cell} = cells[i];
+            this.setCell(ri, ci, cell, 'all');
+        }
     }
 
     deleteColumn(sci, eci) {

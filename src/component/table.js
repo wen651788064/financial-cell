@@ -604,7 +604,7 @@ class Table {
         } else if (!nc.value) {
             workbook = tempData;
         }
-        testValid.call(this);
+
         this.draw.resize(data.viewWidth(), data.viewHeight());
 
         const tx = data.freezeTotalWidth();
@@ -654,6 +654,7 @@ class Table {
             // 5
             renderFreezeHighlightLine.call(this, fw, fh, tx, ty);
         }
+        testValid.call(this);
     }
 
     clear() {

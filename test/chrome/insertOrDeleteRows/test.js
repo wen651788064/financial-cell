@@ -1,12 +1,12 @@
-import DataProxy from "../../src/core/data_proxy";
-import Sheet from "../../src/component/sheet";
-import {h} from "../../src/component/element";
-import {cssPrefix} from "../../src/config";
-import CellRange from "../../src/core/cell_range";
-import {sheetCopy} from "../../src/event/copy";
-import {bugout} from "../../src/log/log_proxy";
-import {GetInfoFromTable} from "../../src/event/paste";
-import {simulateMouseEvent} from "../util/event";
+import Vaild from "../../util/valid";
+import Sheet from "../../../src/component/sheet";
+import {simulateMouseEvent} from "../../util/event";
+import DataProxy from "../../../src/core/data_proxy";
+import {cssPrefix} from "../../../src/config";
+import {bugout} from "../../../src/log/log_proxy";
+import {h} from "../../../src/component/element";
+import CellRange from "../../../src/core/cell_range";
+import {consoleSuccess} from "../../util/utils";
 
 let assert = require('assert');
 /*
@@ -151,45 +151,20 @@ describe("hexColorLuminance", function () {
     sheet.toolbar.change('close', '');
     data.rows.setData(rows1, sheet, false, true);
 
-    it("sheetCopy/paste test", function () {
-        data.selector.range = new CellRange(0, 0, 6, 6);
-        let args = sheetCopy.call(sheet);
+    it('rows/cols', function () {
+        console.log("插入单元格行");
+        assert.equal(data.rows.len, "100");
+        let {contextMenu} = sheet;
+        let ev = simulateMouseEvent('click');
+        contextMenu.menus[3].el.dispatchEvent(ev);
+        assert.equal(data.rows.len, "101");
 
-        data.selector.ri = 1;
-        data.selector.ci = 1;
-        GetInfoFromTable.call(sheet, args.html.el);
+        console.log("插入单元格列");
+        contextMenu.menus[4].el.dispatchEvent(ev);
+        assert.equal(data.cols.len, "27");
 
-
-        let cell1 = data.rows.getCell(1, 1);
-        let cell2 = data.rows.getCell(1, 4);
-        let cell3 = data.rows.getCell(1, 7);
-        let cell4 = data.rows.getCell(4, 3);
-        let cell5 = data.rows.getCell(4, 8);
-        let cell6 = data.rows.getCell(7, 4);
-        let cell7 = data.rows.getCell(6, 5);
-        let cell8 = data.rows.getCell(4, 7);
-
-        assert.equal(cell1.text, "80523");
-        assert.equal(cell1.formulas, "80523");
-        assert.equal(cell2.text, "26939");
-        assert.equal(cell2.formulas, "26939");
-        assert.equal(cell3.text, "92343");
-        assert.equal(cell3.formulas, "92343");
-        assert.equal(cell4.text, "=37872");
-        assert.equal(cell4.formulas, "=37872");
-        assert.equal(cell5.text, "0");
-        assert.equal(cell5.formulas, "=$H$11");
-        assert.equal(cell6.text, "=ADD(B2+B4, 3)");
-        assert.equal(cell6.formulas, "=ADD(B2+B4, 3)");
-        assert.equal(cell7.text, "=B9+B6");
-        assert.equal(cell7.formulas, "=B9+B6");
-        assert.equal(cell8.text, "=ADD($A2:$A3) + 2 + B3");
-        assert.equal(cell8.formulas, "=ADD($A2:$A3) + 2 + B3");
-
-        console.log('copy/paste success');
+        console.log("success"); // todo: 数值
     });
-
-
 
 });
 

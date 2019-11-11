@@ -3,11 +3,10 @@ module.exports = function (config) {
     config.set({
 
         files: [
-            // all files ending in "test"
-
             // 'test/chrome/**'
-            'test/chrome/autofill/auto_fill_test2.js'
-            // each file acts as entry point for the webpack configuration
+            "test/chrome/action/test.js",
+            // 'test/chrome/chrome__test.js',
+            // 'test/chrome/autofill/auto_fill_test2.js'
         ],
 
         // frameworks to use

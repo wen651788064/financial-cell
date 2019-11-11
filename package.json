@@ -28,6 +28,7 @@
     "build": "webpack --config build/webpack.prod.js",
     "build-locale": "webpack --config build/webpack.locale.js",
     "lint": "./node_modules/eslint/bin/eslint.js src",
+    "karma": "karma start",
     "test": "nyc ./node_modules/mocha/bin/mocha --require @babel/register test/*",
     "format_test": "nyc ./node_modules/mocha/bin/mocha --require @babel/register test/core/format_test.js",
     "chrome_test": "node /Users/wen/Downloads/karma-webpack-example/node_modules/karma/bin/karma start --single-run --browsers PhantomJS --require css-loader",

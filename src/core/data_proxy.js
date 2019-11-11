@@ -316,6 +316,13 @@ function setStyleBorders({mode, style, color}) {
             return;
         }
     }
+
+    for (let ri = sri; ri <= eri; ri += 1) {
+        for (let ci = sci; ci <= eci; ci += 1) {
+            setStyleBorder.call(this, ri, ci, {});
+        }
+    }
+
     if (mode === 'outside' && !multiple) {
         setStyleBorder.call(this, sri, sci, {
             top: [style, color], bottom: [style, color], left: [style, color], right: [style, color],
@@ -374,7 +381,7 @@ function setStyleBorders({mode, style, color}) {
                 } else if (mode === 'horizontal') {
                     if (!mrl && ri < eri) bss.bottom = [style, color];
                 } else if (mode === 'vertical') {
-                    if (!mcl && ci < eci) bss.right = [style, color];
+                    if (!mcl && ci <= eci) bss.right = [style, color];
                 } else if (mode === 'outside' && multiple) {
                     if (sri === ri) bss.top = [style, color];
                     if (mrl || eri === ri) bss.bottom = [style, color];

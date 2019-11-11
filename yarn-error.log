@@ -1,5 +1,5 @@
 Arguments: 
-  /usr/local/bin/node /usr/local/lib/node_modules/yarn/bin/yarn.js run dev
+  /usr/local/bin/node /usr/local/bin/yarn karma
 
 PATH: 
   /anaconda3/bin:/anaconda3/condabin:/opt/local/bin:/opt/local/sbin:/usr/local/mongodb/bin:/Users/wen/Downloads/apache-maven-3.5.2/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/go/bin:/Applications/Wireshark.app/Contents/MacOS:/Users/wen/apache-tomcat-9.0.0-2.M26/bin:/usr/local/bin/:/usr/local/mysql/bin:/usr/local/bin/git:/usr/local/share/scala-2.13.0-M2/bin:/Users/wen/Desktop/go/repository/bin
@@ -14,7 +14,7 @@ Platform:
   darwin x64
 
 Trace: 
-  SyntaxError: /Users/wen/Desktop/work/ss/x-spreadsheet/package.json: Unexpected token / in JSON at position 920
+  SyntaxError: /Users/wen/Desktop/work/ss/x-spreadsheet/package.json: Unexpected token / in JSON at position 840
       at JSON.parse (<anonymous>)
       at /usr/local/lib/node_modules/yarn/lib/cli.js:1625:59
       at Generator.next (<anonymous>)
@@ -52,9 +52,10 @@ npm manifest:
       "build": "webpack --config build/webpack.prod.js",
       "build-locale": "webpack --config build/webpack.locale.js",
       "lint": "./node_modules/eslint/bin/eslint.js src",
-      "test": "nyc ./node_modules/mocha/bin/mocha --require @babel/register test/*",
+      "karma": "karma start",
+      "test": "nyc ./node_modules/mocha/bin/mocha --require @babel/register test/*", // todo: 加入我们自己的测试用例。之后每天上线前，测一下。
       "format_test": "nyc ./node_modules/mocha/bin/mocha --require @babel/register test/core/format_test.js",
-  //    "chrome_test": "node ./node_modules/karma/bin/karma start --single-run --browsers PhantomJS",
+      "chrome_test": "node /Users/wen/Downloads/karma-webpack-example/node_modules/karma/bin/karma start --single-run --browsers PhantomJS --require css-loader",
       "selectors_test": "nyc ./node_modules/mocha/bin/mocha --require @babel/register test/core/selectors_test.js",
       "errorPop_test": "nyc  ./node_modules/mocha/bin/mocha   --require @babel/register --require css-loader test/core/errorPop_test.js",
       "cell_proxy_test": "nyc  ./node_modules/mocha/bin/mocha   --require @babel/register --require css-loader test/core/cell_proxy_test.js",
