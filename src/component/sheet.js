@@ -348,10 +348,9 @@ function dropDown(e, isAutofillEl, selector, data, verticalScrollbar, rows, evt,
         let cell = data.viewRange();
         let pos = cell.getMovePos(ri, ci);
 
-        console.log("pos: ", pos);
         selectorBeyondMove.call(this, pos, verticalScrollbar, horizontalScrollbar, cols, rows, data);
 
-        selectorSet.call(this, true, ri, ci, true, true);
+        selectorSet.call(this, true, ri <= 0 ? 0 : ri, ci <= 0 ? 0 : ci, true, true);
     }
 }
 
