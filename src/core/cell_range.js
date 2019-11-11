@@ -137,6 +137,31 @@ class CellRange {
             && other.sci <= this.eci;
     }
 
+    getMovePos(ri, ci) {
+        let {sri, sci, eri, eci} = this;
+
+        let pos = 0;
+        if (ri > eri && ci > eci) {
+            pos = 1;        // 往下往右
+        } else if(ri > eri && ci < sci) {
+            pos = 7;        // 往下往左
+        } else if(ri < sri && ci > eci) {
+            pos = 8;        // 往上往右
+        } else if(ci < sci && ri < sri) {
+            pos = 4;        // 往上往左
+        } else if(ri > eri) {
+            pos = 2;        // 往下
+        } else if(ci > eci) {
+            pos = 3;        // 往右
+        }  else if(ci < sci) {
+            pos = 5;        // 往左
+        } else if(ri < sri) {
+            pos = 6;        // 往上
+        }
+
+        return pos;
+    }
+
     // union
     union(other) {
         const {
@@ -253,7 +278,7 @@ class CellRange {
         let darr = [];
         let index = 0;
         this.each((i, j) => {
-            darr.push({ri: i, ci: j, v: sarr[index % sarr.length ].tmp, type: sarr[index % sarr.length].type});
+            darr.push({ri: i, ci: j, v: sarr[index % sarr.length].tmp, type: sarr[index % sarr.length].type});
             index = index + 1;
         });
 

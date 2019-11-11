@@ -330,7 +330,7 @@ function getPoint(obj) { //获取某元素以浏览器左上角为原点的坐�
 function dropDown(e, isAutofillEl, selector, data, verticalScrollbar, rows, evt, pos = 0, offset, horizontalScrollbar, cols) {
     this.selector.setBoxinner("none");
     this.container.css('pointer-events', 'none');
-    let dstRect = data.getCellRectByXY(e.layerX || e.clientX , e.layerY || e.clientY);
+    let dstRect = data.getCellRectByXYWithNotTotalResult(e.layerX || e.clientX, e.layerY || e.clientY);
     let {ri, ci} = dstRect;
 
     if (isAutofillEl) {
@@ -344,11 +344,17 @@ function dropDown(e, isAutofillEl, selector, data, verticalScrollbar, rows, evt,
         }
 
     } else if (e.buttons === 1 && !e.shiftKey) {
-        // let {rpos, ey, ex, } = dropGetPos.call(this, data, selector, verticalScrollbar, horizontalScrollbar, offset, e, rows, cols, ri, ci, pos);
-        // console.log(rpos, ey, ex);
+
+        let cell = data.viewRange();
+        let pos = cell.getMovePos(ri, ci);
+
+        console.log("pos: ", pos);
+        selectorBeyondMove.call(this, pos, verticalScrollbar, horizontalScrollbar, cols, rows, data);
+
         selectorSet.call(this, true, ri, ci, true, true);
     }
 }
+
 
 function dropGetPos(data, selector, verticalScrollbar, horizontalScrollbar, offset, e, rows, cols, ri, ci, pos) {
     let rect = data.getRect(selector.range);
@@ -370,6 +376,56 @@ function dropGetPos(data, selector, verticalScrollbar, horizontalScrollbar, offs
         ex,
         ey
     };
+}
+
+function selectorBeyondMove(orien, verticalScrollbar, horizontalScrollbar, cols, rows, data) {
+    if (orien === 2) {   //往下
+        scrollTo.call(this, 1, verticalScrollbar, horizontalScrollbar, rows, data, cols);
+    } else if(orien === 6) {    // 往上
+        scrollTo.call(this, 2, verticalScrollbar, horizontalScrollbar, rows, data, cols);
+    } else if(orien === 3) {        //往右
+        scrollTo.call(this, 4, verticalScrollbar, horizontalScrollbar, rows, data, cols);
+    } else if(orien === 5) {    // 往左
+        scrollTo.call(this, 3, verticalScrollbar, horizontalScrollbar, rows, data, cols);
+    } else if(orien === 1) { // 往下往右
+        scrollTo.call(this, 1, verticalScrollbar, horizontalScrollbar, rows, data, cols);
+        scrollTo.call(this, 4, verticalScrollbar, horizontalScrollbar, rows, data, cols);
+    } else if(orien === 7) {         // 往下往左
+        scrollTo.call(this, 1, verticalScrollbar, horizontalScrollbar, rows, data, cols);
+        scrollTo.call(this, 3, verticalScrollbar, horizontalScrollbar, rows, data, cols);
+    } else if(orien === 8) {     // 往上往右
+        scrollTo.call(this, 2, verticalScrollbar, horizontalScrollbar, rows, data, cols);
+        scrollTo.call(this, 4, verticalScrollbar, horizontalScrollbar, rows, data, cols);
+    } else if(orien === 4) {       // 往上往左
+        scrollTo.call(this, 2, verticalScrollbar, horizontalScrollbar, rows, data, cols);
+        scrollTo.call(this, 3, verticalScrollbar, horizontalScrollbar, rows, data, cols);
+    }
+}
+
+function scrollTo(orien, verticalScrollbar, horizontalScrollbar, rows, data, cols) {
+    if(Math.round(Math.random()) !== 1) {
+        return;
+    }
+    // 1 下 2 上 3左 4 右
+    let ri = 0, ci = 0;
+    if (orien === 1) {   //往下
+        const {top} = verticalScrollbar.scroll();  // 可见视图上边缘距离toolbar的像素
+        ri = data.scroll.ri + 1;
+        verticalScrollbar.move({top: top + rows.getHeight(ri) - 1});
+    } else if(orien === 2) {
+        const {top} = verticalScrollbar.scroll();
+        ri = data.scroll.ri - 1;
+
+        verticalScrollbar.move({top: ri === 0 ? 0 : top - rows.getHeight(ri)});
+    } else if(orien === 4) {        //往右
+        const {left} = horizontalScrollbar.scroll();
+        ci = data.scroll.ci + 1;
+        horizontalScrollbar.move({left: left + cols.getWidth(ci)});
+    } else if(orien === 3) {
+        const {left} = horizontalScrollbar.scroll();
+        ci = data.scroll.ci - 1;
+        horizontalScrollbar.move({left: left - cols.getWidth(ci)});
+    }
 }
 
 function continueMove(orien, verticalScrollbar, horizontalScrollbar, cols, rows, data) {

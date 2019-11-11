@@ -565,6 +565,39 @@ describe('qq', () => {
 
     });
 
+    describe(' range move pos ', () => {
+        it('  getMovePos  ', function () {
+            let cell = new CellRange(10, 10, 24, 20);
+            let pos = cell.getMovePos(29, 20);
+            assert.equal(pos, 2);       // 往下
+
+            pos = cell.getMovePos(1, 3);
+            assert.equal(pos, 4);       // 往上往左
+
+            pos = cell.getMovePos(1, 20);
+            assert.equal(pos, 6);       // 往上
+
+            pos = cell.getMovePos(30, 20);
+            assert.equal(pos, 2);       // 往下
+
+            pos = cell.getMovePos(10, 0);
+            assert.equal(pos, 5);       // 往左
+
+            pos = cell.getMovePos(10, 30);
+            assert.equal(pos, 3);       // 往右
+
+            pos = cell.getMovePos(25, 8);
+            assert.equal(pos, 7);       // 往下往左
+
+            pos = cell.getMovePos(9, 30);
+            assert.equal(pos, 8);        // 往上往右
+        });
+
+        it('  getCellRowByAbsY  ', function () {
+            data.getCellRowByAbsY();
+        });
+    });
+
     describe('  recast  ', () => {
         it(' =() recast', function () {
             let recast = new Recast('=()');
