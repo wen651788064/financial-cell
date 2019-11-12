@@ -6,7 +6,7 @@ __pycache__/
 .nyc_output/
 # C extensions
 *.so
-src/xlsx-calc/
+src/xlsx-calc/*
 # Distribution / packaging
 .Python
 env/
