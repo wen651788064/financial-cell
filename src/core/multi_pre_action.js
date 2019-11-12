@@ -24,10 +24,11 @@ export default class MultiPreAction {
                 break;
             case 2:
             case 5:
+            case 11:
             case 6:
                 preAction = new PreAction({
                     type,
-                    action, cellRange, cells
+                    action, cellRange, cells, oldCell
                 });
                 this.undoItems.push(preAction);
                 this.redoItems = [];
@@ -52,7 +53,7 @@ export default class MultiPreAction {
         testValid.call(this);
     }
 
-    getStepType(type, {ri, ci, expr, text, range, cellRange}) {
+    getStepType(type, {ri, ci, expr, text, range, cellRange, property, value}) {
         let str = "";
         let {rows, cols} = this.data;
         // let cells = [];
@@ -98,7 +99,7 @@ export default class MultiPreAction {
                     ci: ci
                 };
                 break;
-              case 5:
+            case 5:
                 str = '自动填充';
                 return {
                     action: str,
@@ -107,8 +108,46 @@ export default class MultiPreAction {
                     cells: this.eachRange(cellRange),
                 };
                 break;
-                case 6:
-                    str = '粘贴';
+            case 11:
+                if(property === 'font-bold' || property === 'font-italic'
+                    || property === 'font-name' || property === 'font-size' || property === 'color') {
+                    str = "字体";
+                } else if(property === 'underline') {
+                    str = "下划线";
+                } else if(property === 'bgcolor' || property === 'format') {
+                    str = "单元格格式";
+                } else if(property === 'align' ) {
+                    if(value === 'left') {
+                        str = "左对齐";
+                    } else if(value === 'center'){
+                        str = "居中";
+                    } else if(value === 'right') {
+                        str = "右对齐";
+                    }
+                } else if(property === 'valign') {
+                    if(value === 'top') {
+                        str = "顶端对齐";
+                    }else if(value === 'center'){
+                        str = "居中";
+                    } else if(value === 'bottom') {
+                        str = "底端对齐";
+                    }
+                } else if(property === 'border') {
+                    str = "边框";
+                } else if(property === 'strike') {
+                    str = "删除线";
+                }
+
+                return {
+                    action: str,
+                    type,
+                    cellRange: range,
+                    cells: this.eachRange(cellRange),
+
+                };
+                break;
+            case 6:
+                str = '粘贴';
                 return {
                     action: str,
                     type,
@@ -130,25 +169,25 @@ export default class MultiPreAction {
     }
 
     eachRange(range) {
-       let cells = [];
-       let {rows} = this.data;
-       range.each((i, j) => {
-          let cell = rows.getCell(i, j);
-          if(isHave(cell)) {
-              cell = deepCopy(cell);
-          } else cell = {};
-          cells.push({
-              ri: i,
-              ci: j,
-              cell: cell
-          });
-      });
-       return cells;
+        let cells = [];
+        let {rows} = this.data;
+        range.each((i, j) => {
+            let cell = rows.getCell(i, j);
+            if (isHave(cell)) {
+                cell = deepCopy(cell);
+            } else cell = {};
+            cells.push({
+                ri: i,
+                ci: j,
+                cell: cell
+            });
+        });
+        return cells;
     }
 
     // todo: actionItems,actionType
     // todo: 所有的历史操作对应MultiPreAction, 单个历史操作 PreAction  单个叫xxx, 多个multixxx
-    does(actionItems,  actionType)  {
+    does(actionItems, actionType) {
         if (!this.data.settings.showEditor) {
             return;
         }

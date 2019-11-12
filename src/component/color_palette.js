@@ -24,11 +24,14 @@ export function selectorColor(index) {
 const standardColors = ['#c00000', '#fe0000', '#fdc101', '#ffff01', '#93d051', '#00b04e', '#01b0f1', '#0170c1', '#012060', '#7030a0'];
 
 function buildTd(bgcolor) {
-    return h('td', '').child(
-        h('div', `${cssPrefix}-color-palette-cell`)
-            .on('click.stop', () => this.change(bgcolor))
-            .css('background-color', bgcolor),
+    let item = h('div', `${cssPrefix}-color-palette-cell`)
+        .on('click.stop', () => this.change(bgcolor))
+        .css('background-color', bgcolor);
+
+    this.items.push(
+        item
     );
+    return h('td', '').child(item);
 }
 
 export default class ColorPalette {
@@ -36,6 +39,7 @@ export default class ColorPalette {
         this.el = h('div', `${cssPrefix}-color-palette`);
         this.change = () => {
         };
+        this.items = [];
         const table = h('table', '').children(
             h('tbody', '').children(
                 h('tr', `${cssPrefix}-theme-color-placeholders`).children(

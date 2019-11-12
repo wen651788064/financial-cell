@@ -4,7 +4,7 @@ import {isHave} from "./helper";
 
 export default class WorkBook {
     constructor() {
-         this.workbook = "";
+        this.workbook = "";
         this.name = "";
 
         this.need_calc = false;
@@ -16,7 +16,7 @@ export default class WorkBook {
 
     init(_, data, proxy, table) {
         this.workbook = [];
-         this.workbook.Sheets = {};
+        this.workbook.Sheets = {};
         this.workbook.Sheets[data.name] = {};
 
         this.name = data.name;
@@ -34,7 +34,7 @@ export default class WorkBook {
         }, mri, mci);
     }
 
-    setWorkBook(  workbook) {
+    setWorkBook(workbook) {
         this.workbook = workbook;
     }
 
@@ -70,7 +70,7 @@ export default class WorkBook {
     }
 
     isDataEmpty() {
-        let {data } = this;
+        let {data} = this;
         if (typeof data === 'string') { // todo: if this.isDataEmpty():{ return}
             return false;
         }
@@ -85,7 +85,7 @@ export default class WorkBook {
 
     change(ri, ci, cell, deep_cell, what = 'input') {
         let expr = xy2expr(ci, ri);
-        let {data,  table} = this;
+        let {data, table} = this;
 
         if (this.isDataEmpty() === false) {
             return;
@@ -134,6 +134,9 @@ export default class WorkBook {
         if (empty === false) {
             if (isHave(cell.depend) && cell.depend.length > 0) {
                 this.contextualArr.push(...cell.depend);
+                this.calcNeedCalcBool(true);
+            } else if (isHave(cell.multivalueRefsCell)) {
+                this.contextualArr.push(expr);
                 this.calcNeedCalcBool(true);
             }
         }

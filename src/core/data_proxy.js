@@ -455,10 +455,10 @@ function getCellRowByAbsY(scrollOffsety) {
         }
     }
 
-    if(ri <= 0) {
+    if (ri <= 0) {
         ri = 0;
     }
-    if(height <= 0) {
+    if (height <= 0) {
         height = 0;
     }
 
@@ -990,7 +990,7 @@ export default class DataProxy {
                     }
                 });
             }
-        });
+        }, {type: 11, cellRange: this.selector.range, property, value});
     }
 
     // state: input | finished
@@ -1037,7 +1037,7 @@ export default class DataProxy {
         }
     }
 
-    changeToHistory({ri, type, ci, cellRange}) {
+    changeToHistory({ri, type, ci, cellRange, property, value, oldCell}) {
         if (type === -1) {
             return {"state": false,}
         }
@@ -1045,8 +1045,8 @@ export default class DataProxy {
         let {multiPreAction} = this;
         const {selector} = this;
 
-        let step = multiPreAction.getStepType(type, {expr: '', range: selector.range, ri, ci, cellRange: cellRange});
-        multiPreAction.addStep(step, {});
+        let step = multiPreAction.getStepType(type, {expr: '', property, value,oldCell, range: selector.range, ri, ci, cellRange: cellRange});
+        multiPreAction.addStep(step, {oldCell});
         return {
             "state": true
         }
@@ -1741,14 +1741,18 @@ export default class DataProxy {
     //
     // }
 
-    changeData(cb, {type = -1, ri = -1, ci = -1, cellRange = ""} = -1) {
+    changeData(cb, {type = -1, ri = -1, ci = -1, cellRange = "", property = "", value = ""} = -1) {
         if (this.settings.showEditor === false) {
             return;
         }
 
-        this.changeToHistory({type, ri, ci, cellRange});
-        // this.history.add(this.getData());
+        let oldCell = {};
+        if(cellRange !== "") {
+            let {multiPreAction} = this;
+            oldCell = multiPreAction.eachRange(cellRange);
+        }
         cb();
+        this.changeToHistory({type, ri, ci, cellRange, property, value, oldCell});
         this.change(this.getData());
     }
 

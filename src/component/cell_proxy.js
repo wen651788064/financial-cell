@@ -2,8 +2,7 @@ import {contain, deepCopy, division, getSheetVale, isSheetVale} from "../core/op
 import {expr2xy, xy2expr} from "../core/alphabet";
 // import Worker from 'worker-loader!../external/Worker.js';
 import {filterFormula} from "../config";
-import {toUpperCase} from "./table";
-import {find} from "../core/helper";
+import {find, isHave} from "../core/helper";
 import {multipleCellsRender, specialWebsiteValue} from "./special_formula_process";
 import {textReplace} from "./context_process";
 
@@ -45,10 +44,14 @@ export default class CellProxy {
 
     // concat的主要作用是把计算出来的公式填入到olddata中，然后返回出去
     // 因为在前面有一步， 把不是此次change的公式都主动设置为""了，所以不能以此为基准。
-    concat(name, workbook) {
+    concat(name, workbook, tileArr) {
         Object.keys(workbook.Sheets[name]).forEach(i => {
-            if (workbook.Sheets[name][i].f != "") {
+            if (workbook.Sheets[name][i].f != "" || isHave(workbook.Sheets[name][i].multivalueRefsCell)) {
                 this.oldData.Sheets[name][i] = workbook.Sheets[name][i];
+
+                if(tileArr.indexOf(i) === -1) {
+                    tileArr.push(i);
+                }
             }
         });
         return this.oldData;
@@ -332,20 +335,20 @@ export default class CellProxy {
             }
 
             let args = specialWebsiteValue(cells[i].v + "", cells[i].f + "");
-            if (args.type === 1 && args.state) {
-                tileArr.push(...multipleCellsRender(cells, args.text));
-            } else if (args.state && args.type === 2) {
+            if (args.state && args.type === 2) {
                 cells[i].v = args.text;
             }
 
-            // let copyCell = this.deepCopy(data[ri]['cells'][ci]);
-            // copyCell.text = cells[i].v;
-            // copyCell.formulas = cells[i].f;
-            //
-              cells[i].v = cells[i].format ? cells[i].text : cells[i].v;
+            if(isHave(cells[i]) && isHave(cells[i].multivalueRefsCell)) {
+                data[ri]['cells'][ci].multivalueRefsCell = cells[i].multivalueRefsCell;
+            }
+
+
+            cells[i].v = cells[i].format ? cells[i].text : cells[i].v;
             // let {state} = this.data.tryParseToNum('change', copyCell, ri, ci);
             // cells[i].v = state ? data[ri]['cells'][ci].text : cells[i].v;
             // cells[i].f = state ? data[ri]['cells'][ci].formulas : cells[i].f;
+
 
             if (cells[i].v + "" === '' && cells[i].f && cells[i].f[0] && cells[i].f[0] === '=') {
                 data[ri]['cells'][ci].text = cells[i].v + "";
@@ -396,9 +399,9 @@ export default class CellProxy {
 
 
     setCell(name, erpx) {
-      if(typeof this.oldData === "string") {
-        return;
-      }
+        if (typeof this.oldData === "string") {
+            return;
+        }
         this.oldData.Sheets[name][erpx] = {
             f: "",
             v: ""

@@ -163,7 +163,7 @@ async function parseCell(viewRange, state = false, src = '', state2 = true, cont
             let {factory} = this;
             factory.data = workbook;
             console.time("x4");
-            workbook = proxy.concat(data.name, workbook);
+            workbook = proxy.concat(data.name, workbook, tileArr);
             console.timeEnd("x4");
 
             data.rows.setWorkBook(deepCopy(workbook));

@@ -10,5 +10,4 @@ export const dpr = 1;
 export default {
     cssPrefix,
     dpr,
-
 };

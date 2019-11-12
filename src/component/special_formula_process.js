@@ -39,13 +39,14 @@ function multipleCellsRender(cells, mc) {
 function specialWebsiteValue(text, formula) {
     let index = indexOf(text, formula);
 
-    if (index === 1) {
-        return {
-            "state": true,
-            "type": index,
-            "text": JSON.parse(text.split("!")[1])
-        };
-    } else if (index === 2) {
+    // if (index === 1) {
+    //     return {
+    //         "state": true,
+    //         "type": index,
+    //         "text": JSON.parse(text.split("!")[1])
+    //     };
+    // } else
+    if (index === 2) {
         let arr = text.split(" ");
         let s = "";
         if (arr.length >= 1) {

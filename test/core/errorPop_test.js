@@ -2,7 +2,7 @@ import {describe, it} from 'mocha';
 import DataProxy from "../../src/core/data_proxy";
 import Recast from "../../src/core/recast";
 import CellProxy from "../../src/component/cell_proxy";
-import {cutStr, deepCopy} from "../../src/core/operator";
+import {cutStr, deepCopy, splitStr} from "../../src/core/operator";
 import {RefRow} from "../../src/core/ref_row";
 import EditorText from "../../src/component/editor_text";
 import {calcDecimals, changeFormat, dateDiff, formatDate} from '../../src/component/date';
@@ -595,6 +595,16 @@ describe('qq', () => {
 
         it('  getCellRowByAbsY  ', function () {
             data.getCellRowByAbsY();
+        });
+
+        it('  getCellTextByShift  ', function () {
+            let args = data.rows.getCellTextByShift(splitStr('=AVERAGE(B1:B5)'), 1, 2);
+            assert.equal(args.bad, false);
+            assert.equal(args.result, '=AVERAGE(C3:C7)');
+
+            args = data.rows.getCellTextByShift(splitStr('=AVERAGE(B$3:$B10)'), 1, 2);
+            assert.equal(args.bad, false);
+            assert.equal(args.result, '=AVERAGE(B$5:$B12)');
         });
     });
 

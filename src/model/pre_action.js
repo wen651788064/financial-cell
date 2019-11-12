@@ -30,10 +30,16 @@ export default class PreAction {
             }
 
             data.rows.setCellText(ri, ci, cell, sheet.table.proxy, data.name, 'cell');
-        } else if (type === 2 || type === 5 || type === 6) {
-            let {cells} = this;
-            for (let i = 0; i < cells.length; i++) {
-                let {cell, ri, ci} = cells[i];
+        } else if (type === 2 || type === 5 || type === 6 || type === 11) {
+            let {cells, oldCell} = this;
+            let _cells = "";
+            if(isRedo === 1) {
+                _cells = deepCopy(oldCell);
+            } else {
+                _cells = deepCopy(cells);
+            }
+            for (let i = 0; i < _cells.length; i++) {
+                let {cell, ri, ci} = _cells[i];
 
                 data.rows.setCellText(ri, ci, cell, sheet.table.proxy, data.name, 'cell');
             }

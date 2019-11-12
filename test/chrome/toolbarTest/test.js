@@ -7,7 +7,6 @@ import {simulateInputEvent, simulateKeyboardEvent, simulateMouseEvent} from "../
 import Vaild from "../../util/valid";
 import {consoleSuccess} from "../../util/utils";
 import {isHave} from "../../../src/core/helper";
-import {deepCopy} from "../../../src/core/operator";
 
 
 let assert = require('assert');
@@ -153,16 +152,108 @@ describe("action", function () {
         //     count += 1;
         // });
 
-        // step 1  先获取ri,ci 的位置
-        getRICIByMouseDown({msg: 'step 1 按下鼠标 成功'});
+        // step 1  选取select range
+        let {overlayerEl} = sheet;
+        event('mousedown', overlayerEl.el, {});
+        for (let i = 0; i < 10; i++) {
+            event('mousemove', window, {
+                clientX: (i + 1) * 20,
+                clientY: (i + 1) * 20,
+                buttons: 1,
+                shiftKey: false
+            });
+        }
+        event('mouseup', window, {});
+        // step 2 按下ctrl+b
+        let count = 0;
+        sheet.table.valid = new Vaild(() => {
+            count = count + 1;
+            if (count === 1) {
+                pressByMouseDown("step 2 按下ctrl+b", {keyCode: 66, metaKey: true});
+            } else if (count === 2) {
+                assert(isHave(data.rows.getCell(0, 0).style), true);
+                assert(isHave(data.rows.getCell(0, 1).style), true);
+                assert(isHave(data.rows.getCell(6, 1).style), true);
+                console.log(data.rows.getCell(3, 3).text)
+                if (isHave(data.rows.getCell(3, 3).style) === true) {
+                    assert(2, 1);
+                }
+                consoleSuccess("验证加粗成功");
+                pressByMouseDown("step 3 按下ctrl+i 倾斜", {keyCode: 73, metaKey: true});
+            }  else if (count === 3) {
+                console.log(data.getCellStyleOrDefault(0, 0).font.italic );
+                 if(data.getCellStyleOrDefault(0, 0).font.italic === false || data.getCellStyleOrDefault(0, 1).font.italic === false ||
+                     data.getCellStyleOrDefault(3, 3).font.italic === true) {
+                     console.log(data.getCellStyleOrDefault(0, 0).font.italic );
+                     console.log(data.getCellStyleOrDefault(0, 1).font.italic );
+                     console.log(data.getCellStyleOrDefault(3, 3).font.italic );
+                     assert(2, 1);
+                     throw "倾斜有问题";
+                }
+
+                consoleSuccess("验证倾斜成功");
+                pressByMouseDown("step 4 按下ctrl+u 下划线", {keyCode: 85, metaKey: true});
+            } else if(count === 4) {
+                if(data.getCellStyleOrDefault(0, 0).underline === false || data.getCellStyleOrDefault(0, 1).underline === false ||
+                    data.getCellStyleOrDefault(3, 3).underline === true) {
+                    console.log(data.getCellStyleOrDefault(0, 0).underline );
+                    console.log(data.getCellStyleOrDefault(0, 1).underline );
+                    console.log(data.getCellStyleOrDefault(3, 3).underline );
+
+                    throw "下划线有问题";
+                }
+                consoleSuccess("验证下划线成功");
+
+                event('click', sheet.toolbar.ddFillColor.colorPalette.items[4].el, {});
+            } else if(count === 5) {
+                if(data.getCellStyleOrDefault(0, 0).bgcolor !== "#5b9cd6" || data.getCellStyleOrDefault(0, 1).bgcolor !== "#5b9cd6" ||
+                    data.getCellStyleOrDefault(3, 3).bgcolor !== '#ffffff'  ) {
+                    console.log(data.getCellStyleOrDefault(0, 0).bgcolor );
+                    console.log(data.getCellStyleOrDefault(0, 1).bgcolor );
+                    console.log(data.getCellStyleOrDefault(3, 3).bgcolor );
+
+                    throw "背景填充色有问题";
+                }
+                consoleSuccess("验证背景填充色成功");
+                event('click', sheet.toolbar.ddTextColor.colorPalette.items[4].el, {});
+            } else if(count === 6) {
+                if(data.getCellStyleOrDefault(0, 0).color !== "#5b9cd6" || data.getCellStyleOrDefault(0, 1).color !== "#5b9cd6" ||
+                    data.getCellStyleOrDefault(3, 3).color !== "#0a0a0a"  ) {
+                    console.log(data.getCellStyleOrDefault(0, 0).color );
+                    console.log(data.getCellStyleOrDefault(0, 1).color );
+                    console.log(data.getCellStyleOrDefault(3, 3).color );
+
+                    throw "字体颜色有问题";
+                }
+                consoleSuccess("验证字体颜色色成功");
+
+                console.log(sheet.toolbar.btnChildren[13].el);
+                event('click', sheet.toolbar.btnChildren[13].el, {});
+            } else if(count === 7) {
+                if(data.getCellStyleOrDefault(0, 0).strike !== true || data.getCellStyleOrDefault(0, 1).strike !== true ||
+                    data.getCellStyleOrDefault(3, 3).strike !== false) {
+                    console.log(data.getCellStyleOrDefault(0, 0).strike );
+                    console.log(data.getCellStyleOrDefault(0, 1).strike );
+                    console.log(data.getCellStyleOrDefault(3, 3).strike );
+
+                    throw "删除线有问题";
+                }
+                consoleSuccess("验证删除线成功");
+
+                console.log(data.multiPreAction);
+            }else if(count === 8) {
+
+            }
+        });
     });
 
 
-    function pressUndoByMouseDown() {
-        // consoleSuccess("按下ctrl + z");
+
+    function pressByMouseDown(msg, {keyCode, metaKey}) {
+        consoleSuccess(msg);
         let undoEvt = simulateKeyboardEvent('keydown', {
-            keyCode: 90,
-            metaKey: true,
+            keyCode: keyCode,
+            metaKey: metaKey,
         });
         window.dispatchEvent(undoEvt);
     }
@@ -211,14 +302,20 @@ describe("action", function () {
         overlayerEl.el.dispatchEvent(evt);
     }
 
+    function event(type, target, args) {
+        let evt = simulateMouseEvent(type, args);
+        target.dispatchEvent(evt);
+    }
+
+
     function getRICIByMouseDown({msg}) {
         let {overlayerEl} = sheet;
         consoleSuccess(msg);
         let evt = simulateMouseEvent('mousedown', {
             detail: 1,
             buttons: 1,
-            clientX: 300,
-            clientY: 300,
+            clientX: 0,
+            clientY: 0,
         });
         overlayerEl.el.dispatchEvent(evt);
     }

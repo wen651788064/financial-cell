@@ -35,6 +35,7 @@ module.exports = function (config) {
 
         webpack: {
             // webpack configuration
+            devtool: 'inline-source-map',
             module: {
                 loaders: [{
                     test: /\.js$/,
@@ -44,9 +45,7 @@ module.exports = function (config) {
                         presets: ['es2015'],
                     }
                 }],
-
             },
-
         },
 
         webpackMiddleware: {
