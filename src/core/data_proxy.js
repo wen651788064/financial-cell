@@ -825,6 +825,28 @@ export default class DataProxy {
         this.clipboard.copy(this.selector.range);
     }
 
+
+    paintFormatChange(cb) {
+        let {clipboard, rows, selector} = this;
+        let {range} = clipboard;
+        let sri = selector.ri;
+        let sci = selector.ci;
+
+        let dsri = Math.abs(range.sri - sri);
+        let dsci = Math.abs(range.sci - sci);
+
+
+        let cells = rows.eachRange(range);
+        for(let i = 0; i < cells.length; i++) {
+            let {ri, ci, cell} = cells[i];
+            if(isHave(cell) && isHave(cell.style)) {
+                rows.setCell(ri + dsri, ci + dsci, cell, 'style');
+            }
+            cb(ri + dsri, ci + dsci);
+        }
+    }
+
+
     move() {
         this.moved.move();
     }

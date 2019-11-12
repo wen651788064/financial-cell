@@ -180,73 +180,102 @@ describe("action", function () {
                 }
                 consoleSuccess("验证加粗成功");
                 pressByMouseDown("step 3 按下ctrl+i 倾斜", {keyCode: 73, metaKey: true});
-            }  else if (count === 3) {
-                console.log(data.getCellStyleOrDefault(0, 0).font.italic );
-                 if(data.getCellStyleOrDefault(0, 0).font.italic === false || data.getCellStyleOrDefault(0, 1).font.italic === false ||
-                     data.getCellStyleOrDefault(3, 3).font.italic === true) {
-                     console.log(data.getCellStyleOrDefault(0, 0).font.italic );
-                     console.log(data.getCellStyleOrDefault(0, 1).font.italic );
-                     console.log(data.getCellStyleOrDefault(3, 3).font.italic );
-                     assert(2, 1);
-                     throw "倾斜有问题";
+            } else if (count === 3) {
+                console.log(data.getCellStyleOrDefault(0, 0).font.italic);
+                if (data.getCellStyleOrDefault(0, 0).font.italic === false || data.getCellStyleOrDefault(0, 1).font.italic === false ||
+                    data.getCellStyleOrDefault(3, 3).font.italic === true) {
+                    console.log(data.getCellStyleOrDefault(0, 0).font.italic);
+                    console.log(data.getCellStyleOrDefault(0, 1).font.italic);
+                    console.log(data.getCellStyleOrDefault(3, 3).font.italic);
+                    assert(2, 1);
+                    throw "倾斜有问题";
                 }
 
                 consoleSuccess("验证倾斜成功");
                 pressByMouseDown("step 4 按下ctrl+u 下划线", {keyCode: 85, metaKey: true});
-            } else if(count === 4) {
-                if(data.getCellStyleOrDefault(0, 0).underline === false || data.getCellStyleOrDefault(0, 1).underline === false ||
+            } else if (count === 4) {
+                if (data.getCellStyleOrDefault(0, 0).underline === false || data.getCellStyleOrDefault(0, 1).underline === false ||
                     data.getCellStyleOrDefault(3, 3).underline === true) {
-                    console.log(data.getCellStyleOrDefault(0, 0).underline );
-                    console.log(data.getCellStyleOrDefault(0, 1).underline );
-                    console.log(data.getCellStyleOrDefault(3, 3).underline );
+                    console.log(data.getCellStyleOrDefault(0, 0).underline);
+                    console.log(data.getCellStyleOrDefault(0, 1).underline);
+                    console.log(data.getCellStyleOrDefault(3, 3).underline);
 
                     throw "下划线有问题";
                 }
                 consoleSuccess("验证下划线成功");
 
                 event('click', sheet.toolbar.ddFillColor.colorPalette.items[4].el, {});
-            } else if(count === 5) {
-                if(data.getCellStyleOrDefault(0, 0).bgcolor !== "#5b9cd6" || data.getCellStyleOrDefault(0, 1).bgcolor !== "#5b9cd6" ||
-                    data.getCellStyleOrDefault(3, 3).bgcolor !== '#ffffff'  ) {
-                    console.log(data.getCellStyleOrDefault(0, 0).bgcolor );
-                    console.log(data.getCellStyleOrDefault(0, 1).bgcolor );
-                    console.log(data.getCellStyleOrDefault(3, 3).bgcolor );
+            } else if (count === 5) {
+                if (data.getCellStyleOrDefault(0, 0).bgcolor !== "#5b9cd6" || data.getCellStyleOrDefault(0, 1).bgcolor !== "#5b9cd6" ||
+                    data.getCellStyleOrDefault(3, 3).bgcolor !== '#ffffff') {
+                    console.log(data.getCellStyleOrDefault(0, 0).bgcolor);
+                    console.log(data.getCellStyleOrDefault(0, 1).bgcolor);
+                    console.log(data.getCellStyleOrDefault(3, 3).bgcolor);
 
                     throw "背景填充色有问题";
                 }
                 consoleSuccess("验证背景填充色成功");
                 event('click', sheet.toolbar.ddTextColor.colorPalette.items[4].el, {});
-            } else if(count === 6) {
-                if(data.getCellStyleOrDefault(0, 0).color !== "#5b9cd6" || data.getCellStyleOrDefault(0, 1).color !== "#5b9cd6" ||
-                    data.getCellStyleOrDefault(3, 3).color !== "#0a0a0a"  ) {
-                    console.log(data.getCellStyleOrDefault(0, 0).color );
-                    console.log(data.getCellStyleOrDefault(0, 1).color );
-                    console.log(data.getCellStyleOrDefault(3, 3).color );
+            } else if (count === 6) {
+                if (data.getCellStyleOrDefault(0, 0).color !== "#5b9cd6" || data.getCellStyleOrDefault(0, 1).color !== "#5b9cd6" ||
+                    data.getCellStyleOrDefault(3, 3).color !== "#0a0a0a") {
+                    console.log(data.getCellStyleOrDefault(0, 0).color);
+                    console.log(data.getCellStyleOrDefault(0, 1).color);
+                    console.log(data.getCellStyleOrDefault(3, 3).color);
 
                     throw "字体颜色有问题";
                 }
                 consoleSuccess("验证字体颜色色成功");
 
-                console.log(sheet.toolbar.btnChildren[13].el);
                 event('click', sheet.toolbar.btnChildren[13].el, {});
-            } else if(count === 7) {
-                if(data.getCellStyleOrDefault(0, 0).strike !== true || data.getCellStyleOrDefault(0, 1).strike !== true ||
+            } else if (count === 7) {
+                if (data.getCellStyleOrDefault(0, 0).strike !== true || data.getCellStyleOrDefault(0, 1).strike !== true ||
                     data.getCellStyleOrDefault(3, 3).strike !== false) {
-                    console.log(data.getCellStyleOrDefault(0, 0).strike );
-                    console.log(data.getCellStyleOrDefault(0, 1).strike );
-                    console.log(data.getCellStyleOrDefault(3, 3).strike );
+                    console.log(data.getCellStyleOrDefault(0, 0).strike);
+                    console.log(data.getCellStyleOrDefault(0, 1).strike);
+                    console.log(data.getCellStyleOrDefault(3, 3).strike);
 
                     throw "删除线有问题";
                 }
+
                 consoleSuccess("验证删除线成功");
+                event('click', sheet.toolbar.ddBorder.borderPalette.items[4].el, {});
+            } else if (count === 8) {
+                event('click', sheet.toolbar.ddBorder.borderPalette.items[0].el, {});
+            } else if (count === 9) {
+                if (data.getCellStyleOrDefault(0, 0).border.left[0] !== "thin" || data.getCellStyleOrDefault(0, 1).border.left[0] !== "thin" ||
+                    (isHave(data.getCellStyleOrDefault(3, 3).border) &&
+                        isHave(isHave(data.getCellStyleOrDefault(3, 3).border.left) && data.getCellStyleOrDefault(0, 0).border.left[0] === "thin"))) {
+                    console.log(data.getCellStyleOrDefault(0, 0).border);
+                    console.log(data.getCellStyleOrDefault(0, 1).border);
+                    console.log(data.getCellStyleOrDefault(3, 3).border);
 
-                console.log(data.multiPreAction);
-            }else if(count === 8) {
+                    throw "边框有问题";
+                }
+                consoleSuccess("验证边框成功");
 
+                event('click', sheet.toolbar.btnChildren[18].el, {});
+            } else if (count === 10) {
+                if ((data.merges._[0].sri === 0 && data.merges._[0].sci === 0 && data.merges._[0].eri === 7 && data.merges._[0].eci === 1) === false) {
+                    throw "合并单元格有问题";
+                }
+                consoleSuccess("验证合并单元格成功");
+                event('click', sheet.toolbar.btnChildren[18].el, {});
+            }  else if(count === 11) {
+
+            } else if (count === 12) {
+                if (data.merges._.length !== 0) {
+                    throw "恢复单元格有问题";
+                }
+                consoleSuccess("验证恢复单元格成功");
+
+                event('click', sheet.toolbar.btnChildren[2].el, {});
+                if(sheet.toolbar.paintformatActive() === false || isHave(data.clipboard.range) === false) {
+                    throw "格式刷存在问题";
+                }
             }
         });
     });
-
 
 
     function pressByMouseDown(msg, {keyCode, metaKey}) {

@@ -115,13 +115,18 @@ export default class WorkBook {
                 }
 
                 let cell_f = !cell.formulas ? cell.text : cell.formulas;
+
                 this.workbook.Sheets[data.name][expr] = {
                     v: cell.text,
                     f: cell_f,
                     z: true,
                     text: cellText,
                     format: state,
+                    multivalueRefsCell: "",
                 };
+                if(isHave(cell.multivalueRefsCell)) {
+                    this.workbook.Sheets[data.name][expr].multivalueRefsCell = cell.multivalueRefsCell;
+                }
 
                 if (data.isFormula(cell.text)) {
                     this.calcNeedCalcBool(true);

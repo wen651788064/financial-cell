@@ -18,20 +18,44 @@ class SelectorElement {
         this._selector = selector;
         this.l = h('div', `${cssPrefix}-selector-box-l`)
             .on('mousedown.stop', evt => {
-                this.moveEvent(1);
-            });
+                if(evt.detail === 2) {
+                    evt.stopPropagation();
+
+                } else {
+                    this.moveEvent(1);
+                }
+
+            })
         this.r = h('div', `${cssPrefix}-selector-box-r`)
             .on('mousedown.stop', evt => {
-                this.moveEvent(2);
+                if(evt.detail === 2) {
+                    evt.stopPropagation();
+                } else {
+                    this.moveEvent(2);
+                }
+            }).on('click', (evt) => {
+                if(evt.detail === 2) {
+                    evt.stopPropagation();
+                }
             });
         this.t = h('div', `${cssPrefix}-selector-box-t`)
             .on('mousedown.stop', evt => {
+                if(evt.detail === 2) {
+                    evt.stopPropagation();
+                } else {
+                    evt.stopPropagation();
+                }
                 this.moveEvent(3);
-            });
+            })
         this.b = h('div', `${cssPrefix}-selector-box-b`)
             .on('mousedown.stop', evt => {
-                this.moveEvent(4);
-            });
+                if(evt.detail === 2) {
+                    evt.stopPropagation();
+                } else {
+                    this.moveEvent(4);
+                }
+            })
+
 
         this.cornerEl.on('mousedown', evt => {
             let {detail} = evt;
@@ -62,6 +86,7 @@ class SelectorElement {
     }
 
     moveEvent(direction) {
+        console.log(60);
         let {data, _selector, sheet} = this;
         let {selector} = data;
         let {sri, sci, eri, eci, w, h} = _selector.range;

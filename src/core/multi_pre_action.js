@@ -169,19 +169,9 @@ export default class MultiPreAction {
     }
 
     eachRange(range) {
-        let cells = [];
         let {rows} = this.data;
-        range.each((i, j) => {
-            let cell = rows.getCell(i, j);
-            if (isHave(cell)) {
-                cell = deepCopy(cell);
-            } else cell = {};
-            cells.push({
-                ri: i,
-                ci: j,
-                cell: cell
-            });
-        });
+        let cells = rows.eachRange(range);
+
         return cells;
     }
 

@@ -304,9 +304,12 @@ function autofilter() {
 }
 
 function toolbarChangePaintformatPaste() {
-    const {toolbar} = this;
+    const {toolbar, data} = this;
     if (toolbar.paintformatActive()) {
-        paste.call(this, 'format');
+        // paste.call(this, 'format');
+        data.paintFormatChange((ri, ci) => {
+            selectorSet.call(this, true, ri, ci, true, true);
+        });
         clearClipboard.call(this);
         toolbar.paintformatToggle();
     }

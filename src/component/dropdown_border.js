@@ -11,5 +11,6 @@ export default class DropdownBorder extends Dropdown {
       this.hide();
     };
     super(icon, 'auto', false, 'bottom-left', {type: false}, borderPalette.el );
+    this.borderPalette = borderPalette;
   }
 }

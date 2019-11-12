@@ -11,8 +11,10 @@ function buildTable(...trs) {
 }
 
 function buildTd(iconName) {
+  let item =  h('div', `${cssPrefix}-border-palette-cell`);
+  this.items.push(item);
   return h('td', '').child(
-    h('div', `${cssPrefix}-border-palette-cell`).child(
+    item.child(
       new Icon(`border-${iconName}`),
     ).on('click', () => {
       this.mode = iconName;
@@ -37,6 +39,8 @@ export default class BorderPalette {
       this.style = s;
     };
     this.el = h('div', `${cssPrefix}-border-palette`);
+    this.items = [];
+
     const table = buildTable(
       h('tr', '').children(
         h('td', `${cssPrefix}-border-palette-left`).child(

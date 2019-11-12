@@ -175,8 +175,8 @@ class Rows {
         return isFormula(text);
     }
 
-    setValue(value, cell) {
-        cell.value = value;
+    setValue(type, value, cell) {
+        cell[type] = value;
     }
 
     // what: all | text | format
@@ -239,6 +239,16 @@ class Rows {
             // if (isHave(cell.text)) {
             //     row.cells[ci].value = cell.text;
             // }
+            return;
+        } else if(what === 'style') {
+            if(isHave(cell) === false) {
+                cell = {};
+            }
+            if(isHave(row.cells[ci]) === false) {
+                row.cells[ci] = {};
+            }
+
+            row.cells[ci].style = cell.style;
             return;
         }
         // cell
@@ -341,6 +351,7 @@ class Rows {
             cell.formulas = text;
             // cell.value = text;
         }
+
         cell.text = text;  // todo 自定义公式： text 为公式计算结果, formulas 为公式
         // this.recast(cell);
         // cell
@@ -474,6 +485,23 @@ class Rows {
             "enter": enter,
             "data": s,
         }
+    }
+
+    eachRange(range) {
+        let cells = [];
+        range.each((i, j) => {
+            let cell = this.getCell(i, j);
+            if (isHave(cell)) {
+                cell = deepCopy(cell);
+            } else cell = {};
+            cells.push({
+                ri: i,
+                ci: j,
+                cell: cell
+            });
+        });
+
+        return cells;
     }
 
     getCellTextByShift(arr, dei, dci, isInsert = false, isAdd = false, sri = 0, isRows = false) {

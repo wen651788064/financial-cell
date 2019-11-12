@@ -1,4 +1,6 @@
 import {expr2xy, xy2expr} from './alphabet';
+import {deepCopy} from "./operator";
+import {isHave} from "./helper";
 
 class CellRange {
     constructor(sri, sci, eri, eci, w = 0, h = 0) {
