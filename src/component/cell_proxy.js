@@ -46,7 +46,7 @@ export default class CellProxy {
     // 因为在前面有一步， 把不是此次change的公式都主动设置为""了，所以不能以此为基准。
     concat(name, workbook, tileArr) {
         Object.keys(workbook.Sheets[name]).forEach(i => {
-            if (workbook.Sheets[name][i].f != "" || isHave(workbook.Sheets[name][i].multivalueRefsCell)) {
+            if (workbook.Sheets[name][i].f != "" || isHave(workbook.Sheets[name][i].multivalueRefsCell) || isHave(workbook.Sheets[name][i].clearMultivalueRefsCell)) {
                 this.oldData.Sheets[name][i] = workbook.Sheets[name][i];
 
                 if(tileArr.indexOf(i) === -1) {
@@ -343,12 +343,14 @@ export default class CellProxy {
                 data[ri]['cells'][ci].multivalueRefsCell = cells[i].multivalueRefsCell;
             }
 
+            if(isHave(cells[i]) && isHave(cells[i].clearMultivalueRefsCell)) {
+                delete data[ri]['cells'][ci].multivalueRefsCell;
+            }
 
             cells[i].v = cells[i].format ? cells[i].text : cells[i].v;
             // let {state} = this.data.tryParseToNum('change', copyCell, ri, ci);
             // cells[i].v = state ? data[ri]['cells'][ci].text : cells[i].v;
             // cells[i].f = state ? data[ri]['cells'][ci].formulas : cells[i].f;
-
 
             if (cells[i].v + "" === '' && cells[i].f && cells[i].f[0] && cells[i].f[0] === '=') {
                 data[ri]['cells'][ci].text = cells[i].v + "";
