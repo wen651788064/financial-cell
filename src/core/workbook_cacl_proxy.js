@@ -122,7 +122,6 @@ export default class WorkBook {
                     z: true,
                     text: cellText,
                     format: state,
-                    multivalueRefsCell: "",
                 };
                 if(isHave(cell.multivalueRefsCell)) {
                     this.workbook.Sheets[data.name][expr].multivalueRefsCell = cell.multivalueRefsCell;
