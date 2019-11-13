@@ -3,6 +3,17 @@ function cloneDeep(obj) {
     return JSON.parse(JSON.stringify(obj));
 }
 
+export function isEqual(v1, v2) {
+    v1 = v1 + "";
+    v2 = v2 + "";
+    v1 = v1.toUpperCase();
+    v2 = v2.toUpperCase();
+    if (v1 === v2) {
+        return true;
+    }
+    return false;
+}
+
 const mergeDeep = (object = {}, ...sources) => {
     sources.forEach((source) => {
         if (source != null && source != undefined) {

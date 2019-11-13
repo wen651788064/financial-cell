@@ -7,16 +7,7 @@ import {specialWebsiteValue} from "./special_formula_process";
 import {textReplace} from "./context_process";
 
 
-export function isEqual(v1, v2) {
-    v1 = v1 + "";
-    v2 = v2 + "";
-    v1 = v1.toUpperCase();
-    v2 = v2.toUpperCase();
-    if (v1 === v2) {
-        return true;
-    }
-    return false;
-}
+
 
 export default class CellProxy {
     constructor(refRow, table, data) {
