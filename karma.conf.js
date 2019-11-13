@@ -5,7 +5,8 @@ module.exports = function (config) {
         files: [
             // 'test/chrome/**'
             // "test/chrome/action/test.js",
-            "test/chrome/toolbarTest/test.js"
+            "test/chrome/insertOrDeleteRows/test.js",
+            // "test/chrome/toolbarTest/test.js"
             // 'test/chrome/chrome__test.js',
             // 'test/chrome/autofill/auto_fill_test2.js'
         ],

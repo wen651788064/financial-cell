@@ -28,6 +28,7 @@ import {expr2xy} from "../core/alphabet";
 import ErrorPopUp from "./error_pop_up";
 import RectProxy from "./rect_proxy";
 import {testValid} from "../utils/test";
+import Timer from "../model/Timer";
 
 function scrollbarMove() {
     const {
@@ -385,29 +386,29 @@ function dropGetPos(data, selector, verticalScrollbar, horizontalScrollbar, offs
 function selectorBeyondMove(orien, verticalScrollbar, horizontalScrollbar, cols, rows, data) {
     if (orien === 2) {   //往下
         scrollTo.call(this, 1, verticalScrollbar, horizontalScrollbar, rows, data, cols);
-    } else if(orien === 6) {    // 往上
+    } else if (orien === 6) {    // 往上
         scrollTo.call(this, 2, verticalScrollbar, horizontalScrollbar, rows, data, cols);
-    } else if(orien === 3) {        //往右
+    } else if (orien === 3) {        //往右
         scrollTo.call(this, 4, verticalScrollbar, horizontalScrollbar, rows, data, cols);
-    } else if(orien === 5) {    // 往左
+    } else if (orien === 5) {    // 往左
         scrollTo.call(this, 3, verticalScrollbar, horizontalScrollbar, rows, data, cols);
-    } else if(orien === 1) { // 往下往右
+    } else if (orien === 1) { // 往下往右
         scrollTo.call(this, 1, verticalScrollbar, horizontalScrollbar, rows, data, cols);
         scrollTo.call(this, 4, verticalScrollbar, horizontalScrollbar, rows, data, cols);
-    } else if(orien === 7) {         // 往下往左
+    } else if (orien === 7) {         // 往下往左
         scrollTo.call(this, 1, verticalScrollbar, horizontalScrollbar, rows, data, cols);
         scrollTo.call(this, 3, verticalScrollbar, horizontalScrollbar, rows, data, cols);
-    } else if(orien === 8) {     // 往上往右
+    } else if (orien === 8) {     // 往上往右
         scrollTo.call(this, 2, verticalScrollbar, horizontalScrollbar, rows, data, cols);
         scrollTo.call(this, 4, verticalScrollbar, horizontalScrollbar, rows, data, cols);
-    } else if(orien === 4) {       // 往上往左
+    } else if (orien === 4) {       // 往上往左
         scrollTo.call(this, 2, verticalScrollbar, horizontalScrollbar, rows, data, cols);
         scrollTo.call(this, 3, verticalScrollbar, horizontalScrollbar, rows, data, cols);
     }
 }
 
 function scrollTo(orien, verticalScrollbar, horizontalScrollbar, rows, data, cols) {
-    if(Math.round(Math.random()) !== 1) {
+    if (Math.round(Math.random()) !== 1) {
         return;
     }
     // 1 下 2 上 3左 4 右
@@ -416,16 +417,16 @@ function scrollTo(orien, verticalScrollbar, horizontalScrollbar, rows, data, col
         const {top} = verticalScrollbar.scroll();  // 可见视图上边缘距离toolbar的像素
         ri = data.scroll.ri + 1;
         verticalScrollbar.move({top: top + rows.getHeight(ri) - 1});
-    } else if(orien === 2) {
+    } else if (orien === 2) {
         const {top} = verticalScrollbar.scroll();
         ri = data.scroll.ri - 1;
 
         verticalScrollbar.move({top: ri === 0 ? 0 : top - rows.getHeight(ri)});
-    } else if(orien === 4) {        //往右
+    } else if (orien === 4) {        //往右
         const {left} = horizontalScrollbar.scroll();
         ci = data.scroll.ci + 1;
         horizontalScrollbar.move({left: left + cols.getWidth(ci)});
-    } else if(orien === 3) {
+    } else if (orien === 3) {
         const {left} = horizontalScrollbar.scroll();
         ci = data.scroll.ci - 1;
         horizontalScrollbar.move({left: left - cols.getWidth(ci)});
@@ -507,24 +508,17 @@ function overlayerMousedown(evt) {
         const {top} = verticalScrollbar.scroll();
         ri = data.scroll.ri + 1;
         let ttop = top + rows.getHeight(ri) - 1;
-        let stopTimer = null;
-        let stopTimer2 = null;
+
         let point = getPoint(this.el.el);
         // mouse move up
         mouseMoveUp(window, (e) => {
-            clearTimeout(stopTimer);
-            clearInterval(stopTimer2);
-            stopTimer = setTimeout(() => {
-                stopTimer2 = setInterval(() => {
+            clearStopTimer.call(this);
 
-                    dropDown.call(this, e, isAutofillEl, selector, data, verticalScrollbar, rows, evt, 0, point, horizontalScrollbar, cols,);
-                }, 50);
-            }, 200);
+            continueDropDown.call(this, e, isAutofillEl, selector, data, verticalScrollbar, rows, evt, point, horizontalScrollbar, cols);
 
             dropDown.call(this, e, isAutofillEl, selector, data, verticalScrollbar, rows, evt, 0, point, horizontalScrollbar, cols);
         }, (e) => {
-            clearTimeout(stopTimer);
-            clearInterval(stopTimer2);
+            clearStopTimer.call(this);
 
             if (isAutofillEl) {
                 if (data.autofill(selector.arange, 'all', msg => xtoast('Tip', msg), this.table.proxy)) {
@@ -546,6 +540,22 @@ function overlayerMousedown(evt) {
             selectorSet.call(this, true, ri, ci);
         }
     }
+}
+
+function continueDropDown(e, isAutofillEl, selector, data, verticalScrollbar, rows, evt, point, horizontalScrollbar, cols) {
+    let stopTimer = setTimeout(() => {
+        let stopTimer2 = setInterval(() => {
+            dropDown.call(this, e, isAutofillEl, selector, data, verticalScrollbar, rows, evt, 0, point, horizontalScrollbar, cols,);
+        }, 50);
+        this.stopTimer2.push(stopTimer2);
+    }, 200);
+
+    this.stopTimer.push(stopTimer);
+}
+
+function clearStopTimer() {
+    this.stopTimer.clear();
+    this.stopTimer2.clear();
 }
 
 function autofillNext() {
@@ -1544,6 +1554,8 @@ export default class Sheet {
             data,
             this,
         );
+        this.stopTimer = new Timer();
+        this.stopTimer2 = new Timer();
         this.website = new Website(data, this.editor);
 
         // data validation
