@@ -1,0 +1,71 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <title>Marked in the browser</title>
+    <link href="https://cdn.quilljs.com/1.0.0/quill.snow.css" rel="stylesheet">
+</head>
+<style>
+    .d3{
+        /*margin-left: 10px;*/
+        /*float: left;*/
+        width: 0;
+        height: 0;
+        border-width: 100px;
+        border-style: solid;
+        border-color:#FFCCCC transparent transparent transparent;
+    }
+</style>
+<body>
+<!-- Create the toolbar container -->
+<div id="toolbar">
+    <button class="ql-bold">Bold</button>
+    <button class="ql-italic">Italic</button>
+</div>
+<script>
+    let d = document.createElement("div");
+
+    function simulateMouseEvent(typeArg, props = {
+        cancelable: true,
+        bubble: true,
+        view: window
+    }) {
+        return new MouseEvent(typeArg, props);
+    }
+
+    function bind(target, name, fn) {
+        target.addEventListener(name, fn);
+    }
+
+    function unbind(target, name, fn) {
+        target.removeEventListener(name, fn);
+    }
+
+    function mouseMoveUp(target, movefunc, upfunc) {
+        bind(target, 'mousemove', movefunc);
+        const t = target;
+        t.xEvtUp = (evt) => {
+            unbind(target, 'mousemove', movefunc);
+            unbind(target, 'mouseup', target.xEvtUp);
+            upfunc(evt);
+        };
+        bind(target, 'mouseup', target.xEvtUp);
+    }
+
+   d.addEventListener('mousedown', () => {
+       mouseMoveUp(d, () => {
+           console.log("...")
+       }, () => {
+           console.log(".asd..")
+       });
+   });
+
+
+
+
+
+</script>
+/**html*/
+<div class="d3"></div>
+</body>
+</html>

@@ -1,0 +1,73 @@
+{
+  "_args": [
+    [
+      "formulajs@1.0.8",
+      "/Users/wen/Desktop/work/ss/x-spreadsheet"
+    ]
+  ],
+  "_from": "formulajs@1.0.8",
+  "_id": "formulajs@1.0.8",
+  "_inBundle": false,
+  "_integrity": "sha1-jDXRZPNopf+xp6vPUHXPjeXmBw4=",
+  "_location": "/formulajs",
+  "_phantomChildren": {},
+  "_requested": {
+    "type": "version",
+    "registry": true,
+    "raw": "formulajs@1.0.8",
+    "name": "formulajs",
+    "escapedName": "formulajs",
+    "rawSpec": "1.0.8",
+    "saveSpec": null,
+    "fetchSpec": "1.0.8"
+  },
+  "_requiredBy": [
+    "/"
+  ],
+  "_resolved": "https://registry.npmjs.org/formulajs/-/formulajs-1.0.8.tgz",
+  "_spec": "1.0.8",
+  "_where": "/Users/wen/Desktop/work/ss/x-spreadsheet",
+  "author": {
+    "name": "Ismael Ghalimi",
+    "email": "ismael@stoic.com"
+  },
+  "bin": {
+    "implementation-stats": "./bin/implementation-stats"
+  },
+  "bugs": {
+    "url": "https://github.com/sutoiku/formula.js/issues"
+  },
+  "config": {
+    "blanket": {
+      "pattern": "lib",
+      "data-cover-never": "node_modules"
+    }
+  },
+  "dependencies": {
+    "bessel": "0.2.0",
+    "jStat": "1.0.6",
+    "numeral": "1.5.3",
+    "numeric": "1.2.6"
+  },
+  "description": "JavaScript implementation of most Microsoft Excel formula functions",
+  "devDependencies": {
+    "blanket": "^1.1.6",
+    "cli-table": "^0.3.0",
+    "coveralls": "^2.11.1",
+    "istanbul": "*",
+    "jshint": "^2.5.2",
+    "mocha": "*",
+    "mocha-lcov-reporter": "0.0.1",
+    "mocha-spec-cov": "0.0.3",
+    "should": "*",
+    "webpack": "^1.4.0"
+  },
+  "homepage": "https://github.com/sutoiku/formula.js#readme",
+  "main": "dist/formula.js",
+  "name": "formulajs",
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/sutoiku/formula.js.git"
+  },
+  "version": "1.0.8"
+}
