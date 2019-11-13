@@ -159,6 +159,7 @@ async function parseCell(viewRange, state = false, src = '', state2 = true, cont
             window.bugout.log('计算公式结束');
             console.timeEnd("calc need time");
 
+            console.log("...");
             // proxy.isDone();   // 如果有问题再取消注释，看看是否有问题
             let {factory} = this;
             factory.data = workbook;
