@@ -170,13 +170,14 @@ function copyPaste(srcCellRange, dstCellRange, what, autofill = false, proxy = "
     });
 }
 
-function cutPaste(srcCellRange, dstCellRange) {
+function cutPaste(srcCellRange, dstCellRange, cleard) {
     const {clipboard, rows, merges} = this;
     rows.cutPaste(srcCellRange, dstCellRange);
     merges.move(srcCellRange,
         dstCellRange.sri - srcCellRange.sri,
         dstCellRange.sci - srcCellRange.sci);
-    clipboard.clear();
+    if(cleard)
+        clipboard.clear();
 }
 
 // bss: { top, bottom, left, right }
@@ -1290,13 +1291,18 @@ export default class DataProxy {
                 this.unsortedRowMap = new Map();
             } else {
                 let v = selector.range.toString();
-                if (v.indexOf(":") === -1) {
-                    const {rows} = this;
-                    selector.range = rows.autoFilterRef(v, selector.range);
-                    autoFilter.ref = selector.range.toString();
-                } else {
-                    autoFilter.ref = v;
+                let eri = selector.range.eri;
+                const {rows} = this;
+
+                for(let i = selector.range.sci; i <= selector.range.eci; i++) {
+                    let range = new CellRange(selector.range.sri, i, selector.range.sri, i);
+                    range = rows.autoFilterRef(v, range);
+                    if(eri < range.eri) {
+                        eri = range.eri;
+                    }
                 }
+                let range = new CellRange(selector.range.sri, selector.range.sci, eri, selector.range.eci);
+                autoFilter.ref =  range.toString();
             }
         });
     }
@@ -1778,8 +1784,8 @@ export default class DataProxy {
         this.change(this.getData());
     }
 
-    cutPaste(srcCellRange, dstCellRange) {
-        cutPaste.call(this, srcCellRange, dstCellRange);
+    cutPaste(srcCellRange, dstCellRange, cleard = true) {
+        cutPaste.call(this, srcCellRange, dstCellRange, cleard);
     }
 
     setData(d, sheet = "", out = false) {

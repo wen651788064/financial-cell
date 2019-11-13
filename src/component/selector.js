@@ -135,7 +135,7 @@ class SelectorElement {
                 arr2.push(movedCell);
             });
 
-            data.cutPaste(_cellRange, cellRange);
+            data.cutPaste(_cellRange, cellRange, false);
             sheet.container.css('pointer-events', 'auto');
             _selector.setBoxinner("auto");
             selectorMoveEl.hide();

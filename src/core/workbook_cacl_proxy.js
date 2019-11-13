@@ -141,6 +141,7 @@ export default class WorkBook {
                 this.calcNeedCalcBool(true);
             } else if (isHave(cell.multivalueRefsCell)) {
                 this.contextualArr.push(expr);
+                this.contextualArr.push(cell.multivalueRefsCell);
                 this.calcNeedCalcBool(true);
             }
         }

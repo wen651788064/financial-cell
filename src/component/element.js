@@ -258,6 +258,13 @@ class Element {
         return window.getComputedStyle(this.el, null);
     }
 
+    isShow() {
+        if(this.el.style['display'] === 'block') {
+            return true;
+        }
+        return false;
+    }
+
     show(key = 'display', text = 'block') {
         this.css(key, text);
         return this;

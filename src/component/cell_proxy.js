@@ -252,7 +252,7 @@ export default class CellProxy {
     }
 
     // =a1 要变成=A1  不破坏数据源
-    pack(name, workbook) {
+    pack(name, workbook, tileArr) {
         if (typeof this.oldData === "string") {
             return workbook;
         }
@@ -293,6 +293,11 @@ export default class CellProxy {
                 }
             }
         });
+
+        for(let i = 0; i < tileArr.length; i++) {
+            let expr = tileArr[i];
+            data.Sheets[name][expr] = workbook.Sheets[name][expr];
+        }
 
         return data;
     }

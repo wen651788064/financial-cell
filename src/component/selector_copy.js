@@ -148,8 +148,6 @@ class SelectorElement {
         this.selectorMove.r.css("pointer-events", pointer);
         this.selectorMove.t.css("pointer-events", pointer);
         this.selectorMove.b.css("pointer-events", pointer);
-
-        this.cornerEl.css("pointer-events", pointer);
     }
 
     setCss(b, key = true) {

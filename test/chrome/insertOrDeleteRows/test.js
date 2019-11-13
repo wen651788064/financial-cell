@@ -155,7 +155,12 @@ describe("hexColorLuminance", function () {
         console.log("插入单元格行");
         assert.equal(data.rows.len, "100");
         let {contextMenu} = sheet;
-        let ev = simulateMouseEvent('click');
+        let ev = simulateMouseEvent('click',{
+            clientX: 0,
+            clientY: 0,
+            buttons: 1,
+            shiftKey: false
+        });
         contextMenu.menus[3].el.dispatchEvent(ev);
         assert.equal(data.rows.len, "101");
 

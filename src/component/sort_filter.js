@@ -55,6 +55,7 @@ export default class SortFilter {
         this.el.on('mousedown.stop', evt => {
             this.tindex = 1;
         });
+
         this.ci = null;
         this.sortDesc = null;
         this.values = null;
@@ -126,13 +127,23 @@ export default class SortFilter {
     }
 
     setOffset(v) {
+        if(this.el.isShow()) {
+            this.hide();
+            return;
+        }
+
         this.el.offset(v).show();
-        this.tindex = 1;
+        let tindex = 1;
+
+
+        console.log(this.el);
         bindClickoutside(this.el, () => {
-            if (this.tindex <= 0) {
+
+            if (tindex === 0) {
                 this.hide();
             }
-            this.tindex -= 1;
+
+            tindex = 0;
         });
     }
 

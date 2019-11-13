@@ -151,7 +151,7 @@ async function parseCell(viewRange, state = false, src = '', state2 = true, cont
             //         this.render(true, workbook);
             //     });
             // // } else {
-            workbook = proxy.pack(data.name, workbook);
+            workbook = proxy.pack(data.name, workbook, tileArr);
 
             console.time("calc need time");
             window.bugout.log('开始计算公式');

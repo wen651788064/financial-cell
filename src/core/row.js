@@ -793,7 +793,6 @@ class Rows {
     }
 
     autoFilterRef(ref, range) {
-        console.log(range, ref);
         let [ci, ri] = expr2xy(ref);
         let cell = this.getCell(ri, ci);
         while (cell !== null) {
