@@ -26,7 +26,6 @@ import {formatNumberRender} from "./format";
 import FormatProxy from "./format_proxy";
 import MultiPreAction from "../core/multi_pre_action";
 import CellProxy from "./cell_proxy";
-import {edgeRight} from "../config";
 // private methods
 /*
  * {
@@ -177,7 +176,7 @@ function cutPaste(srcCellRange, dstCellRange, cleard) {
     merges.move(srcCellRange,
         dstCellRange.sri - srcCellRange.sri,
         dstCellRange.sci - srcCellRange.sci);
-    if(cleard)
+    if (cleard)
         clipboard.clear();
 }
 
@@ -839,9 +838,9 @@ export default class DataProxy {
 
 
         let cells = rows.eachRange(range);
-        for(let i = 0; i < cells.length; i++) {
+        for (let i = 0; i < cells.length; i++) {
             let {ri, ci, cell} = cells[i];
-            if(isHave(cell) && isHave(cell.style)) {
+            if (isHave(cell) && isHave(cell.style)) {
                 rows.setCell(ri + dsri, ci + dsci, cell, 'style');
             }
             cb(ri + dsri, ci + dsci);
@@ -1069,7 +1068,16 @@ export default class DataProxy {
         let {multiPreAction} = this;
         const {selector} = this;
 
-        let step = multiPreAction.getStepType(type, {expr: '', property, value,oldCell, range: selector.range, ri, ci, cellRange: cellRange});
+        let step = multiPreAction.getStepType(type, {
+            expr: '',
+            property,
+            value,
+            oldCell,
+            range: selector.range,
+            ri,
+            ci,
+            cellRange: cellRange
+        });
         multiPreAction.addStep(step, {oldCell});
         return {
             "state": true
@@ -1093,6 +1101,16 @@ export default class DataProxy {
         // console.log('x:', x, ',y:', y, 'left:', left, 'top:', top);
         return x1 > left && x1 < (left + width)
             && y1 > top && y1 < (top + height);
+    }
+
+    isMergeCell(ri, ci) {
+        let state = false;
+        this.merges.each((range) => {
+            if(range.includeByRiCi(ri, ci)) {
+                state = true;
+            }
+        });
+        return state;
     }
 
     getSelectedRect() {
@@ -1295,15 +1313,15 @@ export default class DataProxy {
                 let eri = selector.range.eri;
                 const {rows} = this;
 
-                for(let i = selector.range.sci; i <= selector.range.eci; i++) {
+                for (let i = selector.range.sci; i <= selector.range.eci; i++) {
                     let range = new CellRange(selector.range.sri, i, selector.range.sri, i);
                     range = rows.autoFilterRef(v, range);
-                    if(eri < range.eri) {
+                    if (eri < range.eri) {
                         eri = range.eri;
                     }
                 }
                 let range = new CellRange(selector.range.sri, selector.range.sci, eri, selector.range.eci);
-                autoFilter.ref =  range.toString();
+                autoFilter.ref = range.toString();
             }
         });
     }
@@ -1776,7 +1794,7 @@ export default class DataProxy {
         }
 
         let oldCell = {};
-        if(cellRange !== "") {
+        if (cellRange !== "") {
             let {multiPreAction} = this;
             oldCell = multiPreAction.eachRange(cellRange);
         }

@@ -9,6 +9,10 @@ class Merges {
     this._.forEach(cb);
   }
 
+  each(cb) {
+      this._.forEach(it => cb(it));
+  }
+
   deleteWithin(cr) {
     this._ = this._.filter(it => !it.within(cr));
   }

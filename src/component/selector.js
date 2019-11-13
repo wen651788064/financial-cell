@@ -404,6 +404,8 @@ class selectorCell {
         // this.direction = 1;     // 1 左上 2 右上 3左下 4右下
         this.ri = -1;
         this.ci = -1;
+        this.eri = -1;
+        this.eci = -1;
     }
 
     resetSelectOffset(range) {
@@ -411,9 +413,8 @@ class selectorCell {
 
         if(this.ri !== -1 && this.ci !== -1) {
             if(!isHave(range) || range.includeByRiCi(this.ri, this.ci)) {
-                cellRange = new CellRange( this.ri,  this.ci, this.ri,  this.ci);
+                cellRange = new CellRange( this.ri,  this.ci, this.eri,  this.eci);
             } else {
-                console.log(this.ri, this.ci, range, range.includeByRiCi(this.ri, this.ci));
                 cellRange = new CellRange( range.sri,  range.sci, range.sri,  range.sci);
                 this.ri = cellRange.sri;
                 this.ci = cellRange.sci;
@@ -520,6 +521,9 @@ export default class Selector {
         const coffset = this.data.getClipboardRect();
         setAllAreaOffset.call(this, offset);
         setAllClipboardOffset.call(this, coffset);
+        if(isHave(this.range)) {
+            this.isMergeCell(this.range.sri, this.range.sci);
+        }
 
         this.selectCell.resetSelectOffset(this.range);
         this.resetOffset();
@@ -532,6 +536,9 @@ export default class Selector {
         setTAreaOffset.call(this, offset);
         setBRClipboardOffset.call(this, coffset);
         setTClipboardOffset.call(this, coffset);
+        if(isHave(this.range)) {
+            this.isMergeCell(this.range.sri, this.range.sci);
+        }
         this.selectCell.resetSelectOffset(this.range);
         this.resetOffset();
     }
@@ -543,6 +550,9 @@ export default class Selector {
         setLAreaOffset.call(this, offset);
         setBRClipboardOffset.call(this, coffset);
         setLClipboardOffset.call(this, coffset);
+        if(isHave(this.range)) {
+            this.isMergeCell(this.range.sri, this.range.sci);
+        }
         this.selectCell.resetSelectOffset(this.range);
         this.resetOffset();
     }
@@ -554,8 +564,22 @@ export default class Selector {
         setLAreaOffset.call(this, offset);
         setBRClipboardOffset.call(this, coffset);
         setLClipboardOffset.call(this, coffset);
+        if(isHave(this.range)) {
+            this.isMergeCell(this.range.sri, this.range.sci);
+        }
         this.selectCell.resetSelectOffset(this.range);
         this.resetOffset();
+    }
+
+    isMergeCell(ri, ci) {
+
+        if(this.data.isMergeCell(ri,  ci)) {
+            this.selectCell.eri = this.range.eri;
+            this.selectCell.eci =this.range.eci;
+        } else {
+            this.selectCell.eri = ri;
+            this.selectCell.eci = ci;
+        }
     }
 
     set(ri, ci, indexesUpdated = true) {
@@ -575,9 +599,10 @@ export default class Selector {
         // this.sIndexes = sIndexes;
         // this.eIndexes = eIndexes;
         this.range = cellRange;
-
+        this.isMergeCell(ri, ci);
         // this.resetSelectOffset(cellRange);
         this.selectCell.ri = ri;
+
         this.selectCell.ci = ci;
         this.resetAreaOffset();
         this.el.show();
@@ -596,7 +621,12 @@ export default class Selector {
         }
         this.range = data.calSelectedRangeByEnd(ri, ci);
 
-        this.selectCell.resetSelectOffset(this.range);
+        if(isHave(this.range)) {
+            this.isMergeCell( ri, ci);
+            this.selectCell.resetSelectOffset(new CellRange(ri, ci, this.range.eri, this.range.eci));
+        } else {
+            this.selectCell.resetSelectOffset(new CellRange(ri, ci, ri, ci));
+        }
         setAllAreaOffset.call(this, this.data.getSelectedRect());
     }
 
