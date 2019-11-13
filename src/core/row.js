@@ -18,19 +18,20 @@ export function isFormula(text) {
     return false;
 }
 
-function otherAutoFilter(d, darr, direction, isAdd, what, cb, other) {
-    let ncell = other ? {
-        "text": d.v,
-        "formulas": d.v,
-    } : this.getCellByTopCell(d, direction, isAdd, 'other');
+function otherAutoFilter(d, darr, direction, isAdd, what, cb, other, dri) {
+    // other 为 '=asd'或者'asd'也为false
+    let ncell = this.getCellByTopCell(d, direction, isAdd, 'other', dri, 0);
+
     let {text, formulas} = ncell;
     let iText = formulas != "" ? formulas : text;
 
-    if (other) {
-        this.copyRender(darr, d.ri, d.ci, ncell, what, cb);
-    } else if (this.isFormula(iText)) {
+    // if (other) {
+    //     this.copyRender(darr, d.ri, d.ci, ncell, what, cb);
+    // } else
+    if (this.isFormula(iText)) {
         this.calcFormulaCellByTopCell(iText, darr, d, direction, isAdd, cb);
     } else {
+        // 为 '=asd'或者'asd' 进这里
         this.calcCellByTopCell(cb, what, ncell, darr, isAdd, iText, d, text);
     }
 }
@@ -945,10 +946,10 @@ class Rows {
     }
 
     // logProxy.log({"msg":"12312"})  console.log --> logProxy.log
-    getCellByTopCell(d, direction, isAdd, what = 'all') {
+    getCellByTopCell(d, direction, isAdd, what = 'all', dri = 0, dci = 0) {
         if (what === 'date') {
             if (direction === 1) {
-                let {ri, ci} = this.getRangeByTopCell({ri: d.ri, ci: d.ci}, false, isAdd);
+                let {ri, ci} = this.getRangeByTopCell({ri: isAdd ? d.ri - dri : d.ri + dri, ci: d.ci}, false, isAdd);
                 return this.getCellByCell(ri, ci);
             } else if (direction === 2) {
                 return this.getCellByCell(d.ri, d.ci - 1);
@@ -956,7 +957,7 @@ class Rows {
                 return this.getCellByCell(d.ri, d.ci + 1);
             }
         } else {
-            let {ri, ci} = this.getRangeByTopCell({ri: d.ri, ci: d.ci}, direction, isAdd);
+            let {ri, ci} = this.getRangeByTopCell({ri: isAdd ? d.ri - dri : d.ri + dri, ci: d.ci}, direction, isAdd);
             return this.getCellByCell(ri, ci);
         }
     }
@@ -1023,8 +1024,8 @@ class Rows {
                         numberAutoFilter.call(this, darr[i], darr, isLeftRight, isDown, diffValue, what, cb, isNumber);
                     } else if (isDate || d.type === 'date') {
                         dateAutoFilter.call(this, darr[i], line, isDown, darr, what, cb, isDate);
-                    } else {
-                        otherAutoFilter.call(this, darr[i], darr, isLeftRight, isDown, what, cb, other);
+                    }  else {
+                        otherAutoFilter.call(this, darr[i], darr, isLeftRight, isDown, what, cb, other, sarr.length - 1);
                     }
                 }
             } else {
@@ -1036,7 +1037,7 @@ class Rows {
                     } else if (isDate || d.type === 'date') {
                         dateAutoFilter.call(this, darr[i], line, isDown, darr, what, cb, isDate);
                     } else {
-                        otherAutoFilter.call(this, darr[i], darr, isLeftRight, isDown, what, cb, other);
+                        otherAutoFilter.call(this, darr[i], darr, isLeftRight, isDown, what, cb, other, sarr.length - 1);
                     }
                 }
             }

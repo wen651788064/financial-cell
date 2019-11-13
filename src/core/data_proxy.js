@@ -26,6 +26,7 @@ import {formatNumberRender} from "./format";
 import FormatProxy from "./format_proxy";
 import MultiPreAction from "../core/multi_pre_action";
 import CellProxy from "./cell_proxy";
+import {edgeRight} from "../config";
 // private methods
 /*
  * {

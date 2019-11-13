@@ -269,6 +269,16 @@ class CellRange {
         return ref;
     }
 
+    includeByRiCi(ri, ci) {
+        const {
+            sri, sci, eri, eci, w, h,
+        } = this;
+        if(sri <= ri && eri >= ri && sci <= ci && eci >= ci) {
+            return true;
+        }
+        return false;
+    }
+
     clone() {
         const {
             sri, sci, eri, eci, w, h,

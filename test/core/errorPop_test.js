@@ -315,6 +315,23 @@ describe('qq', () => {
             assert.equal(cell3.formulas, '10');
         });
 
+        it(' A1: "asd" A2: "" ', function () {
+            let cell = {"text": "asd", "formulas": "asd"};
+            data.rows.setCell(3, 4, cell, 'all_with_no_workbook');
+            data.rows.setCell(4, 4, {"text": ""}, 'all_with_no_workbook');
+            const srcCellRange = new CellRange(3, 4, 4, 4, 0, 0);
+            const dstCellRange = new CellRange(5, 4, 12, 4, 0, 0);
+            data.rows.copyPaste(srcCellRange, dstCellRange, 'all', true);
+
+            assert.equal(data.rows.getCell(5, 4).text, 'asd');
+            assert.equal(data.rows.getCell(5, 4).formulas, 'asd');
+            assert.equal(data.rows.getCell(6, 4).text, '');
+            assert.equal(data.rows.getCell(6, 4).formulas, '');
+            assert.equal(data.rows.getCell(7, 4).text, 'asd');
+            assert.equal(data.rows.getCell(7, 4).formulas, 'asd');
+
+        });
+
         it(' =123 ', () => {
             let cell = {"text": "=123", "formulas": "=123"};
             copyPasteTemplate(cell, data);

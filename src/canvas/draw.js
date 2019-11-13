@@ -1,4 +1,6 @@
 /* global window */
+import {isHave} from "../core/helper";
+
 function dpr() {
     return window.devicePixelRatio || 1;       // 修改之后
 }
@@ -224,8 +226,8 @@ class Draw {
     }
 
     selfAdaptionTxtWidth(txt, font, box) {
-        if (txt == undefined || font == undefined)
-            return;
+        if (isHave(txt) === false || isHave(font) == false || txt.length <= 0)
+            return 0;
         const {ctx} = this;
         ctx.font = `${font.italic ? 'italic' : ''} ${font.bold ? 'bold' : ''} ${npx(font.size)}px ${font.name}`;
 
@@ -234,8 +236,8 @@ class Draw {
     }
 
     selfAdaptionOneTxtWidth(txt, font, box) {
-        if (txt == undefined || font == undefined)
-            return;
+        if (isHave(txt) === false || isHave(font) == false || txt.length <= 0)
+            return 0;
         const {ctx} = this;
         ctx.font = `${font.italic ? 'italic' : ''} ${font.bold ? 'bold' : ''} ${npx(font.size)}px ${font.name}`;
 

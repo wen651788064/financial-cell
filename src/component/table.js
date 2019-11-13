@@ -174,7 +174,7 @@ async function parseCell(viewRange, state = false, src = '', state2 = true, cont
             data.rows.setData(cells);
 
             data.change(data.getData());
-            // }
+
         } catch (e) {
             console.error(e);
         }

@@ -413,7 +413,7 @@ function scrollTo(orien, verticalScrollbar, horizontalScrollbar, rows, data, col
     }
     // 1 下 2 上 3左 4 右
     let ri = 0, ci = 0;
-    if (orien === 1) {   //往下
+    if (orien === 1) {
         const {top} = verticalScrollbar.scroll();  // 可见视图上边缘距离toolbar的像素
         ri = data.scroll.ri + 1;
         verticalScrollbar.move({top: top + rows.getHeight(ri) - 1});
@@ -422,7 +422,7 @@ function scrollTo(orien, verticalScrollbar, horizontalScrollbar, rows, data, col
         ri = data.scroll.ri - 1;
 
         verticalScrollbar.move({top: ri === 0 ? 0 : top - rows.getHeight(ri)});
-    } else if (orien === 4) {        //往右
+    } else if (orien === 4) {
         const {left} = horizontalScrollbar.scroll();
         ci = data.scroll.ci + 1;
         horizontalScrollbar.move({left: left + cols.getWidth(ci)});
@@ -975,11 +975,18 @@ function toolbarChange(type, value) {
     } else {
         //format percent 473
         data.setSelectedCellAttr(type, value);
+        if(type === 'border') {
+            borderResSet.call(this, 'none');
+        }
         if (type === 'formula') {
             editorSet.call(this);
         }
         sheetReset.call(this);
     }
+}
+
+function borderResSet(value = "1px solid rgb(75, 137, 255") {
+    this.selector.br.border(value);
 }
 
 function sortFilterChange(ci, order, operator, value) {
@@ -1180,6 +1187,7 @@ function sheetInitEvents() {
 
                     this.selector.longTimeBefore();
                     overlayerMousedown.call(this, evt);
+                    borderResSet.call(this);
                     clearSelectors.call(this);
                     editorSetOffset.call(this);
                 }
