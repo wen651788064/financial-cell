@@ -30,7 +30,7 @@ module.exports = merge(common, {
     },
     devtool: 'inline-source-map',
     devServer: {
-        host: '2',
+        host: '192.168.31.33',
         contentBase: '../dist',
     },
 });
