@@ -2,8 +2,8 @@ import {contain, deepCopy, division, getSheetVale, isSheetVale} from "../core/op
 import {expr2xy, xy2expr} from "../core/alphabet";
 // import Worker from 'worker-loader!../external/Worker.js';
 import {filterFormula} from "../config";
-import {find, isHave} from "../core/helper";
-import {multipleCellsRender, specialWebsiteValue} from "./special_formula_process";
+import {isHave} from "../core/helper";
+import {specialWebsiteValue} from "./special_formula_process";
 import {textReplace} from "./context_process";
 
 
@@ -49,7 +49,7 @@ export default class CellProxy {
             if (workbook.Sheets[name][i].f != "" || isHave(workbook.Sheets[name][i].multivalueRefsCell) || isHave(workbook.Sheets[name][i].clearMultivalueRefsCell)) {
                 this.oldData.Sheets[name][i] = workbook.Sheets[name][i];
 
-                if(tileArr.indexOf(i) === -1) {
+                if (tileArr.indexOf(i) === -1) {
                     tileArr.push(i);
                 }
             }
@@ -272,34 +272,42 @@ export default class CellProxy {
             })
         });
 
-        Object.keys(workbook.Sheets[name]).forEach(i => {
-            if (!isNaN(workbook.Sheets[name][i].v)) {
-                workbook.Sheets[name][i].v = workbook.Sheets[name][i].v * 1;
-            }
-            data.Sheets[name][i] = workbook.Sheets[name][i];
+        // Object.keys(workbook.Sheets[name]).forEach(i => {
+        //     if (!isNaN(workbook.Sheets[name][i].v)) {
+        //         workbook.Sheets[name][i].v = workbook.Sheets[name][i].v * 1;
+        //     }
+        //     data.Sheets[name][i] = workbook.Sheets[name][i];
+        //
+        //     if (workbook.Sheets[name][i].f && workbook.Sheets[name][i].f[0] === '=') {
+        //         if (find(filterFormula, workbook.Sheets[name][i].f) && workbook.Sheets[name][i].v !== "") {
+        //             data.Sheets[name][i].f = "";
+        //         } else {
+        //             data.Sheets[name][i].v = "-";
+        //             data.Sheets[name][i].f = workbook.Sheets[name][i].f;
+        //         }
+        //     }
+        // });
 
-            if (workbook.Sheets[name][i].f && workbook.Sheets[name][i].f[0] === '=') {
-                if (find(filterFormula, workbook.Sheets[name][i].f) && workbook.Sheets[name][i].v !== "") {
-                    data.Sheets[name][i].f = "";
-                } else {
-                    data.Sheets[name][i].v = "-";
-                    data.Sheets[name][i].f = workbook.Sheets[name][i].f;
-                    // if (isSheetVale(workbook.Sheets[name][i].f)) {
-                    //     data.Sheets[name][i].f = workbook.Sheets[name][i].f;
-                    // } else {
-                    //     data.Sheets[name][i].f = workbook.Sheets[name][i].f;
-                    //     // data.Sheets[name][i].f = toUpperCase(workbook.Sheets[name][i].f);
-                    // }
-                }
-            }
-        });
-
-        for(let i = 0; i < tileArr.length; i++) {
+        this.clearMultivalueRefsCell(data);
+        for (let i = 0; i < tileArr.length; i++) {
             let expr = tileArr[i];
             data.Sheets[name][expr] = workbook.Sheets[name][expr];
         }
 
         return data;
+    }
+
+    // clearMultivalueRefsCell  multivalueRefsCell
+    clearMultivalueRefsCell(data) {
+        Object.keys(data).forEach(i => {
+            Object.keys(data[i]).forEach(j => {
+                Object.keys(data[i][j]).forEach(k => {
+                    const cell = data[i][j][k];
+                    delete cell['clearMultivalueRefsCell'];
+                    delete  cell['multivalueRefsCell'];
+                })
+            })
+        });
     }
 
     // unpack 应该只对改变的单元格进行重新赋值
@@ -344,11 +352,11 @@ export default class CellProxy {
                 cells[i].v = args.text;
             }
 
-            if(isHave(cells[i]) && isHave(cells[i].multivalueRefsCell)) {
+            if (isHave(cells[i]) && isHave(cells[i].multivalueRefsCell)) {
                 data[ri]['cells'][ci].multivalueRefsCell = cells[i].multivalueRefsCell;
             }
 
-            if(isHave(cells[i]) && isHave(cells[i].clearMultivalueRefsCell)) {
+            if (isHave(cells[i]) && isHave(cells[i].clearMultivalueRefsCell)) {
                 delete data[ri]['cells'][ci].multivalueRefsCell;
             }
 

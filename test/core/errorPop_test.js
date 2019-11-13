@@ -254,6 +254,8 @@ describe('qq', () => {
         });
     });
 
+
+
     describe('  formatNumberRender  ', () => {
         it('  1.23.23  ', function () {
             assert.equal(formatNumberRender("1.23.23", -1), "1.23.23");
@@ -790,4 +792,6 @@ describe('qq', () => {
             assert.equal(args.date, 'Invalid Date');
         });
     })
+
+
 });
