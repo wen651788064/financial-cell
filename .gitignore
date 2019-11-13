@@ -7,11 +7,11 @@ __pycache__/
 # C extensions
 *.so
 src/xlsx-calc/
-build/*
+
 # Distribution / packaging
 .Python
 env/
-
+build/
 develop-eggs/
 dist/
 downloads/
