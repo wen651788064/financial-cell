@@ -1,6 +1,4 @@
 import {xy2expr} from "./alphabet";
-import {isHave} from "./helper";
-import {deepCopy} from "./operator";
 import PreAction from "../model/pre_action";
 import {testValid} from "../utils/test";
 
@@ -11,14 +9,14 @@ export default class MultiPreAction {
         this.data = data;
     }
 
-    addStep({type, action, ri, ci, expr, cellRange, cells, height, width}, {oldCell, newCell, merges}) {
+    addStep({type, action, ri, ci, expr, cellRange, cells, height, width, property, value}, {oldCell, newCell, mergesData}) {
         let preAction = "";
         switch (type) {
             case 1:
                 preAction = new PreAction({
                     type,
                     action, ri, ci, expr, oldCell, newCell
-                });
+                }, this.data);
                 this.undoItems.push(preAction);
                 this.redoItems = [];
                 break;
@@ -27,9 +25,9 @@ export default class MultiPreAction {
             case 11:
             case 6:
                 preAction = new PreAction({
-                    type,
+                    type, mergesData,  property, value,
                     action, cellRange, cells, oldCell
-                });
+                }, this.data);
                 this.undoItems.push(preAction);
                 this.redoItems = [];
                 break;
@@ -37,7 +35,7 @@ export default class MultiPreAction {
                 preAction = new PreAction({
                     type,
                     action, height, ri
-                });
+                }, this.data);
                 this.undoItems.push(preAction);
                 this.redoItems = [];
                 break;
@@ -45,15 +43,7 @@ export default class MultiPreAction {
                 preAction = new PreAction({
                     type,
                     action, width, ci
-                });
-                this.undoItems.push(preAction);
-                this.redoItems = [];
-                break;
-            case 12:
-                preAction = new PreAction({
-                    type, merges,
-                    action, cellRange, cells, oldCell
-                });
+                }, this.data);
                 this.undoItems.push(preAction);
                 this.redoItems = [];
                 break;
@@ -117,54 +107,47 @@ export default class MultiPreAction {
                 };
                 break;
             case 11:
-                if(property === 'font-bold' || property === 'font-italic'
+                if (property === 'font-bold' || property === 'font-italic'
                     || property === 'font-name' || property === 'font-size' || property === 'color') {
                     str = "字体";
-                } else if(property === 'underline') {
+                } else if (property === 'underline') {
                     str = "下划线";
-                } else if(property === 'bgcolor' || property === 'format') {
+                } else if (property === 'bgcolor' || property === 'format') {
                     str = "单元格格式";
-                } else if(property === 'align' ) {
-                    if(value === 'left') {
+                } else if (property === 'align') {
+                    if (value === 'left') {
                         str = "左对齐";
-                    } else if(value === 'center'){
+                    } else if (value === 'center') {
                         str = "居中";
-                    } else if(value === 'right') {
+                    } else if (value === 'right') {
                         str = "右对齐";
                     }
-                } else if(property === 'valign') {
-                    if(value === 'top') {
+                } else if (property === 'valign') {
+                    if (value === 'top') {
                         str = "顶端对齐";
-                    }else if(value === 'center'){
+                    } else if (value === 'center') {
                         str = "居中";
-                    } else if(value === 'bottom') {
+                    } else if (value === 'bottom') {
                         str = "底端对齐";
                     }
-                } else if(property === 'border') {
+                } else if (property === 'border') {
                     str = "边框";
-                } else if(property === 'strike') {
+                } else if (property === 'strike') {
                     str = "删除线";
+                } else if (property === 'merge') {
+                    str = '合并单元格';
                 }
 
                 return {
                     action: str,
                     type,
-                    cellRange: range,
+                    cellRange: range, property, value,
                     cells: this.eachRange(cellRange),
 
                 };
                 break;
             case 6:
                 str = '粘贴';
-                return {
-                    action: str,
-                    type,
-                    cellRange: range,
-                    cells: this.eachRange(cellRange),
-                };
-                break;
-            case 12:
-                str = '合并单元格';
                 return {
                     action: str,
                     type,

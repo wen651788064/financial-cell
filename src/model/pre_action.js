@@ -2,7 +2,7 @@ import {deepCopy} from "../core/operator";
 import { isHave } from '../core/helper';
 
 export default class PreAction {
-    constructor({type = -1, action = "", ri = -1, ci = -1, expr = "", cellRange = "", cells = {}, height = -1, width = -1, oldCell = {}, newCell= {}, merges = ""}) {
+    constructor({type = -1, action = "", ri = -1, ci = -1, expr = "", cellRange = "", cells = {}, height = -1, width = -1, oldCell = {}, newCell= {}, mergesData = "", property = "", value = ""}, data) {
         this.type = type;
         this.action = action;
         this.ri = ri;
@@ -14,7 +14,11 @@ export default class PreAction {
         this.width = width;
         this.oldCell = oldCell;
         this.newCell = newCell;
-        this.merges = merges;
+        this.mergesData = mergesData;
+        this.property = property;
+        this.value = value;
+
+        this.data = data;
     }
 
     restore(data, sheet, isRedo) { // 如果是2值的参数，用is前缀命名   ，多值   xxxType
@@ -31,24 +35,24 @@ export default class PreAction {
             }
 
             data.rows.setCellText(ri, ci, cell, sheet.table.proxy, data.name, 'cell');
-        } else if(type === 12) {
-            let {merges, cellRange} = this;
-
-
-            merges.deleteWithin(cellRange);
-        }else if (type === 2 || type === 5 || type === 6 || type === 11) {
-            let {cells, oldCell} = this;
+        } else if (type === 2 || type === 5 || type === 6 || type === 11) {
+            let {cells, oldCell, mergesData, cellRange, property, value} = this;
             let _cells = "";
             if(isRedo === 1) {
                 _cells = deepCopy(oldCell);
             } else {
                 _cells = deepCopy(cells);
             }
+
+            this.data.merges.setData(mergesData);
+
             for (let i = 0; i < _cells.length; i++) {
                 let {cell, ri, ci} = _cells[i];
 
                 data.rows.setCellText(ri, ci, cell, sheet.table.proxy, data.name, 'cell');
+
             }
+
         } else if(type === 3) {
             let {ri, height} = this;
             data.rows.setHeight(ri,  height);

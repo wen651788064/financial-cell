@@ -110,7 +110,7 @@ async function parseCell(viewRange, state = false, src = '', state2 = true, cont
 
     console.time(" xx3 ");
     if (ca.state) {
-      workbook.Sheets[data.name] = ca.data;
+        workbook.Sheets[data.name] = ca.data;
     }
 
     let assoc = proxy.associated(data.name, contextualArr, workbook);

@@ -1060,7 +1060,7 @@ export default class DataProxy {
         }
     }
 
-    changeToHistory({ri, type, ci, cellRange, property, value, oldCell}) {
+    changeToHistory({ri, type, ci, cellRange, property, value, oldCell, mergesData}) {
         if (type === -1) {
             return {"state": false,}
         }
@@ -1078,7 +1078,7 @@ export default class DataProxy {
             ci,
             cellRange: cellRange,
         });
-        multiPreAction.addStep(step, {oldCell, merges: this.merges});
+        multiPreAction.addStep(step, {oldCell, mergesData});
         return {
             "state": true
         }
@@ -1279,15 +1279,13 @@ export default class DataProxy {
         // console.log('merge:', rn, cn);
         if (rn > 1 || cn > 1) {
             const {sri, sci} = selector.range;
-            this.changeData(() => {
-                const cell = rows.getCellOrNew(sri, sci);
-                cell.merge = [rn - 1, cn - 1];
-                this.merges.add(selector.range);
-                // delete merge cells
-                this.rows.deleteCells(selector.range);
-                // console.log('cell:', cell, this.d);
-                this.rows.setCell(sri, sci, cell);
-            } , {type: 12, cellRange: selector.range});
+            const cell = rows.getCellOrNew(sri, sci);
+            cell.merge = [rn - 1, cn - 1];
+            this.merges.add(selector.range);
+            // delete merge cells
+            this.rows.deleteCells(selector.range);
+            // console.log('cell:', cell, this.d);
+            this.rows.setCell(sri, sci, cell);
         }
     }
 
@@ -1799,12 +1797,13 @@ export default class DataProxy {
         }
 
         let oldCell = {};
+        let mergesData = this.merges.getData();
         if (cellRange !== "") {
             let {multiPreAction} = this;
             oldCell = multiPreAction.eachRange(cellRange);
         }
         cb();
-        this.changeToHistory({type, ri, ci, cellRange, property, value, oldCell});
+        this.changeToHistory({type, ri, ci, cellRange, property, value, oldCell, mergesData});
         this.change(this.getData());
     }
 

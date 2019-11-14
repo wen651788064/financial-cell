@@ -337,7 +337,8 @@ class Rows {
         return param;
     }
 
-    setCellText(ri, ci, {text, style, formulas}, proxy = "", name = "", what = 'all') {
+    // what === cell 把原本的cell 的merge 清空， 原因是不清空 merge还会存在
+    setCellText(ri, ci, {text, style, formulas, merge = ""}, proxy = "", name = "", what = 'all') {
         const cell = this.getCellOrNew(ri, ci);
         if (what === 'style') {
             cell.style = style;
@@ -348,12 +349,16 @@ class Rows {
         } else if (what === 'cell') {
             cell.style = style;
             cell.formulas = formulas;
-        } else {
+            delete cell['merge'];
+            if(merge !== "") {
+                cell.merge = merge;
+            }
+        }  else {
             cell.formulas = text;
             // cell.value = text;
         }
 
-        cell.text = text;  // todo 自定义公式： text 为公式计算结果, formulas 为公式
+        cell.text = text;
         // this.recast(cell);
         // cell
         this.getDependCell(xy2expr(ci, ri), this.getCell(ri, ci));
