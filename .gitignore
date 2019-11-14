@@ -11,7 +11,8 @@ src/xlsx-calc/
 # Distribution / packaging
 .Python
 env/
-/build/
+build/
+build2/
 develop-eggs/
 dist/
 downloads/

@@ -11,7 +11,7 @@ export default class MultiPreAction {
         this.data = data;
     }
 
-    addStep({type, action, ri, ci, expr, cellRange, cells, height, width}, {oldCell, newCell}) {
+    addStep({type, action, ri, ci, expr, cellRange, cells, height, width}, {oldCell, newCell, merges}) {
         let preAction = "";
         switch (type) {
             case 1:
@@ -49,11 +49,19 @@ export default class MultiPreAction {
                 this.undoItems.push(preAction);
                 this.redoItems = [];
                 break;
+            case 12:
+                preAction = new PreAction({
+                    type, merges,
+                    action, cellRange, cells, oldCell
+                });
+                this.undoItems.push(preAction);
+                this.redoItems = [];
+                break;
         }
         testValid.call(this);
     }
 
-    getStepType(type, {ri, ci, expr, text, range, cellRange, property, value}) {
+    getStepType(type, {ri, ci, expr, text, range, cellRange, property, value, merges}) {
         let str = "";
         let {rows, cols} = this.data;
         // let cells = [];
@@ -148,6 +156,15 @@ export default class MultiPreAction {
                 break;
             case 6:
                 str = '粘贴';
+                return {
+                    action: str,
+                    type,
+                    cellRange: range,
+                    cells: this.eachRange(cellRange),
+                };
+                break;
+            case 12:
+                str = '合并单元格';
                 return {
                     action: str,
                     type,

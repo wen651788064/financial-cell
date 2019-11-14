@@ -1076,9 +1076,9 @@ export default class DataProxy {
             range: selector.range,
             ri,
             ci,
-            cellRange: cellRange
+            cellRange: cellRange,
         });
-        multiPreAction.addStep(step, {oldCell});
+        multiPreAction.addStep(step, {oldCell, merges: this.merges});
         return {
             "state": true
         }
@@ -1105,12 +1105,17 @@ export default class DataProxy {
 
     isMergeCell(ri, ci) {
         let state = false;
+        let data = "";
         this.merges.each((range) => {
             if(range.includeByRiCi(ri, ci)) {
                 state = true;
+                data = range;
             }
         });
-        return state;
+        return {
+            "state": state,
+            "data": data,
+        };
     }
 
     getSelectedRect() {
@@ -1282,7 +1287,7 @@ export default class DataProxy {
                 this.rows.deleteCells(selector.range);
                 // console.log('cell:', cell, this.d);
                 this.rows.setCell(sri, sci, cell);
-            });
+            } , {type: 12, cellRange: selector.range});
         }
     }
 

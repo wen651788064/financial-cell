@@ -2,7 +2,7 @@ import {deepCopy} from "../core/operator";
 import { isHave } from '../core/helper';
 
 export default class PreAction {
-    constructor({type = -1, action = "", ri = -1, ci = -1, expr = "", cellRange = "", cells = {}, height = -1, width = -1, oldCell = {}, newCell= {}}) {
+    constructor({type = -1, action = "", ri = -1, ci = -1, expr = "", cellRange = "", cells = {}, height = -1, width = -1, oldCell = {}, newCell= {}, merges = ""}) {
         this.type = type;
         this.action = action;
         this.ri = ri;
@@ -14,6 +14,7 @@ export default class PreAction {
         this.width = width;
         this.oldCell = oldCell;
         this.newCell = newCell;
+        this.merges = merges;
     }
 
     restore(data, sheet, isRedo) { // 如果是2值的参数，用is前缀命名   ，多值   xxxType
@@ -30,7 +31,12 @@ export default class PreAction {
             }
 
             data.rows.setCellText(ri, ci, cell, sheet.table.proxy, data.name, 'cell');
-        } else if (type === 2 || type === 5 || type === 6 || type === 11) {
+        } else if(type === 12) {
+            let {merges, cellRange} = this;
+
+
+            merges.deleteWithin(cellRange);
+        }else if (type === 2 || type === 5 || type === 6 || type === 11) {
             let {cells, oldCell} = this;
             let _cells = "";
             if(isRedo === 1) {

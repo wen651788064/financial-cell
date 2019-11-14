@@ -111,8 +111,6 @@ async function parseCell(viewRange, state = false, src = '', state2 = true, cont
     console.time(" xx3 ");
     if (ca.state) {
       workbook.Sheets[data.name] = ca.data;
-    } else {
-      // workbook.Sheets[data.name] = {};
     }
 
     let assoc = proxy.associated(data.name, contextualArr, workbook);
@@ -155,7 +153,7 @@ async function parseCell(viewRange, state = false, src = '', state2 = true, cont
 
             console.time("calc need time");
             window.bugout.log('开始计算公式');
-            data.calc(workbook, data.rows);
+            data.calc(workbook, data.rows, tileArr);
             window.bugout.log('计算公式结束');
             console.timeEnd("calc need time");
 

@@ -4,7 +4,7 @@ import {CellRange} from '../core/cell_range';
 import {mouseMoveUp} from "../component/event";
 import {xy2expr} from "../core/alphabet";
 import MovedCell from '../model/moved_cell';
-import { deepCopy } from '../core/operator';
+import {deepCopy} from '../core/operator';
 import {isHave} from "../core/helper";
 
 const selectorHeightBorderWidth = 2 * 2 - 1;
@@ -19,7 +19,7 @@ class SelectorElement {
         this._selector = selector;
         this.l = h('div', `${cssPrefix}-selector-box-l`)
             .on('mousedown.stop', evt => {
-                if(evt.detail === 2) {
+                if (evt.detail === 2) {
                     evt.stopPropagation();
 
                 } else {
@@ -29,19 +29,19 @@ class SelectorElement {
             });
         this.r = h('div', `${cssPrefix}-selector-box-r`)
             .on('mousedown.stop', evt => {
-                if(evt.detail === 2) {
+                if (evt.detail === 2) {
                     evt.stopPropagation();
                 } else {
                     this.moveEvent(2);
                 }
             }).on('click', (evt) => {
-                if(evt.detail === 2) {
+                if (evt.detail === 2) {
                     evt.stopPropagation();
                 }
             });
         this.t = h('div', `${cssPrefix}-selector-box-t`)
             .on('mousedown.stop', evt => {
-                if(evt.detail === 2) {
+                if (evt.detail === 2) {
                     evt.stopPropagation();
                 } else {
                     evt.stopPropagation();
@@ -50,7 +50,7 @@ class SelectorElement {
             })
         this.b = h('div', `${cssPrefix}-selector-box-b`)
             .on('mousedown.stop', evt => {
-                if(evt.detail === 2) {
+                if (evt.detail === 2) {
                     evt.stopPropagation();
                 } else {
                     this.moveEvent(4);
@@ -60,9 +60,9 @@ class SelectorElement {
 
         this.cornerEl.on('mousedown', evt => {
             let {detail} = evt;
-            if(detail === 2) {
-                 sheet.clickCopyPaste();
-                 evt.stopPropagation();
+            if (detail === 2) {
+                sheet.clickCopyPaste();
+                evt.stopPropagation();
             }
         });
         this.boxinner = h('div', `${cssPrefix}-selector-boxinner`)
@@ -123,20 +123,20 @@ class SelectorElement {
                 selectorMoveEl.el.show();
             }
         }, (e) => {
-               // 如果移动的内容被单元格包含，则需要变化
+            // 如果移动的内容被单元格包含，则需要变化
             let {rows} = data;
             let arr = [], arr2 = [], arr3 = [];
 
-           _cellRange.each((i, j) => {
-              console.log(rows.getCell(i, j), i, j);
-              let cell = rows.getCell(i, j);
-              let movedCell = new MovedCell(`${xy2expr(j, i)}:${xy2expr(j, i)}`, deepCopy(cell || {}), i, j);
-              let movedCell2 = new MovedCell(`${xy2expr(j, i)}`, deepCopy(cell || {}), i, j);
+            _cellRange.each((i, j) => {
+                console.log(rows.getCell(i, j), i, j);
+                let cell = rows.getCell(i, j);
+                let movedCell = new MovedCell(`${xy2expr(j, i)}:${xy2expr(j, i)}`, deepCopy(cell || {}), i, j);
+                let movedCell2 = new MovedCell(`${xy2expr(j, i)}`, deepCopy(cell || {}), i, j);
                 arr.push(movedCell);
                 arr3.push(movedCell2);
             });
             cellRange.each((i, j) => {
-              let movedCell = new MovedCell(xy2expr(j, i), deepCopy(rows.getCell(i, j) || {}), i, j);
+                let movedCell = new MovedCell(xy2expr(j, i), deepCopy(rows.getCell(i, j) || {}), i, j);
                 arr2.push(movedCell);
             });
 
@@ -213,10 +213,9 @@ class SelectorElement {
             //     rows.moveChange(arr, arr2, arr3);
             //     sheet.selectorMoveReset();
             // });
-          console.time("move")
+            console.time("move")
             rows.moveChange(arr, arr2, arr3);
-          console.timeEnd("move")
-
+            console.timeEnd("move")
 
 
             sheet.selectorMoveReset();
@@ -411,17 +410,17 @@ class selectorCell {
     resetSelectOffset(range) {
         let cellRange = "";
 
-        if(this.ri !== -1 && this.ci !== -1) {
-            if(!isHave(range) || range.includeByRiCi(this.ri, this.ci)) {
-                cellRange = new CellRange( this.ri,  this.ci, this.eri,  this.eci);
+        if (this.ri !== -1 && this.ci !== -1) {
+            if (!isHave(range) || range.includeByRiCi(this.ri, this.ci)) {
+                cellRange = new CellRange(this.ri, this.ci, this.eri, this.eci);
             } else {
-                cellRange = new CellRange( range.sri,  range.sci, range.sri,  range.sci);
+                cellRange = new CellRange(range.sri, range.sci, range.sri, range.sci);
                 this.ri = cellRange.sri;
                 this.ci = cellRange.sci;
             }
         }
 
-        if(cellRange !== "") {
+        if (cellRange !== "") {
             let rect = this.data.getRect(cellRange);
             this.setOffset(rect);
         } else {
@@ -521,7 +520,7 @@ export default class Selector {
         const coffset = this.data.getClipboardRect();
         setAllAreaOffset.call(this, offset);
         setAllClipboardOffset.call(this, coffset);
-        if(isHave(this.range)) {
+        if (isHave(this.range)) {
             this.isMergeCell(this.range.sri, this.range.sci);
         }
 
@@ -536,7 +535,7 @@ export default class Selector {
         setTAreaOffset.call(this, offset);
         setBRClipboardOffset.call(this, coffset);
         setTClipboardOffset.call(this, coffset);
-        if(isHave(this.range)) {
+        if (isHave(this.range)) {
             this.isMergeCell(this.range.sri, this.range.sci);
         }
         this.selectCell.resetSelectOffset(this.range);
@@ -550,7 +549,7 @@ export default class Selector {
         setLAreaOffset.call(this, offset);
         setBRClipboardOffset.call(this, coffset);
         setLClipboardOffset.call(this, coffset);
-        if(isHave(this.range)) {
+        if (isHave(this.range)) {
             this.isMergeCell(this.range.sri, this.range.sci);
         }
         this.selectCell.resetSelectOffset(this.range);
@@ -564,7 +563,7 @@ export default class Selector {
         setLAreaOffset.call(this, offset);
         setBRClipboardOffset.call(this, coffset);
         setLClipboardOffset.call(this, coffset);
-        if(isHave(this.range)) {
+        if (isHave(this.range)) {
             this.isMergeCell(this.range.sri, this.range.sci);
         }
         this.selectCell.resetSelectOffset(this.range);
@@ -572,10 +571,10 @@ export default class Selector {
     }
 
     isMergeCell(ri, ci) {
-
-        if(this.data.isMergeCell(ri,  ci)) {
-            this.selectCell.eri = this.range.eri;
-            this.selectCell.eci =this.range.eci;
+        let {data, state} = this.data.isMergeCell(ri, ci);
+        if (state) {
+            this.selectCell.eri = data.eri;
+            this.selectCell.eci = data.eci;
         } else {
             this.selectCell.eri = ri;
             this.selectCell.eci = ci;
@@ -612,7 +611,7 @@ export default class Selector {
         console.log(this.range);
     }
 
-    setEnd(ri, ci, moving = true) {
+    setEnd(ri, ci, moving = true, enter = false) {
         const {data, lastri, lastci} = this;
         if (moving) {
             if (ri === lastri && ci === lastci) return;
@@ -621,9 +620,9 @@ export default class Selector {
         }
         this.range = data.calSelectedRangeByEnd(ri, ci);
 
-        if(isHave(this.range)) {
-            this.isMergeCell( ri, ci);
-            this.selectCell.resetSelectOffset(new CellRange(ri, ci, this.range.eri, this.range.eci));
+        if (isHave(this.range)) {
+            this.isMergeCell(this.selectCell.ri, this.selectCell.ci);
+            this.selectCell.resetSelectOffset(new CellRange(this.range.sri, this.range.sci, this.range.eri, this.range.eci));
         } else {
             this.selectCell.resetSelectOffset(new CellRange(ri, ci, ri, ci));
         }
@@ -642,7 +641,7 @@ export default class Selector {
         const {eri, eci, sci, sri} = this.data.selector.range;
         // 原因是 从右下角往左上角选中，然后ctrl + c 会有bug  加下面一行的原因
         // this.set(sri, sci);
-        this.setEnd(eri, eci);
+        this.setEnd(eri, eci, true, true);
     }
 
     setMove(rect) {
@@ -670,7 +669,7 @@ export default class Selector {
         const ecn = eci - ci;
         // console.log(srn, scn, ern, ecn, ri, ci);
         if (pos == 2) {
-             drisc = 11;
+            drisc = 11;
             // left
             // console.log('left');
             this.arange = new CellRange(sri, nci, eri, sci - 1);
@@ -679,7 +678,7 @@ export default class Selector {
             // this.eaIndexes = [eri, sci - 1];
             // data.calRangeIndexes2(
         } else if (pos == 4) {
-             drisc = 22;
+            drisc = 22;
 
             // top
             // console.log('top');
@@ -688,7 +687,7 @@ export default class Selector {
             // this.saIndexes = [nri, sci];
             // this.eaIndexes = [sri - 1, eci];
         } else if (pos == 3) {
-             drisc = 33;
+            drisc = 33;
             // right
             // console.log('right');
             // nci = eci;
@@ -696,7 +695,7 @@ export default class Selector {
             // this.saIndexes = [sri, eci + 1];
             // this.eaIndexes = [eri, nci];
         } else if (pos == 1) {
-             drisc = 44;
+            drisc = 44;
             // bottom
             // console.log('bottom');
             // nri = eri;

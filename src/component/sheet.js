@@ -66,7 +66,7 @@ function selectorSet(multiple, ri, ci, indexesUpdated = true, moving = false) {
         table, selector, toolbar,
     } = this;
     if (multiple) {
-        selector.setEnd(ri, ci, moving);
+        selector.setEnd(ri, ci, moving, true);
     } else {
         selector.set(ri, ci, indexesUpdated);
     }
