@@ -2,7 +2,7 @@ import {deepCopy} from "../core/operator";
 import { isHave } from '../core/helper';
 
 export default class PreAction {
-    constructor({type = -1, action = "", ri = -1, ci = -1, expr = "", cellRange = "", cells = {}, height = -1, width = -1, oldCell = {}, newCell= {}, mergesData = "", property = "", value = ""}, data) {
+    constructor({type = -1, action = "", ri = -1, ci = -1, expr = "", oldStep = "", cellRange = "", cells = {}, height = -1, width = -1, oldCell = {}, newCell= {}, newMergesData = "", oldMergesData = "", property = "", value = ""}, data) {
         this.type = type;
         this.action = action;
         this.ri = ri;
@@ -14,9 +14,11 @@ export default class PreAction {
         this.width = width;
         this.oldCell = oldCell;
         this.newCell = newCell;
-        this.mergesData = mergesData;
+        this.oldMergesData = oldMergesData;
+        this.newMergesData = newMergesData;
         this.property = property;
         this.value = value;
+        this.oldStep = oldStep;
 
         this.data = data;
     }
@@ -36,7 +38,7 @@ export default class PreAction {
 
             data.rows.setCellText(ri, ci, cell, sheet.table.proxy, data.name, 'cell');
         } else if (type === 2 || type === 5 || type === 6 || type === 11) {
-            let {cells, oldCell, mergesData, cellRange, property, value} = this;
+            let {cells, oldCell, oldMergesData, newMergesData, cellRange, property, value} = this;
             let _cells = "";
             if(isRedo === 1) {
                 _cells = deepCopy(oldCell);
@@ -44,21 +46,36 @@ export default class PreAction {
                 _cells = deepCopy(cells);
             }
 
-            this.data.merges.setData(mergesData);
+            //
+            if(property === 'merge') {
+                if(isRedo === 1) {
+                    this.data.merges.setData(oldMergesData);
+                } else {
+                    this.data.merges.setData(newMergesData);
+                }
+            }
 
             for (let i = 0; i < _cells.length; i++) {
                 let {cell, ri, ci} = _cells[i];
-
                 data.rows.setCellText(ri, ci, cell, sheet.table.proxy, data.name, 'cell');
 
             }
 
         } else if(type === 3) {
-            let {ri, height} = this;
-            data.rows.setHeight(ri,  height);
+            let {ri, height, oldStep} = this;
+            if(isRedo === 1) {
+                data.rows.setHeight(ri, oldStep.height);
+            } else {
+                data.rows.setHeight(ri, height);
+            }
         } else if(type === 4) {
-            let {ci, width} = this;
-            data.cols.setWidth(ci,  width);
+            let {ci, width, oldStep} = this;
+            if(isRedo === 1) {
+                data.cols.setWidth(ci,  oldStep.width);
+            } else {
+                data.cols.setWidth(ci,  width);
+            }
+
         }
     }
 }

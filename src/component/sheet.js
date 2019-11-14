@@ -65,11 +65,13 @@ function selectorSet(multiple, ri, ci, indexesUpdated = true, moving = false) {
     const {
         table, selector, toolbar,
     } = this;
+
     if (multiple) {
         selector.setEnd(ri, ci, moving, true);
     } else {
         selector.set(ri, ci, indexesUpdated);
     }
+
     toolbar.reset();
 
     // add
@@ -126,6 +128,8 @@ function selectorMove(multiple, direction) {
     if (multiple) {
         selector.moveIndexes = [ri, ci];
     }
+    selector.selectCell.setData(ri,  ci);
+    selector.selectCell.resetSelectOffset();
     selectorSet.call(this, multiple, ri, ci);
     // editor.clear();
 
@@ -259,6 +263,7 @@ function sheetReset(state = true) {
     verticalScrollbarSet.call(this);
     horizontalScrollbarSet.call(this);
     sheetFreeze.call(this);
+    selector.selectCell.toolbarChangeSelectorCell();
     table.render(false, false, false, state);
     toolbar.reset();
     selector.reset();
@@ -827,6 +832,21 @@ function autoRowResizer() {
         data.settings.view.height = () => viewHeight + 40;
 }
 
+function clickSelectorChangeRiCi(evt) {
+    const overlayer =  evt.target.className === `${cssPrefix}-overlayer` ? true : false;
+    if(!overlayer) {
+        return;
+    }
+
+    let {selector, data} = this;
+
+    const {offsetX, offsetY} = evt;
+    const cellRect = data.getCellRectByXY(offsetX, offsetY);
+
+    selector.selectCell.setData(cellRect.ri, cellRect.ci);
+    selector.selectCell.resetSelectOffset();
+}
+
 function rowResizerFinished(cRect, distance) {
     const {ri} = cRect;
     const {table, selector, data, toolbar} = this;
@@ -1187,6 +1207,7 @@ function sheetInitEvents() {
 
                     this.selector.longTimeBefore();
                     overlayerMousedown.call(this, evt);
+                    clickSelectorChangeRiCi.call(this, evt);
                     borderResSet.call(this);
                     clearSelectors.call(this);
                     editorSetOffset.call(this);
@@ -1572,12 +1593,11 @@ export default class Sheet {
         // contextMenu
         this.contextMenu = new ContextMenu(() => this.getTableOffset(), !showContextmenu);
         // selector
-        this.selector = new Selector(data, this);
-        this.selectorMoveEl = new Selector(data, this);
+        this.selector = new Selector(data, this, true);
+        this.selectorMoveEl = new Selector(data, this, false);
         // this.editorProxy = new EditorProxy();
 
         this.advice = new Advice(data, this);
-
         // this.pasteDirectionsArr = [];
         // this.pasteOverlay = h('div', `${cssPrefix}-paste-overlay-container`).hide();
 

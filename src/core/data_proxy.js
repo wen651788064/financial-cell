@@ -1060,7 +1060,7 @@ export default class DataProxy {
         }
     }
 
-    changeToHistory({ri, type, ci, cellRange, property, value, oldCell, mergesData}) {
+    changeToHistory({ri, type, ci, cellRange, property, value, oldCell, oldMergesData}, oldStep) {
         if (type === -1) {
             return {"state": false,}
         }
@@ -1078,7 +1078,7 @@ export default class DataProxy {
             ci,
             cellRange: cellRange,
         });
-        multiPreAction.addStep(step, {oldCell, mergesData});
+        multiPreAction.addStep(step, {oldCell, oldMergesData, newMergesData: this.merges.getData(), oldStep});
         return {
             "state": true
         }
@@ -1107,7 +1107,7 @@ export default class DataProxy {
         let state = false;
         let data = "";
         this.merges.each((range) => {
-            if(range.includeByRiCi(ri, ci)) {
+            if (range.includeByRiCi(ri, ci)) {
                 state = true;
                 data = range;
             }
@@ -1795,15 +1795,30 @@ export default class DataProxy {
         if (this.settings.showEditor === false) {
             return;
         }
+        let {rows} = this;
 
         let oldCell = {};
-        let mergesData = this.merges.getData();
+        let oldMergesData = this.merges.getData();
+        let {multiPreAction} = this;
+        const {selector} = this;
+
+        let step = multiPreAction.getStepType(type, {
+            expr: '',
+            property,
+            value,
+            oldCell,
+            range: selector.range,
+            ri,
+            ci,
+            cellRange: cellRange,
+        });
+
         if (cellRange !== "") {
             let {multiPreAction} = this;
             oldCell = multiPreAction.eachRange(cellRange);
         }
         cb();
-        this.changeToHistory({type, ri, ci, cellRange, property, value, oldCell, mergesData});
+        this.changeToHistory({type, ri, ci, cellRange, property, value, oldCell, oldMergesData}, step);
         this.change(this.getData());
     }
 
