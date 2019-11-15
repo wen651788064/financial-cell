@@ -1334,8 +1334,15 @@ describe('qq', () => {
             assert.equal(data.rows.getCell(2, 4).formulas, "=abs(A5)");
             assert.equal(data.rows.getCell(2, 5).formulas, "=abs($A5)");
 
-            data.rows.insertColumn(1, 1);
-            console.log(JSON.stringify(data.rows._));
+            data.rows.insertColumn(0, 1);
+            assert.equal(data.rows.getCell(2, 1).formulas, "A2");
+            assert.equal(data.rows.getCell(2, 2).formulas, "=B4");
+            assert.equal(data.rows.getCell(2, 3).formulas, "=B1:B3");
+            assert.equal(data.rows.getCell(2, 4).formulas, "=$B4:B6");
+            assert.equal(data.rows.getCell(2, 5).formulas, "=abs(B5)");
+            assert.equal(data.rows.getCell(2, 6).formulas, "=abs($B5)");
+
+
         });
     });
 
