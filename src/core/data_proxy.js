@@ -26,6 +26,8 @@ import {formatNumberRender} from "./format";
 import FormatProxy from "./format_proxy";
 import MultiPreAction from "../core/multi_pre_action";
 import CellProxy from "./cell_proxy";
+import CellProp from "../model/cell_prop";
+import PaintFormat from "../model/paint_format";
 // private methods
 /*
  * {
@@ -826,27 +828,53 @@ export default class DataProxy {
         this.clipboard.copy(this.selector.range);
     }
 
-
-    paintFormatChange(cb) {
-        let {clipboard, rows, selector} = this;
-        let {range} = clipboard;
-        let sri = selector.ri;
-        let sci = selector.ci;
-
-        let dsri = Math.abs(range.sri - sri);
-        let dsci = Math.abs(range.sci - sci);
-
-
+    makeCellPropArr(range, dsri, dsci) {
+        let {rows} = this;
+        let darr = [];
         let cells = rows.eachRange(range);
         for (let i = 0; i < cells.length; i++) {
             let {ri, ci, cell} = cells[i];
+
+            let cellProp = new CellProp(ri + dsri, ci + dsci, cell);
+            darr.push(cellProp);
+        }
+
+        return darr;
+    }
+
+    setCellByCellProp(pArr, cb) {
+        let {rows} = this;
+        for(let i = 0; i < pArr.length; i++) {
+            let {ri, ci, cell} = pArr[i];
             if (isHave(cell) && isHave(cell.style)) {
-                rows.setCell(ri + dsri, ci + dsci, cell, 'style');
+                rows.setCell(ri, ci, cell, 'style');
             }
-            cb(ri + dsri, ci + dsci);
+            cb(ri, ci);
         }
     }
 
+    paintFormatChange(cb) {
+        this.changeData(() => {
+            let {clipboard, rows, selector} = this;
+            let {range} = clipboard;
+            let sri = selector.ri;
+            let sci = selector.ci;
+
+            let dsri = sri - range.sri;
+            let dsci = sci - range.sci;
+            let darr = this.makeCellPropArr(range, dsri, dsci);
+
+            if (selector.range.eri - selector.range.sri === 0 && selector.range.eci - selector.range.sci === 0) {
+                this.setCellByCellProp(darr, cb);
+            } else {
+                let paintFormat = new PaintFormat(range, selector.range);
+                let paintType = paintFormat.getPaintType();
+                let pArr = paintFormat.makePaintArr(paintType, darr);
+
+                this.setCellByCellProp(pArr, cb);
+            }
+        }, {type: 12, cellRange: this.selector.range});
+    }
 
     move() {
         this.moved.move();
@@ -1795,7 +1823,6 @@ export default class DataProxy {
         if (this.settings.showEditor === false) {
             return;
         }
-        let {rows} = this;
 
         let oldCell = {};
         let oldMergesData = this.merges.getData();

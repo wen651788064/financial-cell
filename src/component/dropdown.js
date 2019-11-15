@@ -20,11 +20,11 @@ export default class Dropdown extends Element {
             .hide();
 
         if (type) {
-            this.headerEl = h('div', `${cssPrefix}-dropdown-header`);
+            this.headerEl = h('div', `${cssPrefix}-dropdown-header`).on('click', change);
             this.headerEl.children(
-                this.title.on('click', change),
+                this.title,
                 showArrow ? h('div', `${cssPrefix}-icon arrow-right_d`).child(
-                    h('div', `${cssPrefix}-icon-img arrow-down`).on('click', () => {
+                    h('div', `${cssPrefix}-icon-img arrow-down`).on('click.stop', (evt) => {
                         arrowChange(historyBorder);
                         if (this.contentEl.css('display') !== 'block') {
                             this.show();

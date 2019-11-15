@@ -51,6 +51,24 @@ class CellRange {
         }
     }
 
+    // 1 * n  /  n * 1 / n * n
+    getType() {
+        let {
+            sri, sci, eri, eci,
+        } = this;
+
+        if(sri === eri && sci !== eci) {
+            return 1;
+        } else if(sri !== eri && sci === eci) {
+            return 2;
+        } else if(sri !== eri && sci !== eci) {
+            return 3;
+        }
+
+        console.error("未知情况");
+        return 4;
+    }
+
     each2(cb, rowFilter = () => true) {
         let {
             sri, sci, eri, eci,

@@ -9,6 +9,7 @@ import WorkBook from "./workbook_cacl_proxy";
 import PasteProxy from "./paste_proxy";
 import CellProxy from "./cell_proxy";
 import CellRange from "./cell_range";
+import CellProp from "../model/cell_prop";
 
 export function isFormula(text) {
     if (text && text[0] === "=") {
@@ -500,11 +501,8 @@ class Rows {
             if (isHave(cell)) {
                 cell = deepCopy(cell);
             } else cell = {};
-            cells.push({
-                ri: i,
-                ci: j,
-                cell: cell
-            });
+            let cellProp = new CellProp(i, j, cell);
+            cells.push(cellProp);
         });
 
         return cells;

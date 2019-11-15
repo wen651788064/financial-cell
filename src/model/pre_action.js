@@ -37,7 +37,7 @@ export default class PreAction {
             }
 
             data.rows.setCellText(ri, ci, cell, sheet.table.proxy, data.name, 'cell');
-        } else if (type === 2 || type === 5 || type === 6 || type === 11) {
+        } else if (type === 2 || type === 5 || type === 6 || type === 11 || type === 12) {
             let {cells, oldCell, oldMergesData, newMergesData, cellRange, property, value} = this;
             let _cells = "";
             if(isRedo === 1) {

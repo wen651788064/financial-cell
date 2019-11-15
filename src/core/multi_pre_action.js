@@ -23,6 +23,7 @@ export default class MultiPreAction {
             case 2:
             case 5:
             case 11:
+            case 12:
             case 6:
                 preAction = new PreAction({
                     type, oldMergesData, property, value, newMergesData,
@@ -106,6 +107,15 @@ export default class MultiPreAction {
                     cells: this.eachRange(cellRange),
                 };
                 break;
+            case 12:
+                str = '选择性粘贴';
+                return {
+                    action: str,
+                    type,
+                    cellRange: range, property, value,
+                    cells: this.eachRange(cellRange),
+                };
+                break;
             case 11:
                 if (property === 'font-bold' || property === 'font-italic'
                     || property === 'font-name' || property === 'font-size' || property === 'color') {
@@ -143,7 +153,6 @@ export default class MultiPreAction {
                     type,
                     cellRange: range, property, value,
                     cells: this.eachRange(cellRange),
-
                 };
                 break;
             case 6:

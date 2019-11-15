@@ -318,12 +318,13 @@ function toolbarChangePaintformatPaste() {
         });
         clearClipboard.call(this);
         toolbar.paintformatToggle();
+        toolbar.reset();
     }
 }
 
 function getPoint(obj) { //获取某元素以浏览器左上角为原点的坐标
-    var t = obj.offsetTop; //获取该元素对应父容器的上边距
-    var l = obj.offsetLeft; //对应父容器的上边距
+    let t = obj.offsetTop; //获取该元素对应父容器的上边距
+    let l = obj.offsetLeft; //对应父容器的上边距
     //判断是否有父容器，如果存在则累加其边距
     while (obj = obj.offsetParent) {//等效 obj = obj.offsetParent;while (obj != undefined)
         t += obj.offsetTop; //叠加父容器的上边距
@@ -517,6 +518,7 @@ function overlayerMousedown(evt) {
         let point = getPoint(this.el.el);
         // mouse move up
         mouseMoveUp(window, (e) => {
+            console.log("dropdown")
             clearStopTimer.call(this);
 
             continueDropDown.call(this, e, isAutofillEl, selector, data, verticalScrollbar, rows, evt, point, horizontalScrollbar, cols);
@@ -833,8 +835,8 @@ function autoRowResizer() {
 }
 
 function clickSelectorChangeRiCi(evt) {
-    const overlayer =  evt.target.className === `${cssPrefix}-overlayer` ? true : false;
-    if(!overlayer) {
+    const overlayer = evt.target.className === `${cssPrefix}-overlayer` ? true : false;
+    if (!overlayer) {
         return;
     }
 
@@ -995,7 +997,7 @@ function toolbarChange(type, value) {
     } else {
         //format percent 473
         data.setSelectedCellAttr(type, value);
-        if(type === 'border') {
+        if (type === 'border') {
             borderResSet.call(this, 'none');
         }
         if (type === 'formula') {

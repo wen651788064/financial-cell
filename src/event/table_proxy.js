@@ -118,7 +118,7 @@ export default class TableProxy {
                 let {bad, result} = rows.getCellTextByShift(strList, dei, dci);
                 rows.updateCellReferenceByShift(bad, result, ri + i, ci + j);
             } else {
-                let _cell = {};
+                let _cell = rows.getCell(ri + i, ci + j) || {};
                 _cell.text = innerText;
                 _cell.formulas = innerText;
 

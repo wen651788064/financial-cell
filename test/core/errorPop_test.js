@@ -12,6 +12,7 @@ import {formatNumberRender} from "../../src/core/format";
 import FormatProxy from "../../src/core/format_proxy";
 import {multipleCellsRender, specialWebsiteValue} from "../../src/component/special_formula_process";
 import CellRange from "../../src/core/cell_range";
+import PaintFormat from "../../src/model/paint_format";
 
 let assert = require('assert');
 
@@ -255,7 +256,6 @@ describe('qq', () => {
     });
 
 
-
     describe('  formatNumberRender  ', () => {
         it('  1.23.23  ', function () {
             assert.equal(formatNumberRender("1.23.23", -1), "1.23.23");
@@ -462,9 +462,573 @@ describe('qq', () => {
         });
     });
 
+    describe(' PaintFormat ', () => {
+        it(' 1行多列 * 1行多列 ', function () {
+            data.rows.setData({
+                0: {
+                    cells: {
+                        0: {style: 0},
+                        1: {style: 1},
+                        2: {style: 2},
+                        3: {style: 1},
+                        4: {style: 3},
+                    }
+                },
+            });
+            // 一列多行
+            let sRange = new CellRange(0, 0, 0, 4);
+            // 一列多行
+            let dRange = new CellRange(1, 1, 1, 8);
+
+            let paintFormat = new PaintFormat(sRange, dRange);
+            let paintType = paintFormat.getPaintType();
+            assert.equal(paintType, 1);
+
+            let sri = dRange.sri;
+            let sci = dRange.sci;
+
+            let dsri = sri - sRange.sri;
+            let dsci = sci - sRange.sci;
+            let darr = data.makeCellPropArr(sRange, dsri, dsci);
+
+            let pArr = paintFormat.makePaintArr(paintType, darr);
+            assert.equal(pArr[0].cell.style, 0);
+            assert.equal(pArr[1].cell.style, 1);
+            assert.equal(pArr[2].cell.style, 2);
+            assert.equal(pArr[3].cell.style, 1);
+            assert.equal(pArr[4].cell.style, 3);
+            assert.equal(pArr[5].cell.style, 0);
+            assert.equal(pArr[6].cell.style, 1);
+        });
+
+        it(' 1行多列 * 1列多行 ', function () {
+            data.rows.setData({
+                0: {
+                    cells: {
+                        0: {style: 0},
+                    }
+                },
+                1: {
+                    cells: {
+                        0: {style: 1},
+                    }
+                },
+                2: {
+                    cells: {
+                        0: {style: 2},
+                    }
+                },
+                3: {
+                    cells: {
+                        0: {style: 1},
+                    }
+                },
+                4: {
+                    cells: {
+                        0: {style: 3},
+                    }
+                }
+            });
+            // 1行多列
+            let sRange = new CellRange(0, 0, 0, 4);
+            // 1列多行
+            let dRange = new CellRange(1, 1, 8, 1);
+
+            let paintFormat = new PaintFormat(sRange, dRange);
+            let paintType = paintFormat.getPaintType();
+            assert.equal(paintType, 4);
+
+            let sri = dRange.sri;
+            let sci = dRange.sci;
+
+            let dsri = sri - sRange.sri;
+            let dsci = sci - sRange.sci;
+            let darr = data.makeCellPropArr(sRange, dsri, dsci);
+
+            let pArr = paintFormat.makePaintArr(paintType, darr);
+            assert.equal(pArr[0].cell.style, 0);
+            assert.equal(pArr[1].cell.style, 0);
+            assert.equal(pArr[2].cell.style, 0);
+            assert.equal(pArr[3].cell.style, 0);
+            assert.equal(pArr[4].cell.style, 0);
+            assert.equal(pArr[5].cell.style, 0);
+            assert.equal(pArr[6].cell.style, 0);
+            assert.equal(pArr[7].cell.style, 0);
+        });
+
+        it(' 1行多列 * 多列多行 ', function () {
+            data.rows.setData({
+                0: {
+                    cells: {
+                        0: {style: 0},
+                        1: {style: 1},
+                        2: {style: 2},
+                        3: {style: 1},
+                        4: {style: 3},
+                    }
+                },
+            });
+            // 1行多列
+            let sRange = new CellRange(0, 0, 0, 4);
+            // 1列多行
+            let dRange = new CellRange(1, 1, 8, 5);
+
+            let paintFormat = new PaintFormat(sRange, dRange);
+            let paintType = paintFormat.getPaintType();
+            assert.equal(paintType, 5);
+
+            let sri = dRange.sri;
+            let sci = dRange.sci;
+
+            let dsri = sri - sRange.sri;
+            let dsci = sci - sRange.sci;
+            let darr = data.makeCellPropArr(sRange, dsri, dsci);
+
+            let pArr = paintFormat.makePaintArr(paintType, darr);
+            assert.equal(pArr[0].cell.style, 0);
+            assert.equal(pArr[1].cell.style, 1);
+            assert.equal(pArr[2].cell.style, 2);
+            assert.equal(pArr[3].cell.style, 1);
+            assert.equal(pArr[4].cell.style, 3);
+            assert.equal(pArr[5].cell.style, 0);
+            assert.equal(pArr[6].cell.style, 1);
+            assert.equal(pArr[7].cell.style, 2);
+        });
+
+
+        it(' 多行多列 * 多列多行 ', function () {
+            data.rows.setData({
+                0: {
+                    cells: {
+                        0: {style: 0},
+                        1: {style: 1},
+                        2: {style: 2},
+                        3: {style: 1},
+                        4: {style: 3},
+                    }
+                },
+                1: {
+                    cells: {
+                        0: {style: 0},
+                        1: {style: 2},
+                        2: {style: 2},
+                        3: {style: 3},
+                        4: {style: 1},
+                    }
+                },
+                2: {
+                    cells: {
+                        0: {style: 0},
+                        1: {style: 0},
+                        2: {style: 0},
+                        3: {style: 0},
+                        4: {style: 0},
+                    }
+                },
+                3: {
+                    cells: {
+                        0: {style: 1},
+                        1: {style: 1},
+                        2: {style: 2},
+                        3: {style: 1},
+                        4: {style: 3},
+                    }
+                },
+                4: {
+                    cells: {
+                        0: {style: 0},
+                        1: {style: 1},
+                        2: {style: 2},
+                        3: {style: 2},
+                        4: {style: 3},
+                    }
+                },
+            });
+            // 1行多列
+            let sRange = new CellRange(0, 0, 4, 4);
+            // 1列多行
+            let dRange = new CellRange(1, 1, 9, 6);
+
+            let paintFormat = new PaintFormat(sRange, dRange);
+            let paintType = paintFormat.getPaintType();
+            assert.equal(paintType, 9);
+
+            let sri = dRange.sri;
+            let sci = dRange.sci;
+
+            let dsri = sri - sRange.sri;
+            let dsci = sci - sRange.sci;
+            let darr = data.makeCellPropArr(sRange, dsri, dsci);
+
+            let pArr = paintFormat.makePaintArr(paintType, darr);
+            assert.equal(pArr[0].cell.style, 0);
+            assert.equal(pArr[1].cell.style, 1);
+            assert.equal(pArr[2].cell.style, 2);
+            assert.equal(pArr[3].cell.style, 1);
+            assert.equal(pArr[4].cell.style, 3);
+            assert.equal(pArr[5].cell.style, 0);
+            assert.equal(pArr[6].cell.style, 0);
+            assert.equal(pArr[7].cell.style, 2);
+            assert.equal(pArr[8].cell.style, 2);
+            assert.equal(pArr[9].cell.style, 3);
+            assert.equal(pArr[10].cell.style, 1);
+            assert.equal(pArr[11].cell.style, 0);
+            assert.equal(pArr[12].cell.style, 0);
+            assert.equal(pArr[13].cell.style, 0);
+        });
+
+        it(' 多行多列 * 1行多列 ', function () {
+            data.rows.setData({
+                0: {
+                    cells: {
+                        0: {style: 0},
+                        1: {style: 1},
+                        2: {style: 2},
+                        3: {style: 1},
+                        4: {style: 3},
+                    }
+                },
+                1: {
+                    cells: {
+                        0: {style: 0},
+                        1: {style: 2},
+                        2: {style: 2},
+                        3: {style: 3},
+                        4: {style: 1},
+                    }
+                },
+                2: {
+                    cells: {
+                        0: {style: 0},
+                        1: {style: 0},
+                        2: {style: 0},
+                        3: {style: 0},
+                        4: {style: 0},
+                    }
+                },
+                3: {
+                    cells: {
+                        0: {style: 1},
+                        1: {style: 1},
+                        2: {style: 2},
+                        3: {style: 1},
+                        4: {style: 3},
+                    }
+                },
+                4: {
+                    cells: {
+                        0: {style: 0},
+                        1: {style: 1},
+                        2: {style: 2},
+                        3: {style: 2},
+                        4: {style: 3},
+                    }
+                },
+            });
+            // 1行多列
+            let sRange = new CellRange(0, 0, 4, 4);
+            // 1列多行
+            let dRange = new CellRange(5, 5, 5, 11);
+
+            let paintFormat = new PaintFormat(sRange, dRange);
+            let paintType = paintFormat.getPaintType();
+            assert.equal(paintType, 3);
+
+            let sri = dRange.sri;
+            let sci = dRange.sci;
+
+            let dsri = sri - sRange.sri;
+            let dsci = sci - sRange.sci;
+            let darr = data.makeCellPropArr(sRange, dsri, dsci);
+
+            let pArr = paintFormat.makePaintArr(paintType, darr);
+            assert.equal(pArr[0].cell.style, 0);
+            assert.equal(pArr[1].cell.style, 1);
+            assert.equal(pArr[2].cell.style, 2);
+            assert.equal(pArr[3].cell.style, 1);
+            assert.equal(pArr[4].cell.style, 3);
+
+        });
+
+        it(' 多行多列 * 1列多行 ', function () {
+            data.rows.setData({
+                0: {
+                    cells: {
+                        0: {style: 0},
+                        1: {style: 1},
+                        2: {style: 2},
+                        3: {style: 1},
+                        4: {style: 3},
+                    }
+                },
+                1: {
+                    cells: {
+                        0: {style: 0},
+                        1: {style: 2},
+                        2: {style: 2},
+                        3: {style: 3},
+                        4: {style: 1},
+                    }
+                },
+                2: {
+                    cells: {
+                        0: {style: 0},
+                        1: {style: 0},
+                        2: {style: 0},
+                        3: {style: 0},
+                        4: {style: 0},
+                    }
+                },
+                3: {
+                    cells: {
+                        0: {style: 1},
+                        1: {style: 1},
+                        2: {style: 2},
+                        3: {style: 1},
+                        4: {style: 3},
+                    }
+                },
+                4: {
+                    cells: {
+                        0: {style: 0},
+                        1: {style: 1},
+                        2: {style: 2},
+                        3: {style: 2},
+                        4: {style: 3},
+                    }
+                },
+            });
+            // 多行多列
+            let sRange = new CellRange(0, 0, 4, 4);
+            // 1列多行
+            let dRange = new CellRange(5, 5, 11, 5);
+
+            let paintFormat = new PaintFormat(sRange, dRange);
+            let paintType = paintFormat.getPaintType();
+            assert.equal(paintType, 7);
+
+            let sri = dRange.sri;
+            let sci = dRange.sci;
+
+            let dsri = sri - sRange.sri;
+            let dsci = sci - sRange.sci;
+            let darr = data.makeCellPropArr(sRange, dsri, dsci);
+
+            let pArr = paintFormat.makePaintArr(paintType, darr);
+            assert.equal(pArr[0].cell.style, 0);
+            assert.equal(pArr[1].cell.style, 0);
+            assert.equal(pArr[2].cell.style, 0);
+            assert.equal(pArr[3].cell.style, 1);
+            assert.equal(pArr[4].cell.style, 0);
+            assert.equal(pArr[5].cell.style, 0);
+            assert.equal(pArr[6].cell.style, 0);
+        });
+
+
+        it(' 1列多行 * 1列多行 ', function () {
+            data.rows.setData({
+                0: {
+                    cells: {
+                        0: {style: 0},
+                    }
+                },
+                1: {
+                    cells: {
+                        0: {style: 1},
+                    }
+                },
+                2: {
+                    cells: {
+                        0: {style: 2},
+                    }
+                },
+                3: {
+                    cells: {
+                        0: {style: 1},
+                    }
+                },
+                4: {
+                    cells: {
+                        0: {style: 3},
+                    }
+                }
+            });
+            // 1列多行
+            let sRange = new CellRange(0, 0, 4, 0);
+            // 1列多行
+            let dRange = new CellRange(1, 1, 8, 1);
+
+            let paintFormat = new PaintFormat(sRange, dRange);
+            let paintType = paintFormat.getPaintType();
+            assert.equal(paintType, 6);
+
+            let sri = dRange.sri;
+            let sci = dRange.sci;
+
+            let dsri = sri - sRange.sri;
+            let dsci = sci - sRange.sci;
+            let darr = data.makeCellPropArr(sRange, dsri, dsci);
+
+            let pArr = paintFormat.makePaintArr(paintType, darr);
+            assert.equal(pArr[0].cell.style, 0);
+            assert.equal(pArr[1].cell.style, 1);
+            assert.equal(pArr[2].cell.style, 2);
+            assert.equal(pArr[3].cell.style, 1);
+            assert.equal(pArr[4].cell.style, 3);
+            assert.equal(pArr[5].cell.style, 0);
+            assert.equal(pArr[6].cell.style, 1);
+            assert.equal(pArr[7].cell.style, 2);
+        });
+
+        it(' 1列多行 * 1行多列 ', function () {
+            data.rows.setData({
+                0: {
+                    cells: {
+                        0: {style: 0},
+                        1: {style: 1},
+                        2: {style: 2},
+                        3: {style: 1},
+                        4: {style: 3},
+                    }
+                },
+                1: {
+                    cells: {
+                        0: {style: 0},
+                        1: {style: 2},
+                        2: {style: 2},
+                        3: {style: 3},
+                        4: {style: 1},
+                    }
+                },
+                2: {
+                    cells: {
+                        0: {style: 0},
+                        1: {style: 0},
+                        2: {style: 0},
+                        3: {style: 0},
+                        4: {style: 0},
+                    }
+                },
+                3: {
+                    cells: {
+                        0: {style: 1},
+                        1: {style: 1},
+                        2: {style: 2},
+                        3: {style: 1},
+                        4: {style: 3},
+                    }
+                },
+                4: {
+                    cells: {
+                        0: {style: 0},
+                        1: {style: 1},
+                        2: {style: 2},
+                        3: {style: 2},
+                        4: {style: 3},
+                    }
+                },
+            });
+            // 1列多行
+            let sRange = new CellRange(0, 0, 4, 0);
+            // 1行多列
+            let dRange = new CellRange(1, 1, 1, 8);
+
+            let paintFormat = new PaintFormat(sRange, dRange);
+            let paintType = paintFormat.getPaintType();
+            assert.equal(paintType, 2);
+
+            let sri = dRange.sri;
+            let sci = dRange.sci;
+
+            let dsri = sri - sRange.sri;
+            let dsci = sci - sRange.sci;
+            let darr = data.makeCellPropArr(sRange, dsri, dsci);
+
+            let pArr = paintFormat.makePaintArr(paintType, darr);
+            assert.equal(pArr[0].cell.style, 0);
+            assert.equal(pArr[1].cell.style, 0);
+            assert.equal(pArr[2].cell.style, 0);
+            assert.equal(pArr[3].cell.style, 0);
+            assert.equal(pArr[4].cell.style, 0);
+            assert.equal(pArr[5].cell.style, 0);
+
+        });
+
+        it(' 1列多行 * 多列多行 ', function () {
+            data.rows.setData({
+                0: {
+                    cells: {
+                        0: {style: 0},
+                        1: {style: 1},
+                        2: {style: 2},
+                        3: {style: 1},
+                        4: {style: 3},
+                    }
+                },
+                1: {
+                    cells: {
+                        0: {style: 1},
+                        1: {style: 2},
+                        2: {style: 2},
+                        3: {style: 3},
+                        4: {style: 1},
+                    }
+                },
+                2: {
+                    cells: {
+                        0: {style: 2},
+                        1: {style: 0},
+                        2: {style: 0},
+                        3: {style: 0},
+                        4: {style: 0},
+                    }
+                },
+                3: {
+                    cells: {
+                        0: {style: 1},
+                        1: {style: 1},
+                        2: {style: 2},
+                        3: {style: 1},
+                        4: {style: 3},
+                    }
+                },
+                4: {
+                    cells: {
+                        0: {style: 0},
+                        1: {style: 1},
+                        2: {style: 2},
+                        3: {style: 2},
+                        4: {style: 3},
+                    }
+                },
+            });
+            // 1列多行
+            let sRange = new CellRange(0, 0, 4, 0);
+            // 多列多行
+            let dRange = new CellRange(1, 1, 8, 5);
+
+            let paintFormat = new PaintFormat(sRange, dRange);
+            let paintType = paintFormat.getPaintType();
+            assert.equal(paintType, 8);
+
+            let sri = dRange.sri;
+            let sci = dRange.sci;
+
+            let dsri = sri - sRange.sri;
+            let dsci = sci - sRange.sci;
+            let darr = data.makeCellPropArr(sRange, dsri, dsci);
+
+            let pArr = paintFormat.makePaintArr(paintType, darr);
+            assert.equal(pArr[0].cell.style, 0);
+            assert.equal(pArr[1].cell.style, 0);
+            assert.equal(pArr[2].cell.style, 0);
+            assert.equal(pArr[3].cell.style, 0);
+            assert.equal(pArr[4].cell.style, 0);
+            assert.equal(pArr[5].cell.style, 1);
+        });
+    });
+
     describe('  tryParseToNum  ', () => {
-
-
         it(' text: 322.12 value: 322.121 to number', function () {
             let cstyle = {};
             cstyle.format = 'number';
@@ -536,7 +1100,7 @@ describe('qq', () => {
 
             let cell = {"text": "2019-01-01", "formulas": "2019-01-01", "style": style};
             data.rows.setCell(1, 1, cell, 'number');
-            let args= data.tryParseToNum('input', cell, 1, 1);
+            let args = data.tryParseToNum('input', cell, 1, 1);
 
             assert.equal(args.state, true);
             assert.equal(args.text, '43466');
@@ -566,8 +1130,6 @@ describe('qq', () => {
         });
 
 
-
-
         it('  57294 number to date    --  value not empty  ', function () {
             let cstyle = {};
             cstyle.format = 'date';
@@ -579,7 +1141,6 @@ describe('qq', () => {
             cell = data.rows.getCell(1, 1);
             assert.equal(cell.value, "=D3");
         });
-
 
 
     });
@@ -805,7 +1366,7 @@ describe('qq', () => {
             assert.equal(args.date, 'Invalid Date');
 
             args = formatDate('2019-01-01');
-             assert.equal(args.state, false);
+            assert.equal(args.state, false);
             assert.equal(args.date, 'Invalid Date');
         });
     })
