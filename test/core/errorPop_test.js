@@ -1312,6 +1312,33 @@ describe('qq', () => {
         });
     });
 
+    describe(' insert/delete rows/cols ', () => {
+        it('  insert ', () => {
+            data.rows.setData({
+                1: {
+                    cells: {
+                        0: {"text": "A2", "formulas": "A2"},
+                        1: {"text": "=A3", "formulas": "=A3"},
+                        2: {"text": "=A1:A2","formulas": "=A1:A2"},
+                        3: {"text": "=$A3:A5","formulas": "=$A3:A5"},
+                        4: {"text": "=abs(A4)","formulas": "=abs(A4)"},
+                        5: {"text": "=abs($A4)", "formulas": "=abs($A4)"},
+                    }
+                },
+            });
+
+            data.rows.insert(0, 1);
+            assert.equal(data.rows.getCell(2, 1).formulas, "=A4");
+            assert.equal(data.rows.getCell(2, 2).formulas, "=A1:A3");
+            assert.equal(data.rows.getCell(2, 3).formulas, "=$A4:A6");
+            assert.equal(data.rows.getCell(2, 4).formulas, "=abs(A5)");
+            assert.equal(data.rows.getCell(2, 5).formulas, "=abs($A5)");
+
+            data.rows.insertColumn(1, 1);
+            console.log(JSON.stringify(data.rows._));
+        });
+    });
+
     describe('changeFormat', () => {
         it(' 2019-01-01 -> 2019年1月1日', function () {
 

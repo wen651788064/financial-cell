@@ -174,7 +174,8 @@ export default class MultiPreAction {
     }
 
     redo() {
-        this.does(this.getItems(2), 2);
+        let preAction = this.does(this.getItems(2), 2);
+        this.undoItems.push(preAction);
     }
 
     eachRange(range) {
