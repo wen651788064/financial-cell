@@ -13,6 +13,7 @@ src/xlsx-calc/
 env/
 build/
 build2/
+index.html
 develop-eggs/
 dist/
 downloads/
