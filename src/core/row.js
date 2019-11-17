@@ -517,6 +517,9 @@ class Rows {
             // if(isInsert && isHave(arr[i])) {
             //     arr[i] = arr[i].replace(/\$/, '');
             // }
+            if(typeof arr[i] === 'string') {
+                arr[i] = arr[i].toUpperCase();
+            }
             if (arr[i].search(/^[A-Z]+\d+$/) != -1) {
                 let ds = expr2xy(arr[i]);
                 if (ds[0] + dei < 0 || ds[1] + dci < 0) {
