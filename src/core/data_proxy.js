@@ -1088,7 +1088,9 @@ export default class DataProxy {
         let expr = xy2expr(ci, ri);
         let step = multiPreAction.getStepType(type, {ri, ci, expr, text: newCell.text});
 
-        multiPreAction.addStep(step, {oldCell, newCell});
+        let oc = new CellProp(ri, ci, oldCell ,expr)
+        let nc = new CellProp(ri, ci, newCell, expr)
+        multiPreAction.addStep(step, {oldCell: [oc], newCell: [nc]});
         this.changeDataForCalc = this.getChangeDataToCalc();
         return {
             "state": true

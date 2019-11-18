@@ -1,9 +1,12 @@
 import {deepCopy} from "../core/operator";
 import { isHave } from '../core/helper';
 function getCellDepend(cells) {
+
     let arr = [];
     for(let i = 0; i < cells.length; i++) {
-        arr.push(...cells[i].cell.depend);
+        if(isHave(cells[i]) && isHave(cells[i].cell) && isHave(cells[i].cell.depend)) {
+            arr.push(...cells[i].cell.depend);
+        }
     }
 
     return arr;
@@ -45,13 +48,18 @@ export default class PreAction {
         let {type} = this;
 
         if (type === 1) { // shuru
-            let {ri, ci, oldCell, newCell} = this;
+            let {  oldCell, newCell} = this;
             let cell = "";
             // redo 1  undo 2
             if(isRedo === 1) {
                 cell = deepCopy(oldCell);
             } else {
                 cell = deepCopy(newCell);
+            }
+            for (let i = 0; i < cell.length; i++) {
+                let {cell, ri, ci} = cell[i];
+                data.rows.setCellText(ri, ci, cell, sheet.table.proxy, data.name, 'cell');
+
             }
 
             data.rows.setCellText(ri, ci, cell, sheet.table.proxy, data.name, 'cell');

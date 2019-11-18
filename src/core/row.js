@@ -351,6 +351,10 @@ class Rows {
             _cell.formulas = text;
         }
 
+        if(isHave(cell.depend)) {
+            _cell.depend = cell.depend;
+        }
+
         _cell.text = text;
         this.setCell(ri, ci, _cell);
 
@@ -365,6 +369,9 @@ class Rows {
         let _cell = new Cell();
         _cell.formulas = formulas == "" ? cell.formulas : formulas;
         _cell.text = text;
+        if(isHave(cell.depend)) {
+            _cell.depend = cell.depend;
+        }
 
         this.setCell(ri, ci, _cell);
         this.getDependCell(xy2expr(ci, ri), this.getCell(ri, ci));
