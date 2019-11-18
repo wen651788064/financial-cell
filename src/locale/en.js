@@ -24,7 +24,7 @@ export default {
         formula: 'Functions',
         more: 'More',
         flexible: 'Flexible',
-        throwFormula: 'Throw formula',
+        throwFormula: 'Throw formulas',
         comeBack: 'come back',
     },
     contextmenu: {

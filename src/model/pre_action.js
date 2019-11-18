@@ -1,5 +1,13 @@
 import {deepCopy} from "../core/operator";
 import { isHave } from '../core/helper';
+function getCellDepend(cells) {
+    let arr = [];
+    for(let i = 0; i < cells.length; i++) {
+        arr.push(...cells[i].depend);
+    }
+
+    return arr;
+}
 
 export default class PreAction {
     constructor({type = -1, action = "", ri = -1, ci = -1, expr = "", oldStep = "", cellRange = "", cells = {}, height = -1, width = -1, oldCell = {}, newCell= {}, newMergesData = "", oldMergesData = "", property = "", value = ""}, data) {
@@ -23,6 +31,16 @@ export default class PreAction {
         this.data = data;
     }
 
+    findAllNeedCalcCell() {
+        let changeArr = [];
+        let {oldCell, newCell} = this;
+        changeArr.push(...getCellDepend(oldCell));
+        changeArr.push(...getCellDepend(newCell));
+
+        return changeArr;
+    }
+
+
     restore(data, sheet, isRedo) { // 如果是2值的参数，用is前缀命名   ，多值   xxxType
         let {type} = this;
 
@@ -38,12 +56,12 @@ export default class PreAction {
 
             data.rows.setCellText(ri, ci, cell, sheet.table.proxy, data.name, 'cell');
         } else if (type === 2 || type === 5 || type === 6 || type === 11 || type === 12) {
-            let {cells, oldCell, oldMergesData, newMergesData, cellRange, property, value} = this;
+            let {newCell, oldCell, oldMergesData, newMergesData, cellRange, property, value} = this;
             let _cells = "";
             if(isRedo === 1) {
                 _cells = deepCopy(oldCell);
             } else {
-                _cells = deepCopy(cells);
+                _cells = deepCopy(newCell);
             }
 
             //

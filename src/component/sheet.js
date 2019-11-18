@@ -1081,6 +1081,7 @@ function sheetInitEvents() {
                         evt.stopPropagation();
                     }, 100);
                 }
+                clickSelectorChangeRiCi.call(this, evt);
             } else if (evt.detail === 2) {
                 clearTimeout(this.render_timer);
                 editor.setMouseDownIndex([]);

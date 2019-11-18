@@ -463,6 +463,43 @@ describe('qq', () => {
     });
 
     describe(' PaintFormat ', () => {
+        it(' 没有style ', function () {
+            data.rows.setData({
+                0: {
+                    cells: {
+                        0: {},
+                        1: {},
+                        2: {},
+                        3: {},
+                        4: {},
+                    }
+                },
+            });
+            // 一列多行
+            let sRange = new CellRange(0, 0, 0, 4);
+            // 一列多行
+            let dRange = new CellRange(1, 1, 1, 8);
+
+            let paintFormat = new PaintFormat(sRange, dRange);
+            let paintType = paintFormat.getPaintType();
+            assert.equal(paintType, 1);
+
+            let sri = dRange.sri;
+            let sci = dRange.sci;
+
+            let dsri = sri - sRange.sri;
+            let dsci = sci - sRange.sci;
+            let darr = data.makeCellPropArr(sRange, dsri, dsci);
+
+            let pArr = paintFormat.makePaintArr(paintType, darr);
+            assert.equal(pArr[0].cell.style, 0);
+            assert.equal(pArr[0].cell.style, 0);
+            assert.equal(pArr[1].cell.style, 0);
+            assert.equal(pArr[2].cell.style, 0);
+            assert.equal(pArr[3].cell.style, 0);
+            console.log(pArr)
+        });
+
         it(' 1行多列 * 1行多列 ', function () {
             data.rows.setData({
                 0: {
@@ -1200,6 +1237,17 @@ describe('qq', () => {
             assert.equal(error, true);
         });
 
+        it(' ="asffsdf""fghfg" ', function () {
+            let recast = new Recast('="asffsdf""fghfg"');
+            let error = false;
+            try {
+                recast.parse();
+            } catch {
+                error = true;
+            }
+            assert.equal(error, false);
+        });
+
         it(' =INDEX({1,2;3,4},0,2) ', function () {
             let recast = new Recast('=INDEX({1,2;3,4},0,2) ');
             let error = false;
@@ -1331,16 +1379,16 @@ describe('qq', () => {
             assert.equal(data.rows.getCell(2, 1).formulas, "=A4");
             assert.equal(data.rows.getCell(2, 2).formulas, "=A1:A3");
             assert.equal(data.rows.getCell(2, 3).formulas, "=$A4:A6");
-            assert.equal(data.rows.getCell(2, 4).formulas, "=abs(A5)");
-            assert.equal(data.rows.getCell(2, 5).formulas, "=abs($A5)");
+            assert.equal(data.rows.getCell(2, 4).formulas, "=ABS(A5)");
+            assert.equal(data.rows.getCell(2, 5).formulas, "=ABS($A5)");
 
             data.rows.insertColumn(0, 1);
             assert.equal(data.rows.getCell(2, 1).formulas, "A2");
             assert.equal(data.rows.getCell(2, 2).formulas, "=B4");
             assert.equal(data.rows.getCell(2, 3).formulas, "=B1:B3");
             assert.equal(data.rows.getCell(2, 4).formulas, "=$B4:B6");
-            assert.equal(data.rows.getCell(2, 5).formulas, "=abs(B5)");
-            assert.equal(data.rows.getCell(2, 6).formulas, "=abs($B5)");
+            assert.equal(data.rows.getCell(2, 5).formulas, "=ABS(B5)");
+            assert.equal(data.rows.getCell(2, 6).formulas, "=ABS($B5)");
 
 
         });

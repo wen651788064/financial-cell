@@ -83,7 +83,7 @@ export default class WorkBook {
         delete this.workbook.Sheets[this.name][expr];
     }
 
-    change(ri, ci, cell, deep_cell, what = 'input') {
+    change(ri, ci, cell, what = 'input') {
         let expr = xy2expr(ci, ri);
         let {data, table} = this;
 
@@ -127,22 +127,15 @@ export default class WorkBook {
                     this.workbook.Sheets[data.name][expr].multivalueRefsCell = cell.multivalueRefsCell;
                 }
 
-                if (data.isFormula(cell.text)) {
-                    this.calcNeedCalcBool(true);
-                } else {
-                    this.calcNeedCalcBool(false);
-                }
             }
         }
 
         if (empty === false) {
             if (isHave(cell.depend) && cell.depend.length > 0) {
                 this.contextualArr.push(...cell.depend);
-                this.calcNeedCalcBool(true);
             } else if (isHave(cell.multivalueRefsCell)) {
                 this.contextualArr.push(expr);
                 this.contextualArr.push(cell.multivalueRefsCell);
-                this.calcNeedCalcBool(true);
             }
         }
     }

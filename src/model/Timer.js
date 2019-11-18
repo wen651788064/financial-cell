@@ -7,7 +7,6 @@ export default class Timer {
         this.timer.push(t);
     }
 
-
     clear() {
         for(let i = 0; i < this.timer.length; i++) {
             let t = this.timer[i];

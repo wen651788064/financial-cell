@@ -114,29 +114,29 @@
         // }
 
         /* 模板2 */
-        // let rows1 = {};
-        // for (let i = 0; i < 20; i++) {
-        //     rows1[i] = {
-        //         "cells": {}
-        //     };
-        //     for (let j = 0; j < 5; j++) {
-        //         rows1[i]["cells"][j] = {
-        //             "text": i + j,
-        //             "formulas": '=' + i+ "+" + j,
-        //         }
-        //     }
-        // }
-        // for (let i = 21; i < 40; i++) {
-        //     rows1[i] = {
-        //         "cells": {}
-        //     };
-        //     for (let j = 1; j < 5; j++) {
-        //         rows1[i]["cells"][j] = {
-        //             "text": '=A' + (i - 20) + "+A" + j,
-        //             "formulas": '=A' + (i - 20) + "+A" + j,
-        //         }
-        //     }
-        // }
+        let rows1 = {};
+        for (let i = 0; i < 20; i++) {
+            rows1[i] = {
+                "cells": {}
+            };
+            for (let j = 0; j < 5; j++) {
+                rows1[i]["cells"][j] = {
+                    "text": i + j,
+                    "formulas": '=' + i+ "+" + j,
+                }
+            }
+        }
+        for (let i = 21; i < 40; i++) {
+            rows1[i] = {
+                "cells": {}
+            };
+            for (let j = 1; j < 5; j++) {
+                rows1[i]["cells"][j] = {
+                    "text": '=A' + (i - 20) + "+A" + j,
+                    "formulas": '=A' + (i - 20) + "+A" + j,
+                }
+            }
+        }
         //
 
         /* 模板3 */
@@ -382,18 +382,18 @@
         // };
 
         /* 模板9 */
-        let rows1 = {
-            1: {
-                cells: {
-                    2: {"text":  "=A4"}
-                }
-            },
-            2: {
-                cells: {
-                    0: {"text":  "=C2"}
-                }
-            }
-        }
+        // let rows1 = {
+        //     1: {
+        //         cells: {
+        //             2: {"text":  "=A4"}
+        //         }
+        //     },
+        //     2: {
+        //         cells: {
+        //             0: {"text":  "=C2"}
+        //         }
+        //     }
+        // }
 
 
         let flex = [

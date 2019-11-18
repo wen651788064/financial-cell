@@ -1,5 +1,5 @@
 import {filterFormula} from "../config";
-// import {loadData} from "./table";
+// import {getWorkbook} from "./table";
 import {expr2xy, xy2expr} from "../core/alphabet";
 import {contain, division} from "../core/operator";
 

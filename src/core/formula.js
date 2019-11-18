@@ -1,5 +1,5 @@
 /**
- formula:
+ formulas:
  key
  title
  render

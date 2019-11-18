@@ -706,6 +706,7 @@ export default class DataProxy {
         this.calc = formulaCalc();
         this.refRow = new RefRow(this.settings.row, this);
         this.pasteDirectionsArr = [];
+
         // save data end
 
         // don't save object
@@ -835,7 +836,12 @@ export default class DataProxy {
         for (let i = 0; i < cells.length; i++) {
             let {ri, ci, cell} = cells[i];
 
-            let cellProp = new CellProp(ri + dsri, ci + dsci, cell);
+            if(isHave(cell) && isHave(cell.style) === false) {
+                let cstyle = this.defaultStyle();
+                cell.style = this.addStyle(cstyle);
+            }
+
+            let cellProp = new CellProp(ri + dsri, ci + dsci, cell, xy2expr(ri + dsri, ci + dsci));
             darr.push(cellProp);
         }
 
@@ -1416,7 +1422,12 @@ export default class DataProxy {
         this.changeData(() => {
             const {sri, sci} = this.selector.range;
             const {rows, merges, cols} = this;
-            begin = begin != -1 ? begin : sri;
+            if(type === 'row') {
+                begin = begin != -1 ? begin : sri;
+            } else  if('column'){
+                begin = begin != -1 ? begin : sci;
+            }
+
             let si = begin;
             if (type === 'row') {
                 rows.insert(begin, n);
@@ -1818,6 +1829,16 @@ export default class DataProxy {
     //     const {pictures} = this;
     //
     // }
+
+    getChangeDataToCalc() {
+        let {multiPreAction} = this;
+        let lastStep = multiPreAction.undoItems[0];
+        if(!isHave(lastStep)) {
+            return null;
+        }
+
+        return lastStep;
+    }
 
     changeData(cb, {type = -1, ri = -1, ci = -1, cellRange = "", property = "", value = ""} = -1) {
         if (this.settings.showEditor === false) {

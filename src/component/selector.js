@@ -3,9 +3,9 @@ import {cssPrefix} from '../config';
 import {CellRange} from '../core/cell_range';
 import {mouseMoveUp} from "../component/event";
 import {xy2expr} from "../core/alphabet";
-import MovedCell from '../model/moved_cell';
 import {deepCopy} from '../core/operator';
 import SelectorCell from "./selector_cell";
+import CellProp from "../model/cell_prop";
 
 export const selectorHeightBorderWidth = 2 * 2 - 1;
 let startZIndex = 10;
@@ -130,13 +130,13 @@ class SelectorElement {
             _cellRange.each((i, j) => {
                 console.log(rows.getCell(i, j), i, j);
                 let cell = rows.getCell(i, j);
-                let movedCell = new MovedCell(`${xy2expr(j, i)}:${xy2expr(j, i)}`, deepCopy(cell || {}), i, j);
-                let movedCell2 = new MovedCell(`${xy2expr(j, i)}`, deepCopy(cell || {}), i, j);
+                let movedCell = new CellProp(i, j, deepCopy(cell || {}), `${xy2expr(j, i)}:${xy2expr(j, i)}`);
+                let movedCell2 = new CellProp(i, j, deepCopy(cell || {}), `${xy2expr(j, i)}`);
                 arr.push(movedCell);
                 arr3.push(movedCell2);
             });
             cellRange.each((i, j) => {
-                let movedCell = new MovedCell(xy2expr(j, i), deepCopy(rows.getCell(i, j) || {}), i, j);
+                let movedCell = new CellProp(i, j, deepCopy(rows.getCell(i, j) || {}), xy2expr(j, i));
                 arr2.push(movedCell);
             });
 

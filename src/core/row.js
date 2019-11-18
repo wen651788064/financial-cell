@@ -10,6 +10,7 @@ import PasteProxy from "./paste_proxy";
 import CellProxy from "./cell_proxy";
 import CellRange from "./cell_range";
 import CellProp from "../model/cell_prop";
+import Cell from "../model/cell";
 
 export function isFormula(text) {
     if (text && text[0] === "=") {
@@ -184,73 +185,64 @@ class Rows {
     // what: all | text | format
     setCell(ri, ci, cell, what = 'all') {
         const row = this.getOrNew(ri);
+        let _cell = new Cell();
+        _cell.setCell(cell);
         if (what === 'all') {
-            row.cells[ci] = cell;
-            if (isHave(cell.text)) {
-                // row.cells[ci].value = cell.text;
-            }
-            this.workbook.change(ri, ci, row.cells[ci], deepCopy(row.cells[ci]));
+            row.cells[ci] = _cell;
+            this.workbook.change(ri, ci, row.cells[ci]);
         } else if (what === 'text') {
             row.cells[ci] = row.cells[ci] || {};
-            row.cells[ci].text = cell.text;
-            // row.cells[ci].value = cell.text;
-            this.workbook.change(ri, ci, row.cells[ci], deepCopy(row.cells[ci]));
+            row.cells[ci].text = _cell.text;
+
+            this.workbook.change(ri, ci, row.cells[ci]);
         } else if (what === 'format') {
             row.cells[ci] = row.cells[ci] || {};
-            row.cells[ci].style = cell.style;
-            if (cell.merge) row.cells[ci].merge = cell.merge;
-            this.workbook.change(ri, ci, row.cells[ci], deepCopy(row.cells[ci]));
+            row.cells[ci].style = _cell.style;
+            if (cell.merge) row.cells[ci].merge = _cell.merge;
+            this.workbook.change(ri, ci, row.cells[ci]);
         } else if (what === 'date' || what === 'datetime') {
             // row.cells[ci] = {};
-            if (!row.cells[ci]) {
-                row.cells[ci] = {}
-            }
-            if (!this.isFormula(cell.formulas) && !cell.minute) {
-                row.cells[ci].formulas = cell.text;
-            } else {
-                row.cells[ci].formulas = cell.formulas;
-            }
-            row.cells[ci].text = cell.text;
-            row.cells[ci].style = cell.style;
-            row.cells[ci].to_calc_num = cell.to_calc_num;
-            // row.cells[ci].value = cell.value;
-        } else if (what === 'normal' || what === 'number') {
-            // row.cells[ci] = {};
-            if (!row.cells[ci]) {
+            if (!isHave(row.cells[ci])) {
                 row.cells[ci] = {}
             }
             if (!this.isFormula(cell.formulas)) {
-                row.cells[ci].formulas = cell.text;
+                row.cells[ci].formulas = _cell.text;
             } else {
-                row.cells[ci].formulas = cell.formulas;
+                row.cells[ci].formulas = _cell.formulas;
+            }
+            row.cells[ci].text = _cell.text;
+            row.cells[ci].style = _cell.style;
+            row.cells[ci].to_calc_num = _cell.to_calc_num;
+        } else if (what === 'normal' || what === 'number') {
+            if (!isHave(row.cells[ci])) {
+                row.cells[ci] = {}
+            }
+            if (!this.isFormula(cell.formulas)) {
+                row.cells[ci].formulas = _cell.text;
+            } else {
+                row.cells[ci].formulas = _cell.formulas;
             }
             // row.cells[ci].value = cell.value;
-            row.cells[ci].text = cell.text;
-            row.cells[ci].style = cell.style;
+            row.cells[ci].text = _cell.text;
+            row.cells[ci].style = _cell.style;
         } else if (what === 'rmb' || what === 'percent') {        // rmb 单独拿出来是因为 text是￥123, 而formalus不能是 ￥123,应该是123
-            if (!row.cells[ci]) {
+            if (!isHave(row.cells[ci])) {
                 row.cells[ci] = {}
             }
 
-            // row.cells[ci].value = cell.value;
-            row.cells[ci].text = cell.text;
-            row.cells[ci].formulas = cell.formulas;
-            row.cells[ci].style = cell.style;
+            row.cells[ci].text = _cell.text;
+            row.cells[ci].formulas = _cell.formulas;
+            row.cells[ci].style = _cell.style;
         } else if (what === 'all_with_no_workbook') {
-            row.cells[ci] = cell;
-            // if (isHave(cell.text)) {
-            //     row.cells[ci].value = cell.text;
-            // }
+            row.cells[ci] = _cell;
+
             return;
-        } else if(what === 'style') {
-            if(isHave(cell) === false) {
-                cell = {};
-            }
-            if(isHave(row.cells[ci]) === false) {
+        } else if (what === 'style') {
+            if (!isHave(row.cells[ci])) {
                 row.cells[ci] = {};
             }
 
-            row.cells[ci].style = cell.style;
+            row.cells[ci].style = _cell.style;
             return;
         }
         // cell
@@ -341,46 +333,41 @@ class Rows {
     // what === cell 把原本的cell 的merge 清空， 原因是不清空 merge还会存在
     setCellText(ri, ci, {text, style, formulas, merge = ""}, proxy = "", name = "", what = 'all') {
         const cell = this.getCellOrNew(ri, ci);
+        let _cell = new Cell();
         if (what === 'style') {
-            cell.style = style;
-            cell.formulas = text;   //    cell.formulas = cell.formulas;
+            _cell.style = style;
+            _cell.formulas = text;   //    cell.formulas = cell.formulas;
         } else if (what === 'format') {
-            cell.formulas = cell.formulas;
-            cell.style = style;
+            _cell.formulas = cell.formulas;
+            _cell.style = style;
         } else if (what === 'cell') {
-            cell.style = style;
-            cell.formulas = formulas;
-            delete cell['merge'];
-            if(merge !== "") {
-                cell.merge = merge;
+            _cell.style = style;
+            _cell.formulas = formulas;
+            _cell['merge'] = undefined;
+            if (merge !== "") {
+                _cell.merge = merge;
             }
-        }  else {
-            cell.formulas = text;
-            // cell.value = text;
+        } else {
+            _cell.formulas = text;
         }
 
-        cell.text = text;
-        // this.recast(cell);
-        // cell
+        _cell.text = text;
+        this.setCell(ri, ci, _cell);
+
         this.getDependCell(xy2expr(ci, ri), this.getCell(ri, ci));
         if (typeof proxy != "string") {
             proxy.setCell(name, xy2expr(ci, ri));
-        }
-        if (what !== 'date') {
-            this.workbook.change(ri, ci, cell, deepCopy(cell));
         }
     }
 
     setCellAll(ri, ci, text, formulas = "", what = '') {
         const cell = this.getCellOrNew(ri, ci);
-        cell.formulas = formulas == "" ? cell.formulas : formulas;
-        cell.text = text;
-        // cell
-        this.getDependCell(xy2expr(ci, ri), this.getCell(ri, ci));
+        let _cell = new Cell();
+        _cell.formulas = formulas == "" ? cell.formulas : formulas;
+        _cell.text = text;
 
-        if (what !== 'date') {
-            this.workbook.change(ri, ci, cell, deepCopy(cell));
-        }
+        this.setCell(ri, ci, _cell);
+        this.getDependCell(xy2expr(ci, ri), this.getCell(ri, ci));
     }
 
     moveChange(arr, arr2, arr3) {
@@ -501,7 +488,7 @@ class Rows {
             if (isHave(cell)) {
                 cell = deepCopy(cell);
             } else cell = {};
-            let cellProp = new CellProp(i, j, cell);
+            let cellProp = new CellProp(i, j, cell, xy2expr(i, j));
             cells.push(cellProp);
         });
 
@@ -517,7 +504,7 @@ class Rows {
             // if(isInsert && isHave(arr[i])) {
             //     arr[i] = arr[i].replace(/\$/, '');
             // }
-            if(typeof arr[i] === 'string') {
+            if (typeof arr[i] === 'string') {
                 arr[i] = arr[i].toUpperCase();
             }
             if (arr[i].search(/^[A-Z]+\d+$/) != -1) {
@@ -526,7 +513,7 @@ class Rows {
                     bad = true;
                 }
 
-                let args = this.getCellTextIsAdd(isInsert, sri, ds, isAdd, dei, dci,0,  isRows);
+                let args = this.getCellTextIsAdd(isInsert, sri, ds, isAdd, dei, dci, 0, isRows);
                 if (args.enter) {
                     arr[i] = args.data;
                 } else if (isInsert === false) {
@@ -1030,7 +1017,7 @@ class Rows {
                         numberAutoFilter.call(this, darr[i], darr, isLeftRight, isDown, diffValue, what, cb, isNumber);
                     } else if (isDate || d.type === 'date') {
                         dateAutoFilter.call(this, darr[i], line, isDown, darr, what, cb, isDate);
-                    }  else {
+                    } else {
                         otherAutoFilter.call(this, darr[i], darr, isLeftRight, isDown, what, cb, other, sarr.length - 1);
                     }
                 }
@@ -1175,7 +1162,7 @@ class Rows {
                     nci += n;
 
                     if (isHave(cell) && isHave(cell.formulas) && this.isFormula(cell.formulas)) {
-                        let {bad, result, enter} = this.getCellTextByShift(splitStr(cell.formulas),  n, 0,  true, true, sci, false);
+                        let {bad, result, enter} = this.getCellTextByShift(splitStr(cell.formulas), n, 0, true, true, sci, false);
                         if (enter && !bad) {
                             cells.push({ri: ri, ci: nci, cell: {text: result, formulas: result}});
                         }
@@ -1238,7 +1225,7 @@ class Rows {
                     if (cell.merge) delete cell.merge;
                 }
 
-                this.workbook.change(ri, ci, cell, deepCopy(cell));
+                this.workbook.change(ri, ci, cell);
             }
         }
     }

@@ -1,4 +1,6 @@
 import CellProp from "./cell_prop";
+import {isHave} from "../core/helper";
+import {xy2expr} from "../core/alphabet";
 
 function getType(dType, sType) {
     if (dType === 1 && sType === 1) {
@@ -61,99 +63,99 @@ export default class PaintFormat {
     makePaintArr(type, darr) {
         let {dstRange, selectorRange} = this;
         let pArr = [];
-        if (type === 1 || type === 6) {  // 1行多列 // 1列多行
-            let index = 0;
-            dstRange.each((i, j) => {
-                let {cell} = darr[index];
-                let cellProp = new CellProp(i, j, cell);
-                pArr.push(cellProp);
-
-                index += 1;
-                if (index === darr.length) {
-                    index = 0;
-                }
-            });
-        } else if (type === 3) {        // 3 多行多列 * 1行多列
-            let dci = selectorRange.eci - selectorRange.sci, index = 0, recordRi = dstRange.sri;
-
-            let _darr = changeDarrToDoubleArr(darr, selectorRange);
-
-            dstRange.each((i, j) => {
-                let {cell} = _darr[0][index];
-                let cellProp = new CellProp(i, j, cell);
-                pArr.push(cellProp);
-
-                if (index === dci) {
-                    index = 0;
-                } else {
-                    index += 1;
-                }
-            });
-        } else if(type === 7) {
-            let recordRi = dstRange.sri;
-            let rowIndex = 0;
-
-            let _darr = changeDarrToDoubleArr(darr, selectorRange);
-
-            dstRange.each((i, j) => {
-                if (recordRi !== i) {
-                    rowIndex += 1;
-
-                    if (rowIndex === _darr.length) {
-                        rowIndex = 0;
-                    }
-                }
-
-                let {cell} = _darr[rowIndex][0];
-                let cellProp = new CellProp(i, j, cell);
-                pArr.push(cellProp);
-
-                recordRi = i;
-            });
-        }else if (type === 4 || type === 2) {   // 4: 1行多列 * 1列多行    6: 1列多行 * 1行多列
-            dstRange.each((i, j) => {
-                let {cell} = darr[0];
-                let cellProp = new CellProp(i, j, cell);
-                pArr.push(cellProp);
-            });
-        } else if (type === 5) {
-            let dci = selectorRange.eci - selectorRange.sci, index = 0, recordRi = dstRange.sri;
-
-            dstRange.each((i, j) => {
-                if (recordRi !== i) {
-                    index = 0;
-                }
-
-                let {cell} = darr[index];
-                let cellProp = new CellProp(i, j, cell);
-                pArr.push(cellProp);
-
-                if (index === dci) {
-                    index = 0;
-                } else {
-                    index += 1;
-                }
-                recordRi = i;
-            });
-        } else if (type === 8) {
-            let rowIndex = 0, recordRi = dstRange.sri;
-
-            dstRange.each((i, j) => {
-                if (recordRi !== i) {
-                    rowIndex += 1;
-
-                    if (rowIndex === darr.length) {
-                        rowIndex = 0;
-                    }
-                }
-
-                let {cell} = darr[rowIndex];
-                let cellProp = new CellProp(i, j, cell);
-                pArr.push(cellProp);
-
-                recordRi = i;
-            });
-        } else if (type === 9) {
+        // if (type === 1 || type === 6) {  // 1行多列 // 1列多行
+        //     let index = 0;
+        //     dstRange.each((i, j) => {
+        //         let {cell} = darr[index];
+        //         let cellProp = new CellProp(i, j, cell);
+        //         pArr.push(cellProp);
+        //
+        //         index += 1;
+        //         if (index === darr.length) {
+        //             index = 0;
+        //         }
+        //     });
+        // } else if (type === 3) {        // 3 多行多列 * 1行多列
+        //     let dci = selectorRange.eci - selectorRange.sci, index = 0, recordRi = dstRange.sri;
+        //
+        //     let _darr = changeDarrToDoubleArr(darr, selectorRange);
+        //
+        //     dstRange.each((i, j) => {
+        //         let {cell} = _darr[0][index];
+        //         let cellProp = new CellProp(i, j, cell);
+        //         pArr.push(cellProp);
+        //
+        //         if (index === dci) {
+        //             index = 0;
+        //         } else {
+        //             index += 1;
+        //         }
+        //     });
+        // } else if(type === 7) {
+        //     let recordRi = dstRange.sri;
+        //     let rowIndex = 0;
+        //
+        //     let _darr = changeDarrToDoubleArr(darr, selectorRange);
+        //
+        //     dstRange.each((i, j) => {
+        //         if (recordRi !== i) {
+        //             rowIndex += 1;
+        //
+        //             if (rowIndex === _darr.length) {
+        //                 rowIndex = 0;
+        //             }
+        //         }
+        //
+        //         let {cell} = _darr[rowIndex][0];
+        //         let cellProp = new CellProp(i, j, cell);
+        //         pArr.push(cellProp);
+        //
+        //         recordRi = i;
+        //     });
+        // }else if (type === 4 || type === 2) {   // 4: 1行多列 * 1列多行    6: 1列多行 * 1行多列
+        //     dstRange.each((i, j) => {
+        //         let {cell} = darr[0];
+        //         let cellProp = new CellProp(i, j, cell);
+        //         pArr.push(cellProp);
+        //     });
+        // } else if (type === 5) {
+        //     let dci = selectorRange.eci - selectorRange.sci, index = 0, recordRi = dstRange.sri;
+        //
+        //     dstRange.each((i, j) => {
+        //         if (recordRi !== i) {
+        //             index = 0;
+        //         }
+        //
+        //         let {cell} = darr[index];
+        //         let cellProp = new CellProp(i, j, cell);
+        //         pArr.push(cellProp);
+        //
+        //         if (index === dci) {
+        //             index = 0;
+        //         } else {
+        //             index += 1;
+        //         }
+        //         recordRi = i;
+        //     });
+        // } else if (type === 8) {
+        //     let rowIndex = 0, recordRi = dstRange.sri;
+        //
+        //     dstRange.each((i, j) => {
+        //         if (recordRi !== i) {
+        //             rowIndex += 1;
+        //
+        //             if (rowIndex === darr.length) {
+        //                 rowIndex = 0;
+        //             }
+        //         }
+        //
+        //         let {cell} = darr[rowIndex];
+        //         let cellProp = new CellProp(i, j, cell);
+        //         pArr.push(cellProp);
+        //
+        //         recordRi = i;
+        //     });
+        // } else if (type === 9) {
             let dci = selectorRange.eci - selectorRange.sci, index = 0, recordRi = dstRange.sri;
             let rowIndex = 0;
 
@@ -169,7 +171,8 @@ export default class PaintFormat {
                 }
 
                 let {cell} = _darr[rowIndex][index];
-                let cellProp = new CellProp(i, j, cell);
+
+                let cellProp = new CellProp(i, j, cell, xy2expr(i, j));
                 pArr.push(cellProp);
 
                 if (index === dci) {
@@ -179,7 +182,7 @@ export default class PaintFormat {
                 }
                 recordRi = i;
             });
-        }
+        // }
 
         return pArr;
     }

@@ -9,6 +9,7 @@ import CellProxy from "./cell_proxy";
 import {look} from "../config";
 import {deepCopy, distinct} from "../core/operator";
 import {testValid} from "../utils/test";
+import {isHave} from "../core/helper";
 // import Worker from 'worker-loader!../external/Worker.js';
 var formulajs = require('formulajs');
 // gobal var
@@ -76,20 +77,36 @@ export function toUpperCase(text) {
     return text;
 }
 
-export function loadData() {
+export function getWorkbook() {
     let {data} = this;
     let workbook = [];
     workbook.Sheets = {};
     workbook.Sheets[data.name] = {};
 
-    console.time("loadData need time");
-    let wb = data.rows.workbook.getWorkbook(1);
+    console.time("getWorkbook need time");
+    let wb = data.rows.workbook.getWorkbook();
     workbook = wb === "" ? workbook : wb;
-    console.timeEnd("loadData need time");
+    console.timeEnd("getWorkbook need time");
 
     return {
         workbook,
     };
+}
+
+function getChangeDataToCalc() {
+    let {data} = this;
+    let changeData = data.getChangeDataToCalc();
+    if(!isHave(changeData)) {
+        return {
+            "state": false,
+            "data": null,
+        }
+    } else {
+        return {
+            "state": true,
+            "data": changeData
+        }
+    }
 }
 
 async function parseCell(viewRange, state = false, src = '', state2 = true, contextualArr) {
@@ -97,28 +114,30 @@ async function parseCell(viewRange, state = false, src = '', state2 = true, cont
     let {data, proxy} = this;
 
     console.time(" xx1 ");
-    let {workbook} = loadData.call(this);        // 得到 workbook对象
+    let {workbook} = getWorkbook.call(this);        // 得到 workbook对象
     let {factory} = this;
     let s = await factory.getSamples(workbook.Sheets);      // 得到跨sheet的数据
     factory.mergeWorkbook(s, workbook, data.name);          // 合并
     console.timeEnd(" xx1 ");
 
     console.time(" xx2 ");
-    let tileArr = [];       // 被其他单元格引用的数据
-    let ca = proxy.calc(workbook, tileArr, data.name);      // 得到workbook的差异的地方
+    // let tileArr = [];       // 被其他单元格引用的数据
+
+    // let ca = proxy.calc(workbook, tileArr, data.name);      // 得到workbook的差异的地方
+    let ca = getChangeDataToCalc.call(this);
     console.timeEnd(" xx2 ");
 
     console.time(" xx3 ");
-    if (ca.state) {
-        workbook.Sheets[data.name] = ca.data;
-    }
-
-    let assoc = proxy.associated(data.name, contextualArr, workbook);
-    if (assoc.changeArr.length > 0) {
-        tileArr.push(...assoc.changeArr);
-        tileArr = distinct(tileArr);
-        ca.state = true;
-    }
+    // if (ca.state) {
+    //     workbook.Sheets[data.name] = ca.data;
+    // }
+    //
+    // let assoc = proxy.associated(data.name, contextualArr, workbook);
+    // if (assoc.changeArr.length > 0) {
+    //     tileArr.push(...assoc.changeArr);
+    //     tileArr = distinct(tileArr);
+    //     ca.state = true;
+    // }
 
     console.timeEnd(" xx3 ");
     if (state) {
@@ -149,30 +168,30 @@ async function parseCell(viewRange, state = false, src = '', state2 = true, cont
             //         this.render(true, workbook);
             //     });
             // // } else {
-            workbook = proxy.pack(data.name, workbook, tileArr);
+            // workbook = proxy.pack(data.name, workbook, tileArr);
 
             console.time("calc need time");
             window.bugout.log('开始计算公式');
-            data.calc(workbook, data.rows, tileArr);
+            console.log(ca.data.findAllNeedCalcCell())
+            data.calc(workbook, data.rows, ca.data);
             window.bugout.log('计算公式结束');
             console.timeEnd("calc need time");
 
             // proxy.isDone();   // 如果有问题再取消注释，看看是否有问题
-            let {factory} = this;
-            factory.data = workbook;
-            console.time("x4");
-            workbook = proxy.concat(data.name, workbook, tileArr);
-            console.timeEnd("x4");
-
-            data.rows.setWorkBook(deepCopy(workbook));
-            console.log(tileArr);
-            console.time("x5");
-            let cells = proxy.unpack(workbook.Sheets[data.name], data.rows._, tileArr);
-            console.timeEnd("x5");
-            data.rows.setData(cells);
-
-            data.change(data.getData());
-
+            // let {factory} = this;
+            // factory.data = workbook;
+            // console.time("x4");
+            // workbook = proxy.concat(data.name, workbook, tileArr);
+            // console.timeEnd("x4");
+            //
+            // data.rows.setWorkBook(deepCopy(workbook));
+            // console.log(tileArr);
+            // console.time("x5");
+            // let cells = proxy.unpack(workbook.Sheets[data.name], data.rows._, tileArr);
+            // console.timeEnd("x5");
+            // data.rows.setData(cells);
+            //
+            // data.change(data.getData());
         } catch (e) {
             console.error(e);
         }
@@ -594,12 +613,12 @@ class Table {
         let workbook = "";
 
         let nc = data.rows.workbook.getNeedCalc();
-        if (!temp && nc.value) {
+        if (!temp ) {
             let args = await parseCell.call(this, viewRange, false, '', state, nc.contextualArr);
 
             this.clear();
             workbook = args.data;
-        } else if (!nc.value) {
+        } else  {
             workbook = tempData;
         }
 

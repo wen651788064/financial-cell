@@ -63,6 +63,8 @@ class CellRange {
             return 2;
         } else if(sri !== eri && sci !== eci) {
             return 3;
+        } else if(sri === eri && sci === eci) {
+            return 1;
         }
 
         console.error("未知情况");

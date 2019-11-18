@@ -27,7 +27,7 @@ export default class MultiPreAction {
             case 6:
                 preAction = new PreAction({
                     type, oldMergesData, property, value, newMergesData,
-                    action, cellRange, cells, oldCell
+                    action, cellRange,  oldCell, newCell: cells
                 }, this.data);
                 this.undoItems.push(preAction);
                 this.redoItems = [];
