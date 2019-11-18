@@ -5,6 +5,7 @@ export default class Cell {
         this.text = "";
         this.style = undefined;
         this.merge = undefined;
+        this.multivalueRefsCell = undefined;
         this.depend = [];
         this.formulas = "";
     }
@@ -30,6 +31,10 @@ export default class Cell {
 
         if (isHave(cell.style)) {
             this.style = cell.style;
+        }
+
+        if (isHave(cell.multivalueRefsCell)) {
+            this.multivalueRefsCell = cell.multivalueRefsCell;
         }
 
         if (isHave(cell.merge)) {

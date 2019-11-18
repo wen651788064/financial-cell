@@ -77,7 +77,7 @@ function calcDoneToSetCells(cells, workbook) {
     for (let i = 0; i < cells.length; i++) {
         let arg = expr2xy(cells[i]);
         if (isHave(workbook.Sheets[data.name][cells[i]]) && isHave(workbook.Sheets[data.name][cells[i]].v)) {
-            data.rows.setCell(arg[0], arg[1], {text: workbook.Sheets[data.name][cells[i]].v}, 'text');
+            data.rows.setCell(arg[1], arg[0], {text: workbook.Sheets[data.name][cells[i]].v}, 'text');
         }
 
     }
@@ -126,10 +126,10 @@ async function parseCell(viewRange, state = false, src = '', state2 = true, cont
     let {data, proxy} = this;
 
     console.time(" xx1 ");
-    let {workbook} = getWorkbook.call(this);        // 得到 workbook对象
+    let {workbook} = getWorkbook.call(this);                  // 得到 workbook对象
     let {factory} = this;
     let s = await factory.getSamples(workbook.Sheets);      // 得到跨sheet的数据
-    factory.mergeWorkbook(s, workbook, data.name);          // 合并
+    factory.mergeWorkbook(s, workbook, data.name);            // 合并
     console.timeEnd(" xx1 ");
 
     console.time(" xx2 ");
@@ -161,6 +161,7 @@ async function parseCell(viewRange, state = false, src = '', state2 = true, cont
 
     if (ca.state) {
         try {
+            console.log(contextualArr)
             workbook = ca.data.type === 999 ? ca.data.workbook.getWorkbook() : workbook;
             redo = true;
             // if(proxy.countProperties(workbook)) {
@@ -215,7 +216,7 @@ async function parseCell(viewRange, state = false, src = '', state2 = true, cont
         }
     } else {
         if (state2 != false) {
-            proxy.setOldData(workbook);
+            // proxy.setOldData(workbook);
             redo = false;
         }
     }

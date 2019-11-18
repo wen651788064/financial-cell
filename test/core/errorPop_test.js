@@ -1210,10 +1210,6 @@ describe('qq', () => {
             assert.equal(pos, 8);        // 往上往右
         });
 
-        it('  getCellRowByAbsY  ', function () {
-            data.getCellRowByAbsY();
-        });
-
         it('  getCellTextByShift  ', function () {
             let args = data.rows.getCellTextByShift(splitStr('=AVERAGE(B1:B5)'), 1, 2);
             assert.equal(args.bad, false);

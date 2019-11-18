@@ -3,11 +3,14 @@ import {isHave} from '../core/helper';
 import {expr2xy, xy2expr} from "../core/alphabet";
 
 function getCellDepend(cells) {
-
     let arr = [];
     for (let i = 0; i < cells.length; i++) {
         if (isHave(cells[i]) && isHave(cells[i].cell) && isHave(cells[i].cell.depend)) {
             arr.push(...cells[i].cell.depend);
+        }
+
+        if(isHave(cells[i]) && isHave(cells[i].cell) && isHave(cells[i].cell.multivalueRefsCell)) {
+            arr.push(cells[i].cell.multivalueRefsCell);
         }
     }
 
@@ -43,14 +46,14 @@ export default class PreAction {
         changeArr.push(...getCellDepend(oldCell));
         changeArr.push(...getCellDepend(newCell));
         if (ri !== -1 && ci !== -1) {
-            changeArr.push(xy2expr(ri, ci));
+            changeArr.push(xy2expr(ci, ri));
         }
 
         return changeArr;
     }
 
 
-    restore(data, sheet, isRedo) { // 如果是2值的参数，用is前缀命名   ，多值   xxxType
+    restore(data, sheet, isRedo) {
         let {type} = this;
 
         if (type === 1) { // shuru
@@ -76,7 +79,6 @@ export default class PreAction {
                 _cells = deepCopy(newCell);
             }
 
-            //
             if (property === 'merge') {
                 if (isRedo === 1) {
                     this.data.merges.setData(oldMergesData);

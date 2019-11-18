@@ -12,7 +12,6 @@ export default class SelectorCell {
     }
 
     resetSelectOffset() {
-        console.log(this._)
         let rect = this.data.getRect(this._);
         this.setOffset(rect);
     }
