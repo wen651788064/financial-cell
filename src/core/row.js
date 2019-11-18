@@ -354,7 +354,7 @@ class Rows {
         if(isHave(cell.depend)) {
             _cell.depend = cell.depend;
         }
-
+        console.log()
         _cell.text = text;
         this.setCell(ri, ci, _cell);
 
