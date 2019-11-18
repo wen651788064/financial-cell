@@ -1078,11 +1078,11 @@ export default class DataProxy {
     }
 
     editorChangeToHistory(oldCell, newCell, {ri, ci}, type) {
-        if (oldCell.text === newCell.text || oldCell.formulas === newCell.text) {
-            return {
-                "state": false,
-            };
-        }
+        // if (oldCell.text === newCell.text || oldCell.formulas === newCell.text) {
+        //     return {
+        //         "state": false,
+        //     };
+        // }
 
         let {multiPreAction} = this;
         let expr = xy2expr(ci, ri);
@@ -1555,6 +1555,8 @@ export default class DataProxy {
             mci
         }
     }
+
+
 
     isEmpty(cell) {
         return this.rows.isEmpty(cell);

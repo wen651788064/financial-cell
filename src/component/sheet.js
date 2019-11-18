@@ -29,6 +29,7 @@ import ErrorPopUp from "./error_pop_up";
 import RectProxy from "./rect_proxy";
 import {testValid} from "../utils/test";
 import Timer from "../model/Timer";
+import PreAction from "../model/pre_action";
 
 function scrollbarMove() {
     const {
@@ -128,7 +129,7 @@ function selectorMove(multiple, direction) {
     if (multiple) {
         selector.moveIndexes = [ri, ci];
     }
-    selector.selectCell.setData(ri,  ci);
+    selector.selectCell.setData(ri, ci);
     selector.selectCell.resetSelectOffset();
     selectorSet.call(this, multiple, ri, ci);
     // editor.clear();
@@ -978,9 +979,16 @@ function toolbarChange(type, value) {
     } else if (type === 'throwFormula') {
         throwFormula.call(this);
     } else if (type === 'close') {
-        this.data.rows.workbook.calcNeedCalcBool(true);
-        this.table.proxy.diff = 305;
-        this.table.proxy.oldData = "";
+        // this.data.rows.workbook.calcNeedCalcBool(true);
+        // this.table.proxy.diff = 305;
+        // this.table.proxy.oldData = "";
+        let {mri, mci} = data.getMax();
+
+        data.changeDataForCalc = new PreAction({
+            type: 999,
+            workbook: this.data.rows.workbook,
+            action: "重新计算", ri: -1, ci: -1, oldCell: {}, newCell: data.rows.eachRange(new CellRange(0, 0, mri, mci))
+        }, this.data);
         sheetReset.call(this);
         // loadFormula.call(this, true);
     } else if (type === 'freeze') {

@@ -1,4 +1,4 @@
-import {stringAt, xy2expr} from '../core/alphabet';
+import {expr2xy, stringAt, xy2expr} from '../core/alphabet';
 import {getFontSizePxByPt} from '../core/font';
 import _cell from '../core/cell';
 import {formulam} from '../core/formula';
@@ -70,6 +70,18 @@ function getStr(str) {
     });
 }
 
+function calcDoneToSetCells(cells, workbook) {
+    let {data} = this;
+
+
+    for (let i = 0; i < cells.length; i++) {
+        let arg = expr2xy(cells[i]);
+        if (isHave(workbook.Sheets[data.name][cells[i]]) && isHave(workbook.Sheets[data.name][cells[i]].v)) {
+            data.rows.setCell(arg[0], arg[1], {text: workbook.Sheets[data.name][cells[i]].v}, 'text');
+        }
+
+    }
+}
 
 export function toUpperCase(text) {
     text = text.toString().toUpperCase();
@@ -96,7 +108,7 @@ export function getWorkbook() {
 function getChangeDataToCalc() {
     let {data} = this;
     let changeData = data.changeDataForCalc;
-    if(!isHave(changeData)) {
+    if (!isHave(changeData)) {
         return {
             "state": false,
             "data": null,
@@ -125,6 +137,7 @@ async function parseCell(viewRange, state = false, src = '', state2 = true, cont
 
     // let ca = proxy.calc(workbook, tileArr, data.name);      // 得到workbook的差异的地方
     let ca = getChangeDataToCalc.call(this);
+
     console.timeEnd(" xx2 ");
 
     console.time(" xx3 ");
@@ -148,6 +161,7 @@ async function parseCell(viewRange, state = false, src = '', state2 = true, cont
 
     if (ca.state) {
         try {
+            workbook = ca.data.type === 999 ? ca.data.workbook.getWorkbook() : workbook;
             redo = true;
             // if(proxy.countProperties(workbook)) {
             //     let {worker} = this;
@@ -173,8 +187,10 @@ async function parseCell(viewRange, state = false, src = '', state2 = true, cont
             //  淡化workbook , 直接用data.rows._
             console.time("calc need time");
             window.bugout.log('开始计算公式');
-            console.log(ca.data.findAllNeedCalcCell())
+
             data.calc(workbook, data.rows, ca.data);
+            calcDoneToSetCells.call(this, ca.data.findAllNeedCalcCell(), workbook);
+
             window.bugout.log('计算公式结束');
             console.timeEnd("calc need time");
             data.changeDataForCalc = null;
@@ -615,12 +631,12 @@ class Table {
         let workbook = "";
 
         let nc = data.rows.workbook.getNeedCalc();
-        if (!temp ) {
+        if (!temp) {
             let args = await parseCell.call(this, viewRange, false, '', state, nc.contextualArr);
 
             this.clear();
             workbook = args.data;
-        } else  {
+        } else {
             workbook = tempData;
         }
 

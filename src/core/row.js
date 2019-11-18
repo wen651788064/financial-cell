@@ -1285,11 +1285,6 @@ class Rows {
             }
             this._ = d;
 
-            if (rowsInit) {
-                sheet.toolbar.change('close', '');
-                this.init();
-            }
-
 
             // 为什么要判断sheet = '' ?
             if (out) {
@@ -1304,6 +1299,12 @@ class Rows {
                 this.workbook.init(this._, data, proxy, table);
                 let workbook = this.workbook.getWorkbook();
                 proxy.setOldData(workbook);
+
+                if (rowsInit) {
+                    this.init();
+                    sheet.toolbar.change('close', '');
+
+                }
             }
 
             // this.each((ri, row) => {
