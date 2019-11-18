@@ -706,6 +706,7 @@ export default class DataProxy {
         this.calc = formulaCalc();
         this.refRow = new RefRow(this.settings.row, this);
         this.pasteDirectionsArr = [];
+        this.changeDataForCalc = null;
 
         // save data end
 
@@ -1088,7 +1089,7 @@ export default class DataProxy {
         let step = multiPreAction.getStepType(type, {ri, ci, expr, text: newCell.text});
 
         multiPreAction.addStep(step, {oldCell, newCell});
-
+        this.changeDataForCalc = this.getChangeDataToCalc();
         return {
             "state": true
         }
@@ -1832,7 +1833,10 @@ export default class DataProxy {
 
     getChangeDataToCalc() {
         let {multiPreAction} = this;
-        let lastStep = multiPreAction.undoItems[0];
+        if(multiPreAction.undoItems.length <= 0) {
+            return null;
+        }
+        let lastStep = multiPreAction.undoItems[multiPreAction.undoItems.length - 1];
         if(!isHave(lastStep)) {
             return null;
         }
@@ -1867,6 +1871,8 @@ export default class DataProxy {
         }
         cb();
         this.changeToHistory({type, ri, ci, cellRange, property, value, oldCell, oldMergesData}, step);
+        this.changeDataForCalc = this.getChangeDataToCalc();
+
         this.change(this.getData());
     }
 

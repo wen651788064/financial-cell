@@ -3,7 +3,7 @@ import { isHave } from '../core/helper';
 function getCellDepend(cells) {
     let arr = [];
     for(let i = 0; i < cells.length; i++) {
-        arr.push(...cells[i].depend);
+        arr.push(...cells[i].cell.depend);
     }
 
     return arr;

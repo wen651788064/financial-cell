@@ -95,7 +95,7 @@ export function getWorkbook() {
 
 function getChangeDataToCalc() {
     let {data} = this;
-    let changeData = data.getChangeDataToCalc();
+    let changeData = data.changeDataForCalc;
     if(!isHave(changeData)) {
         return {
             "state": false,
@@ -170,12 +170,14 @@ async function parseCell(viewRange, state = false, src = '', state2 = true, cont
             // // } else {
             // workbook = proxy.pack(data.name, workbook, tileArr);
 
+            //  淡化workbook , 直接用data.rows._
             console.time("calc need time");
             window.bugout.log('开始计算公式');
             console.log(ca.data.findAllNeedCalcCell())
             data.calc(workbook, data.rows, ca.data);
             window.bugout.log('计算公式结束');
             console.timeEnd("calc need time");
+            data.changeDataForCalc = null;
 
             // proxy.isDone();   // 如果有问题再取消注释，看看是否有问题
             // let {factory} = this;
