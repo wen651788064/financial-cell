@@ -52,7 +52,6 @@ export default class PreAction {
         return changeArr;
     }
 
-
     restore(data, sheet, isRedo) {
         let {type} = this;
 

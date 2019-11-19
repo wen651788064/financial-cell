@@ -5,7 +5,6 @@ import {expr2xy} from "../core/alphabet";
 import dayjs from 'dayjs'
 import {deepCopy, distinct, isSheetVale, splitStr} from "./operator";
 import Recast from "./recast";
-import WorkBook from "./workbook_cacl_proxy";
 import PasteProxy from "./paste_proxy";
 import CellProxy from "./cell_proxy";
 import CellRange from "./cell_range";
@@ -79,7 +78,6 @@ function dateAutoFilter(d, line, isDown, darr, what, cb, isDate) {
 class Rows {
     constructor({len, height}) {
         this._ = {};
-        this.workbook = new WorkBook();
         this.len = len;
         // default row height
         this.height = height;
@@ -189,17 +187,13 @@ class Rows {
         _cell.setCell(cell);
         if (what === 'all') {
             row.cells[ci] = _cell;
-            this.workbook.change(ri, ci, row.cells[ci]);
         } else if (what === 'text') {
             row.cells[ci] = row.cells[ci] || {};
             row.cells[ci].text = _cell.text;
-
-            this.workbook.change(ri, ci, row.cells[ci]);
         } else if (what === 'format') {
             row.cells[ci] = row.cells[ci] || {};
             row.cells[ci].style = _cell.style;
             if (cell.merge) row.cells[ci].merge = _cell.merge;
-            this.workbook.change(ri, ci, row.cells[ci]);
         } else if (what === 'date' || what === 'datetime') {
             // row.cells[ci] = {};
             if (!isHave(row.cells[ci])) {
@@ -351,7 +345,7 @@ class Rows {
             _cell.formulas = text;
         }
 
-        if(isHave(cell.depend)) {
+        if (isHave(cell.depend)) {
             _cell.depend = cell.depend;
         }
 
@@ -369,7 +363,7 @@ class Rows {
         let _cell = new Cell();
         _cell.formulas = formulas == "" ? cell.formulas : formulas;
         _cell.text = text;
-        if(isHave(cell.depend)) {
+        if (isHave(cell.depend)) {
             _cell.depend = cell.depend;
         }
 
@@ -1215,9 +1209,6 @@ class Rows {
         if (row !== null) {
             const cell = this.getCell(ri, ci);
             if (cell !== null) {
-                this.workbook.deleteWorkbook(ri, ci, what);
-                let {table, data} = this.workbook;
-                table.proxy.setCell(data.name, xy2expr(ci, ri));
                 if (what === 'all') {
                     delete row.cells[ci];
                 } else if (what === 'text') {
@@ -1231,8 +1222,6 @@ class Rows {
                 } else if (what === 'merge') {
                     if (cell.merge) delete cell.merge;
                 }
-
-                this.workbook.change(ri, ci, cell);
             }
         }
     }
@@ -1265,10 +1254,6 @@ class Rows {
         }
     }
 
-    setWorkBook(type, workbook) {
-        this.workbook.setWorkBook(type, workbook);
-    }
-
     init() {
         this.each((ri, row) => {
             this.eachCells(ri, (ci, cell) => {
@@ -1288,22 +1273,12 @@ class Rows {
 
             // 为什么要判断sheet = '' ?
             if (out) {
-                const {table, data} = sheet;
-                const {proxy} = table;
-                let workbook = proxy.outCalc(this._, this.workbook.getWorkbook(), data.name);
-                this.workbook.setWorkBook(workbook);
-                proxy.setOldData(workbook);
-            } else if (sheet !== '') {
-                const {table, data} = sheet;
-                const {proxy} = table;
-                this.workbook.init(this._, data, proxy, table);
-                let workbook = this.workbook.getWorkbook();
-                proxy.setOldData(workbook);
 
+
+            } else if (sheet !== '') {
                 if (rowsInit) {
                     this.init();
                     sheet.toolbar.change('close', '');
-
                 }
             }
 

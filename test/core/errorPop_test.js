@@ -1352,7 +1352,6 @@ describe('qq', () => {
             assert.equal(result.isValid, false);
 
             result = dateDiff('2019年01月01日');
-
         });
     });
 
@@ -1385,8 +1384,6 @@ describe('qq', () => {
             assert.equal(data.rows.getCell(2, 4).formulas, "=$B4:B6");
             assert.equal(data.rows.getCell(2, 5).formulas, "=ABS(B5)");
             assert.equal(data.rows.getCell(2, 6).formulas, "=ABS($B5)");
-
-
         });
     });
 
@@ -1448,6 +1445,4 @@ describe('qq', () => {
             assert.equal(args.date, 'Invalid Date');
         });
     })
-
-
 });

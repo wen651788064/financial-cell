@@ -70,39 +70,10 @@ function getStr(str) {
     });
 }
 
-function calcDoneToSetCells(cells, workbook) {
-    let {data} = this;
-
-
-    for (let i = 0; i < cells.length; i++) {
-        let arg = expr2xy(cells[i]);
-        if (isHave(workbook.Sheets[data.name][cells[i]]) && isHave(workbook.Sheets[data.name][cells[i]].v)) {
-            data.rows.setCell(arg[1], arg[0], {text: workbook.Sheets[data.name][cells[i]].v}, 'text');
-        }
-
-    }
-}
-
 export function toUpperCase(text) {
     text = text.toString().toUpperCase();
 
     return text;
-}
-
-export function getWorkbook() {
-    let {data} = this;
-    let workbook = [];
-    workbook.Sheets = {};
-    workbook.Sheets[data.name] = {};
-
-    console.time("getWorkbook need time");
-    let wb = data.rows.workbook.getWorkbook();
-    workbook = wb === "" ? workbook : wb;
-    console.timeEnd("getWorkbook need time");
-
-    return {
-        workbook,
-    };
 }
 
 function getChangeDataToCalc() {
@@ -121,111 +92,15 @@ function getChangeDataToCalc() {
     }
 }
 
-async function parseCell(viewRange, state = false, src = '', state2 = true, contextualArr) {
-    console.time("parse cell need time");
+function parseCell(viewRange, state = false, src = '', state2 = true) {
     let {data, proxy} = this;
 
-    console.time(" xx1 ");
-    let {workbook} = getWorkbook.call(this);                  // 得到 workbook对象
-    let {factory} = this;
-    let s = await factory.getSamples(workbook.Sheets);      // 得到跨sheet的数据
-    factory.mergeWorkbook(s, workbook, data.name);            // 合并
-    console.timeEnd(" xx1 ");
+    let changeDataArgs = getChangeDataToCalc.call(this);    // todo
+    data.calc(data.rows, changeDataArgs.data);
 
-    console.time(" xx2 ");
-    // let tileArr = [];       // 被其他单元格引用的数据
-
-    // let ca = proxy.calc(workbook, tileArr, data.name);      // 得到workbook的差异的地方
-    let ca = getChangeDataToCalc.call(this);
-
-    console.timeEnd(" xx2 ");
-
-    console.time(" xx3 ");
-    // if (ca.state) {
-    //     workbook.Sheets[data.name] = ca.data;
-    // }
-    //
-    // let assoc = proxy.associated(data.name, contextualArr, workbook);
-    // if (assoc.changeArr.length > 0) {
-    //     tileArr.push(...assoc.changeArr);
-    //     tileArr = distinct(tileArr);
-    //     ca.state = true;
-    // }
-
-    console.timeEnd(" xx3 ");
-    if (state) {
-        workbook.Sheets[data.name]['A1'] = {v: '', f: `=${src}`};
+    if(changeDataArgs.state) {
+        data.changeDataForCalc = null;
     }
-
-    let redo = false;
-
-    if (ca.state) {
-        try {
-            console.log(contextualArr)
-            workbook = ca.data.type === 999 ? ca.data.workbook.getWorkbook() : workbook;
-            redo = true;
-            // if(proxy.countProperties(workbook)) {
-            //     let {worker} = this;
-            //     worker.terminate();
-            //     worker = new Worker();
-            //
-            //     workbook = proxy.pack(data.name, workbook);
-            //     worker.postMessage({workbook});
-            //
-            //     worker.addEventListener("message", (event) => {
-            //         workbook = event.data.data;
-            //         let {factory} = this;
-            //         factory.data = workbook;
-            //         workbook = proxy.concat(data.name, workbook);
-            //         let cells = proxy.unpack(workbook.Sheets[data.name],  data.rows._);
-            //         data.rows.setData(cells);
-            //         data.change(data.getData());
-            //         this.render(true, workbook);
-            //     });
-            // // } else {
-            // workbook = proxy.pack(data.name, workbook, tileArr);
-
-            //  淡化workbook , 直接用data.rows._
-            console.time("calc need time");
-            window.bugout.log('开始计算公式');
-
-            data.calc(workbook, data.rows, ca.data);
-            calcDoneToSetCells.call(this, ca.data.findAllNeedCalcCell(), workbook);
-
-            window.bugout.log('计算公式结束');
-            console.timeEnd("calc need time");
-            data.changeDataForCalc = null;
-
-            // proxy.isDone();   // 如果有问题再取消注释，看看是否有问题
-            // let {factory} = this;
-            // factory.data = workbook;
-            // console.time("x4");
-            // workbook = proxy.concat(data.name, workbook, tileArr);
-            // console.timeEnd("x4");
-            //
-            // data.rows.setWorkBook(deepCopy(workbook));
-            // console.log(tileArr);
-            // console.time("x5");
-            // let cells = proxy.unpack(workbook.Sheets[data.name], data.rows._, tileArr);
-            // console.timeEnd("x5");
-            // data.rows.setData(cells);
-            //
-            // data.change(data.getData());
-        } catch (e) {
-            console.error(e);
-        }
-    } else {
-        if (state2 != false) {
-            // proxy.setOldData(workbook);
-            redo = false;
-        }
-    }
-
-    console.timeEnd("parse cell need time");
-    return {
-        "redo": redo,
-        "data": workbook
-    };
 }
 
 export function parseCell2(viewRange, state = false, src = '') {
@@ -285,7 +160,7 @@ function specialStyle(text) {
     return false;
 }
 
-function renderCell(rindex, cindex, sheetbook) {
+function renderCell(rindex, cindex) {
     const {draw, data} = this;
     const {sortedRowMap} = data;
     let nrindex = rindex;
@@ -314,7 +189,7 @@ function renderCell(rindex, cindex, sheetbook) {
     if (data.showEquation) {
         cellText = cell.formulas;
     } else {
-        cellText = _cell.render(data, sheetbook, rindex, cindex, cell.text || '', formulam, (y, x) => (data.getCellTextOrDefault(x, y)));
+        cellText = cell.text;
     }
     draw.rect2(dbox, () => {
         // render text
@@ -400,7 +275,7 @@ function renderAutofilter(viewRange) {
     // renderFlexible.call(this, 1, 1)
 }
 
-async function renderContent(viewRange, fw, fh, tx, ty, sheetbook) {
+async function renderContent(viewRange, fw, fh, tx, ty) {
     // let sheetbook = args.data;
     const {draw, data} = this;
     draw.save();
@@ -421,7 +296,7 @@ async function renderContent(viewRange, fw, fh, tx, ty, sheetbook) {
     draw.save();
 
     viewRange.each((ri, ci) => {
-        renderCell.call(this, ri, ci, sheetbook);
+        renderCell.call(this, ri, ci);
     }, ri => filteredTranslateFunc(ri));
     draw.restore();
     // 2 render cell border
@@ -435,7 +310,7 @@ async function renderContent(viewRange, fw, fh, tx, ty, sheetbook) {
     draw.save();
     data.eachMergesInView(viewRange, ({sri, sci, eri}) => {
         if (!exceptRowSet.has(sri)) {
-            renderCell.call(this, sri, sci, sheetbook);
+            renderCell.call(this, sri, sci);
         } else if (!rset.has(sri)) {
             rset.add(sri);
             const height = data.rows.sumHeight(sri, eri + 1);
@@ -623,22 +498,17 @@ class Table {
     }
 
 
-    async render(temp = false, tempData, redo = false, state = true) {
+     render(temp = false, tempData, redo = false, state = true) {
         // resize canvas
         const {data} = this;
         const {rows, cols} = data;
         let viewRange = data.viewRange();
 
-        let workbook = "";
 
-        let nc = data.rows.workbook.getNeedCalc();
         if (!temp) {
-            let args = await parseCell.call(this, viewRange, false, '', state, nc.contextualArr);
+            let args = parseCell.call(this, viewRange, false, '', state);
 
             this.clear();
-            workbook = args.data;
-        } else {
-            workbook = tempData;
         }
 
         this.draw.resize(data.viewWidth(), data.viewHeight());
@@ -654,7 +524,7 @@ class Table {
 
         renderContentGrid.call(this, viewRange, fw, fh, tx, ty);
 
-        renderContent.call(this, viewRange, fw, fh, -x, -y, workbook);
+        renderContent.call(this, viewRange, fw, fh, -x, -y);
 
         renderFixedHeaders.call(this, 'all', viewRange, fw, fh, tx, ty);
 
@@ -669,7 +539,7 @@ class Table {
                 vr.eri = fri - 1;
                 vr.h = ty;
                 renderContentGrid.call(this, vr, fw, fh, tx, 0);
-                renderContent.call(this, vr, fw, fh, -x, 0, workbook);
+                renderContent.call(this, vr, fw, fh, -x, 0);
                 renderFixedHeaders.call(this, 'top', vr, fw, fh, tx, 0);
             }
             // 3x
@@ -680,13 +550,13 @@ class Table {
                 vr.w = tx;
                 renderContentGrid.call(this, vr, fw, fh, 0, ty);
                 renderFixedHeaders.call(this, 'left', vr, fw, fh, 0, ty);
-                renderContent.call(this, vr, fw, fh, 0, -y, workbook);
+                renderContent.call(this, vr, fw, fh, 0, -y);
             }
             // 4
             const freezeViewRange = data.freezeViewRange();
             renderContentGrid.call(this, freezeViewRange, fw, fh, 0, 0);
             renderFixedHeaders.call(this, 'all', freezeViewRange, fw, fh, 0, 0);
-            renderContent.call(this, freezeViewRange, fw, fh, 0, 0, workbook);
+            renderContent.call(this, freezeViewRange, fw, fh, 0, 0);
             // 5
             renderFreezeHighlightLine.call(this, fw, fh, tx, ty);
         }
