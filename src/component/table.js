@@ -93,12 +93,13 @@ function getChangeDataToCalc() {
 }
 
 function parseCell(viewRange, state = false, src = '', state2 = true) {
-    let {data, proxy} = this;
+    let {data} = this;
 
     let changeDataArgs = getChangeDataToCalc.call(this);    // todo
-    data.calc(data.rows, changeDataArgs.data);
+     data.calc(data.rows, changeDataArgs.data);
 
     if(changeDataArgs.state) {
+        changeDataArgs.data.findAllNeedCalcCell()
         data.changeDataForCalc = null;
     }
 }

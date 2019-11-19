@@ -5,6 +5,10 @@ import {expr2xy, xy2expr} from "../core/alphabet";
 function getCellDepend(cells) {
     let arr = [];
     for (let i = 0; i < cells.length; i++) {
+        if(isHave(cells[i]) && isHave(cells[i].expr)) {
+            arr.push(cells[i].expr);
+        }
+
         if (isHave(cells[i]) && isHave(cells[i].cell) && isHave(cells[i].cell.depend)) {
             arr.push(...cells[i].cell.depend);
         }
