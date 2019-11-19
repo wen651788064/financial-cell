@@ -529,7 +529,7 @@ function overlayerMousedown(evt) {
             clearStopTimer.call(this);
 
             if (isAutofillEl) {
-                if (data.autofill(selector.arange, 'all', msg => xtoast('Tip', msg), this.table.proxy)) {
+                if (data.autofill(selector.arange, 'all', msg => xtoast('Tip', msg))) {
                     testValid.call(this);
                     autofillNext.call(this);
                 }
@@ -1673,7 +1673,7 @@ export default class Sheet {
         let args = data.clickCopyPaste();
         if (args.enter) {
             this.selector.arange = args.dstCellRange;
-            data.clickAutofill(args.srcCellRange, args.dstCellRange, "all", msg => xtoast('Tip', msg), this.table.proxy);
+            data.clickAutofill(args.srcCellRange, args.dstCellRange, "all", msg => xtoast('Tip', msg));
             autofillNext.call(this);
         }
     }

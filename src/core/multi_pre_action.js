@@ -57,114 +57,106 @@ export default class MultiPreAction {
         let {rows, cols} = this.data;
         // let cells = [];
 
-        switch (type) {
-            case 1:
-                str = `在${expr}中键入"${text}"`;
-                return {
-                    action: str,
-                    type,
-                    ri, ci, expr
-                };
-                break;
-            case 2:
-                let expr1 = xy2expr(range.sci, range.sri);
-                let expr2 = xy2expr(range.eci, range.eri);
-                expr = expr1 === expr2 ? expr1 : `${expr1}:${expr2}`;
-                str = `删除${expr}的单元格内容`;
-                return {
-                    action: str,
-                    type,
-                    cellRange: range,
-                    cells: this.eachRange(range),
-                };
-                break;
-            case 3:
-                let height = rows.getHeight(ri);
-                str = `行宽`;
-                return {
-                    action: str,
-                    type,
-                    height: height,
-                    ri: ri
-                };
-                break;
-            case 4:
-                let width = cols.getWidth(ci);
-                str = `列宽`;
-                return {
-                    action: str,
-                    type,
-                    width: width,
-                    ci: ci
-                };
-                break;
-            case 5:
-                str = '自动填充';
-                return {
-                    action: str,
-                    type,
-                    cellRange: range,
-                    cells: this.eachRange(cellRange),
-                };
-                break;
-            case 12:
-                str = '选择性粘贴';
-                return {
-                    action: str,
-                    type,
-                    cellRange: range, property, value,
-                    cells: this.eachRange(cellRange),
-                };
-                break;
-            case 11:
-                if (property === 'font-bold' || property === 'font-italic'
-                    || property === 'font-name' || property === 'font-size' || property === 'color') {
-                    str = "字体";
-                } else if (property === 'underline') {
-                    str = "下划线";
-                } else if (property === 'bgcolor' || property === 'format') {
-                    str = "单元格格式";
-                } else if (property === 'align') {
-                    if (value === 'left') {
-                        str = "左对齐";
-                    } else if (value === 'center') {
-                        str = "居中";
-                    } else if (value === 'right') {
-                        str = "右对齐";
-                    }
-                } else if (property === 'valign') {
-                    if (value === 'top') {
-                        str = "顶端对齐";
-                    } else if (value === 'center') {
-                        str = "居中";
-                    } else if (value === 'bottom') {
-                        str = "底端对齐";
-                    }
-                } else if (property === 'border') {
-                    str = "边框";
-                } else if (property === 'strike') {
-                    str = "删除线";
-                } else if (property === 'merge') {
-                    str = '合并单元格';
+        if(type === 1) {
+            str = `在${expr}中键入"${text}"`;
+            return {
+                action: str,
+                type,
+                ri, ci, expr
+            };
+        } else if(type === 2) {
+            let expr1 = xy2expr(range.sci, range.sri);
+            let expr2 = xy2expr(range.eci, range.eri);
+            expr = expr1 === expr2 ? expr1 : `${expr1}:${expr2}`;
+            str = `删除${expr}的单元格内容`;
+            return {
+                action: str,
+                type,
+                cellRange: range,
+                cells: this.eachRange(range),
+            };
+        } else if(type === 3) {
+            let height = rows.getHeight(ri);
+            str = `行宽`;
+            return {
+                action: str,
+                type,
+                height: height,
+                ri: ri
+            };
+        } else if(type === 4) {
+            let width = cols.getWidth(ci);
+            str = `列宽`;
+            return {
+                action: str,
+                type,
+                width: width,
+                ci: ci
+            };
+        } else if(type === 5) {
+            str = '自动填充';
+            return {
+                action: str,
+                type,
+                cellRange: range,
+                cells: this.eachRange(cellRange),
+            };
+        } else if(type === 12) {
+            str = '选择性粘贴';
+            return {
+                action: str,
+                type,
+                cellRange: range, property, value,
+                cells: this.eachRange(cellRange),
+            };
+        } else if(type === 11) {
+            if (property === 'font-bold' || property === 'font-italic'
+                || property === 'font-name' || property === 'font-size' || property === 'color') {
+                str = "字体";
+            } else if (property === 'underline') {
+                str = "下划线";
+            } else if (property === 'bgcolor' || property === 'format') {
+                str = "单元格格式";
+            } else if (property === 'align') {
+                if (value === 'left') {
+                    str = "左对齐";
+                } else if (value === 'center') {
+                    str = "居中";
+                } else if (value === 'right') {
+                    str = "右对齐";
                 }
+            } else if (property === 'valign') {
+                if (value === 'top') {
+                    str = "顶端对齐";
+                } else if (value === 'center') {
+                    str = "居中";
+                } else if (value === 'bottom') {
+                    str = "底端对齐";
+                }
+            } else if (property === 'border') {
+                str = "边框";
+            } else if (property === 'strike') {
+                str = "删除线";
+            } else if (property === 'merge') {
+                str = '合并单元格';
+            } else if(property === 'insert') {
+                str = '插入单元格';
+            }
 
-                return {
-                    action: str,
-                    type,
-                    cellRange: range, property, value,
-                    cells: this.eachRange(cellRange),
-                };
-                break;
-            case 6:
-                str = '粘贴';
-                return {
-                    action: str,
-                    type,
-                    cellRange: range,
-                    cells: this.eachRange(cellRange),
-                };
-                break;
-
+            return {
+                action: str,
+                type,
+                cellRange: range, property, value,
+                cells: this.eachRange(cellRange),
+            };
+        } else if(type === 6) {
+            str = '粘贴';
+            return {
+                action: str,
+                type,
+                cellRange: range,
+                cells: this.eachRange(cellRange),
+            };
         }
     }
 

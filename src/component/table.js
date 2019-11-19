@@ -89,7 +89,6 @@ function parseCell() {
     data.calc(data.rows, changeDataArgs.data);
 
     if (changeDataArgs.state) {
-        changeDataArgs.data.findAllNeedCalcCell();
         data.changeDataForCalc = null;
     }
 }
@@ -178,8 +177,10 @@ function renderCell(rindex, cindex) {
         cell.formulas = !cell.text ? "" : cell.text;
     }
     if (data.showEquation) {
-        cellText = cell.formulas;
-    } else {
+        if(isHave(cell.formulas)) {
+            cellText = cell.formulas;
+        }
+    } else if(isHave(cell.text)) {
         cellText = cell.text;
     }
     draw.rect2(dbox, () => {

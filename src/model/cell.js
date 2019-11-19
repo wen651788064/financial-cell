@@ -17,7 +17,6 @@ export default class Cell {
             return;
         }
 
-
         if (isHave(cell.text)) {
             this.text = cell.text;
         }

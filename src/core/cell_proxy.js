@@ -20,10 +20,7 @@ export default class CellProxy {
             // console.log(data.formatm, '>>', cell.format);
             let formatInfo = data.tryParseToNum(cell, nrindex, cindex);
             if(formatInfo.state) {
-                cellText = formatInfo.cell.text;
-                // if(data.isFormula() === false) {
-                //     cellText = formatInfo.cell.text;
-                // }
+                cellText = formatInfo.text;
             } else {
                 if( isHave(cell.text) === false) {
                     cell.text = "";

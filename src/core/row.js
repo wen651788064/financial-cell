@@ -189,6 +189,9 @@ class Rows {
         _cell.setCell(cell);
         if (what === 'all') {
             row.cells[ci] = _cell;
+        } else if(what === 'formulas') {
+            row.cells[ci] = row.cells[ci] || {};
+            row.cells[ci].formulas = _cell.formulas;
         } else if (what === 'text') {
             row.cells[ci] = row.cells[ci] || {};
             row.cells[ci].text = _cell.text;
@@ -366,11 +369,9 @@ class Rows {
         let _cell = new Cell();
         _cell.formulas = formulas == "" ? cell.formulas : formulas;
         _cell.text = text;
-        if (isHave(cell.depend)) {
-            _cell.depend = cell.depend;
-        }
 
-        this.setCell(ri, ci, _cell);
+        this.setCell(ri, ci, _cell, 'formulas');
+        this.setCell(ri, ci, _cell, 'text');
         this.getDependCell(xy2expr(ci, ri), this.getCell(ri, ci));
     }
 

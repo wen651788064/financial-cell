@@ -1,4 +1,4 @@
-import {deepCopy} from "../core/operator";
+import {deepCopy, distinct} from "../core/operator";
 import {isHave} from '../core/helper';
 import {expr2xy, xy2expr} from "../core/alphabet";
 
@@ -52,6 +52,7 @@ export default class PreAction {
             changeArr.push(xy2expr(ci, ri));
         }
 
+        changeArr = distinct(changeArr);
         return changeArr;
     }
 

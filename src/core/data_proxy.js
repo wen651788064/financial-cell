@@ -153,7 +153,7 @@ function canPaste(src, dst, error = () => {
     return true;
 }
 
-function copyPaste(srcCellRange, dstCellRange, what, autofill = false, proxy = "") {
+function copyPaste(srcCellRange, dstCellRange, what, autofill = false) {
     const {rows, merges} = this;
     // delete dest merge
     if (what === 'all' || what === 'format') {
@@ -161,7 +161,6 @@ function copyPaste(srcCellRange, dstCellRange, what, autofill = false, proxy = "
         merges.deleteWithin(dstCellRange);
     }
     rows.copyPaste(srcCellRange, dstCellRange, what, autofill, (ri, ci, cell) => {
-        proxy.setCells(this.name, dstCellRange);
         if (cell && cell.merge) {
             // console.log('cell:', ri, ci, cell);
             const [rn, cn] = cell.merge;
@@ -517,7 +516,7 @@ function getCellColByX(x, scrollOffsetx) {
 }
 
 // what = 'input' || 'change'
-function tryParseToNum( cell, ri, ci) {
+function tryParseToNum(cell, ri, ci) {
     return getType.call(this, ri, ci, cell);
 }
 
@@ -552,7 +551,7 @@ function getType(ri, ci, cell) {
             "cell": _cell,
         }
     } else if (format === 'date' || format === 'datetime') {
-        let text =  cell.text, formula = cell.formulas, minute = false;
+        let text = cell.text, formula = cell.formulas, minute = false;
         let _cell = {};
 
         if (!isValid) {
@@ -619,8 +618,6 @@ function getType(ri, ci, cell) {
             return s;
         });
         if (_cell) {
-            data.dateInput(_cell, ri, ci, 'rmb');
-
             return {
                 "state": true,
                 "text": _cell.text,
@@ -642,8 +639,6 @@ function getType(ri, ci, cell) {
             return Number(s * 100).toFixed(2);
         });
         if (_cell) {
-            data.dateInput(_cell, ri, ci, 'percent');
-
             return {
                 "state": true,
                 "text": _cell.text,
@@ -710,7 +705,7 @@ export default class DataProxy {
         });
     }
 
-    tryParseToNum( cell, ri, ci) {
+    tryParseToNum(cell, ri, ci) {
         return tryParseToNum.call(this, cell, ri, ci);
     }
 
@@ -808,7 +803,7 @@ export default class DataProxy {
         for (let i = 0; i < cells.length; i++) {
             let {ri, ci, cell} = cells[i];
 
-            if(isHave(cell) && isHave(cell.style) === false) {
+            if (isHave(cell) && isHave(cell.style) === false) {
                 let cstyle = this.defaultStyle();
                 cell.style = this.addStyle(cstyle);
             }
@@ -822,7 +817,7 @@ export default class DataProxy {
 
     setCellByCellProp(pArr, cb) {
         let {rows} = this;
-        for(let i = 0; i < pArr.length; i++) {
+        for (let i = 0; i < pArr.length; i++) {
             let {ri, ci, cell} = pArr[i];
             if (isHave(cell) && isHave(cell.style)) {
                 rows.setCell(ri, ci, cell, 'style');
@@ -888,11 +883,11 @@ export default class DataProxy {
     // }
 
     autofill(cellRange, what, error = () => {
-    }, proxy = "") {
+    }) {
         const srcRange = this.selector.range;
         if (!canPaste.call(this, srcRange, cellRange, error)) return false;
         this.changeData(() => {
-            copyPaste.call(this, srcRange, cellRange, what, true, proxy);
+            copyPaste.call(this, srcRange, cellRange, what, true);
         }, {type: 5, cellRange: cellRange});
 
         return true;
@@ -900,10 +895,10 @@ export default class DataProxy {
 
 
     clickAutofill(srcRange, cellRange, what, error = () => {
-    }, proxy = "") {
+    }) {
         if (!canPaste.call(this, srcRange, cellRange, error)) return false;
         this.changeData(() => {
-            copyPaste.call(this, srcRange, cellRange, what, true, proxy);
+            copyPaste.call(this, srcRange, cellRange, what, true);
         });
         return true;
     }
@@ -1059,7 +1054,7 @@ export default class DataProxy {
         let expr = xy2expr(ci, ri);
         let step = multiPreAction.getStepType(type, {ri, ci, expr, text: newCell.text});
 
-        let oc = new CellProp(ri, ci, oldCell ,expr)
+        let oc = new CellProp(ri, ci, oldCell, expr)
         let nc = new CellProp(ri, ci, newCell, expr)
         multiPreAction.addStep(step, {oldCell: [oc], newCell: [nc]});
         this.changeDataForCalc = this.getChangeDataToCalc();
@@ -1393,15 +1388,24 @@ export default class DataProxy {
 
     // type: row | column
     insert(type, n = 1, begin = -1) {
-        this.changeData(() => {
-            const {sri, sci} = this.selector.range;
-            const {rows, merges, cols} = this;
-            if(type === 'row') {
-                begin = begin != -1 ? begin : sri;
-            } else  if('column'){
-                begin = begin != -1 ? begin : sci;
-            }
+        let {
+            mri,
+            mci
+        } = this.getMax();
+        const {sri, sci} = this.selector.range;
+        const {rows, merges, cols} = this;
+        let dri = 0, dci = 0;
+        if (type === 'row') {
+            begin = begin != -1 ? begin : sri;
+            dri = begin;
+            dci = 0;
+        } else if ('column') {
+            begin = begin != -1 ? begin : sci;
+            dci = begin;
+            dri = 0;
+        }
 
+        this.changeData(() => {
             let si = begin;
             if (type === 'row') {
                 rows.insert(begin, n);
@@ -1415,7 +1419,7 @@ export default class DataProxy {
                 cell.merge[0] += rn;
                 cell.merge[1] += cn;
             });
-        });
+        }, {type: 11, cellRange: new CellRange(dri, dci, sri, sci), property: "insert"});
     }
 
     // type: row | column
@@ -1526,7 +1530,6 @@ export default class DataProxy {
             mci
         }
     }
-
 
 
     isEmpty(cell) {
@@ -1808,11 +1811,11 @@ export default class DataProxy {
 
     getChangeDataToCalc() {
         let {multiPreAction} = this;
-        if(multiPreAction.undoItems.length <= 0) {
+        if (multiPreAction.undoItems.length <= 0) {
             return null;
         }
         let lastStep = multiPreAction.undoItems[multiPreAction.undoItems.length - 1];
-        if(!isHave(lastStep)) {
+        if (!isHave(lastStep)) {
             return null;
         }
 
