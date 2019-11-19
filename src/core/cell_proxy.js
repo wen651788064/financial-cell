@@ -18,7 +18,7 @@ export default class CellProxy {
         let cellText = "";
         if (style.format) {
             // console.log(data.formatm, '>>', cell.format);
-            let formatInfo = data.tryParseToNum("change", cell, nrindex, cindex);
+            let formatInfo = data.tryParseToNum(cell, nrindex, cindex);
             if(formatInfo.state) {
                 cellText = formatInfo.cell.text;
                 // if(data.isFormula() === false) {

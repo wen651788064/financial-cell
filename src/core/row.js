@@ -76,11 +76,12 @@ function dateAutoFilter(d, line, isDown, darr, what, cb, isDate) {
 }
 
 class Rows {
-    constructor({len, height}) {
+    constructor({len, height}, data = "") {
         this._ = {};
         this.len = len;
         // default row height
         this.height = height;
+        this.data = data;
         this.pasteProxy = new PasteProxy();
     }
 
@@ -182,6 +183,7 @@ class Rows {
 
     // what: all | text | format
     setCell(ri, ci, cell, what = 'all') {
+        let {data} = this;
         const row = this.getOrNew(ri);
         let _cell = new Cell();
         _cell.setCell(cell);
@@ -241,6 +243,7 @@ class Rows {
         }
         // cell
         this.getDependCell(xy2expr(ci, ri), this.getCell(ri, ci));
+        _cell.setFormatText(data.tryParseToNum(_cell, ri, ci));
     }
 
     getDependCell(expr, cell) {
@@ -451,7 +454,7 @@ class Rows {
         } else if (cellStyle && cellStyle.format && cellStyle.format === 'datetime') {
             return "datetime";
         } else if (
-            (isValid && cellStyle === null)
+            (isValid && !isHave(cellStyle))
             || (isValid && cellStyle && cellStyle.format !== 'normal')
             || cellStyle && cellStyle.format && cellStyle.format === 'date') {
             return "date";

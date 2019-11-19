@@ -1069,18 +1069,21 @@ describe('qq', () => {
             cstyle.format = 'number';
             let style = data.addStyle(cstyle);
 
-            let cell = {"text": "322.12", "formulas": "322.12", "value": "322.121", "style": style};
+            let cell = {"text": "322.12", "formulas": "322.12", "style": style};
             data.rows.setCell(1, 1, cell, 'number');
-            let {state, text} = data.tryParseToNum('input', cell, 1, 1);
+            let {state, text} = data.tryParseToNum(cell, 1, 1);
+
+            assert.equal(state, true);
+            assert.equal(text, '322.12');
 
             cstyle.format = 'normal';
             style = data.addStyle(cstyle);
             cell.style = style;
             data.rows.setCell(1, 1, cell, 'normal');
-            let args = data.tryParseToNum('input', cell, 1, 1);
+            let args = data.tryParseToNum(cell, 1, 1);
 
             assert.equal(args.state, true);
-            assert.equal(args.text, '322.121');
+            assert.equal(args.text, '322.12');
         });
 
         // 可能小数点的情况以后会发生变化
@@ -1089,12 +1092,31 @@ describe('qq', () => {
             cstyle.format = 'date';
             let style = data.addStyle(cstyle);
 
-            let cell = {"text": "1899-12-31", "formulas": "1899-12-31", "value": "1.23", "style": style};
+            let cell = {"text": "1899-12-31", "formulas": "1899-12-31", "style": style};
             data.rows.setCell(1, 1, cell, 'date');
-            let args = data.tryParseToNum('input', cell, 1, 1);
-
+            let args = data.tryParseToNum(cell, 1, 1);
+            console.log(args);
             assert.equal(args.state, true);
             assert.equal(args.text, '1899-12-31');
+        });
+
+        it(' text:  1899-12-31 ', function () {
+            let cell = {"text": "1899-12-31", "formulas": "1899-12-31"};
+            data.rows.setCell(1, 1, cell);
+            let args = data.tryParseToNum(cell, 1, 1);
+            assert.equal(args.state, true);
+            assert.equal(args.text, '1');
+        });
+
+        it(' text:  1899-12-312 ', function () {
+            let cstyle = {};
+            cstyle.format = 'date';
+            let style = data.addStyle(cstyle);
+            let cell = {"text": "1899-12-31", "formulas": "1899-12-31", "style": style};
+            data.rows.setCell(1, 1, cell);
+            let args = data.tryParseToNum(cell, 1, 1);
+            assert.equal(args.state, true);
+            assert.equal(args.text, "1899-12-31");
         });
 
         it(' 44048 -> ￥', function () {
@@ -1103,14 +1125,13 @@ describe('qq', () => {
             let style = data.addStyle(cstyle);
             let cell = {"text": "44048", "formulas": "44048", "style": style};
             data.rows.setCell(1, 1, cell, 'rmb');
-            let {state, text} = data.tryParseToNum('input', cell, 1, 1);
-
+            let {state, text} = data.tryParseToNum(cell, 1, 1);
             assert.equal(state, true);
             assert.equal(text, '￥44048');
 
             cell = {"text": "2019-01-01", "formulas": "2019-01-01", "style": style};
             data.rows.setCell(1, 1, cell, 'rmb');
-            let args = data.tryParseToNum('input', cell, 1, 1);
+            let args = data.tryParseToNum(cell, 1, 1);
 
             assert.equal(args.state, true);
             assert.equal(args.text, '￥43466');
@@ -1122,7 +1143,7 @@ describe('qq', () => {
             let style = data.addStyle(cstyle);
             let cell = {"text": "44048", "formulas": "44048", "style": style};
             data.rows.setCell(1, 1, cell, 'percent');
-            let {state, text} = data.tryParseToNum('input', cell, 1, 1);
+            let {state, text} = data.tryParseToNum(cell, 1, 1);
 
             assert.equal(text, '4404800.00%');
             assert.equal(state, true);
@@ -1135,14 +1156,14 @@ describe('qq', () => {
 
             let cell = {"text": "2019-01-01", "formulas": "2019-01-01", "style": style};
             data.rows.setCell(1, 1, cell, 'number');
-            let args = data.tryParseToNum('input', cell, 1, 1);
+            let args = data.tryParseToNum(cell, 1, 1);
 
             assert.equal(args.state, true);
             assert.equal(args.text, '43466');
 
         });
 
-        it(' value 2019-01-01 to normal', function () {
+        it(' 2019-01-01 to normal', function () {
             let cstyle = {};
             cstyle.format = 'normal';
             let style = data.addStyle(cstyle);
@@ -1151,30 +1172,27 @@ describe('qq', () => {
                 "text": "43466",
                 "formulas": "43466",
                 "style": style,
-                "value": "2019-01-01",
-                "to_calc_num": "43466"
             };
             data.rows.setCell(1, 1, cell, 'normal');
-            let {state, text} = data.tryParseToNum('input', cell, 1, 1);
+            let {state, text} = data.tryParseToNum(cell, 1, 1);
 
             cell = data.rows.getCell(1, 1);
             assert.equal(state, true);
             assert.equal(text, '43466');
             assert.equal(cell.formulas, '43466');
-            assert.equal(cell.value, '2019-01-01');
         });
 
 
-        it('  57294 number to date    --  value not empty  ', function () {
+        it('  57294 number to date    ', function () {
             let cstyle = {};
             cstyle.format = 'date';
             let style = data.addStyle(cstyle);
-            let cell = {"text": "57294", "formulas": "=D3", "value": "=D3", "style": style};
+            let cell = {"text": "57294", "formulas": "=D3", "style": style};
             data.rows.setCell(1, 1, cell, 'normal');
-            data.tryParseToNum('input', cell, 1, 1);
-
+            let args = data.tryParseToNum(cell, 1, 1);
+            assert.equal(args.text, "2056-11-10");
             cell = data.rows.getCell(1, 1);
-            assert.equal(cell.value, "=D3");
+            assert.equal(cell.formulas, "=D3");
         });
 
 
@@ -1287,9 +1305,9 @@ describe('qq', () => {
                     cells: {
                         0: {"text": "A2", "formulas": "A2"},
                         1: {"text": "=A3", "formulas": "=A3"},
-                        2: {"text": "=A1:A2","formulas": "=A1:A2"},
-                        3: {"text": "=$A3:A5","formulas": "=$A3:A5"},
-                        4: {"text": "=abs(A4)","formulas": "=abs(A4)"},
+                        2: {"text": "=A1:A2", "formulas": "=A1:A2"},
+                        3: {"text": "=$A3:A5", "formulas": "=$A3:A5"},
+                        4: {"text": "=abs(A4)", "formulas": "=abs(A4)"},
                         5: {"text": "=abs($A4)", "formulas": "=abs($A4)"},
                     }
                 },

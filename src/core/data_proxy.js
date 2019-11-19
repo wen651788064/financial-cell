@@ -517,42 +517,33 @@ function getCellColByX(x, scrollOffsetx) {
 }
 
 // what = 'input' || 'change'
-function tryParseToNum(what = 'input', cell, ri, ci) {
-    if (what === 'input') {
-        return getType.call(this, ri, ci, cell);
-    }
-
-    return {
-        "state": false,
-        "text": cell.text
-    };
+function tryParseToNum( cell, ri, ci) {
+    return getType.call(this, ri, ci, cell);
 }
 
 function getType(ri, ci, cell) {
     let data = this;
     let {rows} = this;
     let cellStyle = data.getCellStyle(ri, ci);
-    let {isValid, diff} = dateDiff(rows.useOne(cell.value, cell.text));
+    let {isValid, diff} = dateDiff(cell.text);
 
+    console.log(isValid, cellStyle)
     let format = rows.getCellStyleConvert(cellStyle, isValid);
     if (format === 'number') {
-        let text = rows.useOne(cell.value, cell.text), formula = cell.formulas;
+        let text = cell.text, formula = cell.formulas;
         let _cell = {};
         if (isValid) {
             _cell = {
-                "text": diff.toFixed(0),
-                "value": text,
+                "text": diff.toFixed(2),
                 "formulas": formula,
             };
-            data.dateInput(_cell, ri, ci, 'number');
         } else {
-            text = formatNumberRender(text, 0);
+            text = formatNumberRender(text, 2);
             _cell = {
                 "text": text,
-                "value": rows.useOne(cell.value, cell.text, false),
+                "value": cell.text,
                 "formulas": formula,
             };
-            data.dateInput(_cell, ri, ci, 'number');
         }
 
         return {
@@ -561,7 +552,7 @@ function getType(ri, ci, cell) {
             "cell": _cell,
         }
     } else if (format === 'date' || format === 'datetime') {
-        let text = rows.useOne(cell.value, cell.text), formula = cell.formulas, minute = false;
+        let text =  cell.text, formula = cell.formulas, minute = false;
         let _cell = {};
 
         if (!isValid) {
@@ -569,40 +560,31 @@ function getType(ri, ci, cell) {
             let {state, date, date_formula} = args;
             minute = args.minute;
             isValid = state;
-            formula = rows.isFormula(formula) ? formula : minute ? date_formula : formula;
             diff = cell.text;
             text = date;
         }
 
         if (isValid) {
             if (format === 'datetime') {
-                console.log(text)
                 text = changeFormat(formatDate(dateDiff(text).diff).date);
             }
             _cell = {
                 "formulas": formula,
                 "text": text,
-                "value": rows.useOne(cell.value, cell.text, false),
-                "to_calc_num": diff,
-                "minute": minute,
             };
-            data.dateInput(_cell, ri, ci, format);
         }
 
         return {
-            "state": true,
-            "text": isValid ? _cell.to_calc_num : cell.text,
-            "cell": isValid ? _cell : cell,
+            "state": isValid,
+            "text": !isHave(cellStyle) ? diff : text,
         };
     } else if (format === 'normal') {
         if (isValid) {
             let text = diff, formula = cell.formulas;
             let _cell = {
                 "formulas": rows.toString(formula),
-                "value": rows.toString(rows.useOne(cell.value, cell.text, false)),
                 "text": rows.toString(text),
             };
-            data.dateInput(_cell, ri, ci, 'normal');
 
             return {
                 "state": true,
@@ -610,13 +592,11 @@ function getType(ri, ci, cell) {
                 "cell": _cell,
             }
         } else {
-            let text = rows.useOne(cell.value, cell.text), formula = cell.formulas;
+            let text = cell.text, formula = cell.formulas;
             let _cell = {
                 "formulas": formula,
-                "value": rows.useOne(cell.value, cell.text),
                 "text": text,
             };
-            data.dateInput(_cell, ri, ci, 'normal');
 
             return {
                 "state": true,
@@ -689,7 +669,7 @@ export default class DataProxy {
         this.freeze = [0, 0];
         this.styles = []; // Array<Style>
         this.merges = new Merges(); // [CellRange, ...]
-        this.rows = new Rows(this.settings.row);
+        this.rows = new Rows(this.settings.row, this);
         this.cols = new Cols(this.settings.col);
         this.validations = new Validations();
         this.hyperlinks = {};
@@ -730,8 +710,8 @@ export default class DataProxy {
         });
     }
 
-    tryParseToNum(type, cell, ri, ci) {
-        return tryParseToNum.call(this, type, cell, ri, ci);
+    tryParseToNum( cell, ri, ci) {
+        return tryParseToNum.call(this, cell, ri, ci);
     }
 
     clickCopyPaste() {
@@ -1000,7 +980,7 @@ export default class DataProxy {
                     let cell = rows.getCellOrNew(ri, ci);
 
                     let cstyle = {};
-                    if (cell.style !== undefined) {
+                    if (isHave(cell.style)) {
                         cstyle = helper.cloneDeep(styles[cell.style]);
                     }
                     if (property === 'format') {
