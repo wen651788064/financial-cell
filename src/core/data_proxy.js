@@ -18,7 +18,6 @@ import Moved from '../event/move';
 import {h} from "../component/element";
 import {mountImg} from "../event/paste";
 import {parseCell2} from "../component/table";
-import {RefRow} from "./ref_row";
 import {isLegal} from "./operator";
 import Recast from "./recast";
 import {changeFormat, dateDiff, formatDate} from '../component/date';
@@ -521,13 +520,6 @@ function getCellColByX(x, scrollOffsetx) {
 function tryParseToNum(what = 'input', cell, ri, ci) {
     if (what === 'input') {
         return getType.call(this, ri, ci, cell);
-    } else if (what === 'change') {
-        if (cell.text === '' || isHave(cell.text) === false) {
-            return {
-                "state": false,
-            }
-        }
-        return getType.call(this, ri, ci, cell);
     }
 
     return {
@@ -704,7 +696,6 @@ export default class DataProxy {
         this.comments = {};
         this.showEquation = false;
         this.calc = formulaCalc();
-        this.refRow = new RefRow(this.settings.row, this);
         this.pasteDirectionsArr = [];
         this.changeDataForCalc = null;
 
@@ -1889,8 +1880,7 @@ export default class DataProxy {
         Object.keys(d).forEach((property) => {
             // this.judgeAutoWidth(d.rows);
             if (property === 'merges'
-                || property === 'cols' || property === 'validations'
-                || property === 'refRow') {
+                || property === 'cols' || property === 'validations') {
                 this[property].setData(d[property]);
             } else if (property === 'flex') {
                 autoFilter.addFiexRows(d[property]);

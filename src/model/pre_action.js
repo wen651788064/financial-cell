@@ -22,7 +22,7 @@ function getCellDepend(cells) {
 }
 
 export default class PreAction {
-    constructor({type = -1, action = "", workbook, ri = -1, ci = -1, expr = "", oldStep = "", cellRange = "", cells = {}, height = -1, width = -1, oldCell = {}, newCell = {}, newMergesData = "", oldMergesData = "", property = "", value = ""}, data) {
+    constructor({type = -1, action = "", ri = -1, ci = -1, expr = "", oldStep = "", cellRange = "", cells = {}, height = -1, width = -1, oldCell = {}, newCell = {}, newMergesData = "", oldMergesData = "", property = "", value = ""}, data) {
         this.type = type;
         this.action = action;
         this.ri = ri;
@@ -39,7 +39,6 @@ export default class PreAction {
         this.property = property;
         this.value = value;
         this.oldStep = oldStep;
-        this.workbook = workbook;
 
         this.data = data;
     }

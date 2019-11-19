@@ -1,9 +1,7 @@
 import {describe, it} from 'mocha';
 import DataProxy from "../../src/core/data_proxy";
 import Recast from "../../src/core/recast";
-import CellProxy from "../../src/component/cell_proxy";
 import {cutStr, deepCopy, splitStr} from "../../src/core/operator";
-import {RefRow} from "../../src/core/ref_row";
 import EditorText from "../../src/component/editor_text";
 import {calcDecimals, changeFormat, dateDiff, formatDate} from '../../src/component/date';
 import {isHave} from "../../src/core/helper";
@@ -1253,79 +1251,6 @@ describe('qq', () => {
                 error = true;
             }
             assert.equal(error, false);
-        });
-    });
-
-    describe('  cell_proxy  ', () => {
-        it(' diff ', function () {
-            this.workbook = [];
-            this.workbook.Sheets = {};
-            this.workbook.Sheets[data.name] = {
-                A1: {v: "苏州群尚海", f: "苏州群尚海", z: true},
-                A2: {v: "上海花屿湾", f: "上海花屿湾", z: true},
-                A3: {v: "苏州红树湾东侧046、049地铁", f: "苏州红树湾东侧046、049地铁", z: true},
-                A4: {v: "上海龙泉棉城公馆", f: "上海龙泉棉城公馆", z: true},
-                A5: {v: "常熟万科公望花园", f: "常熟万科公望花园", z: true},
-                B1: {v: "苏州", f: "苏州", z: true},
-                B2: {v: "上海", f: "上海", z: true},
-                B3: {v: "苏州", f: "苏州", z: true},
-                B4: {v: "上海", f: "上海", z: true},
-                B5: {v: "常熟", f: "常熟", z: true},
-                C1: {v: "苏州", f: "苏州", z: true},
-                C2: {v: "苏州群尚海", f: "=PQUERY(A1:A5, B1:B5, C1, D1:D5, E1)", z: true},
-                C10: {v: 67090.75, f: "=AVERAGE(D2:D5)", t: "n"},
-                D1: {v: "46601", f: "46601", z: true},
-                D2: {v: "79748", f: "79748", z: true},
-                D3: {v: "57294", f: "57294", z: true},
-                D4: {v: "87273", f: "87273", z: true},
-                D5: {v: "44048", f: "44048", z: true},
-                E1: {v: "46601", f: "46601", z: true},
-                E2: {v: "常熟", f: "常熟", z: true},
-                E4: {v: "44048", f: "44048", z: true},
-            };
-
-            let cellProxy = new CellProxy("", "", "");
-            cellProxy.setOldData(deepCopy(this.workbook));
-            this.workbook.Sheets[data.name]["B5"] = {
-                v: "扬州",
-                f: "扬州",
-                z: true
-            };
-            cellProxy.diff = 402;
-            let args = cellProxy.calc(this.workbook, [], data.name);
-
-            assert.equal(args.state, true);
-
-            assert.equal(args.data["B5"].v, "扬州");
-        });
-
-        it(' diff associated ', function () {
-            this.workbook = [];
-            this.workbook.Sheets = {};
-            this.workbook.Sheets[data.name] = {
-                A1: {v: "1", f: "1", z: true},
-                A2: {v: "2", f: "2", z: true},
-                A3: {v: "=average(A1:A2)", f: "=average(A1:A2)", z: true},
-            };
-            let refRow = new RefRow(data.settings.row, data);
-            let cellProxy = new CellProxy(refRow, "", "");
-            cellProxy.setOldData(deepCopy(this.workbook));
-            this.workbook.Sheets[data.name]["A1"] = {
-                v: "3",
-                f: "3",
-                z: true
-            };
-
-            let da = ['A3'];
-            let args = cellProxy.calc(this.workbook, da, data.name);
-            assert.equal(args.state, true);
-            assert.equal(args.data["A1"].v, "3");
-
-            this.workbook.Sheets[data.name] = args.data;
-            let assoc = cellProxy.associated(data.name, da, this.workbook);
-            let tileArr = assoc.changeArr;
-            assert.equal(tileArr[1], 'A1');
-            assert.equal(tileArr[0], 'A3');
         });
     });
 

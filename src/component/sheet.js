@@ -265,7 +265,7 @@ function sheetReset(state = true) {
     horizontalScrollbarSet.call(this);
     sheetFreeze.call(this);
     selector.selectCell.toolbarChangeSelectorCell();
-    table.render(false, false, false, state);
+    table.render();
     toolbar.reset();
     selector.reset();
 }
@@ -705,7 +705,7 @@ function verticalScrollbarMove(distance) {
         adviceSetOffset.call(this);
         selectorsSetOffset.call(this);
         editorSetOffset.call(this, false);
-        table.render(true);
+        table.render();
     });
 }
 
@@ -718,7 +718,7 @@ function horizontalScrollbarMove(distance) {
         adviceSetOffset.call(this);
         selectorsSetOffset.call(this);
         editorSetOffset.call(this, false);
-        table.render(true);
+        table.render();
     });
 }
 
@@ -979,14 +979,10 @@ function toolbarChange(type, value) {
     } else if (type === 'throwFormula') {
         throwFormula.call(this);
     } else if (type === 'close') {
-        // this.data.rows.workbook.calcNeedCalcBool(true);
-        // this.table.proxy.diff = 305;
-        // this.table.proxy.oldData = "";
         let {mri, mci} = data.getMax();
 
         data.changeDataForCalc = new PreAction({
             type: 999,
-            workbook: this.data.rows.workbook,
             action: "重新计算", ri: -1, ci: -1, oldCell: {}, newCell: data.rows.eachRange(new CellRange(0, 0, mri, mci))
         }, this.data);
         sheetReset.call(this);

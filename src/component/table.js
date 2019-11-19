@@ -5,7 +5,6 @@ import {formulam} from '../core/formula';
 import {isMinus} from "../utils/number_util";
 import {Draw, DrawBox, npx, thinLineWidth,} from '../canvas/draw';
 import ApplicationFactory from "./application";
-import CellProxy from "./cell_proxy";
 import {look} from "../config";
 import {deepCopy, distinct} from "../core/operator";
 import {testValid} from "../utils/test";
@@ -61,15 +60,6 @@ function getCellTextStyle(rindex, cindex) {
     return style;
 }
 
-function getStr(str) {
-    let result = str.match(/\"(.*?)\"/ig);
-    if (!result)
-        return "";
-    return result.map(function (element) {
-        return element.replace(/\"/g, '');
-    });
-}
-
 export function toUpperCase(text) {
     text = text.toString().toUpperCase();
 
@@ -92,14 +82,14 @@ function getChangeDataToCalc() {
     }
 }
 
-function parseCell(viewRange, state = false, src = '', state2 = true) {
+function parseCell() {
     let {data} = this;
 
-    let changeDataArgs = getChangeDataToCalc.call(this);    // todo
-     data.calc(data.rows, changeDataArgs.data);
+    let changeDataArgs = getChangeDataToCalc.call(this);
+    data.calc(data.rows, changeDataArgs.data);
 
-    if(changeDataArgs.state) {
-        changeDataArgs.data.findAllNeedCalcCell()
+    if (changeDataArgs.state) {
+        changeDataArgs.data.findAllNeedCalcCell();
         data.changeDataForCalc = null;
     }
 }
@@ -456,7 +446,6 @@ class Table {
         this.data = data;
         this.timer = null;
         // this.worker = new Worker();
-        this.proxy = new CellProxy(data.refRow, this, data);
         this.autoAdaptList = [];
     }
 
@@ -499,18 +488,14 @@ class Table {
     }
 
 
-     render(temp = false, tempData, redo = false, state = true) {
+    render() {
         // resize canvas
         const {data} = this;
         const {rows, cols} = data;
         let viewRange = data.viewRange();
 
-
-        if (!temp) {
-            let args = parseCell.call(this, viewRange, false, '', state);
-
-            this.clear();
-        }
+        parseCell.call(this);
+        this.clear();
 
         this.draw.resize(data.viewWidth(), data.viewHeight());
 
