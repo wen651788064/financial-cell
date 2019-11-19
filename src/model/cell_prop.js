@@ -2,16 +2,18 @@ import {isHave} from "../core/helper";
 import {expr2xy} from "../core/alphabet";
 
 export default class CellProp {
-    constructor(ri, ci, cell, expr) {
+    constructor(ri, ci, cell, expr, empty) {
         this.ri = ri;
         this.ci = ci;
         this.cell = cell;
         this.expr = expr;
+        this.empty = empty;
     }
 
     isInclude() {
 
     }
+
 
     each(cb) {
         let {cell} = this;

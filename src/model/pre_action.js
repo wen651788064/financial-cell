@@ -22,7 +22,7 @@ function getCellDepend(cells) {
 }
 
 export default class PreAction {
-    constructor({type = -1, action = "", ri = -1, ci = -1, expr = "", oldStep = "", cellRange = "", cells = {}, height = -1, width = -1, oldCell = {}, newCell = {}, newMergesData = "", oldMergesData = "", property = "", value = ""}, data) {
+    constructor({type = -1, action = "",  ri = -1, ci = -1, expr = "", oldStep = "", cellRange = "", cells = {}, height = -1, width = -1, oldCell = {}, newCell = {}, newMergesData = "", oldMergesData = "", property = "", value = ""}, data) {
         this.type = type;
         this.action = action;
         this.ri = ri;
@@ -73,6 +73,8 @@ export default class PreAction {
                 data.rows.setCellText(ri, ci, cell, 'cell');
             }
 
+        } else if(type === 13) {
+
         } else if (type === 2 || type === 5 || type === 6 || type === 11 || type === 12) {
             let {newCell, oldCell, oldMergesData, newMergesData, cellRange, property, value} = this;
             let _cells = "";
@@ -91,11 +93,14 @@ export default class PreAction {
             }
 
             for (let i = 0; i < _cells.length; i++) {
-                let {cell, ri, ci} = _cells[i];
-                data.rows.setCellText(ri, ci, cell, 'cell');
+                let {cell, ri, ci, empty} = _cells[i];
 
+                if(empty) {
+                    data.rows.setCellText(ri, ci, cell, 'all_with_no_workbook');
+                } else {
+                    data.rows.setCellText(ri, ci, cell, 'cell');
+                }
             }
-
         } else if (type === 3) {
             let {ri, height, oldStep} = this;
             if (isRedo === 1) {

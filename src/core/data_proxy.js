@@ -185,9 +185,10 @@ function setStyleBorder(ri, ci, bss) {
     const {styles, rows} = this;
     const cell = rows.getCellOrNew(ri, ci);
     let cstyle = {};
-    if (cell.style !== undefined) {
+    if(isHave(cell.style)) {
         cstyle = helper.cloneDeep(styles[cell.style]);
     }
+
     Object.assign(cstyle, {border: bss});
     cell.style = this.addStyle(cstyle);
 }
@@ -808,6 +809,7 @@ export default class DataProxy {
 
     undo(sheet) {
         this.multiPreAction.undo();
+        this.changeDataForCalc = this.getChangeDataToCalc();
         // this.history.undo(this.getData(), (d) => {
         //     this.setData(d);
         // }, sheet);
@@ -819,6 +821,7 @@ export default class DataProxy {
 
     redo() {
         this.multiPreAction.redo();
+        this.changeDataForCalc = this.getChangeDataToCalc();
         // this.history.redo(this.getData(), (d) => {
         //     this.setData(d);
         // });
@@ -1452,7 +1455,7 @@ export default class DataProxy {
                 cell.merge[0] += rn;
                 cell.merge[1] += cn;
             });
-        }, {type: 11, cellRange: new CellRange(dri, dci, sri, sci), property: "insert"});
+        }, {type: 11, cellRange: new CellRange( dri, dci, mri, mci), property: "insert"});
     }
 
     // type: row | column

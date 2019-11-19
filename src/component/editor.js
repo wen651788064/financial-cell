@@ -803,7 +803,7 @@ export default class Editor {
         inputEventHandler.call(this, null,  text, (cell && cell.formulas) || '', "end");
 
         setTimeout(() => {
-            this.pos = text.length;
+            this.pos = data.rows.toString(text).length;
             set_focus.call(this, this.textEl.el, -1);
         }, 20)
     }

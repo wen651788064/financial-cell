@@ -19,6 +19,22 @@ export function isFormula(text) {
     return false;
 }
 
+function isEmpty(text, formulas, formatText) {
+    if(isHave(text) && text !== "") {
+        return false;
+    }
+
+    if(isHave(formulas) && formulas !== "") {
+        return false;
+    }
+
+    if(isHave(formatText)) {
+        return false;
+    }
+
+    return true;
+}
+
 function otherAutoFilter(d, darr, direction, isAdd, what, cb, other, dri) {
     // other 为 '=asd'或者'asd'也为false
     let ncell = this.getCellByTopCell(d, direction, isAdd, 'other', dri, 0);
@@ -332,6 +348,11 @@ class Rows {
 
     // what === cell 把原本的cell 的merge 清空， 原因是不清空 merge还会存在
     setCellText(ri, ci, {text, style, formulas, merge = ""},  what = 'all') {
+        if(what === 'all_with_no_workbook') {
+            this.setCell(ri, ci, {}, 'all_with_no_workbook');
+            return;
+        }
+
         const cell = this.getCellOrNew(ri, ci);
         let _cell = new Cell();
         _cell.setCell(cell);
@@ -339,7 +360,7 @@ class Rows {
         if (what === 'style') {
             _cell.style = style;
             _cell.formulas = text;   //    cell.formulas = cell.formulas;
-        } else if (what === 'format') {
+        }   else if (what === 'format') {
             _cell.formulas = cell.formulas;
             _cell.style = style;
         } else if (what === 'cell') {
@@ -485,10 +506,15 @@ class Rows {
         range.each((i, j) => {
             let cell = this.getCell(i, j);
             if (isHave(cell)) {
+                let empty = isEmpty(cell);
                 cell = deepCopy(cell);
-            } else cell = {};
-            let cellProp = new CellProp(i, j, cell, xy2expr(i, j));
-            cells.push(cellProp);
+                let cellProp = new CellProp(i, j, cell, xy2expr(i, j), empty);
+                cells.push(cellProp);
+            } else  {
+                cell = {};
+                let cellProp = new CellProp(i, j, cell, xy2expr(i, j), true);
+                cells.push(cellProp);
+            }
         });
 
         return cells;
@@ -1274,10 +1300,13 @@ class Rows {
 
 
             } else if (sheet !== '') {
+                console.time("setData")
                 if (rowsInit) {
                     this.init();
                     sheet.toolbar.change('close', '');
                 }
+                console.timeEnd("setData")
+
             }
 
             // this.each((ri, row) => {
