@@ -907,7 +907,7 @@ export function selectorCellText(ri, ci, {text, style}, state, proxy = "") {
         }
     }
 
-    data.setCellText(ri, ci, {text, style}, state, proxy);
+    data.setCellText(ri, ci, {text, style});
     editor.setRiCi(-1, -1);
 
     return false;
@@ -1257,7 +1257,7 @@ function sheetInitEvents() {
     // editor
     editor.change = (state, itext) => {
         if (state === 'finish') { //  用户输入
-            data.editorChangeToHistory(editor.editorText.getOldCell(), {text: itext}, editor.editorText.getRICI(), 1);
+            data.editorChangeToHistory(editor.editorText.getOldCell(), editor.editorText.getRICI(), 1);
             editor.editorText.setOldCell({}, {ri: -1, ci: -1});
             return;
         }

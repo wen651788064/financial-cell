@@ -143,20 +143,22 @@ describe('qq', () => {
 
     describe('  cell change action  ', () => {
         it(' editorChangeToHistory ', function () {
-            let {state} = data.editorChangeToHistory({text: "1",}, {"text": "2"}, {ri: 1, ci: 1}, 1);
+            data.rows.setCell(1, 1,{text: "2"})
+            let {state} = data.editorChangeToHistory({text: "1",}, {ri: 1, ci: 1}, 1);
             let args = data.multiPreAction.getItems(1);
             assert.equal(state, true);
             assert.equal(args[0].ri, '1');
             assert.equal(args[0].ci, '1');
             assert.equal(args[0].action, '在B2中键入"2"');
             assert.equal(args[0].expr, 'B2');
-            assert.equal(args[0].oldCell.text, '1');
+            assert.equal(args[0].oldCell[0].cell.text, '1');
 
-            args = data.editorChangeToHistory({text: "1", formulas: "=add(1, 0)"}, {"text": "=add(1, 0)"}, {
+            data.rows.setCell(2, 2, {"text": "=add(1, 0)"})
+            args = data.editorChangeToHistory({text: "1", formulas: "=add(1, 0)"}, {
                 ri: 2,
                 ci: 2
             }, 1);
-            assert.equal(args.state, false);
+            assert.equal(args.state, true);
         });
 
         it('  changeToHistory  ', function () {
@@ -433,13 +435,13 @@ describe('qq', () => {
         });
 
         it('  setCellText  ', function () {
-            data.rows.setCellText(1, 1, {text: "=add(1, 3)", style: 1}, '', '', 'style');
+            data.rows.setCellText(1, 1, {text: "=add(1, 3)", style: 1},  'style');
             let cell = data.rows.getCell(1, 1);
 
             assert.equal(cell.text, '=add(1, 3)');
             assert.equal(cell.formulas, '=add(1, 3)');
 
-            data.rows.setCellText(1, 1, {text: "1", style: 1}, '', '', 'format');
+            data.rows.setCellText(1, 1, {text: "1", style: 1}, 'format');
             cell = data.rows.getCell(1, 1);
             assert.equal(cell.text, '1');
             assert.equal(cell.formulas, '=add(1, 3)');
@@ -1108,6 +1110,28 @@ describe('qq', () => {
             assert.equal(args.text, '1');
         });
 
+        it(' text: "" ', function () {
+            let cstyle = {};
+            cstyle.format = 'rmb';
+            let style = data.addStyle(cstyle);
+            let cell = {"text": "", "formulas": "", style: style};
+            data.rows.setCell(1, 1, cell);
+            let args = data.tryParseToNum(cell, 1, 1);
+
+            assert.equal(args.state, false);
+        });
+
+        it(' text: null ', function () {
+            let cstyle = {};
+            cstyle.format = 'percent';
+            let style = data.addStyle(cstyle);
+            let cell = {  style: style};
+            data.rows.setCell(1, 1, cell);
+            let args = data.tryParseToNum(cell, 1, 1);
+            console.log(args)
+            assert.equal(args.state, false);
+        });
+
         it(' text:  1899-12-312 ', function () {
             let cstyle = {};
             cstyle.format = 'date';
@@ -1159,7 +1183,7 @@ describe('qq', () => {
             let args = data.tryParseToNum(cell, 1, 1);
 
             assert.equal(args.state, true);
-            assert.equal(args.text, '43466');
+            assert.equal(args.text, '43466.00');
 
         });
 

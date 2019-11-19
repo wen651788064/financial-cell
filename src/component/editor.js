@@ -786,7 +786,8 @@ export default class Editor {
         text = text == '' ? (cell && cell.text) || '' : text;
         let {data} = this;
         const style = data.getCellStyleOrDefault( this.ri, this.ci);
-        let args = data.renderFormat(style, cell, this.ri, this.ci);
+        // 为什么要着2行？？ 用户是对格式不可见的
+        let args = data.renderFormat(style, cell, this.ri, this.ci, true);
         text = args.state ? args.cellText : text;
 
         this.textEl.child(text + "");
@@ -799,11 +800,12 @@ export default class Editor {
         }, {ri: this.ri, ci: this.ci});
 
         testValid.call(this);
-        inputEventHandler.call(this, null, (cell && cell.text) || text, (cell && cell.formulas) || '', "end");
+        inputEventHandler.call(this, null,  text, (cell && cell.formulas) || '', "end");
 
         setTimeout(() => {
+            this.pos = text.length;
             set_focus.call(this, this.textEl.el, -1);
-        })
+        }, 20)
     }
 
     setCell(cell, validator, type = 1) {
@@ -882,7 +884,7 @@ export default class Editor {
 
     setCursorPos(pos) {
         this.pos = pos;
-        set_focus.call(this, this.textEl.el, pos);
+        set_focus.call(this, this.textEl.el);
     }
 
     setText(text) {

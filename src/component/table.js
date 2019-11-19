@@ -185,7 +185,7 @@ function renderCell(rindex, cindex) {
     }
     draw.rect2(dbox, () => {
         // render text
-        let args = data.renderFormat(style, cell, nrindex, cindex);
+        let args = data.renderFormat(style, cell, nrindex, cindex, false);
         cellText = args.state ? args.cellText : cellText;
         const font = Object.assign({}, style.font);
 

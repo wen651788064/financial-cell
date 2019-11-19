@@ -1,13 +1,22 @@
 import dayjs from 'dayjs'
 import {datePattern, str2Re} from "../core/re";
 import {formatNumberRender} from "../core/format";
-import {isHave} from "../core/helper";
+import {isHave, isNumber} from "../core/helper";
 
 function fract(num) {
     return num - Math.trunc(num);
 }
 
 export function formatDate(diff) {
+    if(!isHave(diff) || !isNumber(diff)) {
+        return {
+            "state": false,
+            "date": date,
+            "date_formula": "",
+            "minute": false
+        }
+    }
+
     let str = calcDecimals(diff, (i) => {
         return i * 24 * 60;
     });

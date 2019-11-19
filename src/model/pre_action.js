@@ -70,7 +70,7 @@ export default class PreAction {
             }
             for (let i = 0; i < _cell.length; i++) {
                 let {cell, ri, ci} = _cell[i];
-                data.rows.setCellText(ri, ci, cell, sheet.table.proxy, data.name, 'cell');
+                data.rows.setCellText(ri, ci, cell, 'cell');
             }
 
         } else if (type === 2 || type === 5 || type === 6 || type === 11 || type === 12) {
@@ -92,7 +92,7 @@ export default class PreAction {
 
             for (let i = 0; i < _cells.length; i++) {
                 let {cell, ri, ci} = _cells[i];
-                data.rows.setCellText(ri, ci, cell, sheet.table.proxy, data.name, 'cell');
+                data.rows.setCellText(ri, ci, cell, 'cell');
 
             }
 

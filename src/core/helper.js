@@ -133,6 +133,14 @@ function rangeSum(min, max, getv) {
     return s;
 }
 
+function isNumber(inputData) {
+    if (parseFloat(inputData).toString() == "NaN") {
+        return false;
+    } else {
+        return true;
+    }
+}
+
 function rangeEach(min, max, cb) {
     for (let i = min; i < max; i += 1) {
         cb(i);
@@ -161,6 +169,7 @@ export default {
 };
 
 export {
+    isNumber,
     isOusideViewRange,
     find,
     isHave,

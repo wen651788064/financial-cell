@@ -1,8 +1,12 @@
 import {tf} from '../locale/locale';
+import {isHave, isNumber} from "./helper";
 
 const formatStringRender = v => v;
 
 const formatNumberRender = (v, fixed = 2) => {
+    if(!isHave(v) || !isNumber(v)) {
+        return "";
+    }
     if (/^(-?\d*.?\d*)$/.test(v)) {
         const v1 = fixed === -1 ? v.toString() : Number(v).toFixed(fixed).toString();
         const [first, ...parts] = v1.split('\\.');

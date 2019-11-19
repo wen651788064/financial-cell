@@ -7,7 +7,7 @@ import History from './history';
 import Clipboard from './clipboard';
 import AutoFilter from './auto_filter';
 import {Merges} from './merge';
-import helper, {isHave, useOne} from './helper';
+import helper, {isHave, isNumber, useOne} from './helper';
 import {isFormula, Rows} from './row';
 import {Cols} from './col';
 import {Validations} from './validation';
@@ -515,6 +515,25 @@ function getCellColByX(x, scrollOffsetx) {
     return {ci: ci - 1, left, width};
 }
 
+function makeFormatCell({text, formula}, {symbol, position}, cb) {
+    if(!isHave(text) || !isNumber(text)) {
+        return null;
+    }
+
+    let cText = cb(formatNumberRender(text, -1));
+    formula = isFormula(formula) ? formula : cText;
+    if (!isNaN(cText)) {
+        let _cell = {
+            "text": position === 'begin' ? symbol + cText : cText + symbol,
+            "value": text,
+            "formulas": formula,
+        };
+        return _cell;
+    } else {
+        return null;
+    }
+}
+
 // what = 'input' || 'change'
 function tryParseToNum(cell, ri, ci) {
     return getType.call(this, ri, ci, cell);
@@ -547,6 +566,7 @@ function getType(ri, ci, cell) {
 
         return {
             "state": true,
+            "style": format,
             "text": _cell.text,
             "cell": _cell,
         }
@@ -575,6 +595,7 @@ function getType(ri, ci, cell) {
 
         return {
             "state": isValid,
+            "style": format,
             "text": !isHave(cellStyle) ? diff : text,
         };
     } else if (format === 'normal') {
@@ -588,6 +609,7 @@ function getType(ri, ci, cell) {
             return {
                 "state": true,
                 "text": _cell.text,
+                "style": format,
                 "cell": _cell,
             }
         } else {
@@ -599,6 +621,7 @@ function getType(ri, ci, cell) {
 
             return {
                 "state": true,
+                "style": format,
                 "text": _cell.text,
                 "cell": _cell,
             }
@@ -609,17 +632,17 @@ function getType(ri, ci, cell) {
             text = diff;
             formula = isFormula(cell.formulas) ? cell.formulas : diff;
         } else {
-            text = rows.useOne(cell.value, cell.text);
+            text = formatNumberRender(cell.text, 0);
             formula = cell.formulas;
         }
 
-        let formatProxy = new FormatProxy();
-        let _cell = formatProxy.makeFormatCell({text, formula}, {symbol: "￥", position: "begin"}, (s) => {
+        let _cell = makeFormatCell({text, formula}, {symbol: "￥", position: "begin"}, (s) => {
             return s;
         });
         if (_cell) {
             return {
                 "state": true,
+                "style": format,
                 "text": _cell.text,
                 "cell": _cell,
             };
@@ -634,13 +657,13 @@ function getType(ri, ci, cell) {
             text = rows.useOne(cell.value, cell.text);
             formula = cell.formulas;
         }
-        let formatProxy = new FormatProxy();
-        let _cell = formatProxy.makeFormatCell({text, formula}, {symbol: "%", position: "end"}, (s) => {
+        let _cell = makeFormatCell({text, formula}, {symbol: "%", position: "end"}, (s) => {
             return Number(s * 100).toFixed(2);
         });
         if (_cell) {
             return {
                 "state": true,
+                "style": format,
                 "text": _cell.text,
                 "cell": _cell,
             };
@@ -649,6 +672,7 @@ function getType(ri, ci, cell) {
 
     return {
         "state": false,
+        "style": format,
         "text": cell.text,
         "cell": {},
     };
@@ -985,7 +1009,7 @@ export default class DataProxy {
                         rows.setCellText(ri, ci, {
                             text: cell.text,
                             style: this.addStyle(cstyle)
-                        }, this.sheet.table.proxy, this.name, 'format');
+                        }, 'format');
                         // this.rows.workbook.change(ri, ci, cell, deepCopy(cell), 'change');
                     } else if (property === 'font-bold' || property === 'font-italic'
                         || property === 'font-name' || property === 'font-size') {
@@ -1043,13 +1067,13 @@ export default class DataProxy {
         return this.rows.getCell(nri, ci);
     }
 
-    editorChangeToHistory(oldCell, newCell, {ri, ci}, type) {
+    editorChangeToHistory(oldCell, {ri, ci}, type) {
+        let newCell = this.rows.getCell(ri, ci);
         // if (oldCell.text === newCell.text || oldCell.formulas === newCell.text) {
         //     return {
         //         "state": false,
         //     };
         // }
-
         let {multiPreAction} = this;
         let expr = xy2expr(ci, ri);
         let step = multiPreAction.getStepType(type, {ri, ci, expr, text: newCell.text});
@@ -1536,9 +1560,9 @@ export default class DataProxy {
         return this.rows.isEmpty(cell);
     }
 
-    renderFormat(style, cell, nrindex, cindex) {
+    renderFormat(style, cell, nrindex, cindex, filter) {
         let cellProxy = new CellProxy(cell);
-        return cellProxy.renderFormat(style, nrindex, cindex, this);
+        return cellProxy.renderFormat(style, nrindex, cindex, this, filter);
     }
 
     isFormula(text) {
@@ -1603,7 +1627,7 @@ export default class DataProxy {
     }
 
     // state: input | finished
-    setCellText(ri, ci, {text, style}, state, proxy = "") {
+    setCellText(ri, ci, {text, style}, state ) {
         // text = text.replace(/\"/g)
         const {rows, history, validations} = this;
         if (state === 'finished') {
@@ -1616,9 +1640,9 @@ export default class DataProxy {
             } else if (state === 'formulas') {
                 rows.setCellAll(ri, ci, text, "-");
             } else if (state === 'style') {
-                rows.setCellText(ri, ci, {text, style}, proxy, this.name, 'style');
+                rows.setCellText(ri, ci, {text, style}, 'style');
             } else {
-                rows.setCellText(ri, ci, {text}, proxy, this.name);
+                rows.setCellText(ri, ci, {text});
                 // rows.
             }
             // 不应该没打开一个单元格就 change一次

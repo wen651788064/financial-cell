@@ -331,9 +331,11 @@ class Rows {
     }
 
     // what === cell 把原本的cell 的merge 清空， 原因是不清空 merge还会存在
-    setCellText(ri, ci, {text, style, formulas, merge = ""}, proxy = "", name = "", what = 'all') {
+    setCellText(ri, ci, {text, style, formulas, merge = ""},  what = 'all') {
         const cell = this.getCellOrNew(ri, ci);
         let _cell = new Cell();
+        _cell.setCell(cell);
+        // _cell.setFormatText(data.tryParseToNum(_cell, ri, ci));
         if (what === 'style') {
             _cell.style = style;
             _cell.formulas = text;   //    cell.formulas = cell.formulas;
@@ -350,18 +352,10 @@ class Rows {
         } else {
             _cell.formulas = text;
         }
-
-        if (isHave(cell.depend)) {
-            _cell.depend = cell.depend;
-        }
-
         _cell.text = text;
         this.setCell(ri, ci, _cell);
 
         this.getDependCell(xy2expr(ci, ri), this.getCell(ri, ci));
-        if (typeof proxy != "string") {
-            proxy.setCell(name, xy2expr(ci, ri));
-        }
     }
 
     setCellAll(ri, ci, text, formulas = "", what = '') {

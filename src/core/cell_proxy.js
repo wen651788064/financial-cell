@@ -6,7 +6,7 @@ export default class CellProxy {
         this.cell = cell;
     }
 
-    renderFormat(style, nrindex, cindex, data) {
+    renderFormat(style, nrindex, cindex, data, filter) {
         if(isHave(style) === false || isHave(style.format) === false) {
             return {
                 "cellText": "",
@@ -20,7 +20,15 @@ export default class CellProxy {
             // console.log(data.formatm, '>>', cell.format);
             let formatInfo = data.tryParseToNum(cell, nrindex, cindex);
             if(formatInfo.state) {
-                cellText = formatInfo.text;
+                if(filter) {
+                    if((formatInfo.style === 'date' || formatInfo.style === 'datetime')) {
+                        cellText = formatInfo.text;
+                    } else {
+                        formatInfo.state = false;
+                    }
+                }  else {
+                    cellText = formatInfo.text;
+                }
             } else {
                 if( isHave(cell.text) === false) {
                     cell.text = "";
@@ -29,7 +37,7 @@ export default class CellProxy {
             }
             return {
                 "cellText": cellText,
-                "state": true,
+                "state": formatInfo.state,
             };
         }
         return {
