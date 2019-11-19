@@ -5,7 +5,7 @@ const formatStringRender = v => v;
 
 const formatNumberRender = (v, fixed = 2) => {
     if(!isHave(v) || !isNumber(v)) {
-        return "";
+        return v;
     }
     if (/^(-?\d*.?\d*)$/.test(v)) {
         const v1 = fixed === -1 ? v.toString() : Number(v).toFixed(fixed).toString();

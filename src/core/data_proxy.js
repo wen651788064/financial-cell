@@ -564,11 +564,20 @@ function getType(ri, ci, cell) {
             };
         }
 
-        return {
-            "state": true,
-            "style": format,
-            "text": _cell.text,
-            "cell": _cell,
+        if(isHave( _cell.text) && isNumber( _cell.text)) {
+            return {
+                "state": true,
+                "style": format,
+                "text": _cell.text,
+                "cell": _cell,
+            }
+        } else {
+            return {
+                "state": false,
+                "style": format,
+                "text": _cell.text,
+                "cell": _cell,
+            }
         }
     } else if (format === 'date' || format === 'datetime') {
         let text = cell.text, formula = cell.formulas, minute = false;

@@ -1121,6 +1121,17 @@ describe('qq', () => {
             assert.equal(args.state, false);
         });
 
+        it(' text: "asd" ', function () {
+            let cstyle = {};
+            cstyle.format = 'number';
+            let style = data.addStyle(cstyle);
+            let cell = {"text": "asd", "formulas": "asd", style: style};
+            data.rows.setCell(1, 1, cell);
+            let args = data.tryParseToNum(cell, 1, 1);
+            assert.equal(args.state, true);
+            assert.equal(args.text, 'asd');
+        });
+
         it(' text: null ', function () {
             let cstyle = {};
             cstyle.format = 'percent';
