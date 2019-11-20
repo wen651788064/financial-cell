@@ -159,7 +159,7 @@ function renderCell(rindex, cindex) {
     }
 
     const cell = data.getCell(nrindex, cindex);
-    if (cell === null) return;
+    if (!isHave(cell)) return;
     // data.rows.setHeight(1, 50);
 
     // console.log(rindex, nrindex, "63")
@@ -173,9 +173,7 @@ function renderCell(rindex, cindex) {
     }
 
     let cellText = "";
-    if (!cell.formulas) {
-        cell.formulas = !cell.text ? "" : cell.text;
-    }
+
     if (data.showEquation) {
         if(isHave(cell.formulas)) {
             cellText = cell.formulas;

@@ -8,7 +8,7 @@ import {isHave} from "../core/helper";
 export default class TableProxy {
     constructor(data ) {
         this.data = data;
-         this.rows = new Rows({len: 0, height: 0});
+         this.rows = new Rows({len: 0, height: 0}, data);
     }
 
     getComputedStyle(computedStyle) {

@@ -335,6 +335,7 @@ function parse(v) {
 }
 
 function parse2(v, pos) {
+    v = v + "";
     const start = v.lastIndexOf('=');
     if (start === 0 && v.length >= 1 && operation(v[pos - 1])) {
         this.setLock(true);
@@ -782,8 +783,14 @@ export default class Editor {
     }
 
     setCellEnd(cell) {
-        let text = (cell && cell.formulas) || '';
-        text = text == '' ? (cell && cell.text) || '' : text;
+        let text = '';
+        if(isHave(cell) && isHave(cell.formulas)) {
+            text = cell.formulas;
+        }
+        if(isHave(cell) && isHave(cell.text)) {
+            text = cell.text;
+        }
+
         let {data} = this;
         const style = data.getCellStyleOrDefault( this.ri, this.ci);
         // 为什么要着2行？？ 用户是对格式不可见的

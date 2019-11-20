@@ -114,18 +114,18 @@
         // }
 
         /* 模板2 */
-        let rows1 = {};
-        for (let i = 0; i < 200; i++) {
-            rows1[i] = {
-                "cells": {}
-            };
-            for (let j = 0; j < 20; j++) {
-                rows1[i]["cells"][j] = {
-                    "text": i,
-                    "formulas": i,
-                }
-            }
-        }
+        // let rows1 = {};
+        // for (let i = 0; i < 200; i++) {
+        //     rows1[i] = {
+        //         "cells": {}
+        //     };
+        //     for (let j = 0; j < 20; j++) {
+        //         rows1[i]["cells"][j] = {
+        //             "text": i,
+        //             "formulas": i,
+        //         }
+        //     }
+        // }
         // for (let i = 21; i < 40; i++) {
         //     rows1[i] = {
         //         "cells": {}
@@ -382,18 +382,21 @@
         // };
 
         /* 模板9 */
-        // let rows1 = {
-        //     1: {
-        //         cells: {
-        //             2: {"text":  1, "style": 1}
-        //         }
-        //     },
-        //     2: {
-        //         cells: {
-        //             0: {"text":  "=C2"}
-        //         }
-        //     }
-        // }
+        let rows1 = {
+            1: {
+                cells: {
+                    2: {"text":  1, "style": 1}
+                }
+            },
+            2: {
+                cells: {
+                    0: {"text":  "=C2", "formulas":  "=C2"},
+                    1: {"text":  "=C2:C4", "formulas":  "=C2:C4"},
+                    2: {"text":  "=C1:C4", "formulas":  "=C1:C4"},
+                    3: {"text":  "=average(C1:C4)", "formulas":  "=average(C1:C4)"}
+                }
+            }
+        }
 
 
         let flex = [

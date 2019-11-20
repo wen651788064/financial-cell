@@ -546,7 +546,6 @@ function getType(ri, ci, cell) {
     let cellStyle = data.getCellStyle(ri, ci);
     let {isValid, diff} = dateDiff(cell.text);
 
-    console.log(isValid, cellStyle)
     let format = rows.getCellStyleConvert(cellStyle, isValid);
     if (format === 'number') {
         let text = cell.text, formula = cell.formulas;
@@ -1080,6 +1079,9 @@ export default class DataProxy {
     }
 
     editorChangeToHistory(oldCell, {ri, ci}, type) {
+        if(ri === -1 || ci === -1) {
+            return {"state": false}
+        }
         let newCell = this.rows.getCell(ri, ci);
         // if (oldCell.text === newCell.text || oldCell.formulas === newCell.text) {
         //     return {
