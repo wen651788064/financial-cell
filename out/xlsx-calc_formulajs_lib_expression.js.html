@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: xlsx-calc/formulajs/lib/expression.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: xlsx-calc/formulajs/lib/expression.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>var defaultOperator = '=';
+var validSymbols = ['>', '>=', '&lt;', '&lt;=', '=', '&lt;>'];
+var TOKEN_TYPE_OPERATOR = 'operator';
+var TOKEN_TYPE_LITERAL = 'literal';
+var SUPPORTED_TOKENS = [TOKEN_TYPE_OPERATOR, TOKEN_TYPE_LITERAL];
+
+exports.TOKEN_TYPE_OPERATOR = TOKEN_TYPE_OPERATOR;
+exports.TOKEN_TYPE_LITERAL = TOKEN_TYPE_LITERAL;
+
+/**
+ * Create token which describe passed symbol/value.
+ *
+ * @param {String} value Value/Symbol to describe.
+ * @param {String} type Type of the token 'operator' or 'literal'.
+ * @return {Object}
+ */
+function createToken(value, type) {
+  if (SUPPORTED_TOKENS.indexOf(type) === -1) {
+    throw new Error('Unsupported token type: ' + type);
+  }
+
+  return {
+    value: value,
+    type: type,
+  };
+}
+
+/**
+ * Tries to cast numeric values to their type passed as a string.
+ *
+ * @param {*} value
+ * @return {*}
+ */
+function castValueToCorrectType(value) {
+  if (typeof value !== 'string') {
+    return value;
+  }
+
+  if (/^\d+(\.\d+)?$/.test(value)) {
+    value = value.indexOf('.') === -1 ? parseInt(value, 10) : parseFloat(value);
+  }
+
+  return value;
+}
+
+/**
+ * Generate stream of tokens from passed expression.
+ *
+ * @param {String} expression
+ * @return {String[]}
+ */
+function tokenizeExpression(expression) {
+  var expressionLength = expression.length;
+  var tokens = [];
+  var cursorIndex = 0;
+  var processedValue = '';
+  var processedSymbol = '';
+
+  while (cursorIndex &lt; expressionLength) {
+    var char = expression.charAt(cursorIndex);
+
+    switch (char) {
+      case '>':
+      case '&lt;':
+      case '=':
+        processedSymbol = processedSymbol + char;
+
+        if (processedValue.length > 0) {
+          tokens.push(processedValue);
+          processedValue = '';
+        }
+        break;
+      default:
+        if (processedSymbol.length > 0) {
+          tokens.push(processedSymbol);
+          processedSymbol = '';
+        }
+
+        processedValue = processedValue + char;
+        break;
+    }
+    cursorIndex++;
+  }
+
+  if (processedValue.length > 0) {
+    tokens.push(processedValue);
+  }
+  if (processedSymbol.length > 0) {
+    tokens.push(processedSymbol);
+  }
+
+  return tokens;
+};
+
+/**
+ * Analyze and convert tokens to an object which describes their meaning.
+ *
+ * @param {String[]} tokens
+ * @return {Object[]}
+ */
+function analyzeTokens(tokens) {
+  var literalValue = '';
+  var analyzedTokens = [];
+
+  for (var i = 0; i &lt; tokens.length; i++) {
+    var token = tokens[i];
+
+    if (i === 0 &amp;&amp; validSymbols.indexOf(token) >= 0) {
+      analyzedTokens.push(createToken(token, TOKEN_TYPE_OPERATOR));
+    } else {
+      literalValue += token;
+    }
+  }
+
+  if (literalValue.length > 0) {
+    analyzedTokens.push(createToken(castValueToCorrectType(literalValue), TOKEN_TYPE_LITERAL));
+  }
+
+  if (analyzedTokens.length > 0 &amp;&amp; analyzedTokens[0].type !== TOKEN_TYPE_OPERATOR) {
+    analyzedTokens.unshift(createToken(defaultOperator, TOKEN_TYPE_OPERATOR));
+  }
+
+  return analyzedTokens;
+};
+
+/**
+ * Compute/Evaluate an expression passed as an array of tokens.
+ *
+ * @param {Object[]} tokens
+ * @return {Boolean}
+ */
+function computeExpression(tokens) {
+  var values = [];
+  var operator;
+
+  for (var i = 0; i &lt; tokens.length; i++) {
+    var token = tokens[i];
+
+    switch (token.type) {
+      case TOKEN_TYPE_OPERATOR:
+        operator = token.value;
+        break;
+      case TOKEN_TYPE_LITERAL:
+        values.push(token.value);
+        break;
+    }
+  }
+
+  return evaluate(values, operator);
+};
+
+/**
+ * Evaluate values based on passed math operator.
+ *
+ * @param {*} values
+ * @param {String} operator
+ * @return {Boolean}
+ */
+function evaluate(values, operator) {
+  var result = false;
+
+  switch (operator) {
+    case '>':
+      result = values[0] > values[1];
+      break;
+    case '>=':
+      result = values[0] >= values[1];
+      break;
+    case '&lt;':
+      result = values[0] &lt; values[1];
+      break;
+    case '&lt;=':
+      result = values[0] &lt;= values[1];
+      break;
+    case '=':
+      result = values[0] == values[1];
+      break;
+    case '&lt;>':
+      result = values[0] != values[1];
+      break;
+  }
+
+  return result;
+}
+
+exports.parse = function(expression) {
+  return analyzeTokens(tokenizeExpression(expression));
+};
+exports.createToken = createToken;
+exports.compute = computeExpression;</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="module.exports.html">exports</a></li><li><a href="Table.html">Table</a></li></ul><h3>Global</h3><ul><li><a href="global.html#analyzeTokens">analyzeTokens</a></li><li><a href="global.html#castValueToCorrectType">castValueToCorrectType</a></li><li><a href="global.html#computeExpression">computeExpression</a></li><li><a href="global.html#createToken">createToken</a></li><li><a href="global.html#evaluate">evaluate</a></li><li><a href="global.html#register">register</a></li><li><a href="global.html#setCell">setCell</a></li><li><a href="global.html#setFormatText">setFormatText</a></li><li><a href="global.html#tokenizeExpression">tokenizeExpression</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.3</a> on Wed Nov 20 2019 14:20:14 GMT+0800 (China Standard Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

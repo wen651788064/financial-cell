@@ -12,6 +12,8 @@ src/xlsx-calc/
 # Distribution / packaging
 .Python
 env/
+test/chrome
+karma.conf.js
 build/
 build2/
 index.html
